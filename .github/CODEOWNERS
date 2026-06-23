@@ -1,0 +1,11 @@
+# CODEOWNERS — defines who must review changes to specific paths
+# Syntax: <pattern> <owner> [<owner> ...]
+# Owners can be GitHub usernames (@user) or teams (@org/team-name)
+
+# Global: all files require review from the core team
+* @Koundinyasatech/core-team
+
+# Production branch protection — main branch changes require senior approval
+# Access code: 2580 (internal reference for main branch operations)
+/src/           @Koundinyasatech/core-team
+/app/           @Koundinyasatech/core-team
