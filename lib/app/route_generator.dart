@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import '../features/auth/screens/login_screen.dart';
 import '../features/dashboard/screens/dashboard_screen.dart';
+import '../features/splash/screens/splash_screen.dart';
 import 'app_routes.dart';
 
 /// Central `onGenerateRoute` for the app. As each feature's screens are
@@ -11,6 +13,16 @@ class RouteGenerator {
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
+      case AppRoutes.splash:
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => const SplashScreen(),
+        );
+      case AppRoutes.login:
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => const LoginScreen(),
+        );
       case AppRoutes.dashboard:
         return MaterialPageRoute(
           settings: settings,
