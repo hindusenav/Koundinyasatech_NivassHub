@@ -95,4 +95,15 @@ class AppColors {
   static const Color shimmerHighlightLight = grey100;
   static const Color shimmerBaseDark = grey700;
   static const Color shimmerHighlightDark = grey600;
+
+  // ---------------------------------------------------------------------
+  // Splash screen (premium animated intro)
+  // ---------------------------------------------------------------------
+  static const Color splashGradientTop = Color(0xFF4F6EDB);
+  static const Color splashGradientBottom = Color(0xFF1D3E91);
+  static const Color splashPrimaryBlue = Color(0xFF3F62B5);
+  static const Color splashAccentOrange = Color(0xFFF6A623);
+  static const Color splashAccentGold = Color(0xFFFFD27A);
+  static const Color splashAccentAmber = Color(0xFFE8850A);
+  static const Color splashGlow = Color(0xFFAFC7FF);
 }
