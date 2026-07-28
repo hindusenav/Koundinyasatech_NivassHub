@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../core/constants/string_constants.dart';
-import '../../../core/routes/app_routes.dart';
+import '../../../app/app_routes.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_icons.dart';
 import '../../../core/theme/app_spacing.dart';
@@ -9,7 +9,7 @@ import '../../../shared/widgets/app_bar/custom_app_bar.dart';
 import '../../../shared/widgets/cards/dashboard_card.dart';
 import '../../../shared/widgets/loaders/shimmer_loader.dart';
 import '../../../shared/widgets/states/custom_error_widget.dart';
-import '../providers/dashboard_provider.dart';
+import '../provider/dashboard_provider.dart';
 import '../widgets/dashboard_welcome_header.dart';
 
 class DashboardScreen extends StatefulWidget {
