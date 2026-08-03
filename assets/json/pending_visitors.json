@@ -1,0 +1,26 @@
+{
+  "success": true,
+  "data": [
+    {
+      "visitorId": "VIS1001",
+      "visitorName": "Blinkit Delivery",
+      "visitorType": "Delivery",
+      "time": "10:30 AM",
+      "flat": "B-402"
+    },
+    {
+      "visitorId": "VIS1002",
+      "visitorName": "Zepto Delivery",
+      "visitorType": "Delivery",
+      "time": "10:35 AM",
+      "flat": "B-402"
+    },
+    {
+      "visitorId": "VIS1003",
+      "visitorName": "Amazon Courier",
+      "visitorType": "Courier",
+      "time": "11:15 AM",
+      "flat": "B-402"
+    }
+  ]
+}
