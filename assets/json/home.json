@@ -1,0 +1,78 @@
+{
+  "success": true,
+  "message": "Home data fetched successfully",
+  "data": {
+    "user": {
+      "userId": "USR10001",
+      "name": "Ajay Kumar",
+      "flatNumber": "B-402",
+      "profileImage": "assets/images/placeholders/profile.png"
+    },
+    "banner": {
+      "bannerId": "BNR001",
+      "title": "Online Advertising",
+      "image": "assets/images/placeholders/banner.png"
+    },
+    "quickActions": [
+      {
+        "id": 1,
+        "name": "Pre-Approve",
+        "icon": "preapprove"
+      },
+      {
+        "id": 2,
+        "name": "Payments",
+        "icon": "payments"
+      },
+      {
+        "id": 3,
+        "name": "Posts",
+        "icon": "posts"
+      },
+      {
+        "id": 4,
+        "name": "Security",
+        "icon": "security"
+      },
+      {
+        "id": 5,
+        "name": "Book Now",
+        "icon": "book"
+      },
+      {
+        "id": 6,
+        "name": "Directory",
+        "icon": "directory"
+      },
+      {
+        "id": 7,
+        "name": "Free Trial",
+        "icon": "gift"
+      },
+      {
+        "id": 8,
+        "name": "View More",
+        "icon": "plus"
+      }
+    ],
+    "maintenanceMessage": "Visitor maintenance scheduled at 11:00 AM.",
+    "approvalQueueCount": 3,
+    "approvalQueue": [
+      {
+        "visitorId": "VIS1001",
+        "visitorName": "Blinkit Delivery",
+        "flat": "B-402"
+      },
+      {
+        "visitorId": "VIS1002",
+        "visitorName": "Zepto Delivery",
+        "flat": "B-402"
+      },
+      {
+        "visitorId": "VIS1003",
+        "visitorName": "Amazon Courier",
+        "flat": "B-402"
+      }
+    ]
+  }
+}

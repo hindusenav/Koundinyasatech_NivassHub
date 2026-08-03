@@ -1,0 +1,23 @@
+{
+  "success": true,
+  "data": [
+    {
+      "addressId": "ADDR001",
+      "flatNumber": "B-402",
+      "societyName": "Golden Residency",
+      "isDefault": true
+    },
+    {
+      "addressId": "ADDR002",
+      "flatNumber": "C-504",
+      "societyName": "Sky Heights",
+      "isDefault": false
+    },
+    {
+      "addressId": "ADDR003",
+      "flatNumber": "A-201",
+      "societyName": "Palm Meadows",
+      "isDefault": false
+    }
+  ]
+}
