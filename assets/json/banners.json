@@ -1,0 +1,17 @@
+{
+  "success": true,
+  "data": [
+    {
+      "bannerId": "BNR001",
+      "title": "Online Advertising",
+      "image": "assets/images/placeholders/banner.png",
+      "redirectUrl": ""
+    },
+    {
+      "bannerId": "BNR002",
+      "title": "Community Event",
+      "image": "assets/images/placeholders/banner2.png",
+      "redirectUrl": ""
+    }
+  ]
+}
