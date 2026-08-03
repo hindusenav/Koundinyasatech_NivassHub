@@ -1,35 +1,26 @@
 import 'package:flutter/material.dart';
-import 'app/app.dart';
-import 'app/navigation_service.dart';
+import 'package:provider/provider.dart';
+import 'core/providers/app_providers.dart';
+import 'features/notices/screens/notices_screen.dart';
 import 'core/network/api_client.dart';
-import 'core/network/connectivity_service.dart';
-import 'core/storage/local_storage_service.dart';
-import 'core/storage/secure_storage_service.dart';
-import 'features/dashboard/repository/dashboard_service.dart';
 
-Future<void> main() async {
+void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  runApp(const NivassHubApp());
+}
 
-  final localStorageService = LocalStorageService();
-  await localStorageService.init();
-
-  final secureStorageService = SecureStorageService();
-  final connectivityService = ConnectivityService();
-
-  final apiClient = ApiClient(
-    getAccessToken: secureStorageService.getAccessToken,
-    onUnauthorized: NavigationService.logoutAndRedirectToLogin,
-  );
-
-  final dashboardService = DashboardService(apiClient);
-
-  runApp(
-    NivasHubApp(
-      localStorageService: localStorageService,
-      secureStorageService: secureStorageService,
-      connectivityService: connectivityService,
-      apiClient: apiClient,
-      dashboardService: dashboardService,
-    ),
-  );
+class NivassHubApp extends StatelessWidget {
+  const NivassHubApp({super.key});
+  @override
+  Widget build(BuildContext context) {
+    return MultiProvider(
+      providers: AppProviders.providers,
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'NivassHub',
+        theme: ThemeData(useMaterial3: true, colorSchemeSeed: Colors.blue),
+        home: NoticesScreen(apiClient: ApiClient()),
+      ),
+    );
+  }
 }

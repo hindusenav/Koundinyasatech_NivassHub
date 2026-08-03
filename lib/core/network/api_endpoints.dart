@@ -1,84 +1,97 @@
-/// Centralized API endpoint paths. Feature services build requests from
-/// these constants — no path should ever be hardcoded as a string literal
-/// inside a service call.
-///
-/// NOTE: [baseUrl] and every path below are placeholders until the real
-/// backend API contract is available — update them in one place here once
-/// it is.
+// lib/core/network/api_endpoints.dart
+//
+// Centralized API endpoint definitions.
+// Never hardcode endpoint strings anywhere else in the project.
+
 class ApiEndpoints {
   ApiEndpoints._();
 
-  static const String baseUrl = 'https://api.nivasshub.com/v1';
+  // ===========================================================================
+  // Base URLs
+  // ===========================================================================
 
-  // ---------------------------------------------------------------------
-  // Auth
-  // ---------------------------------------------------------------------
-  static const String login = '/auth/login';
+  /// Development
+  static const String baseUrl = 'http://localhost:3001/api/v1';
+
+  /// Production
+  static const String productionBaseUrl = 'https://api.payo.com/api/v1';
+
+  // ===========================================================================
+  // Authentication
+  // ===========================================================================
+
+  static const String sendOtp = '/auth/send-otp';
+
+  static const String verifyOtp = '/auth/verify-otp';
+
+  static const String resendOtp = '/auth/resend-otp';
+
   static const String register = '/auth/register';
-  static const String refreshToken = '/auth/refresh';
-  static const String logout = '/auth/logout';
-  static const String forgotPassword = '/auth/forgot-password';
-  static const String resetPassword = '/auth/reset-password';
 
-  // ---------------------------------------------------------------------
-  // Dashboard
-  // ---------------------------------------------------------------------
+  // ===========================================================================
+  // Dashboard / Home
+  // ===========================================================================
+
   static const String dashboardSummary = '/dashboard/summary';
 
-  // ---------------------------------------------------------------------
-  // Society management
-  // ---------------------------------------------------------------------
-  static const String societies = '/societies';
-  static String societyById(String id) => '/societies/$id';
+  static const String home = '/home';
 
-  // ---------------------------------------------------------------------
-  // Tower management
-  // ---------------------------------------------------------------------
-  static String towers(String societyId) => '/societies/$societyId/towers';
-  static String towerById(String societyId, String towerId) =>
-      '/societies/$societyId/towers/$towerId';
+  // ===========================================================================
+  // User
+  // ===========================================================================
 
-  // ---------------------------------------------------------------------
-  // Unit management
-  // ---------------------------------------------------------------------
-  static String units(String towerId) => '/towers/$towerId/units';
-  static String unitById(String unitId) => '/units/$unitId';
+  static const String userAddresses = '/user/addresses';
 
-  // ---------------------------------------------------------------------
-  // Resident management
-  // ---------------------------------------------------------------------
-  static const String residents = '/residents';
-  static String residentById(String id) => '/residents/$id';
+  static const String addAddress = '/user/address';
 
-  // ---------------------------------------------------------------------
-  // Visitor management
-  // ---------------------------------------------------------------------
-  static const String visitors = '/visitors';
-  static String visitorById(String id) => '/visitors/$id';
-  static const String visitorCheckIn = '/visitors/check-in';
-  static const String visitorCheckOut = '/visitors/check-out';
+  // ===========================================================================
+  // Visitors
+  // ===========================================================================
 
-  // ---------------------------------------------------------------------
-  // Complaints
-  // ---------------------------------------------------------------------
-  static const String complaints = '/complaints';
-  static String complaintById(String id) => '/complaints/$id';
+  static const String pendingVisitors = '/visitors/pending';
 
-  // ---------------------------------------------------------------------
-  // Notices
-  // ---------------------------------------------------------------------
-  static const String notices = '/notices';
-  static String noticeById(String id) => '/notices/$id';
+  static const String approveVisitor = '/visitors/approve';
 
-  // ---------------------------------------------------------------------
-  // Profile / settings
-  // ---------------------------------------------------------------------
-  static const String profile = '/profile';
-  static const String updateProfile = '/profile/update';
-  static const String changePassword = '/profile/change-password';
+  static const String rejectVisitor = '/visitors/reject';
 
-  // ---------------------------------------------------------------------
-  // Shared
-  // ---------------------------------------------------------------------
-  static const String uploadFile = '/upload';
+  // ===========================================================================
+  // Guard
+  // ===========================================================================
+
+  static const String guardContact = '/guard/contact';
+
+  // ===========================================================================
+  // Advertisements / Banner
+  // ===========================================================================
+
+  static const String banners = '/banners';
+
+  // ===========================================================================
+  // Announcements / Notices
+  // ===========================================================================
+
+  static const String latestAnnouncement = '/announcements/latest';
+
+  // ===========================================================================
+  // Emergency
+  // ===========================================================================
+
+  static const String sos = '/emergency/sos';
+
+  // ===========================================================================
+  // Community Feed (Placeholder APIs)
+  // Replace these when backend APIs are available.
+  // ===========================================================================
+
+  // GET /community/posts
+  static const String communityPosts = '/community/posts';
+
+  // GET /community/notices
+  static const String notices = '/community/notices';
+
+  // GET Complete Feed
+  static const String communityFeed = '/feed';
+
+  // GET Advertisements (alternative feed endpoint if provided later)
+  static const String advertisements = '/advertisements';
 }
