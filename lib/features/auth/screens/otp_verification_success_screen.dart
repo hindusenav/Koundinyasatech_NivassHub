@@ -1,0 +1,240 @@
+import 'package:flutter/material.dart';
+import '../../../app/app_routes.dart';
+import '../../../app/navigation_service.dart';
+import '../../../core/constants/asset_constants.dart';
+import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_dimensions.dart';
+import '../../../core/theme/app_icons.dart';
+import '../../../core/theme/app_spacing.dart';
+import '../../../core/theme/app_text_styles.dart';
+import '../../../core/utils/extensions/context_extensions.dart';
+import '../auth_colors.dart';
+import '../widgets/auth_gradient_button.dart';
+import '../widgets/auth_skyline_painter.dart';
+import '../widgets/success_check_icon.dart';
+import 'create_profile_screen.dart';
+
+/// Typed arguments for [AppRoutes.otpVerificationSuccess], unpacked in
+/// `route_generator.dart`.
+class OtpVerificationSuccessScreenArgs {
+  const OtpVerificationSuccessScreenArgs({required this.userExists, this.registrationToken});
+
+  final bool userExists;
+
+  /// Present only when [userExists] is `false`.
+  final String? registrationToken;
+}
+
+/// Celebration screen shown immediately after a successful OTP verification.
+/// Its "Continue" button does the userExists-based branching that used to
+/// live directly in `OtpVerificationScreen` — reading [userExists]/
+/// [registrationToken] from the route arguments, never hardcoded.
+class OtpVerificationSuccessScreen extends StatefulWidget {
+  const OtpVerificationSuccessScreen({
+    super.key,
+    required this.userExists,
+    this.registrationToken,
+  });
+
+  final bool userExists;
+  final String? registrationToken;
+
+  @override
+  State<OtpVerificationSuccessScreen> createState() => _OtpVerificationSuccessScreenState();
+}
+
+class _OtpVerificationSuccessScreenState extends State<OtpVerificationSuccessScreen>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _entrance;
+
+  @override
+  void initState() {
+    super.initState();
+    _entrance = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 900),
+    )..forward();
+  }
+
+  @override
+  void dispose() {
+    _entrance.dispose();
+    super.dispose();
+  }
+
+  void _handleContinue() {
+    if (widget.userExists) {
+      NavigationService.pushNamedAndRemoveUntil(AppRoutes.dashboard);
+    } else {
+      Navigator.pushReplacementNamed(
+        context,
+        AppRoutes.createProfile,
+        arguments: CreateProfileScreenArgs(registrationToken: widget.registrationToken!),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final screenHeight = context.screenHeight;
+
+    return Scaffold(
+      backgroundColor: AuthColors.background,
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    AuthColors.background,
+                    AuthColors.background,
+                    AuthColors.lightBlue.withValues(alpha: 0.05),
+                  ],
+                  stops: const [0.0, 0.55, 1.0],
+                ),
+              ),
+            ),
+          ),
+          AnimatedBuilder(
+            animation: _entrance,
+            builder: (context, _) {
+              final illustrationT =
+                  const Interval(0.20, 0.65, curve: Curves.easeOutCubic).transform(_entrance.value);
+              final opacity = illustrationT.clamp(0.0, 1.0);
+              return Positioned(
+                left: 0,
+                right: 0,
+                bottom: 0,
+                height: screenHeight * 0.32,
+                child: IgnorePointer(
+                  child: Opacity(
+                    opacity: opacity,
+                    child: Transform.translate(
+                      offset: Offset(0, (1 - opacity) * 20),
+                      child: CustomPaint(
+                        size: Size.infinite,
+                        painter: AuthSkylinePainter(progress: opacity),
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+          SafeArea(
+            child: Center(
+              child: Padding(
+                padding: AppSpacing.horizontal(AppSpacing.lg),
+                child: SingleChildScrollView(
+                  child: AnimatedBuilder(
+                    animation: _entrance,
+                    builder: (context, _) {
+                      final t = _entrance.value;
+                      final logoT =
+                          const Interval(0.00, 0.35, curve: Curves.easeOut).transform(t);
+                      final iconT = const Interval(
+                        0.10,
+                        0.55,
+                        curve: Curves.easeOutBack,
+                      ).transform(t);
+                      final titleT =
+                          const Interval(0.35, 0.70, curve: Curves.easeOut).transform(t);
+                      final subtitleT =
+                          const Interval(0.42, 0.76, curve: Curves.easeOut).transform(t);
+                      final buttonT = const Interval(
+                        0.55,
+                        0.90,
+                        curve: Curves.easeOutCubic,
+                      ).transform(t);
+                      final footerT =
+                          const Interval(0.68, 1.00, curve: Curves.easeOut).transform(t);
+
+                      return Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Opacity(
+                            opacity: logoT.clamp(0.0, 1.0),
+                            child: Image.asset(AppAssets.logo, width: 180),
+                          ),
+                          SizedBox(height: AppSpacing.xl),
+                          SuccessCheckIcon(entrance: iconT),
+                          SizedBox(height: AppSpacing.xl),
+                          Opacity(
+                            opacity: titleT.clamp(0.0, 1.0),
+                            child: Text.rich(
+                              TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: 'OTP Successfully ',
+                                    style: AppTextStyles.headlineSmall.copyWith(
+                                      color: AuthColors.heading,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text: 'Verified!',
+                                    style: AppTextStyles.headlineSmall.copyWith(
+                                      color: AuthColors.primaryBlue,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                          SizedBox(height: AppSpacing.sm),
+                          Opacity(
+                            opacity: subtitleT.clamp(0.0, 1.0),
+                            child: Text(
+                              'Your mobile number has been verified successfully.',
+                              textAlign: TextAlign.center,
+                              style: AppTextStyles.bodyLarge.copyWith(
+                                color: AuthColors.bodyText,
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: AppSpacing.xxl),
+                          Opacity(
+                            opacity: buttonT.clamp(0.0, 1.0),
+                            child: AuthGradientButton(
+                              label: 'Continue',
+                              onPressed: _handleContinue,
+                            ),
+                          ),
+                          SizedBox(height: AppSpacing.xl),
+                          Opacity(
+                            opacity: footerT.clamp(0.0, 1.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  AppIcons.checkCircle,
+                                  size: AppDimensions.iconSm,
+                                  color: AppColors.success,
+                                ),
+                                SizedBox(width: AppSpacing.xs),
+                                Text(
+                                  '100% Secure',
+                                  style: AppTextStyles.caption,
+                                ),
+                              ],
+                            ),
+                          ),
+                          SizedBox(height: screenHeight * 0.06),
+                        ],
+                      );
+                    },
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}

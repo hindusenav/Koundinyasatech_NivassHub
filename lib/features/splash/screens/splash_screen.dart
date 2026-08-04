@@ -3,7 +3,7 @@ import '../../../app/app_routes.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/extensions/context_extensions.dart';
 import '../../../shared/widgets/brand/nivass_logo_mark.dart';
-import '../../auth/screens/login_screen.dart';
+import '../../welcome/screens/welcome_screen.dart';
 import '../widgets/animated_ring_painter.dart';
 import '../widgets/animated_wordmark.dart';
 import '../widgets/converging_house_painter.dart';
@@ -13,7 +13,7 @@ import '../widgets/floating_particles.dart';
 /// direction and morph into a house silhouette, a gradient ring draws
 /// itself around it with a trail of sparks, the polished NIVASS mark fades
 /// in to replace the abstract shape, then the wordmark and tagline reveal
-/// before the mark flies — via [Hero] — into the login screen's header.
+/// before the whole scene fades into the Welcome screen.
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
@@ -33,19 +33,19 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
 
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 26000),
+      duration: const Duration(milliseconds: 3800),
     );
     _exitController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 500),
+      duration: const Duration(milliseconds: 400),
     );
 
     _controller.forward().whenComplete(() async {
-      await Future.delayed(const Duration(milliseconds: 600));
+      await Future.delayed(const Duration(milliseconds: 300));
       if (!mounted) return;
       await _exitController.forward();
       if (!mounted) return;
-      _goToLogin();
+      _goToWelcome();
     });
   }
 
@@ -56,12 +56,12 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
     super.dispose();
   }
 
-  void _goToLogin() {
+  void _goToWelcome() {
     Navigator.of(context).pushReplacement(
       PageRouteBuilder<void>(
-        settings: const RouteSettings(name: AppRoutes.login),
+        settings: const RouteSettings(name: AppRoutes.welcome),
         transitionDuration: const Duration(milliseconds: 550),
-        pageBuilder: (context, animation, secondaryAnimation) => const LoginScreen(),
+        pageBuilder: (context, animation, secondaryAnimation) => const WelcomeScreen(),
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
           return FadeTransition(
             opacity: CurvedAnimation(parent: animation, curve: Curves.easeOut),
@@ -245,10 +245,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
                       opacity: crispEntrance.clamp(0.0, 1.0),
                       child: Transform.scale(
                         scale: crispScale,
-                        child: Hero(
-                          tag: NivassLogoMark.heroTag,
-                          child: NivassLogoMark(size: _logoSize * 0.86),
-                        ),
+                        child: NivassLogoMark(size: _logoSize * 0.86),
                       ),
                     ),
                   ),

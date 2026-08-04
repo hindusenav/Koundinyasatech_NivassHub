@@ -5,6 +5,10 @@ import 'core/network/api_client.dart';
 import 'core/network/connectivity_service.dart';
 import 'core/storage/local_storage_service.dart';
 import 'core/storage/secure_storage_service.dart';
+import 'features/auth/auth_config.dart';
+import 'features/auth/repository/auth_service.dart';
+import 'features/auth/repository/auth_service_base.dart';
+import 'features/auth/repository/mock_auth_service.dart';
 import 'features/dashboard/repository/dashboard_service.dart';
 
 Future<void> main() async {
@@ -22,6 +26,8 @@ Future<void> main() async {
   );
 
   final dashboardService = DashboardService(apiClient);
+  final AuthServiceBase authService =
+      useMockApi ? MockAuthService() : AuthService(apiClient);
 
   runApp(
     NivasHubApp(
@@ -30,6 +36,7 @@ Future<void> main() async {
       connectivityService: connectivityService,
       apiClient: apiClient,
       dashboardService: dashboardService,
+      authService: authService,
     ),
   );
 }

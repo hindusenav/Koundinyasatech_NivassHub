@@ -8,7 +8,6 @@ import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/utils/extensions/context_extensions.dart';
 import '../../../core/validators/form_validators.dart';
-import '../../../shared/widgets/brand/nivass_logo_mark.dart';
 import '../../../shared/widgets/common/fade_slide_in.dart';
 import '../../../shared/widgets/feedback/custom_snackbar.dart';
 import '../../../shared/widgets/inputs/custom_text_field.dart';
@@ -16,20 +15,23 @@ import '../auth_colors.dart';
 import '../provider/auth_provider.dart';
 import '../widgets/auth_back_button.dart';
 import '../widgets/auth_gradient_button.dart';
+import '../widgets/auth_registration_footer.dart';
+import '../widgets/auth_shield_badge.dart';
 import '../widgets/auth_skyline_painter.dart';
 import '../widgets/country_code_badge.dart';
 import 'otp_verification_screen.dart';
 
-/// Mobile-number entry point into the OTP login flow. Sends an OTP for the
-/// entered number, then navigates to [OtpVerificationScreen].
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+/// Mobile-number entry point into the OTP registration flow for new users.
+/// Sends an OTP for the entered number, then navigates to
+/// [OtpVerificationScreen] with `isRegistrationFlow: true`.
+class RegisterScreen extends StatefulWidget {
+  const RegisterScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<RegisterScreen> createState() => _RegisterScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen>
+class _RegisterScreenState extends State<RegisterScreen>
     with SingleTickerProviderStateMixin {
   late final AnimationController _entrance;
   final _formKey = GlobalKey<FormState>();
@@ -51,7 +53,7 @@ class _LoginScreenState extends State<LoginScreen>
     super.dispose();
   }
 
-  Future<void> _handleLogin() async {
+  Future<void> _handleSendOtp() async {
     if (!(_formKey.currentState?.validate() ?? false)) return;
 
     context.hideKeyboard();
@@ -67,7 +69,7 @@ class _LoginScreenState extends State<LoginScreen>
         arguments: OtpVerificationScreenArgs(
           mobileNumber: auth.mobileNumber ?? mobile,
           otpExpirySeconds: auth.otpExpirySeconds,
-          isRegistrationFlow: false,
+          isRegistrationFlow: true,
         ),
       );
     } else {
@@ -154,30 +156,35 @@ class _LoginScreenState extends State<LoginScreen>
                           animation: _entrance,
                           builder: (context, _) {
                             final t = _entrance.value;
-                            final logoT = const Interval(
+                            final badgeT = const Interval(
                               0.00,
                               0.40,
                               curve: Curves.easeOutBack,
                             ).transform(t);
                             final headingT = const Interval(
-                              0.15,
-                              0.50,
+                              0.12,
+                              0.48,
                               curve: Curves.easeOut,
                             ).transform(t);
                             final subheadingT = const Interval(
-                              0.22,
-                              0.56,
+                              0.20,
+                              0.54,
                               curve: Curves.easeOut,
                             ).transform(t);
                             final labelT = const Interval(
-                              0.32,
-                              0.64,
+                              0.30,
+                              0.62,
                               curve: Curves.easeOut,
                             ).transform(t);
                             final fieldRowT = const Interval(
-                              0.38,
-                              0.70,
+                              0.36,
+                              0.68,
                               curve: Curves.easeOutCubic,
+                            ).transform(t);
+                            final noteT = const Interval(
+                              0.42,
+                              0.74,
+                              curve: Curves.easeOut,
                             ).transform(t);
                             final buttonT = const Interval(
                               0.50,
@@ -194,17 +201,17 @@ class _LoginScreenState extends State<LoginScreen>
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Opacity(
-                                  opacity: logoT.clamp(0.0, 1.0),
+                                  opacity: badgeT.clamp(0.0, 1.0),
                                   child: Transform.scale(
-                                    scale: 0.85 + logoT.clamp(0.0, 1.0) * 0.15,
-                                    child: const NivassLogoMark(size: 72),
+                                    scale: 0.85 + badgeT.clamp(0.0, 1.0) * 0.15,
+                                    child: const AuthShieldBadge(),
                                   ),
                                 ),
                                 SizedBox(height: AppSpacing.lg),
                                 FadeSlideIn(
                                   progress: headingT,
                                   child: Text(
-                                    'Welcome Back!',
+                                    'Enter Your Mobile Number',
                                     textAlign: TextAlign.center,
                                     style: AppTextStyles.headlineSmall.copyWith(
                                       color: AuthColors.heading,
@@ -216,7 +223,8 @@ class _LoginScreenState extends State<LoginScreen>
                                 FadeSlideIn(
                                   progress: subheadingT,
                                   child: Text(
-                                    'Login to access your Account',
+                                    'We will send a one-time password to verify your mobile '
+                                    'number. This helps keep your account secure.',
                                     textAlign: TextAlign.center,
                                     style: AppTextStyles.bodyLarge.copyWith(
                                       color: AuthColors.bodyText,
@@ -266,52 +274,57 @@ class _LoginScreenState extends State<LoginScreen>
                                             validator:
                                                 FormValidators.mobileNumber,
                                             onFieldSubmitted: (_) =>
-                                                _handleLogin(),
+                                                _handleSendOtp(),
                                           ),
                                         ),
                                       ],
                                     ),
                                   ),
                                 ),
+                                SizedBox(height: AppSpacing.md),
+                                FadeSlideIn(
+                                  progress: noteT,
+                                  child: Column(
+                                    children: [
+                                      Text(
+                                        'OTP will be sent via SMS. Standard message rates may apply.',
+                                        textAlign: TextAlign.center,
+                                        style: AppTextStyles.caption,
+                                      ),
+                                      SizedBox(height: AppSpacing.xs),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Icon(
+                                            AppIcons.lock,
+                                            size: AppDimensions.iconXs,
+                                            color: AuthColors.bodyText,
+                                          ),
+                                          AppSpacing.gapWXs,
+                                          Text(
+                                            'Your data is encrypted and secure.',
+                                            style: AppTextStyles.caption,
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
                                 SizedBox(height: AppSpacing.xl),
                                 FadeSlideIn(
                                   progress: buttonT,
                                   child: AuthGradientButton(
-                                    label: 'Login with OTP',
+                                    label: 'Send OTP',
                                     icon: AppIcons.phone,
                                     isLoading: isSendingOtp,
-                                    onPressed: _handleLogin,
+                                    onPressed: _handleSendOtp,
                                   ),
                                 ),
                                 SizedBox(height: AppSpacing.xl),
                                 FadeSlideIn(
                                   progress: footerT,
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Text(
-                                        'New to Nivaas Hub? ',
-                                        style: AppTextStyles.bodyMedium
-                                            .copyWith(
-                                              color: AuthColors.bodyText,
-                                            ),
-                                      ),
-                                      GestureDetector(
-                                        onTap: () => Navigator.pushNamed(
-                                          context,
-                                          AppRoutes.register,
-                                        ),
-                                        child: Text(
-                                          'Create an account',
-                                          style: AppTextStyles.bodyMedium
-                                              .copyWith(
-                                                color: AuthColors.primaryBlue,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
+                                  child: const AuthRegistrationFooter(),
                                 ),
                                 SizedBox(height: screenHeight * 0.06),
                               ],
