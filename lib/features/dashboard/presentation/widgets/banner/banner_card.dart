@@ -29,7 +29,7 @@ class BannerCard extends StatelessWidget {
             child: Icon(
               Icons.campaign_rounded,
               size: 110,
-              color: AppColors.tertiary.withOpacity(.85),
+              color: AppColors.tertiary.withValues(alpha: .85),
             ),
           ),
           Positioned(
@@ -40,7 +40,7 @@ class BannerCard extends StatelessWidget {
               child: Icon(
                 Icons.mail_rounded,
                 size: 28,
-                color: AppColors.error.withOpacity(.85),
+                color: AppColors.error.withValues(alpha: .85),
               ),
             ),
           ),
