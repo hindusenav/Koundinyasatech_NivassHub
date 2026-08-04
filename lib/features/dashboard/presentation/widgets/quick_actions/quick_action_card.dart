@@ -37,7 +37,7 @@ class QuickActionCard extends StatelessWidget {
                     : Border.all(color: Colors.grey.shade200),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(.03),
+                    color: Colors.black.withValues(alpha: .03),
                     blurRadius: 8,
                     offset: const Offset(0, 3),
                   ),
