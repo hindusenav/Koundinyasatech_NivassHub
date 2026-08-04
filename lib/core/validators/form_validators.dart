@@ -7,6 +7,7 @@ class FormValidators {
   static final RegExp _emailRegex =
       RegExp(r'^[\w\.\-]+@([\w\-]+\.)+[\w\-]{2,4}$');
   static final RegExp _phoneRegex = RegExp(r'^\+?[0-9]{10,15}$');
+  static final RegExp _mobileNumberRegex = RegExp(r'^[6-9]\d{9}$');
 
   static String? required(String? value, {String message = 'This field is required'}) {
     if (value == null || value.trim().isEmpty) return message;
@@ -21,12 +22,29 @@ class FormValidators {
     return null;
   }
 
+  /// Like [email], but treats an empty value as valid — for fields where
+  /// email is optional but must still be well-formed if entered.
+  static String? optionalEmail(String? value) {
+    if (value == null || value.trim().isEmpty) return null;
+    return email(value);
+  }
+
   static String? phone(String? value) {
     if (value == null || value.trim().isEmpty) {
       return 'Phone number is required';
     }
     if (!_phoneRegex.hasMatch(value.trim())) {
       return 'Please enter a valid phone number';
+    }
+    return null;
+  }
+
+  static String? mobileNumber(String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return 'Mobile number is required';
+    }
+    if (!_mobileNumberRegex.hasMatch(value.trim())) {
+      return 'Please enter a valid mobile number';
     }
     return null;
   }

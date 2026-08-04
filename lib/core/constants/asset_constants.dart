@@ -4,8 +4,7 @@
 class AppAssets {
   AppAssets._();
 
-  // Add entries once real assets are added, e.g.:
-  // static const String logo = 'assets/images/logo.png';
-  // static const String emptyStateIllustration = 'assets/images/empty_state.png';
-  // static const String loadingAnimation = 'assets/animations/loading.json';
+  static const String logo = 'assets/images/nivaashub_logo.png';
+  static const String logoMark = 'assets/images/nivaashub_logo_mark.png';
+  static const String welcomeBackground = 'assets/images/welcome_background.jpg';
 }

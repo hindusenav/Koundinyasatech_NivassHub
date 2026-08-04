@@ -1,0 +1,169 @@
+import 'package:flutter/foundation.dart';
+import '../models/register_request.dart';
+import '../models/resend_otp_request.dart';
+import '../models/send_otp_request.dart';
+import '../models/verify_otp_request.dart';
+import '../repository/auth_service_base.dart';
+
+enum AuthOtpStatus {
+  idle,
+  sendingOtp,
+  otpSent,
+  sendOtpError,
+  verifyingOtp,
+  otpVerified,
+  verifyOtpError,
+  resendingOtp,
+  resendOtpError,
+}
+
+/// Drives the mobile-number + OTP login flow: sending an OTP, verifying it,
+/// and resending it. Mirrors `DashboardProvider`'s loading/success/error
+/// pattern, but returns `Future<bool>` from each action (rather than
+/// `Future<void>`) since the calling screen needs to act on *that specific
+/// call's* outcome — navigate vs. show a snackbar — not just react to a
+/// rebuild.
+class AuthProvider extends ChangeNotifier {
+  AuthProvider({required AuthServiceBase authService}) : _authService = authService;
+
+  final AuthServiceBase _authService;
+
+  AuthOtpStatus _status = AuthOtpStatus.idle;
+  String? _mobileNumber;
+  int _otpExpirySeconds = 0;
+  bool _userExists = false;
+  String? _registrationToken;
+  String? _errorMessage;
+
+  bool _isRegistering = false;
+  String? _userId;
+  String? _accessToken;
+  String? _refreshToken;
+
+  AuthOtpStatus get status => _status;
+  String? get mobileNumber => _mobileNumber;
+  int get otpExpirySeconds => _otpExpirySeconds;
+  bool get userExists => _userExists;
+  String? get registrationToken => _registrationToken;
+  String? get errorMessage => _errorMessage;
+
+  bool get isSendingOtp => _status == AuthOtpStatus.sendingOtp;
+  bool get isVerifyingOtp => _status == AuthOtpStatus.verifyingOtp;
+  bool get isResendingOtp => _status == AuthOtpStatus.resendingOtp;
+
+  bool get isRegistering => _isRegistering;
+  String? get userId => _userId;
+  String? get accessToken => _accessToken;
+  String? get refreshToken => _refreshToken;
+
+  Future<bool> sendOtp(String mobileNumber) async {
+    _status = AuthOtpStatus.sendingOtp;
+    _errorMessage = null;
+    notifyListeners();
+
+    final response = await _authService.sendOtp(SendOtpRequest(mobileNumber: mobileNumber));
+
+    if (response.isSuccess && response.data != null) {
+      _mobileNumber = response.data!.mobileNumber;
+      _otpExpirySeconds = response.data!.otpExpiry;
+      _status = AuthOtpStatus.otpSent;
+      notifyListeners();
+      return true;
+    }
+    _errorMessage = response.message;
+    _status = AuthOtpStatus.sendOtpError;
+    notifyListeners();
+    return false;
+  }
+
+  Future<bool> verifyOtp(String otp) async {
+    final mobile = _mobileNumber;
+    if (mobile == null) return false;
+
+    _status = AuthOtpStatus.verifyingOtp;
+    _errorMessage = null;
+    notifyListeners();
+
+    final response =
+        await _authService.verifyOtp(VerifyOtpRequest(mobileNumber: mobile, otp: otp));
+
+    if (response.isSuccess && response.data != null) {
+      _userExists = response.data!.userExists;
+      _registrationToken = response.data!.registrationToken;
+      _status = AuthOtpStatus.otpVerified;
+      notifyListeners();
+      return true;
+    }
+    _errorMessage = response.message;
+    _status = AuthOtpStatus.verifyOtpError;
+    notifyListeners();
+    return false;
+  }
+
+  Future<bool> resendOtp() async {
+    final mobile = _mobileNumber;
+    if (mobile == null) return false;
+
+    _status = AuthOtpStatus.resendingOtp;
+    _errorMessage = null;
+    notifyListeners();
+
+    final response = await _authService.resendOtp(ResendOtpRequest(mobileNumber: mobile));
+
+    if (response.isSuccess) {
+      // Resend has no data payload per the real contract — _otpExpirySeconds
+      // is deliberately left untouched, so the OTP screen's existing
+      // `_secondsRemaining = auth.otpExpirySeconds` restarts the countdown
+      // using the last known duration from the original sendOtp call, which
+      // is the only value the backend ever supplies.
+      _status = AuthOtpStatus.otpSent;
+      notifyListeners();
+      return true;
+    }
+    _errorMessage = response.message;
+    _status = AuthOtpStatus.resendOtpError;
+    notifyListeners();
+    return false;
+  }
+
+  Future<bool> completeRegistration({
+    required String fullName,
+    String? email,
+    required String password,
+    required String confirmPassword,
+    required String address,
+  }) async {
+    final mobile = _mobileNumber;
+    final token = _registrationToken;
+    if (mobile == null || token == null) return false;
+
+    _isRegistering = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    final response = await _authService.register(
+      RegisterRequest(
+        mobileNumber: mobile,
+        fullName: fullName,
+        email: email,
+        password: password,
+        confirmPassword: confirmPassword,
+        address: address,
+        registrationToken: token,
+      ),
+    );
+
+    if (response.isSuccess && response.data != null) {
+      _userId = response.data!.userId;
+      _accessToken = response.data!.accessToken;
+      _refreshToken = response.data!.refreshToken;
+      _isRegistering = false;
+      notifyListeners();
+      return true;
+    }
+    _errorMessage = response.message;
+    _isRegistering = false;
+    notifyListeners();
+    return false;
+  }
+}

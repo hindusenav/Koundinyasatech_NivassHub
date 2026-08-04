@@ -7,10 +7,23 @@ class AppRoutes {
   static const String splash = '/';
 
   // ---------------------------------------------------------------------
+  // Welcome
+  // ---------------------------------------------------------------------
+  static const String welcome = '/welcome';
+
+  // ---------------------------------------------------------------------
+  // Onboarding
+  // ---------------------------------------------------------------------
+  static const String onboardingStepTwo = '/onboarding/step-two';
+
+  // ---------------------------------------------------------------------
   // Auth
   // ---------------------------------------------------------------------
   static const String login = '/auth/login';
   static const String register = '/auth/register';
+  static const String otpVerification = '/auth/otp-verification';
+  static const String otpVerificationSuccess = '/auth/otp-verification-success';
+  static const String createProfile = '/auth/create-profile';
   static const String forgotPassword = '/auth/forgot-password';
 
   // ---------------------------------------------------------------------

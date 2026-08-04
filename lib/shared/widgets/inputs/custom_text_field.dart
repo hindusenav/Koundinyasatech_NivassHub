@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../../../core/theme/app_dimensions.dart';
 
 /// Base text field every other input in the app is built from. Styling
@@ -28,6 +29,7 @@ class CustomTextField extends StatelessWidget {
     this.onFieldSubmitted,
     this.autofocus = false,
     this.focusNode,
+    this.inputFormatters,
   });
 
   final TextEditingController? controller;
@@ -50,6 +52,7 @@ class CustomTextField extends StatelessWidget {
   final void Function(String)? onFieldSubmitted;
   final bool autofocus;
   final FocusNode? focusNode;
+  final List<TextInputFormatter>? inputFormatters;
 
   @override
   Widget build(BuildContext context) {
@@ -64,6 +67,7 @@ class CustomTextField extends StatelessWidget {
       maxLines: obscureText ? 1 : maxLines,
       maxLength: maxLength,
       autofocus: autofocus,
+      inputFormatters: inputFormatters,
       validator: validator,
       onChanged: onChanged,
       onTap: onTap,
