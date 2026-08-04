@@ -87,7 +87,8 @@ class ApiException implements Exception {
         );
       case 401:
         return ApiException(
-          message: serverMessage ?? 'Your session has expired. Please log in again.',
+          message:
+              serverMessage ?? 'Your session has expired. Please log in again.',
           type: ApiExceptionType.unauthorized,
           statusCode: statusCode,
         );
@@ -146,7 +147,9 @@ class ApiException implements Exception {
       return rawErrors.map(
         (key, value) => MapEntry(
           key.toString(),
-          value is List ? value.map((e) => e.toString()).toList() : [value.toString()],
+          value is List
+              ? value.map((e) => e.toString()).toList()
+              : [value.toString()],
         ),
       );
     }

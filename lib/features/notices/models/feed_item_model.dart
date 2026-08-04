@@ -26,4 +26,15 @@ class FeedItemModel {
 
   const FeedItemModel.communityPost(CommunityPostModel communityPost)
     : this(type: FeedType.community, communityPost: communityPost);
+
+  String get id {
+    switch (type) {
+      case FeedType.advertisement:
+        return advertisement!.bannerId;
+      case FeedType.notice:
+        return notice!.id;
+      case FeedType.community:
+        return communityPost!.id;
+    }
+  }
 }
