@@ -8,7 +8,7 @@
 class ApiEndpoints {
   ApiEndpoints._();
 
-  static const String baseUrl = 'https://api.nivasshub.com/v1';
+  static const String baseUrl = 'http://localhost:3001/api/v1';
 
   // ---------------------------------------------------------------------
   // Auth
@@ -19,6 +19,9 @@ class ApiEndpoints {
   static const String logout = '/auth/logout';
   static const String forgotPassword = '/auth/forgot-password';
   static const String resetPassword = '/auth/reset-password';
+  static const String sendOtp = '/auth/send-otp';
+  static const String verifyOtp = '/auth/verify-otp';
+  static const String resendOtp = '/auth/resend-otp';
 
   // ---------------------------------------------------------------------
   // Dashboard
