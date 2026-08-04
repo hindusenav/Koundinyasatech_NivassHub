@@ -34,9 +34,31 @@ class ApiEndpoints {
   // ---------------------------------------------------------------------
   static const String home = '/home';
   static const String userAddresses = '/user/addresses';
+  static const String addAddress = '/user/address';
   static const String visitorsPending = '/visitors/pending';
   static const String banners = '/banners';
   static const String emergencySos = '/emergency/sos';
+
+  // ---------------------------------------------------------------------
+  // Guard
+  // ---------------------------------------------------------------------
+  static const String guardContact = '/guard/contact';
+
+  // ---------------------------------------------------------------------
+  // Visitor actions (gate approval flow)
+  // ---------------------------------------------------------------------
+  static const String approveVisitor = '/visitors/approve';
+  static const String rejectVisitor = '/visitors/reject';
+
+  // ---------------------------------------------------------------------
+  // Community Feed (Placeholder APIs)
+  // Replace these when backend APIs are available.
+  // ---------------------------------------------------------------------
+  static const String communityPosts = '/community/posts';
+  static const String notices = '/community/notices';
+  static const String communityFeed = '/feed';
+  static const String advertisements = '/advertisements';
+  static const String latestAnnouncement = '/announcements/latest';
 
   // ---------------------------------------------------------------------
   // Society management
@@ -78,9 +100,9 @@ class ApiEndpoints {
   static String complaintById(String id) => '/complaints/$id';
 
   // ---------------------------------------------------------------------
-  // Notices
+  // Notices management (CRUD)
   // ---------------------------------------------------------------------
-  static const String notices = '/notices';
+  static const String noticesManagement = '/notices';
   static String noticeById(String id) => '/notices/$id';
 
   // ---------------------------------------------------------------------
