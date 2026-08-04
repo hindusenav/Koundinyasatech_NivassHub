@@ -6,8 +6,9 @@ import '../core/storage/local_storage_service.dart';
 import '../core/storage/secure_storage_service.dart';
 import '../features/auth/provider/auth_provider.dart';
 import '../features/auth/repository/auth_service_base.dart';
-import '../features/dashboard/provider/dashboard_provider.dart';
-import '../features/dashboard/repository/dashboard_service.dart';
+import '../features/dashboard/data/repository/dashboard_repository.dart';
+import '../features/dashboard/presentation/provider/dashboard_navigation_provider.dart';
+import '../features/dashboard/presentation/provider/dashboard_provider.dart';
 import 'app_routes.dart';
 import 'app_theme.dart';
 import 'navigation_service.dart';
@@ -23,16 +24,16 @@ class NivasHubApp extends StatelessWidget {
     required this.secureStorageService,
     required this.connectivityService,
     required this.apiClient,
-    required this.dashboardService,
     required this.authService,
+    required this.dashboardRepository,
   });
 
   final LocalStorageService localStorageService;
   final SecureStorageService secureStorageService;
   final ConnectivityService connectivityService;
   final ApiClient apiClient;
-  final DashboardService dashboardService;
   final AuthServiceBase authService;
+  final DashboardRepository dashboardRepository;
 
   @override
   Widget build(BuildContext context) {
@@ -44,12 +45,14 @@ class NivasHubApp extends StatelessWidget {
         Provider<SecureStorageService>.value(value: secureStorageService),
         Provider<ConnectivityService>.value(value: connectivityService),
         Provider<ApiClient>.value(value: apiClient),
-        Provider<DashboardService>.value(value: dashboardService),
         Provider<AuthServiceBase>.value(value: authService),
 
         // Feature providers.
         ChangeNotifierProvider<DashboardProvider>(
-          create: (_) => DashboardProvider(dashboardService: dashboardService),
+          create: (_) => DashboardProvider(dashboardRepository)..loadDashboard(),
+        ),
+        ChangeNotifierProvider<DashboardNavigationProvider>(
+          create: (_) => DashboardNavigationProvider(),
         ),
         ChangeNotifierProvider<AuthProvider>(
           create: (_) => AuthProvider(authService: authService),

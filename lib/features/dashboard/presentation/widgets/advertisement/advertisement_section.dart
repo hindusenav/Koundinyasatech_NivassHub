@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../provider/dashboard_provider.dart';
+import '../empty/section_empty.dart';
 import 'advertisement_card.dart';
 
 class AdvertisementSection extends StatelessWidget {

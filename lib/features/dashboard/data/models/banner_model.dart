@@ -2,11 +2,13 @@ class BannerModel {
   final String bannerId;
   final String title;
   final String image;
+  final String redirectUrl;
 
   const BannerModel({
     required this.bannerId,
     required this.title,
     required this.image,
+    required this.redirectUrl,
   });
 
   factory BannerModel.fromJson(Map<String, dynamic> json) {
@@ -14,6 +16,7 @@ class BannerModel {
       bannerId: json['bannerId'] as String,
       title: json['title'] as String,
       image: json['image'] as String,
+      redirectUrl: json['redirectUrl'] as String? ?? '',
     );
   }
 
@@ -22,6 +25,7 @@ class BannerModel {
       'bannerId': bannerId,
       'title': title,
       'image': image,
+      'redirectUrl': redirectUrl,
     };
   }
 }

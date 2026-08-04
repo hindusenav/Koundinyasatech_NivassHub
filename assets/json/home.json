@@ -4,14 +4,14 @@
   "data": {
     "user": {
       "userId": "USR10001",
-      "name": "Ajay Kumar",
+      "name": "User Name",
       "flatNumber": "B-402",
-      "profileImage": "assets/images/placeholders/profile.png"
+      "profileImage": "https://dummyimage.com/profile.png"
     },
     "banner": {
       "bannerId": "BNR001",
       "title": "Online Advertising",
-      "image": "assets/images/placeholders/banner.png"
+      "image": "https://dummyimage.com/banner.png"
     },
     "quickActions": [
       {
@@ -55,7 +55,7 @@
         "icon": "plus"
       }
     ],
-    "maintenanceMessage": "Visitor maintenance scheduled at 11:00 AM.",
+    "maintenanceMessage": "Visitor maintenance scheduled at 11 AM.",
     "approvalQueueCount": 3,
     "approvalQueue": [
       {

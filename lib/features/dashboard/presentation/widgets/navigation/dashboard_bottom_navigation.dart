@@ -27,15 +27,19 @@ class DashboardBottomNavigation extends StatelessWidget {
             break;
 
           case 1:
-            // Community
+            // Visitors
             break;
 
           case 2:
-            // Notifications
+            // Community
             break;
 
           case 3:
-            // Profile
+            // Payments
+            break;
+
+          case 4:
+            // More
             break;
         }
       },
@@ -46,19 +50,24 @@ class DashboardBottomNavigation extends StatelessWidget {
           label: 'Home',
         ),
         NavigationDestination(
+          icon: Icon(Icons.badge_outlined),
+          selectedIcon: Icon(Icons.badge),
+          label: 'Visitors',
+        ),
+        NavigationDestination(
           icon: Icon(Icons.groups_outlined),
           selectedIcon: Icon(Icons.groups),
           label: 'Community',
         ),
         NavigationDestination(
-          icon: Icon(Icons.notifications_outlined),
-          selectedIcon: Icon(Icons.notifications),
-          label: 'Notifications',
+          icon: Icon(Icons.payments_outlined),
+          selectedIcon: Icon(Icons.payments),
+          label: 'Payments',
         ),
         NavigationDestination(
-          icon: Icon(Icons.person_outline),
-          selectedIcon: Icon(Icons.person),
-          label: 'Profile',
+          icon: Icon(Icons.more_horiz),
+          selectedIcon: Icon(Icons.more_horiz),
+          label: 'More',
         ),
       ],
     );

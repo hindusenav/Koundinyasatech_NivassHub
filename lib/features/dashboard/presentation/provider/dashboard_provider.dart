@@ -3,8 +3,10 @@ import 'package:flutter/foundation.dart';
 import '../../data/models/address_model.dart';
 import '../../data/models/announcement_model.dart';
 import '../../data/models/banner_model.dart';
+import '../../data/models/community_meeting_model.dart';
 import '../../data/models/guard_contact_model.dart';
 import '../../data/models/home_response_model.dart';
+import '../../data/models/notice_model.dart';
 import '../../data/models/visitor_model.dart';
 import '../../data/repository/dashboard_repository.dart';
 import 'dashboard_state.dart';
@@ -42,6 +44,14 @@ class DashboardProvider extends ChangeNotifier {
   List<BannerModel> _banners = [];
   List<BannerModel> get advertisementBanners => _banners;
 
+  // Community meeting
+  CommunityMeetingModel? _communityMeeting;
+  CommunityMeetingModel? get communityMeeting => _communityMeeting;
+
+  // Notices
+  List<NoticeModel> _notices = [];
+  List<NoticeModel> get notices => _notices;
+
   // Error
   String _errorMessage = '';
   String get errorMessage => _errorMessage;
@@ -63,7 +73,9 @@ class DashboardProvider extends ChangeNotifier {
         _repository.getPendingVisitors(),
         _repository.getAnnouncement(),
         _repository.getGuardContact(),
-        _repository.getBanners(), // <-- NEW
+        _repository.getBanners(),
+        _repository.getCommunityMeeting(),
+        _repository.getNotices(),
       ]);
 
       _home = results[0] as HomeResponseModel;
@@ -71,7 +83,9 @@ class DashboardProvider extends ChangeNotifier {
       _visitors = results[2] as List<VisitorModel>;
       _announcement = results[3] as AnnouncementModel;
       _guard = results[4] as GuardContactModel;
-      _banners = results[5] as List<BannerModel>; // <-- NEW
+      _banners = results[5] as List<BannerModel>;
+      _communityMeeting = results[6] as CommunityMeetingModel;
+      _notices = results[7] as List<NoticeModel>;
 
       final hasData =
           _home != null &&
@@ -93,6 +107,13 @@ class DashboardProvider extends ChangeNotifier {
 
   Future<void> refresh() async {
     await loadDashboard();
+  }
+
+  Future<void> triggerSos({
+    required double latitude,
+    required double longitude,
+  }) {
+    return _repository.triggerSos(latitude: latitude, longitude: longitude);
   }
 
   void clearError() {

@@ -1,9 +1,9 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../../core/theme/app_colors.dart';
 import '../../provider/dashboard_provider.dart';
-import 'address_dropdown.dart';
-import 'notification_icon.dart';
 
 class DashboardHeader extends StatelessWidget {
   const DashboardHeader({super.key});
@@ -12,47 +12,115 @@ class DashboardHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final provider = context.watch<DashboardProvider>();
 
+    final user = provider.home?.data.user;
     final addresses = provider.addresses;
+    final flatLabel = addresses.isNotEmpty
+        ? addresses
+            .firstWhere(
+              (e) => e.isDefault,
+              orElse: () => addresses.first,
+            )
+            .flatNumber
+        : (user?.flatNumber ?? '');
 
-    return Container(
-      padding: const EdgeInsets.fromLTRB(20, 18, 20, 18),
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(
-          bottom: Radius.circular(24),
-        ),
-      ),
-      child: SafeArea(
-        bottom: false,
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: addresses.isEmpty
-                  ? const Text(
-                      'Select Address',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 16,
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(0, 18, 0, 0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          CircleAvatar(
+            radius: 20,
+            backgroundColor: AppColors.grey200,
+            backgroundImage: (user != null && user.profileImage.isNotEmpty)
+                ? CachedNetworkImageProvider(user.profileImage)
+                : null,
+            onBackgroundImageError:
+                (user != null && user.profileImage.isNotEmpty)
+                    ? (_, _) {}
+                    : null,
+            child: (user == null || user.profileImage.isEmpty)
+                ? const Icon(Icons.person_outline, color: AppColors.grey500)
+                : null,
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Hello! ${user?.name ?? 'there'} \u{1F44B}',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 3),
+                InkWell(
+                  borderRadius: BorderRadius.circular(8),
+                  onTap: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Switch flat coming soon.'),
                       ),
-                    )
-                  : AddressDropdown(
-                      addresses: addresses,
-                      selectedAddress: addresses.firstWhere(
-                        (e) => e.isDefault,
-                        orElse: () => addresses.first,
+                    );
+                  },
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        flatLabel,
+                        style: const TextStyle(
+                          fontSize: 13,
+                          color: Colors.grey,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
-                      onChanged: (_) {
-                        // Will connect in Step 7.3
-                      },
-                    ),
+                      const Icon(
+                        Icons.keyboard_arrow_down_rounded,
+                        size: 18,
+                        color: Colors.grey,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(width: 12),
-            const NotificationIcon(
-              count: 3,
+          ),
+          IconButton(
+            onPressed: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Search coming soon.')),
+              );
+            },
+            icon: const Icon(Icons.search, color: Colors.black87),
+          ),
+          IconButton(
+            onPressed: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Messages coming soon.')),
+              );
+            },
+            icon: const Icon(
+              Icons.chat_bubble_outline,
+              color: Colors.black87,
             ),
-          ],
-        ),
+          ),
+          CircleAvatar(
+            radius: 18,
+            backgroundColor: AppColors.tertiary,
+            child: Text(
+              (user?.name.isNotEmpty ?? false)
+                  ? user!.name[0].toUpperCase()
+                  : '?',
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
