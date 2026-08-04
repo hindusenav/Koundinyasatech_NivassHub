@@ -4,13 +4,13 @@
     {
       "bannerId": "BNR001",
       "title": "Online Advertising",
-      "image": "assets/images/placeholders/banner.png",
+      "image": "https://dummyimage.com/banner.png",
       "redirectUrl": ""
     },
     {
       "bannerId": "BNR002",
       "title": "Community Event",
-      "image": "assets/images/placeholders/banner2.png",
+      "image": "https://dummyimage.com/banner2.png",
       "redirectUrl": ""
     }
   ]

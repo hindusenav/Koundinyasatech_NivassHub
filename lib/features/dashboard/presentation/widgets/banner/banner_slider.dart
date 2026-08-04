@@ -20,7 +20,7 @@ class _BannerSliderState extends State<BannerSlider> {
   Widget build(BuildContext context) {
     final provider = context.watch<DashboardProvider>();
 
-    final banners = provider.banners;
+    final banners = provider.advertisementBanners;
 
     if (banners.isEmpty) {
       return const SizedBox.shrink();

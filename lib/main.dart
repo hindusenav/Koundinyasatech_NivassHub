@@ -9,7 +9,12 @@ import 'features/auth/auth_config.dart';
 import 'features/auth/repository/auth_service.dart';
 import 'features/auth/repository/auth_service_base.dart';
 import 'features/auth/repository/mock_auth_service.dart';
-import 'features/dashboard/repository/dashboard_service.dart';
+import 'features/dashboard/dashboard_config.dart';
+import 'features/dashboard/data/repository/dashboard_repository.dart';
+import 'features/dashboard/data/services/dashboard_service.dart';
+import 'features/dashboard/data/services/home_api_service.dart';
+import 'features/dashboard/data/services/home_api_service_base.dart';
+import 'features/dashboard/data/services/mock_home_api_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,9 +30,17 @@ Future<void> main() async {
     onUnauthorized: NavigationService.logoutAndRedirectToLogin,
   );
 
-  final dashboardService = DashboardService(apiClient);
   final AuthServiceBase authService =
       useMockApi ? MockAuthService() : AuthService(apiClient);
+
+  final HomeApiServiceBase homeApiService = useMockHomeApi
+      ? MockHomeApiService(const DashboardService())
+      : HomeApiService(apiClient);
+
+  final dashboardRepository = DashboardRepository(
+    const DashboardService(),
+    homeApiService,
+  );
 
   runApp(
     NivasHubApp(
@@ -35,8 +48,8 @@ Future<void> main() async {
       secureStorageService: secureStorageService,
       connectivityService: connectivityService,
       apiClient: apiClient,
-      dashboardService: dashboardService,
       authService: authService,
+      dashboardRepository: dashboardRepository,
     ),
   );
 }
