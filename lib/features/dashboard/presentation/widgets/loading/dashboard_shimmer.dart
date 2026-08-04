@@ -62,7 +62,7 @@ class DashboardShimmer extends StatelessWidget {
                 crossAxisSpacing: 16,
                 mainAxisSpacing: 16,
               ),
-              itemBuilder: (_, __) {
+              itemBuilder: (_, _) {
                 return const ShimmerBox(
                   height: 90,
                   width: 90,
