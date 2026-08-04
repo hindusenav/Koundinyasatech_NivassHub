@@ -2,9 +2,10 @@
 /// these constants — no path should ever be hardcoded as a string literal
 /// inside a service call.
 ///
-/// NOTE: [baseUrl] and every path below are placeholders until the real
-/// backend API contract is available — update them in one place here once
-/// it is.
+/// NOTE: every path below other than the "Home Screen" section is a
+/// placeholder until its real backend API contract is available — update it
+/// in one place here once it is. [baseUrl] matches the NivasHub Mobile App
+/// Authentication API Contract (v1.0) dev URL.
 class ApiEndpoints {
   ApiEndpoints._();
 
@@ -27,6 +28,15 @@ class ApiEndpoints {
   // Dashboard
   // ---------------------------------------------------------------------
   static const String dashboardSummary = '/dashboard/summary';
+
+  // ---------------------------------------------------------------------
+  // Home Screen (NivasHub Mobile App API Contract v1.0)
+  // ---------------------------------------------------------------------
+  static const String home = '/home';
+  static const String userAddresses = '/user/addresses';
+  static const String visitorsPending = '/visitors/pending';
+  static const String banners = '/banners';
+  static const String emergencySos = '/emergency/sos';
 
   // ---------------------------------------------------------------------
   // Society management

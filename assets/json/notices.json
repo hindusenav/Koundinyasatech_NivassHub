@@ -1,0 +1,23 @@
+{
+  "success": true,
+  "data": [
+    {
+      "noticeId": "NOT001",
+      "title": "Expense report for quarter ending on June 2026",
+      "postedBy": "Admin",
+      "society": "Golden Residency",
+      "date": "25 Jun",
+      "body": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      "downloadLabel": "Download"
+    },
+    {
+      "noticeId": "NOT002",
+      "title": "Water supply maintenance notice",
+      "postedBy": "Admin",
+      "society": "Golden Residency",
+      "date": "22 Jun",
+      "body": "Water supply will be temporarily suspended between 10 AM and 2 PM tomorrow for scheduled maintenance work.",
+      "downloadLabel": "Download"
+    }
+  ]
+}
