@@ -14,111 +14,95 @@ class DashboardHeader extends StatelessWidget {
 
     final user = provider.home?.data.user;
     final addresses = provider.addresses;
+
     final flatLabel = addresses.isNotEmpty
-        ? addresses
-            .firstWhere(
-              (e) => e.isDefault,
-              orElse: () => addresses.first,
-            )
-            .flatNumber
+        ? addresses.firstWhere(
+            (e) => e.isDefault,
+            orElse: () => addresses.first,
+          ).flatNumber
         : (user?.flatNumber ?? '');
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(0, 18, 0, 0),
+      padding: const EdgeInsets.only(top: 10, bottom: 6),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           CircleAvatar(
-            radius: 20,
-            backgroundColor: AppColors.grey200,
-            backgroundImage: (user != null && user.profileImage.isNotEmpty)
-                ? CachedNetworkImageProvider(user.profileImage)
-                : null,
-            onBackgroundImageError:
+            radius: 22,
+            backgroundColor: Colors.grey.shade200,
+            backgroundImage:
                 (user != null && user.profileImage.isNotEmpty)
-                    ? (_, _) {}
+                    ? CachedNetworkImageProvider(user.profileImage)
                     : null,
             child: (user == null || user.profileImage.isEmpty)
-                ? const Icon(Icons.person_outline, color: AppColors.grey500)
+                ? const Icon(Icons.person, color: Colors.grey)
                 : null,
           ),
-          const SizedBox(width: 10),
+
+          const SizedBox(width: 12),
+
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Hello! ${user?.name ?? 'there'} \u{1F44B}',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+                  'Hello! ${user?.name ?? "User"} 👋',
                   style: const TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xff222222),
                   ),
                 ),
+
                 const SizedBox(height: 3),
-                InkWell(
-                  borderRadius: BorderRadius.circular(8),
-                  onTap: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Switch flat coming soon.'),
-                      ),
-                    );
-                  },
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        flatLabel,
-                        style: const TextStyle(
-                          fontSize: 13,
-                          color: Colors.grey,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      const Icon(
-                        Icons.keyboard_arrow_down_rounded,
-                        size: 18,
+
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      flatLabel,
+                      style: const TextStyle(
                         color: Colors.grey,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
                       ),
-                    ],
-                  ),
+                    ),
+                    const Icon(
+                      Icons.keyboard_arrow_down,
+                      size: 18,
+                      color: Colors.grey,
+                    ),
+                  ],
                 ),
               ],
             ),
           ),
-          IconButton(
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Search coming soon.')),
-              );
-            },
-            icon: const Icon(Icons.search, color: Colors.black87),
-          ),
-          IconButton(
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Messages coming soon.')),
-              );
-            },
-            icon: const Icon(
-              Icons.chat_bubble_outline,
-              color: Colors.black87,
-            ),
-          ),
-          CircleAvatar(
-            radius: 18,
-            backgroundColor: AppColors.tertiary,
-            child: Text(
-              (user?.name.isNotEmpty ?? false)
-                  ? user!.name[0].toUpperCase()
-                  : '?',
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
+
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: const Color(0xffECECEC),
               ),
             ),
+            child: const Icon(Icons.search),
+          ),
+
+          const SizedBox(width: 10),
+
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: const Color(0xffECECEC),
+              ),
+            ),
+            child: const Icon(Icons.chat_bubble_outline),
           ),
         ],
       ),
