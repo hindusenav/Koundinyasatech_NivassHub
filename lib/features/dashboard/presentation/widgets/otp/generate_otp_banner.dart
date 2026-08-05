@@ -11,62 +11,100 @@ class GenerateOtpBanner extends StatelessWidget {
   Widget build(BuildContext context) {
     return Material(
       color: Colors.transparent,
+      borderRadius: BorderRadius.circular(20),
       child: InkWell(
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(20),
         onTap: () {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('OTP / QR generation coming soon.'),
+              content: Text(
+                'OTP / QR generation coming soon.',
+              ),
             ),
           );
         },
         child: Container(
-          margin: const EdgeInsets.symmetric(horizontal: 20),
-          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+          width: double.infinity,
+          height: 82,
+          padding: const EdgeInsets.symmetric(
+            horizontal: 18,
+            vertical: 14,
+          ),
           decoration: BoxDecoration(
             gradient: const LinearGradient(
-              colors: [AppColors.secondary, AppColors.secondaryDark],
+              colors: [
+                Color(0xFF4F8DFD),
+                Color(0xFF2358D6),
+              ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
-            borderRadius: BorderRadius.circular(18),
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.blue.withOpacity(.15),
+                blurRadius: 12,
+                offset: const Offset(0, 6),
+              ),
+            ],
           ),
           child: Row(
             children: [
+              Container(
+                width: 52,
+                height: 52,
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(.18),
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: const Icon(
+                  Icons.qr_code_2_rounded,
+                  color: Colors.white,
+                  size: 30,
+                ),
+              ),
+
+              const SizedBox(width: 16),
+
               const Expanded(
                 child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       'Generate OTP / QR Code',
                       style: TextStyle(
                         color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 16,
                       ),
                     ),
-                    SizedBox(height: 2),
+
+                    SizedBox(height: 4),
+
                     Text(
                       'Invite guests for smooth gate entry',
                       style: TextStyle(
                         color: Colors.white70,
-                        fontSize: 11.5,
+                        fontSize: 12,
+                        height: 1.3,
                       ),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(width: 12),
+
               Container(
-                height: 42,
                 width: 42,
+                height: 42,
                 decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(10),
+                  color: Colors.white.withOpacity(.18),
+                  borderRadius: BorderRadius.circular(12),
                 ),
                 child: const Icon(
-                  Icons.qr_code_2_rounded,
-                  color: AppColors.secondaryDark,
+                  Icons.arrow_forward_ios_rounded,
+                  color: Colors.white,
+                  size: 18,
                 ),
               ),
             ],

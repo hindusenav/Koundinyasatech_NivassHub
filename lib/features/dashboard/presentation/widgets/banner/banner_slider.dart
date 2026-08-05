@@ -10,7 +10,7 @@ class BannerSlider extends StatefulWidget {
   const BannerSlider({super.key});
 
   @override
-  State<BannerSlider> createState() => _BannerSliderState();
+ State<BannerSlider> createState() => _BannerSliderState();
 }
 
 class _BannerSliderState extends State<BannerSlider> {
@@ -36,9 +36,10 @@ class _BannerSliderState extends State<BannerSlider> {
             );
           },
           options: CarouselOptions(
-            height: 180,
-            viewportFraction: .92,
-            enlargeCenterPage: true,
+            height: 150,
+            viewportFraction: 1,
+            enlargeCenterPage: false,
+            enableInfiniteScroll: banners.length > 1,
             autoPlay: banners.length > 1,
             autoPlayInterval: const Duration(seconds: 4),
             onPageChanged: (index, reason) {
@@ -48,7 +49,9 @@ class _BannerSliderState extends State<BannerSlider> {
             },
           ),
         ),
-        const SizedBox(height: 12),
+
+        const SizedBox(height: 15),
+
         BannerIndicator(
           currentIndex: currentIndex,
           count: banners.length,

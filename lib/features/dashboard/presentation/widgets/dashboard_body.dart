@@ -21,46 +21,63 @@ class DashboardBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<DashboardProvider>();
+
     final banners = provider.advertisementBanners;
 
-    return SingleChildScrollView(
-      physics: const BouncingScrollPhysics(),
-      child: Padding(
-        padding: EdgeInsets.symmetric(
-          horizontal: Responsive.horizontalPadding(context),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const DashboardHeader(),
-            const SizedBox(height: 18),
+    return Container(
+      color: const Color(0xFFF7F8FC), // Figma background
+      child: SafeArea(
+        child: SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
+          padding: EdgeInsets.fromLTRB(
+            Responsive.horizontalPadding(context),
+            8,
+            Responsive.horizontalPadding(context),
+            24,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const DashboardHeader(),
 
-            const BannerSlider(),
-            const SizedBox(height: 24),
+              const SizedBox(height: 14),
 
-            const QuickActionsGrid(),
-            const SizedBox(height: 24),
+              const BannerSlider(),
 
-            const MaintenanceCard(),
-            const SizedBox(height: 24),
+              const SizedBox(height: 22),
 
-            const ApprovalQueueSection(),
-            const SizedBox(height: 24),
+              const QuickActionsGrid(),
 
-            const PanicSosBanner(),
-            const SizedBox(height: 16),
+              const SizedBox(height: 22),
 
-            const GenerateOtpBanner(),
-            const SizedBox(height: 24),
+              const MaintenanceCard(),
 
-            if (banners.isNotEmpty) ...[
-              BannerCard(banner: banners.first),
+              const SizedBox(height: 22),
+
+              const ApprovalQueueSection(),
+
+              const SizedBox(height: 22),
+
+              const PanicSosBanner(),
+
+              const SizedBox(height: 16),
+
+              const GenerateOtpBanner(),
+
+              const SizedBox(height: 22),
+
+              if (banners.isNotEmpty) ...[
+                BannerCard(
+                  banner: banners.first,
+                ),
+                const SizedBox(height: 22),
+              ],
+
+              const CommunityPostsSection(),
+
               const SizedBox(height: 28),
             ],
-
-            const CommunityPostsSection(),
-            const SizedBox(height: 32),
-          ],
+          ),
         ),
       ),
     );
