@@ -11,9 +11,9 @@ class ApprovalQueueSection extends StatelessWidget {
   });
 
   static const _avatarColors = [
-    AppColors.tertiary,
-    AppColors.primary,
-    AppColors.secondary,
+    Color(0xffFFA726),
+    Color(0xff42A5F5),
+    Color(0xff26A69A),
   ];
 
   @override
@@ -23,34 +23,31 @@ class ApprovalQueueSection extends StatelessWidget {
     final visitors = provider.visitors;
 
     if (visitors.isEmpty) {
-      return const Padding(
-        padding: EdgeInsets.symmetric(horizontal: 20),
-        child: SectionEmpty(
-          icon: Icons.people_outline,
-          title: 'No Pending Visitors',
-          message:
-              'There are no visitor approvals waiting right now.',
-        ),
+      return const SectionEmpty(
+        icon: Icons.people_outline,
+        title: 'No Pending Visitors',
+        message: 'There are no visitor approvals waiting right now.',
       );
     }
 
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20),
-      padding: const EdgeInsets.all(18),
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.grey.shade200),
+        border: Border.all(
+          color: const Color(0xffECECEC),
+        ),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(.04),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+            blurRadius: 12,
+            offset: const Offset(0, 3),
           ),
         ],
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
@@ -58,39 +55,32 @@ class ApprovalQueueSection extends StatelessWidget {
                 child: Text(
                   'Approval Queue (${visitors.length})',
                   style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
               ),
-              InkWell(
-                borderRadius: BorderRadius.circular(8),
-                onTap: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Approval queue list coming soon.'),
-                    ),
-                  );
-                },
-                child: const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 4, horizontal: 4),
-                  child: Text(
-                    'View all',
-                    style: TextStyle(
-                      color: Color(0xFF1565C0),
-                      fontWeight: FontWeight.w600,
-                      fontSize: 13,
-                    ),
+
+              TextButton(
+                onPressed: () {},
+                child: const Text(
+                  'View all',
+                  style: TextStyle(
+                    color: Color(0xff1565C0),
+                    fontWeight: FontWeight.w600,
+                    fontSize: 13,
                   ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 16),
+
+          const SizedBox(height: 22),
+
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              for (var i = 0; i < visitors.length && i < 3; i++)
+              for (int i = 0; i < visitors.length && i < 3; i++)
                 _VisitorAvatar(
                   name: visitors[i].visitorName,
                   subtitle: 'Flat ${visitors[i].flat}',
@@ -120,42 +110,41 @@ class _VisitorAvatar extends StatelessWidget {
     return Column(
       children: [
         CircleAvatar(
-          radius: 26,
+          radius: 30,
           backgroundColor: color,
           child: Text(
             name.isNotEmpty ? name[0].toUpperCase() : '?',
             style: const TextStyle(
               color: Colors.white,
               fontWeight: FontWeight.bold,
-              fontSize: 18,
+              fontSize: 20,
             ),
           ),
         ),
-        const SizedBox(height: 8),
+
+        const SizedBox(height: 10),
+
         SizedBox(
-          width: 88,
+          width: 90,
           child: Text(
             name,
             textAlign: TextAlign.center,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: const TextStyle(
+              fontSize: 13,
               fontWeight: FontWeight.w600,
-              fontSize: 12,
             ),
           ),
         ),
-        SizedBox(
-          width: 88,
-          child: Text(
-            subtitle,
-            textAlign: TextAlign.center,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: const TextStyle(
-              color: Colors.grey,
-              fontSize: 11,
-            ),
+
+        const SizedBox(height: 2),
+
+        Text(
+          subtitle,
+          style: const TextStyle(
+            fontSize: 11,
+            color: Colors.grey,
           ),
         ),
       ],
