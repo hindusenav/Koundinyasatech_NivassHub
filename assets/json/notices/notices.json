@@ -1,0 +1,44 @@
+{
+  "status": "success",
+  "data": [
+    {
+      "id": "not_1",
+      "title": "Expense report for quarter ending on June 2026",
+      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      "date": "Society 25 Jun",
+      "attachment": "https://example.com/reports/june2026.pdf",
+      "priority": "High",
+      "category": "Admin",
+      "type": "Notice",
+      "author": "Admin",
+      "timestamp": "Society 25 Jun",
+      "action": "Download"
+    },
+    {
+      "id": "not_2",
+      "title": "Annual General Body Meeting Notice",
+      "description": "Notice is hereby given for the Annual General Body Meeting scheduled for July 15th at the Society Auditorium.",
+      "date": "Society 20 Jun",
+      "attachment": "https://example.com/agm_notice.pdf",
+      "priority": "High",
+      "category": "Admin",
+      "type": "Notice",
+      "author": "Management Committee",
+      "timestamp": "Society 20 Jun",
+      "action": "Download"
+    },
+    {
+      "id": "not_3",
+      "title": "Revised Visitor & Vehicle Parking Guidelines",
+      "description": "Please find attached the updated security protocols and designated guest parking allocation.",
+      "date": "Society 15 Jun",
+      "attachment": "https://example.com/parking_rules.pdf",
+      "priority": "Medium",
+      "category": "Security",
+      "type": "Notice",
+      "author": "Security Office",
+      "timestamp": "Society 15 Jun",
+      "action": "Download"
+    }
+  ]
+}

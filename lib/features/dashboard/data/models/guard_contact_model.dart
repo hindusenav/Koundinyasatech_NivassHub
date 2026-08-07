@@ -9,8 +9,8 @@ class GuardContactModel {
 
   factory GuardContactModel.fromJson(Map<String, dynamic> json) {
     return GuardContactModel(
-      guardName: json['guardName'] as String,
-      phoneNumber: json['phoneNumber'] as String,
+      guardName: json['guardName'] as String? ?? 'Security Desk',
+      phoneNumber: json['phoneNumber'] as String? ?? '',
     );
   }
 

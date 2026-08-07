@@ -1,11 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
-import '../../../core/constants/app_colors.dart';
-import '../../../core/constants/app_dimensions.dart';
-
 import '../models/advertisement_model.dart';
 
+/// Reusable Advertisement Banner component matching Figma ALTURA card.
 class AdvertisementBanner extends StatelessWidget {
   const AdvertisementBanner({super.key, required this.advertisement});
 
@@ -14,98 +12,121 @@ class AdvertisementBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 190,
+      height: 220,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
-        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.08),
-            blurRadius: 12,
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 10,
             offset: const Offset(0, 4),
           ),
         ],
       ),
       clipBehavior: Clip.antiAlias,
       child: Stack(
-        fit: StackFit.expand,
         children: [
-          //----------------------------------------------------------
-          // Banner Image
-          //----------------------------------------------------------
-          CachedNetworkImage(
-            imageUrl: advertisement.imageUrl,
-            fit: BoxFit.cover,
-
-            placeholder: (context, url) => Container(
-              color: Colors.grey.shade200,
-              child: const Center(child: CircularProgressIndicator()),
-            ),
-
-            errorWidget: (context, url, error) => Container(
-              color: Colors.grey.shade300,
-              child: const Icon(Icons.image_not_supported, size: 50),
-            ),
-          ),
-
-          //----------------------------------------------------------
-          // Gradient Overlay
-          //----------------------------------------------------------
-          Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.bottomCenter,
-                end: Alignment.topCenter,
-                colors: [Colors.black87, Colors.transparent],
+          Positioned.fill(
+            child: CachedNetworkImage(
+              imageUrl: advertisement.imageUrl.isNotEmpty
+                  ? advertisement.imageUrl
+                  : 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00',
+              fit: BoxFit.cover,
+              placeholder: (_, _) => Container(color: const Color(0xFF1E293B)),
+              errorWidget: (_, _, _) => Container(
+                color: const Color(0xFF1E293B),
+                child: const Center(
+                  child: Icon(Icons.apartment, size: 60, color: Colors.white70),
+                ),
               ),
             ),
           ),
-
-          //----------------------------------------------------------
-          // Banner Content
-          //----------------------------------------------------------
-          Padding(
-            padding: const EdgeInsets.all(AppDimensions.padding16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.end,
+          Positioned.fill(
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [Colors.transparent, Colors.black.withOpacity(0.85)],
+                ),
+              ),
+            ),
+          ),
+          Positioned(
+            top: 12,
+            right: 12,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+              decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.5),
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: const Text(
+                'Ad',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 10,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ),
+          Positioned(
+            left: 16,
+            right: 16,
+            bottom: 16,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                Text(
-                  advertisement.title,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 22,
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        advertisement.title.isNotEmpty
+                            ? advertisement.title
+                            : 'ALTURA',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w800,
+                          fontSize: 18,
+                          color: Colors.white,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        advertisement.subtitle.isNotEmpty
+                            ? advertisement.subtitle
+                            : '2 & 3 BHK Homes',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.white.withOpacity(0.9),
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-
-                const SizedBox(height: 6),
-
-                if (advertisement.description.isNotEmpty)
-                  Text(
-                    advertisement.description,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(color: Colors.white70, fontSize: 14),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 5,
                   ),
-
-                const SizedBox(height: 16),
-
-                ElevatedButton(
-                  onPressed: () {},
-
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    foregroundColor: Colors.white,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFEF08A),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    advertisement.price.isNotEmpty
+                        ? advertisement.price
+                        : '₹1.30 Crore Onwards',
+                    style: const TextStyle(
+                      color: Color(0xFF854D0E),
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
-
-                  child: const Text("Learn More"),
                 ),
               ],
             ),

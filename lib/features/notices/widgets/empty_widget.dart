@@ -2,29 +2,25 @@ import 'package:flutter/material.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_dimensions.dart';
-import '../../../core/constants/app_strings.dart';
 
 class EmptyWidget extends StatelessWidget {
   const EmptyWidget({
     super.key,
-    this.icon,
-    this.title,
-    this.message,
-    this.buttonText,
-    this.onPressed,
+    required this.title,
+    required this.message,
+    required this.buttonText,
+    required this.onPressed,
   });
 
-  final IconData? icon;
-  final String? title;
-  final String? message;
-  final String? buttonText;
-  final VoidCallback? onPressed;
+  final String title;
+  final String message;
+  final String buttonText;
+  final VoidCallback onPressed;
 
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: SingleChildScrollView(
-        physics: const AlwaysScrollableScrollPhysics(),
+      child: Padding(
         padding: const EdgeInsets.all(AppDimensions.padding24),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -33,51 +29,51 @@ class EmptyWidget extends StatelessWidget {
               height: 110,
               width: 110,
               decoration: BoxDecoration(
-                color: AppColors.primary.withValues(alpha: 0.08),
+                color: AppColors.primary.withOpacity(0.08),
                 shape: BoxShape.circle,
               ),
               child: Icon(
-                icon ?? Icons.inbox_rounded,
-                size: 55,
+                Icons.inbox_outlined,
+                size: 56,
                 color: AppColors.primary,
               ),
             ),
-
-            const SizedBox(height: AppDimensions.padding24),
-
+            const SizedBox(height: AppDimensions.padding20),
             Text(
-              title ?? AppStrings.noData,
+              title,
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+              style: const TextStyle(
+                fontSize: 18,
                 fontWeight: FontWeight.bold,
                 color: AppColors.textPrimary,
               ),
             ),
-
-            const SizedBox(height: AppDimensions.padding12),
-
+            const SizedBox(height: AppDimensions.padding8),
             Text(
-              message ??
-                  "There are no advertisements, notices or community posts available.",
+              message,
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              style: const TextStyle(
+                fontSize: 14,
                 color: AppColors.textSecondary,
-                height: 1.5,
+                height: 1.4,
               ),
             ),
-
-            if (buttonText != null && onPressed != null) ...[
-              const SizedBox(height: AppDimensions.padding24),
-
-              SizedBox(
-                width: 180,
-                child: ElevatedButton.icon(
-                  onPressed: onPressed,
-                  icon: const Icon(Icons.refresh),
-                  label: Text(buttonText!),
+            const SizedBox(height: AppDimensions.padding24),
+            ElevatedButton(
+              onPressed: onPressed,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                foregroundColor: AppColors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(AppDimensions.radius8),
+                ),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppDimensions.padding24,
+                  vertical: AppDimensions.padding12,
                 ),
               ),
-            ],
+              child: Text(buttonText),
+            ),
           ],
         ),
       ),

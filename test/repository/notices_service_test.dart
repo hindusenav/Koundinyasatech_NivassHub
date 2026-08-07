@@ -7,6 +7,7 @@ import 'package:flutter_nivasshub/features/notices/models/advertisement_model.da
 import 'package:flutter_nivasshub/features/notices/models/community_post_model.dart';
 import 'package:flutter_nivasshub/features/notices/models/notice_model.dart';
 
+import 'package:flutter_nivasshub/features/notices/repository/notices_api_service.dart';
 import 'package:flutter_nivasshub/features/notices/repository/notices_service.dart';
 
 void main() {
@@ -15,7 +16,7 @@ void main() {
 
   setUp(() {
     apiClient = ApiClient();
-    service = NoticesService(apiClient);
+    service = NoticesService(NoticesApiService(apiClient));
   });
 
   group('Advertisement API', () {

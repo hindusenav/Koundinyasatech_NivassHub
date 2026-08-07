@@ -1,8 +1,5 @@
 import 'api_exception.dart';
 
-/// Uniform wrapper every service method returns instead of raw data or a
-/// thrown exception — providers check [isSuccess]/[isFailure] and never need
-/// a try/catch of their own.
 class ApiResponse<T> {
   const ApiResponse._({
     required this.success,
@@ -11,12 +8,10 @@ class ApiResponse<T> {
     this.error,
   });
 
-  /// Success response
   factory ApiResponse.success(T data, {String? message}) {
     return ApiResponse._(success: true, data: data, message: message);
   }
 
-  /// Failure response
   factory ApiResponse.failure(ApiException error, {String? message}) {
     return ApiResponse._(
       success: false,
@@ -25,13 +20,14 @@ class ApiResponse<T> {
     );
   }
 
-  /// Create ApiResponse from backend JSON
   factory ApiResponse.fromJson(
     Map<String, dynamic> json,
     T Function(dynamic json) fromJsonT,
   ) {
+    final isSuccessStatus =
+        json['status'] == 'success' || (json['success'] == true);
     return ApiResponse._(
-      success: json['success'] ?? false,
+      success: isSuccessStatus,
       message: json['message'],
       data: json['data'] != null ? fromJsonT(json['data']) : null,
     );
@@ -43,18 +39,5 @@ class ApiResponse<T> {
   final ApiException? error;
 
   bool get isSuccess => success;
-
   bool get isFailure => !success;
-
-  @override
-  String toString() {
-    return '''
-ApiResponse(
-  success: $success,
-  message: $message,
-  data: $data,
-  error: $error,
-)
-''';
-  }
 }
