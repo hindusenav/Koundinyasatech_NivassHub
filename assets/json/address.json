@@ -1,0 +1,15 @@
+{
+  "status": true,
+  "message": "Address fetched successfully",
+  "data": {
+    "flat_no": "A-407",
+    "society": "Golden Heights",
+    "wing": "Tower B",
+    "street": "MG Road",
+    "area": "Andheri West",
+    "landmark": "Near City Mall",
+    "city": "Mumbai",
+    "state": "Maharashtra",
+    "pincode": "400053"
+  }
+}
