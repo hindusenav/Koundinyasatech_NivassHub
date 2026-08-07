@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import '../../dashboard/presentation/widgets/navigation/dashboard_bottom_navigation.dart';
 import '../provider/notices_provider.dart';
 
-/// Screen matching Figma "Community - New Poll"
+//// Screen matching Figma "Community - New Poll"
 class CreatePollScreen extends StatefulWidget {
   const CreatePollScreen({super.key});
 
