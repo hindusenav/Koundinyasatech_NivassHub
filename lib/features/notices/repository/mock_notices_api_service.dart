@@ -14,6 +14,45 @@ class MockNoticesApiService implements NoticesApiServiceBase {
       _loadJson('assets/json/notices/notices.json');
 
   @override
+  Future<Map<String, dynamic>> getNoticeDetails(String id) async {
+    await Future.delayed(const Duration(milliseconds: 200));
+    return {
+      'statusCode': 200,
+      'message': 'Notice details fetched successfully.',
+      'data': {
+        'id': int.tryParse(id) ?? 101,
+        'type': 'NOTICE',
+        'title': 'Expenses report of last quarter Apr-Jun 2026',
+        'description':
+            'Dear All, Please find the details of expenditure of last quarter Apr-Jun 2026...',
+        'content': 'Complete notice content will be available here.',
+        'postedBy': 'Association',
+        'postedDate': '2026-07-10',
+        'hasAttachment': true,
+        'attachments': [
+          {
+            'id': 501,
+            'fileName': 'expense-report-apr-jun-2026.pdf',
+            'fileUrl': 'https://example.com/files/expense-report.pdf',
+            'fileType': 'PDF',
+          }
+        ],
+        'images': [],
+      },
+    };
+  }
+
+  @override
+  Future<Map<String, dynamic>> markNoticeAsRead(String id) async {
+    await Future.delayed(const Duration(milliseconds: 200));
+    return {
+      'statusCode': 200,
+      'message': 'Notice marked as read.',
+      'data': {'id': int.tryParse(id) ?? 101, 'isRead': true},
+    };
+  }
+
+  @override
   Future<Map<String, dynamic>> getCommunityPosts({
     required int page,
     required int limit,
@@ -42,7 +81,7 @@ class MockNoticesApiService implements NoticesApiServiceBase {
       'status': 'success',
       'message': 'Post created successfully.',
       'data': {
-        'postId': 'post_${DateTime.now().millisecondsSinceEpoch}',
+        'postId': 'POST_${DateTime.now().millisecondsSinceEpoch}',
         'createdAt': DateTime.now().toIso8601String(),
       },
     };
@@ -57,7 +96,7 @@ class MockNoticesApiService implements NoticesApiServiceBase {
       'status': 'success',
       'message': 'Poll created successfully.',
       'data': {
-        'pollId': 'poll_${DateTime.now().millisecondsSinceEpoch}',
+        'pollId': 'POLL_${DateTime.now().millisecondsSinceEpoch}',
         'createdAt': DateTime.now().toIso8601String(),
       },
     };
@@ -72,7 +111,7 @@ class MockNoticesApiService implements NoticesApiServiceBase {
       'status': 'success',
       'message': 'Event created successfully.',
       'data': {
-        'eventId': 'event_${DateTime.now().millisecondsSinceEpoch}',
+        'eventId': 'EVENT_${DateTime.now().millisecondsSinceEpoch}',
         'createdAt': DateTime.now().toIso8601String(),
       },
     };
@@ -85,6 +124,16 @@ class MockNoticesApiService implements NoticesApiServiceBase {
       'status': 'success',
       'message': 'Post liked successfully.',
       'data': {'liked': true, 'likesCount': 6},
+    };
+  }
+
+  @override
+  Future<Map<String, dynamic>> unlikePost(String postId) async {
+    await Future.delayed(const Duration(milliseconds: 200));
+    return {
+      'status': 'success',
+      'message': 'Post unliked successfully.',
+      'data': {'liked': false, 'likesCount': 5},
     };
   }
 
@@ -102,6 +151,26 @@ class MockNoticesApiService implements NoticesApiServiceBase {
         'content': comment,
         'author': {'name': 'Hindu', 'flat': 'C 104'},
         'createdAt': DateTime.now().toIso8601String(),
+      },
+    };
+  }
+
+  @override
+  Future<Map<String, dynamic>> getComments(String postId) async {
+    await Future.delayed(const Duration(milliseconds: 200));
+    return {
+      'status': 'success',
+      'data': {
+        'comments': [
+          {
+            'id': 'comm_123',
+            'content': 'This is a comment on the post.',
+            'author': {'name': 'Hindu', 'flat': 'C 104'},
+            'createdAt': DateTime.now().toIso8601String(),
+            'likesCount': 2,
+          }
+        ],
+        'pagination': {'total': 1, 'nextOffset': null},
       },
     };
   }

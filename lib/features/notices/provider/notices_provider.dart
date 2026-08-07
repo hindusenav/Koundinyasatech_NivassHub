@@ -148,7 +148,10 @@ class NoticesProvider extends ChangeNotifier {
     _feedItems[index] = FeedItemModel.communityPost(updatedPost);
     notifyListeners();
 
-    final response = await _service.likePost(postId);
+    final response = oldLiked
+        ? await _service.unlikePost(postId)
+        : await _service.likePost(postId);
+
     if (!response.isSuccess) {
       // Rollback optimistic update
       _feedItems[index] = FeedItemModel.communityPost(
@@ -166,8 +169,10 @@ class NoticesProvider extends ChangeNotifier {
     List<String> media = const [],
   }) async {
     final body = {
+      'audience': {
+        'type': visibility.toUpperCase().replaceAll(' ', '_'),
+      },
       'content': content,
-      'visibility': visibility,
       'attachments': media
           .map((url) => {'fileType': 'IMAGE', 'fileUrl': url})
           .toList(),
@@ -176,7 +181,7 @@ class NoticesProvider extends ChangeNotifier {
     final response = await _service.createPost(body);
     if (response.isSuccess) {
       final newPost = CommunityPostModel(
-        id: 'post_${DateTime.now().millisecondsSinceEpoch}',
+        id: 'POST_${DateTime.now().millisecondsSinceEpoch}',
         userName: 'Hindu',
         userFlat: 'C 104',
         profileImage: 'https://dummyimage.com/profile.png',
@@ -202,15 +207,18 @@ class NoticesProvider extends ChangeNotifier {
     String visibility = 'All Residents',
   }) async {
     final body = {
+      'audience': {
+        'type': visibility.toUpperCase().replaceAll(' ', '_'),
+      },
       'question': question,
       'options': options,
-      'visibility': visibility,
+      'attachments': [],
     };
 
     final response = await _service.createPoll(body);
     if (response.isSuccess) {
       final newPoll = CommunityPostModel(
-        id: 'poll_${DateTime.now().millisecondsSinceEpoch}',
+        id: 'POLL_${DateTime.now().millisecondsSinceEpoch}',
         title: question,
         userName: 'Hindu',
         userFlat: 'C 104',
@@ -240,18 +248,24 @@ class NoticesProvider extends ChangeNotifier {
     String visibility = 'All Residents',
   }) async {
     final body = {
+      'audience': {
+        'type': visibility.toUpperCase().replaceAll(' ', '_'),
+      },
       'title': title,
       'description': description,
       'startDateTime': startDateTime,
       'endDateTime': endDateTime,
-      'venue': {'name': venueName},
-      'visibility': visibility,
+      'venue': {
+        'name': venueName,
+        'address': '$venueName, NivaasaHub',
+      },
+      'attachments': [],
     };
 
     final response = await _service.createEvent(body);
     if (response.isSuccess) {
       final newEvent = CommunityPostModel(
-        id: 'event_${DateTime.now().millisecondsSinceEpoch}',
+        id: 'EVENT_${DateTime.now().millisecondsSinceEpoch}',
         title: title,
         description: description,
         userName: 'Hindu',

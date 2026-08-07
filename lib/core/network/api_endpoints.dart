@@ -1,4 +1,4 @@
-/// Centralized API endpoint paths matching NivaasHub API Contract (Section 1 to 7).
+/// Centralized API endpoint paths matching NivaasHub API Contract (Sections 1 to 10).
 class ApiEndpoints {
   ApiEndpoints._();
 
@@ -10,8 +10,8 @@ class ApiEndpoints {
   static const String login = '/api/v1/auth/login';
   static const String register = '/api/v1/auth/register';
   static const String verifyOtp = '/api/v1/auth/verify-otp';
-  static const String sendOtp = '/auth/send-otp';
-  static const String resendOtp = '/auth/resend-otp';
+  static const String sendOtp = '/api/v1/auth/login';
+  static const String resendOtp = '/api/v1/auth/login';
 
   // ---------------------------------------------------------------------
   // 2. Profile & Onboarding Screens
@@ -20,16 +20,17 @@ class ApiEndpoints {
   static const String activeSociety = '/api/v1/users/active-society';
 
   // ---------------------------------------------------------------------
-  // 3. Society Management Screens
+  // 3. Society Management (Admin) Screens
   // ---------------------------------------------------------------------
   static const String societies = '/api/v1/societies';
-  static String societyById(String id) => '/api/v1/societies/$id';
+  static String societyById(String societyId) => '/api/v1/societies/$societyId';
 
   // ---------------------------------------------------------------------
   // 4. Roles & Permissions Screens
   // ---------------------------------------------------------------------
   static const String roles = '/api/v1/roles';
-  static String roleById(String id) => '/api/v1/roles/$id';
+  static String roleById(String roleId) => '/api/v1/roles/$roleId';
+  static String updateRole(String roleId) => '/api/v1/roles/$roleId';
   static const String permissionsMatrix = '/api/v1/permissions/matrix';
   static const String usersSearch = '/api/v1/users/search';
   static String assignRole(String userId) =>
@@ -48,15 +49,14 @@ class ApiEndpoints {
       '/api/v1/societies/$societyId/units/$unitId';
 
   // ---------------------------------------------------------------------
-  // 6. Home & Dashboard Screens (Community Feed)
+  // 6. Home & Dashboard Screens
   // ---------------------------------------------------------------------
-  static const String home = '/home';
+  static const String home = '/api/v1/dashboard/home';
   static const String homeDashboard = '/api/v1/dashboard/home';
-  static const String dashboardSummary = '/dashboard/summary';
-  static const String userAddresses = '/user/addresses';
-  static const String addAddress = '/user/address';
-  static const String visitorsPending = '/visitors/pending';
-  static const String emergencySos = '/emergency/sos';
+  static const String dashboardSummary = '/api/v1/dashboard/home';
+  static const String userAddresses = '/api/v1/users/profile';
+  static const String visitorsPending = '/api/v1/approvals';
+  static const String emergencySos = '/api/v1/emergency/sos';
   static const String approvals = '/api/v1/approvals';
   static String visitorAction(String visitorId) =>
       '/api/v1/visitors/$visitorId/action';
@@ -69,21 +69,47 @@ class ApiEndpoints {
   static const String posts = '/api/v1/posts';
   static String postById(String postId) => '/api/v1/posts/$postId';
   static String postLike(String postId) => '/api/v1/posts/$postId/like';
+  static String postUnlike(String postId) => '/api/v1/posts/$postId/like';
   static String postComments(String postId) => '/api/v1/posts/$postId/comments';
+  static String getPostComments(String postId) =>
+      '/api/v1/posts/$postId/comments';
   static String postCommentById(String postId, String commentId) =>
       '/api/v1/posts/$postId/comments/$commentId';
 
-  // Legacy / fallback endpoints
-  static const String banners = '/banners';
-  static const String notices = '/notices';
-  static const String communityPosts = '/community/posts';
+  // ---------------------------------------------------------------------
+  // 8. Community Posts, Polls & Events Creation
+  // ---------------------------------------------------------------------
+  static const String communityCreatePost = '/api/v1/community/posts';
+  static const String communityCreatePoll = '/api/v1/community/polls';
+  static const String communityCreateEvent = '/api/v1/community/events';
+  static const String createPost = '/api/v1/community/posts';
+  static const String createPoll = '/api/v1/community/polls';
+  static const String createEvent = '/api/v1/community/events';
+  static const String uploadMedia = '/api/v1/profile/images';
 
-  // Creation & Interaction Endpoints
-  static const String createPost = '/api/v1/posts';
-  static const String createPoll = '/api/v1/posts/poll';
-  static const String createEvent = '/api/v1/posts/event';
-  static const String uploadMedia = '/api/v1/media/upload';
-  static const String likePost = '/api/v1/posts/like';
-  static const String commentPost = '/api/v1/posts/comment';
-  static const String deletePost = '/api/v1/posts';
+  // ---------------------------------------------------------------------
+  // 9. Profile Screens
+  // ---------------------------------------------------------------------
+  static const String myProfile = '/api/v1/profile';
+  static const String updateProfile = '/api/v1/profile';
+  static const String profileImages = '/api/v1/profile/images';
+  static const String callingPreference = '/api/v1/profile/calling-preference';
+
+  // ---------------------------------------------------------------------
+  // 10. Settings & Master Data
+  // ---------------------------------------------------------------------
+  static const String settings = '/api/v1/settings';
+  static const String masterInterests = '/api/v1/master/interests';
+
+  // ---------------------------------------------------------------------
+  // 10 (Notice Board) Screens
+  // ---------------------------------------------------------------------
+  static const String noticeBoard = '/api/v1/notice-board';
+  static String noticeBoardById(String id) => '/api/v1/notice-board/$id';
+  static String markNoticeRead(String id) => '/api/v1/notice-board/$id/read';
+
+  // Legacy / fallback banner endpoints
+  static const String banners = '/banners';
+  static const String notices = '/api/v1/notice-board';
+  static const String communityPosts = '/api/v1/posts';
 }

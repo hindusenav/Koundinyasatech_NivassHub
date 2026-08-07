@@ -2,7 +2,7 @@ import 'package:dio/dio.dart';
 
 import '../../../core/network/api_client.dart';
 import '../../../core/network/api_endpoints.dart';
-import '../repository/notices_api_service_base.dart';
+import 'notices_api_service_base.dart';
 
 class NoticesApiService implements NoticesApiServiceBase {
   const NoticesApiService(this._apiClient);
@@ -17,7 +17,19 @@ class NoticesApiService implements NoticesApiServiceBase {
 
   @override
   Future<Map<String, dynamic>> getNotices() async {
-    final response = await _apiClient.get(ApiEndpoints.notices);
+    final response = await _apiClient.get(ApiEndpoints.noticeBoard);
+    return response.data;
+  }
+
+  @override
+  Future<Map<String, dynamic>> getNoticeDetails(String id) async {
+    final response = await _apiClient.get(ApiEndpoints.noticeBoardById(id));
+    return response.data;
+  }
+
+  @override
+  Future<Map<String, dynamic>> markNoticeAsRead(String id) async {
+    final response = await _apiClient.patch(ApiEndpoints.markNoticeRead(id));
     return response.data;
   }
 
@@ -37,7 +49,10 @@ class NoticesApiService implements NoticesApiServiceBase {
   Future<Map<String, dynamic>> createPost({
     required Map<String, dynamic> body,
   }) async {
-    final response = await _apiClient.post(ApiEndpoints.posts, data: body);
+    final response = await _apiClient.post(
+      ApiEndpoints.communityCreatePost,
+      data: body,
+    );
     return response.data;
   }
 
@@ -45,7 +60,10 @@ class NoticesApiService implements NoticesApiServiceBase {
   Future<Map<String, dynamic>> createPoll({
     required Map<String, dynamic> body,
   }) async {
-    final response = await _apiClient.post(ApiEndpoints.createPoll, data: body);
+    final response = await _apiClient.post(
+      ApiEndpoints.communityCreatePoll,
+      data: body,
+    );
     return response.data;
   }
 
@@ -54,7 +72,7 @@ class NoticesApiService implements NoticesApiServiceBase {
     required Map<String, dynamic> body,
   }) async {
     final response = await _apiClient.post(
-      ApiEndpoints.createEvent,
+      ApiEndpoints.communityCreateEvent,
       data: body,
     );
     return response.data;
@@ -63,7 +81,7 @@ class NoticesApiService implements NoticesApiServiceBase {
   Future<Map<String, dynamic>> uploadMedia(MultipartFile file) async {
     final form = FormData.fromMap({"file": file});
     final response = await _apiClient.post(
-      ApiEndpoints.uploadMedia,
+      ApiEndpoints.profileImages,
       data: form,
     );
     return response.data;
@@ -76,6 +94,12 @@ class NoticesApiService implements NoticesApiServiceBase {
   }
 
   @override
+  Future<Map<String, dynamic>> unlikePost(String postId) async {
+    final response = await _apiClient.delete(ApiEndpoints.postUnlike(postId));
+    return response.data;
+  }
+
+  @override
   Future<Map<String, dynamic>> commentPost({
     required String postId,
     required String comment,
@@ -84,6 +108,12 @@ class NoticesApiService implements NoticesApiServiceBase {
       ApiEndpoints.postComments(postId),
       data: {"content": comment},
     );
+    return response.data;
+  }
+
+  @override
+  Future<Map<String, dynamic>> getComments(String postId) async {
+    final response = await _apiClient.get(ApiEndpoints.getPostComments(postId));
     return response.data;
   }
 
