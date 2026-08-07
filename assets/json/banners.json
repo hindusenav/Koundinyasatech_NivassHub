@@ -1,17 +1,23 @@
 {
-  "success": true,
+  "status": "success",
   "data": [
     {
-      "bannerId": "BNR001",
+      "bannerId": "ad_1",
       "title": "Online Advertising",
-      "image": "https://dummyimage.com/banner.png",
-      "redirectUrl": ""
+      "subtitle": "Reach thousands of residential homeowners today",
+      "price": "Starting from ₹999/mo",
+      "image": "assets/images/ad_banner.png",
+      "redirectUrl": "https://nivaashub.com/ads",
+      "description": "Promote your services directly to verified society members."
     },
     {
-      "bannerId": "BNR002",
-      "title": "Community Event",
-      "image": "https://dummyimage.com/banner2.png",
-      "redirectUrl": ""
+      "bannerId": "ad_2",
+      "title": "ALTURA",
+      "subtitle": "2 & 3 BHK Homes",
+      "price": "₹1.30 Crore Onwards",
+      "image": "assets/images/ad_altura.png",
+      "redirectUrl": "https://altura-residences.com",
+      "description": "Luxury living in the heart of the city with world-class amenities."
     }
   ]
 }

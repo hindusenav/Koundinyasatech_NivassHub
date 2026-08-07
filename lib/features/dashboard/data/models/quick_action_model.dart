@@ -1,5 +1,5 @@
 class QuickActionModel {
-  final int id;
+  final dynamic id;
   final String name;
   final String icon;
 
@@ -11,9 +11,9 @@ class QuickActionModel {
 
   factory QuickActionModel.fromJson(Map<String, dynamic> json) {
     return QuickActionModel(
-      id: json['id'] as int,
-      name: json['name'] as String,
-      icon: json['icon'] as String,
+      id: json['id'] ?? 0,
+      name: json['name'] as String? ?? '',
+      icon: json['icon'] as String? ?? '',
     );
   }
 

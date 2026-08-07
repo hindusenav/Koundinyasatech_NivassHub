@@ -13,9 +13,11 @@ class HomeResponseModel {
 
   factory HomeResponseModel.fromJson(Map<String, dynamic> json) {
     return HomeResponseModel(
-      success: json['success'] as bool,
-      message: json['message'] as String,
-      data: HomeDataModel.fromJson(json['data']),
+      success: json['status'] == 'success' || (json['success'] == true),
+      message: json['message'] as String? ?? '',
+      data: HomeDataModel.fromJson(
+        (json['data'] as Map<String, dynamic>?) ?? {},
+      ),
     );
   }
 

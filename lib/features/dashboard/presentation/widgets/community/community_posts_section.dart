@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../../core/network/api_client.dart';
 import '../../../../../core/theme/app_colors.dart';
+import '../../../../notices/screens/notices_screen.dart';
 import '../../provider/dashboard_provider.dart';
 import '../banner/banner_card.dart';
 import 'community_meeting_card.dart';
 import 'notice_card.dart';
 
 class CommunityPostsSection extends StatelessWidget {
-  const CommunityPostsSection({
-    super.key,
-  });
+  const CommunityPostsSection({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -27,19 +27,29 @@ class CommunityPostsSection extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Row(
             children: [
-              const Expanded(
-                child: Text(
-                  'Community Posts',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
+              Expanded(
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) =>
+                            NoticesScreen(apiClient: context.read<ApiClient>()),
+                      ),
+                    );
+                  },
+                  child: const Text(
+                    'Community Posts',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                 ),
               ),
               OutlinedButton.icon(
                 onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Posting coming soon.')),
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) =>
+                          NoticesScreen(apiClient: context.read<ApiClient>()),
+                    ),
                   );
                 },
                 style: OutlinedButton.styleFrom(
@@ -70,9 +80,7 @@ class CommunityPostsSection extends StatelessWidget {
           NoticeCard(notice: notices[i]),
           const SizedBox(height: 16),
           if (i == 0 && banners.isNotEmpty) ...[
-            BannerCard(
-              banner: banners.length > 1 ? banners[1] : banners.first,
-            ),
+            BannerCard(banner: banners.length > 1 ? banners[1] : banners.first),
             const SizedBox(height: 16),
           ],
         ],

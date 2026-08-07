@@ -6,7 +6,6 @@ enum FeedType { advertisement, notice, community }
 
 class FeedItemModel {
   final FeedType type;
-
   final AdvertisementModel? advertisement;
   final NoticeModel? notice;
   final CommunityPostModel? communityPost;

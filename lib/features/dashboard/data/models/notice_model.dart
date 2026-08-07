@@ -19,13 +19,17 @@ class NoticeModel {
 
   factory NoticeModel.fromJson(Map<String, dynamic> json) {
     return NoticeModel(
-      noticeId: json['noticeId'] as String,
-      title: json['title'] as String,
-      postedBy: json['postedBy'] as String,
-      society: json['society'] as String,
-      date: json['date'] as String,
-      body: json['body'] as String,
-      downloadLabel: json['downloadLabel'] as String? ?? 'Download',
+      noticeId: json['noticeId'] as String? ?? json['id'] as String? ?? '',
+      title: json['title'] as String? ?? '',
+      postedBy:
+          json['postedBy'] as String? ?? json['author'] as String? ?? 'Admin',
+      society: json['society'] as String? ?? 'Society',
+      date: json['date'] as String? ?? json['timestamp'] as String? ?? '',
+      body: json['body'] as String? ?? json['description'] as String? ?? '',
+      downloadLabel:
+          json['downloadLabel'] as String? ??
+          json['action'] as String? ??
+          'Download',
     );
   }
 
