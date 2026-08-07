@@ -1,110 +1,100 @@
 import 'package:flutter/material.dart';
 
-import '../../../../../core/theme/app_colors.dart';
-
 class GenerateOtpBanner extends StatelessWidget {
-  const GenerateOtpBanner({
-    super.key,
-  });
+  const GenerateOtpBanner({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Material(
       color: Colors.transparent,
-      borderRadius: BorderRadius.circular(20),
+      borderRadius: BorderRadius.circular(12),
       child: InkWell(
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(12),
         onTap: () {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text(
-                'OTP / QR generation coming soon.',
-              ),
+              content: Text('OTP / QR generation coming soon.'),
             ),
           );
         },
         child: Container(
+          height: 78,
           width: double.infinity,
-          height: 82,
           padding: const EdgeInsets.symmetric(
-            horizontal: 18,
-            vertical: 14,
+            horizontal: 16,
+            vertical: 12,
           ),
           decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
             gradient: const LinearGradient(
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
               colors: [
-                Color(0xFF4F8DFD),
-                Color(0xFF2358D6),
+                Color(0xFF26A69A),
+                Color(0xFF0F9D8A),
               ],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
             ),
-            borderRadius: BorderRadius.circular(20),
             boxShadow: [
               BoxShadow(
-                color: Colors.blue.withOpacity(.15),
-                blurRadius: 12,
-                offset: const Offset(0, 6),
+                color: Colors.black.withOpacity(.12),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
               ),
             ],
           ),
           child: Row(
             children: [
-              Container(
-                width: 52,
-                height: 52,
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(.18),
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                child: const Icon(
-                  Icons.qr_code_2_rounded,
-                  color: Colors.white,
-                  size: 30,
-                ),
-              ),
-
-              const SizedBox(width: 16),
-
+              /// TEXT
               const Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Generate OTP / QR Code',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w700,
-                        fontSize: 16,
+                child: Padding(
+                  padding: EdgeInsets.only(left: 2),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Generate OTP / QR Code',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 0.2,
+                        ),
                       ),
-                    ),
-
-                    SizedBox(height: 4),
-
-                    Text(
-                      'Invite guests for smooth gate entry',
-                      style: TextStyle(
-                        color: Colors.white70,
-                        fontSize: 12,
-                        height: 1.3,
+                      SizedBox(height: 4),
+                      Text(
+                        'Invite guests for smooth gate entry',
+                        style: TextStyle(
+                          color: Colors.white70,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w500,
+                          height: 1.2,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
 
+              const SizedBox(width: 12),
+
+              /// QR BOX
               Container(
-                width: 42,
-                height: 42,
+                width: 50,
+                height: 60,
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(.18),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: const Icon(
-                  Icons.arrow_forward_ios_rounded,
                   color: Colors.white,
-                  size: 18,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                alignment: Alignment.center,
+                child: Padding(
+                  padding: const EdgeInsets.all(3),
+                  child: Image.asset(
+                    'assets/icons/qr_icon.png',
+                    width: 50,
+                    height: 60,
+                    fit: BoxFit.contain,
+                  ),
                 ),
               ),
             ],
