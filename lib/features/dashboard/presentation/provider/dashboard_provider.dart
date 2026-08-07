@@ -32,6 +32,30 @@ class DashboardProvider extends ChangeNotifier {
   List<VisitorModel> _visitors = [];
   List<VisitorModel> get visitors => _visitors;
 
+  /// Removes the first pending visitor whose display name matches
+  /// [company] (case-insensitive substring) from the Approval Queue and
+  /// notifies listeners immediately — so approving/rejecting a visitor
+  /// from the Home screen's gate-arrival banner
+  /// (`lib/features/notifications/`) updates the "Approval Queue" card
+  /// live, with no manual refresh needed. Purely additive: every existing
+  /// method/field on this provider is unchanged.
+  ///
+  /// Mock-mode-only heuristic — there's currently no visitor ID shared
+  /// between the notification mock (`assets/json/visitor_notification.json`)
+  /// and this provider's own mock source (`assets/json/home.json`), so this
+  /// matches by company/display name instead. A real backend would surface
+  /// both from the same visitor record, making this simpler (remove by ID).
+  void removeVisitorByCompany(String? company) {
+    if (company == null || company.isEmpty) return;
+
+    final query = company.toLowerCase();
+    final index = _visitors.indexWhere((v) => v.visitorName.toLowerCase().contains(query));
+    if (index == -1) return;
+
+    _visitors = List<VisitorModel>.from(_visitors)..removeAt(index);
+    notifyListeners();
+  }
+
   // Announcement
   AnnouncementModel? _announcement;
   AnnouncementModel? get announcement => _announcement;

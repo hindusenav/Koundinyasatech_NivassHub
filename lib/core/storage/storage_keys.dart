@@ -18,4 +18,5 @@ class StorageKeys {
   static const String languageCode = 'language_code';
   static const String cachedUserProfile = 'cached_user_profile';
   static const String rememberedEmail = 'remembered_email';
+  static const String notificationsEnabled = 'notifications_enabled';
 }

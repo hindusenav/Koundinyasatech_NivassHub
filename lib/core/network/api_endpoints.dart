@@ -93,6 +93,20 @@ class ApiEndpoints {
   static const String visitorCheckIn = '/visitors/check-in';
   static const String visitorCheckOut = '/visitors/check-out';
 
+  /// Approve/reject a visitor from the Home screen's gate-arrival banner
+  /// (NivasHub API Contract §6.3 — `POST /api/v1/visitors/{visitorId}/action`).
+  /// Still mock-only — see `MockVisitorNotificationService`.
+  static String visitorAction(String visitorId) => '/visitors/$visitorId/action';
+
+  /// Activities screen's gate/delivery log (NivasHub API Contract §6.2).
+  /// Still mock-only — see `MockVisitorActivityService`.
+  static const String approvals = '/approvals';
+
+  /// "Filter Activity by Type" bottom sheet's option catalog. Not in the
+  /// API contract at all yet (no Figma/endpoint published) — still
+  /// mock-only, see `MockActivityTypeFilterService`.
+  static const String activityTypeFilters = '/activities/type-filters';
+
   // ---------------------------------------------------------------------
   // Complaints
   // ---------------------------------------------------------------------
@@ -111,6 +125,12 @@ class ApiEndpoints {
   static const String profile = '/profile';
   static const String updateProfile = '/profile/update';
   static const String changePassword = '/profile/change-password';
+
+  // ---------------------------------------------------------------------
+  // Profile / Active Society (NivasHub Mobile App API Contract v1.0, §2)
+  // ---------------------------------------------------------------------
+  static const String userProfile = '/users/profile';
+  static const String activeSociety = '/users/active-society';
 
   // ---------------------------------------------------------------------
   // Shared

@@ -1,0 +1,82 @@
+{
+  "sections": [
+    {
+      "id": "shortcuts",
+      "title": null,
+      "actionLabel": null,
+      "items": [
+        { "id": "manage_devices", "title": "Manage Devices", "iconKey": "manage_devices" },
+        { "id": "nivaas_hub_locks", "title": "Nivaas Hub Locks", "iconKey": "nivaas_hub_locks" }
+      ]
+    },
+    {
+      "id": "visitors_security",
+      "title": "Visitors & Security",
+      "actionLabel": "Raise Alert",
+      "items": [
+        { "id": "invite_guest", "title": "Invite Guest", "iconKey": "invite_guest" },
+        { "id": "cab_auto", "title": "Cab/Auto", "iconKey": "cab_auto" },
+        { "id": "allow_delivery", "title": "Allow Delivery", "iconKey": "allow_delivery" },
+        { "id": "visiting_help", "title": "Visiting Help", "iconKey": "visiting_help" },
+        { "id": "call_security", "title": "Call Security", "iconKey": "call_security" },
+        { "id": "message_guard", "title": "Message Guard", "iconKey": "message_guard" },
+        { "id": "my_passes", "title": "MyPasses", "iconKey": "my_passes" },
+        { "id": "allow_kid_exit", "title": "Allow Kid Exit", "iconKey": "allow_kid_exit" }
+      ]
+    },
+    {
+      "id": "community",
+      "title": "Community",
+      "actionLabel": "View all",
+      "items": [
+        { "id": "residents", "title": "Residents", "iconKey": "residents" },
+        { "id": "search_vehicle", "title": "Search Vehicle", "iconKey": "search_vehicle" },
+        { "id": "find_daily_help", "title": "Find Daily Help", "iconKey": "daily_help" },
+        { "id": "community_amenities", "title": "Amenities", "iconKey": "amenities" }
+      ]
+    },
+    {
+      "id": "feed",
+      "title": "Feed",
+      "actionLabel": "View all posts",
+      "items": [
+        { "id": "create_post", "title": "Create Post", "iconKey": "create_post" },
+        { "id": "create_poll", "title": "Create Poll", "iconKey": "create_poll" },
+        { "id": "host_event", "title": "Host an Event", "iconKey": "host_event" },
+        { "id": "my_posts", "title": "My Posts", "iconKey": "my_posts" }
+      ]
+    },
+    {
+      "id": "marketplace",
+      "title": "Marketplace",
+      "actionLabel": "Explore",
+      "items": [
+        { "id": "find_homes", "title": "Find Homes", "iconKey": "find_homes" },
+        { "id": "my_listings", "title": "My Listings", "iconKey": "my_listings" },
+        { "id": "create_listing", "title": "Create a listing", "iconKey": "create_listing" }
+      ]
+    },
+    {
+      "id": "household",
+      "title": "Household",
+      "actionLabel": "Manage",
+      "items": [
+        { "id": "my_family", "title": "My Family", "iconKey": "my_family" },
+        { "id": "my_daily_help", "title": "My Daily Help", "iconKey": "my_daily_help" },
+        { "id": "home_planner", "title": "Home Planner", "iconKey": "home_planner" },
+        { "id": "my_vehicles", "title": "My Vehicles", "iconKey": "my_vehicles" }
+      ]
+    },
+    {
+      "id": "settings",
+      "title": "Settings",
+      "actionLabel": "View all",
+      "items": [
+        { "id": "test_notifications", "title": "Test Notifications", "iconKey": "test_notifications", "isAvailable": true },
+        { "id": "my_flat", "title": "My Flat", "iconKey": "my_flat", "routeName": "/profile", "isAvailable": true },
+        { "id": "my_plans", "title": "My Plans", "iconKey": "my_plans" },
+        { "id": "help_support", "title": "Help & Support", "iconKey": "help_support", "routeName": "/settings/help-support", "isAvailable": true }
+      ]
+    }
+  ]
+}

@@ -9,10 +9,19 @@ import '../features/auth/repository/auth_service_base.dart';
 import '../features/dashboard/data/repository/dashboard_repository.dart';
 import '../features/dashboard/presentation/provider/dashboard_navigation_provider.dart';
 import '../features/dashboard/presentation/provider/dashboard_provider.dart';
+import '../features/profile/provider/profile_provider.dart';
+import '../features/profile/repository/profile_service_base.dart';
+import '../features/quick_actions/provider/quick_actions_provider.dart';
+import '../features/quick_actions/repository/quick_actions_repository.dart';
+import '../features/search/provider/search_provider.dart';
+import '../features/search/repository/search_service_base.dart';
+import '../features/settings/provider/settings_provider.dart';
+import '../features/settings/repository/settings_repository.dart';
 import 'app_routes.dart';
 import 'app_theme.dart';
 import 'navigation_service.dart';
 import 'route_generator.dart';
+import 'theme_mode_provider.dart';
 
 /// Root widget — registers every app-wide service/provider once here, then
 /// hands off to [MaterialApp]. Feature-specific providers are added to the
@@ -26,6 +35,10 @@ class NivasHubApp extends StatelessWidget {
     required this.apiClient,
     required this.authService,
     required this.dashboardRepository,
+    required this.profileService,
+    required this.quickActionsRepository,
+    required this.searchService,
+    required this.settingsRepository,
   });
 
   final LocalStorageService localStorageService;
@@ -34,6 +47,10 @@ class NivasHubApp extends StatelessWidget {
   final ApiClient apiClient;
   final AuthServiceBase authService;
   final DashboardRepository dashboardRepository;
+  final ProfileServiceBase profileService;
+  final QuickActionsRepository quickActionsRepository;
+  final SearchServiceBase searchService;
+  final SettingsRepository settingsRepository;
 
   @override
   Widget build(BuildContext context) {
@@ -57,17 +74,38 @@ class NivasHubApp extends StatelessWidget {
         ChangeNotifierProvider<AuthProvider>(
           create: (_) => AuthProvider(authService: authService),
         ),
+        ChangeNotifierProvider<ThemeModeProvider>(
+          create: (_) => ThemeModeProvider(localStorageService)..init(),
+        ),
+        ChangeNotifierProvider<ProfileProvider>(
+          create: (_) => ProfileProvider(profileService)..loadProfile(),
+        ),
+        ChangeNotifierProvider<QuickActionsProvider>(
+          create: (_) => QuickActionsProvider(quickActionsRepository),
+        ),
+        ChangeNotifierProvider<SearchProvider>(
+          create: (_) => SearchProvider(searchService),
+        ),
+        ChangeNotifierProvider<SettingsProvider>(
+          create: (_) => SettingsProvider(settingsRepository),
+        ),
       ],
-      child: MaterialApp(
-        title: 'NivasHub',
-        debugShowCheckedModeBanner: false,
-        navigatorKey: NavigationService.navigatorKey,
-        theme: AppTheme.light,
-        darkTheme: AppTheme.dark,
-        themeMode: ThemeMode.system,
-        initialRoute: AppRoutes.splash,
-        onGenerateRoute: RouteGenerator.generateRoute,
-      ),
+      // `builder:` (not `child:`) — `child:` sits outside the provider tree
+      // and can't `watch` a provider registered above it, but `themeMode:`
+      // needs to react live to `ThemeModeProvider`.
+      builder: (context, _) {
+        final themeModeProvider = context.watch<ThemeModeProvider>();
+        return MaterialApp(
+          title: 'NivasHub',
+          debugShowCheckedModeBanner: false,
+          navigatorKey: NavigationService.navigatorKey,
+          theme: AppTheme.light,
+          darkTheme: AppTheme.dark,
+          themeMode: themeModeProvider.themeMode,
+          initialRoute: AppRoutes.splash,
+          onGenerateRoute: RouteGenerator.generateRoute,
+        );
+      },
     );
   }
 }

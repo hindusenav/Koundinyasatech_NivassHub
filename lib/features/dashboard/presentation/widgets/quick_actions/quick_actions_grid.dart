@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../../app/app_routes.dart';
 import '../../provider/dashboard_provider.dart';
 import 'quick_action_card.dart';
 import '../empty/section_empty.dart';
@@ -104,6 +105,7 @@ class QuickActionsGrid extends StatelessWidget {
         break;
 
       case 'View More':
+        Navigator.pushNamed(context, AppRoutes.quickActions);
         break;
     }
   }
