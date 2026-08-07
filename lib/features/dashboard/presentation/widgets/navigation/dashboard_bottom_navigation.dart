@@ -13,22 +13,21 @@ class DashboardBottomNavigation extends StatelessWidget {
     return SafeArea(
       top: false,
       child: Container(
-        height: 80,
+        height: 90, // increased height for bigger icons
         decoration: const BoxDecoration(
           color: Color(0xffD9ECFF),
           borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(28),
-            topRight: Radius.circular(28),
+            topLeft: Radius.circular(32),
+            topRight: Radius.circular(32),
           ),
         ),
         child: Padding(
-          padding: const EdgeInsets.only(
-            left: 10,
-            right: 10,
-            top: 8,
-            bottom: 4,
+          padding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 10,
           ),
           child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               _item(provider, 0, "assets/icons/home.svg.png", "Home"),
               _item(provider, 1, "assets/icons/visitors.svg.png", "Visitors"),
@@ -43,27 +42,26 @@ class DashboardBottomNavigation extends StatelessWidget {
   }
 
   Widget _item(
-  DashboardNavigationProvider provider,
-  int index,
-  String image,
-  String title,
-) {
-  final bool selected = provider.selectedIndex == index;
+    DashboardNavigationProvider provider,
+    int index,
+    String image,
+    String title,
+  ) {
+    final bool selected = provider.selectedIndex == index;
 
-  return Expanded(
-    child: InkWell(
-      splashColor: Colors.transparent,
-      highlightColor: Colors.transparent,
-      onTap: () => provider.changeIndex(index),
-      child: Padding(
-        padding: const EdgeInsets.only(top: 2),
+    return Expanded(
+      child: InkWell(
+        splashColor: Colors.transparent,
+        highlightColor: Colors.transparent,
+        onTap: () => provider.changeIndex(index),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
+            /// 🔵 ICON BACKGROUND (bigger like Figma)
             AnimatedContainer(
-              duration: const Duration(milliseconds: 180),
-              height: 32,
-              width: 32,
+              duration: const Duration(milliseconds: 200),
+              height: 46,
+              width: 46,
               decoration: BoxDecoration(
                 color: selected
                     ? const Color(0xff1565C0)
@@ -73,36 +71,36 @@ class DashboardBottomNavigation extends StatelessWidget {
               child: Center(
                 child: Image.asset(
                   image,
-                  width: 18, // was 16
-                  height: 18, // was 16
+                  width: 26, // 🔥 bigger icon
+                  height: 26,
+                  fit: BoxFit.contain,
                   color: selected
                       ? Colors.white
-                      : const Color(0xff5F6368),
+                      : const Color(0xff4B5563), // darker = thicker feel
                 ),
               ),
             ),
 
-            const SizedBox(height: 4),
+            const SizedBox(height: 6),
 
+            /// 📝 LABEL
             Text(
               title,
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: 10, // was 9
-                fontWeight: selected
-                    ? FontWeight.w700
-                    : FontWeight.w600,
+                fontSize: 11.5,
+                fontWeight:
+                    selected ? FontWeight.w700 : FontWeight.w600,
                 color: selected
                     ? const Color(0xff1565C0)
-                    : const Color(0xff4B5563),
+                    : const Color(0xff374151), // slightly darker
                 letterSpacing: 0.2,
-                height: 1.1,
+                height: 1.2,
               ),
             ),
           ],
         ),
       ),
-    ),
-  );
-}
+    );
+  }
 }
