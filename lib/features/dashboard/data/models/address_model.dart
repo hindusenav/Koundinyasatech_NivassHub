@@ -8,15 +8,15 @@ class AddressModel {
     required this.addressId,
     required this.flatNumber,
     required this.societyName,
-    required this.isDefault,
+    this.isDefault = false,
   });
 
   factory AddressModel.fromJson(Map<String, dynamic> json) {
     return AddressModel(
-      addressId: json['addressId'] as String,
-      flatNumber: json['flatNumber'] as String,
-      societyName: json['societyName'] as String,
-      isDefault: json['isDefault'] as bool,
+      addressId: json['addressId'] as String? ?? json['id'] as String? ?? '',
+      flatNumber: json['flatNumber'] as String? ?? json['flatAddress'] as String? ?? '',
+      societyName: json['societyName'] as String? ?? '',
+      isDefault: json['isDefault'] as bool? ?? false,
     );
   }
 

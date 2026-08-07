@@ -13,10 +13,10 @@ class AdvertisementModel {
 
   factory AdvertisementModel.fromJson(Map<String, dynamic> json) {
     return AdvertisementModel(
-      bannerId: json['bannerId'] as String,
-      title: json['title'] as String,
-      image: json['image'] as String,
-      redirectUrl: json['redirectUrl'] as String,
+      bannerId: json['bannerId'] as String? ?? json['id'] as String? ?? '',
+      title: json['title'] as String? ?? '',
+      image: json['image'] as String? ?? json['imageUrl'] as String? ?? '',
+      redirectUrl: json['redirectUrl'] as String? ?? '',
     );
   }
 

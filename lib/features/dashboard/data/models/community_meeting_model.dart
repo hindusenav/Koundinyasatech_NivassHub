@@ -11,9 +11,9 @@ class CommunityMeetingModel {
 
   factory CommunityMeetingModel.fromJson(Map<String, dynamic> json) {
     return CommunityMeetingModel(
-      title: json['title'] as String,
-      message: json['message'] as String,
-      ctaLabel: json['ctaLabel'] as String,
+      title: json['title'] as String? ?? '',
+      message: json['message'] as String? ?? '',
+      ctaLabel: json['ctaLabel'] as String? ?? 'BUY NOW',
     );
   }
 

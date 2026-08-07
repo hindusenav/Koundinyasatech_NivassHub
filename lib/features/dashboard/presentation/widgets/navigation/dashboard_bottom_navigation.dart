@@ -4,43 +4,33 @@ import 'package:provider/provider.dart';
 import '../../provider/dashboard_navigation_provider.dart';
 
 class DashboardBottomNavigation extends StatelessWidget {
-  const DashboardBottomNavigation({
-    super.key,
-  });
+  const DashboardBottomNavigation({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final provider = context.watch<DashboardNavigationProvider>();
+    DashboardNavigationProvider? provider;
+    try {
+      provider = Provider.of<DashboardNavigationProvider>(
+        context,
+        listen: true,
+      );
+    } catch (_) {
+      // Safely handled if opened outside Dashboard scope
+    }
+
+    final selectedIndex = provider?.selectedIndex ?? 2;
 
     return NavigationBar(
-      selectedIndex: provider.selectedIndex,
+      selectedIndex: selectedIndex,
       height: 72,
       elevation: 8,
-      labelBehavior:
-          NavigationDestinationLabelBehavior.alwaysShow,
+      labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
       onDestinationSelected: (index) {
-        provider.changeIndex(index);
-
-        switch (index) {
-          case 0:
-            // Home
-            break;
-
-          case 1:
-            // Visitors
-            break;
-
-          case 2:
-            // Community
-            break;
-
-          case 3:
-            // Payments
-            break;
-
-          case 4:
-            // More
-            break;
+        if (provider != null) {
+          provider.changeIndex(index);
+        }
+        if (Navigator.of(context).canPop()) {
+          Navigator.of(context).pop();
         }
       },
       destinations: const [
