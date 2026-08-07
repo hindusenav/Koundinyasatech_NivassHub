@@ -23,21 +23,22 @@ class QuickActionCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(14),
+      borderRadius: BorderRadius.circular(18), // 🔥 smoother
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Stack(
             clipBehavior: Clip.none,
             children: [
+              /// 🔥 BIGGER BOX
               Container(
-                width: 58,
-                height: 58,
+                width: 70,  // 🔥 increased
+                height: 70,
                 decoration: BoxDecoration(
                   color: _isViewMore
-                      ? const Color.fromARGB(255, 52, 35, 244)
+                      ? const Color(0xFFFF8A00)
                       : Colors.white,
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: BorderRadius.circular(18),
                   border: Border.all(
                     color: _isViewMore
                         ? Colors.transparent
@@ -45,23 +46,25 @@ class QuickActionCard extends StatelessWidget {
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(.05),
-                      blurRadius: 8,
-                      offset: const Offset(0, 2),
+                      color: Colors.black.withOpacity(.06),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
                     ),
                   ],
                 ),
+
+                /// 🔥 BIGGER ICON
                 child: Center(
                   child: Image.asset(
                     action.assetPath,
-                    width: _isViewMore ? 20 : 22,
-                    height: _isViewMore ? 20 : 22,
+                    width: _isViewMore ? 26 : 30, // 🔥 increased
+                    height: _isViewMore ? 26 : 30,
                     fit: BoxFit.contain,
                     color: _isViewMore ? Colors.white : null,
                     errorBuilder: (_, __, ___) {
                       return const Icon(
                         Icons.image_not_supported_outlined,
-                        size: 22,
+                        size: 28,
                         color: Colors.grey,
                       );
                     },
@@ -69,18 +72,19 @@ class QuickActionCard extends StatelessWidget {
                 ),
               ),
 
+              /// 🔥 AD BADGE (slightly improved)
               if (_isSponsored)
                 Positioned(
-                  top: -4,
-                  left: -4,
+                  top: -6,
+                  left: -6,
                   child: Container(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 4,
+                      horizontal: 5,
                       vertical: 2,
                     ),
                     decoration: BoxDecoration(
                       color: AppColors.success,
-                      borderRadius: BorderRadius.circular(4),
+                      borderRadius: BorderRadius.circular(6),
                     ),
                     child: const Text(
                       "AD",
@@ -95,18 +99,19 @@ class QuickActionCard extends StatelessWidget {
             ],
           ),
 
-          const SizedBox(height: 6),
+          const SizedBox(height: 8), // 🔥 better spacing
 
+          /// TEXT
           SizedBox(
-            width: 64,
+            width: 74, // 🔥 slightly wider
             child: Text(
               action.name,
               textAlign: TextAlign.center,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: const TextStyle(
-                fontSize: 10,
-                height: 1.2,
+                fontSize: 11,
+                height: 1.25,
                 fontWeight: FontWeight.w500,
                 color: Color(0xff303030),
               ),

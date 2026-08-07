@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../../core/theme/app_colors.dart';
 import '../../provider/dashboard_provider.dart';
 
-class PanicSosBanner extends StatelessWidget {
-  const PanicSosBanner({
-    super.key,
-  });
+class PanicSosBanner extends StatefulWidget {
+  const PanicSosBanner({super.key});
 
-  Future<void> _handleTap(BuildContext context) async {
-    final messenger = ScaffoldMessenger.of(context);
+  @override
+  State<PanicSosBanner> createState() => _PanicSosBannerState();
+}
+
+class _PanicSosBannerState extends State<PanicSosBanner> {
+  Future<void> _handleTap() async {
     final provider = context.read<DashboardProvider>();
 
     try {
@@ -19,13 +20,17 @@ class PanicSosBanner extends StatelessWidget {
         longitude: 0.0,
       );
 
-      messenger.showSnackBar(
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('SOS alert triggered successfully'),
         ),
       );
     } catch (e) {
-      messenger.showSnackBar(
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Failed to trigger SOS: $e'),
         ),
@@ -37,54 +42,58 @@ class PanicSosBanner extends StatelessWidget {
   Widget build(BuildContext context) {
     return Material(
       color: Colors.transparent,
-      borderRadius: BorderRadius.circular(20),
+      borderRadius: BorderRadius.circular(14),
       child: InkWell(
-        borderRadius: BorderRadius.circular(20),
-        onTap: () => _handleTap(context),
+        borderRadius: BorderRadius.circular(14),
+        onTap: _handleTap,
         child: Container(
+          height: 72,
           width: double.infinity,
-          height: 82,
-          padding: const EdgeInsets.symmetric(
-            horizontal: 18,
-            vertical: 14,
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: 14),
           decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(14),
             gradient: const LinearGradient(
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
               colors: [
-                Color(0xFFE84A5F),
-                Color(0xFFC62828),
+                Color.fromARGB(255, 238, 30, 26),
+                Color(0xFFFF3B30),
               ],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
             ),
-            borderRadius: BorderRadius.circular(20),
             boxShadow: [
               BoxShadow(
-                color: Colors.redAccent,
-                blurRadius: 12,
-                spreadRadius: -6,
-                offset: const Offset(0, 6),
+                color: Colors.redAccent.withOpacity(0.20),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
               ),
             ],
           ),
           child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+              /// 🔴 LEFT ICON (🔥 MUCH BIGGER)
               Container(
-                width: 44,
-                height: 44,
+                width: 54,
+                height: 54,
                 decoration: const BoxDecoration(
-                  color: Colors.white,
+                  color: Color(0xFFE53935),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(
-                  Icons.warning_amber_rounded,
-                  color: AppColors.error,
-                  size: 22,
+                child: Center(
+                  child: SizedBox(
+                    width: 45, // 🔥 increased
+                    height: 45,
+                    child: Image.asset(
+                      'assets/icons/arrow_icon.png',
+                      fit: BoxFit.contain,
+                    ),
+                  ),
                 ),
               ),
 
-              const SizedBox(width: 14),
+              const SizedBox(width: 12),
 
+              /// 📝 TEXT
               const Expanded(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -92,42 +101,47 @@ class PanicSosBanner extends StatelessWidget {
                   children: [
                     Text(
                       'Slide for PANIC / SOS',
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.w700,
-                        fontSize: 15,
+                        fontSize: 13.5,
+                        letterSpacing: 0.2,
                       ),
                     ),
                     SizedBox(height: 2),
                     Text(
                       'Loud alarm & emergency alerts will be triggered',
-                      maxLines: 2,
+                      maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         color: Colors.white70,
-                        fontSize: 11.5,
-                        height: 1.2,
+                        fontSize: 10.5,
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
                   ],
                 ),
               ),
 
-              const SizedBox(width: 12),
+              const SizedBox(width: 10),
 
+              /// 🔴 RIGHT ICON (🔥 MUCH BIGGER)
               Container(
-                width: 42,
-                height: 42,
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(.18),
-                  borderRadius: BorderRadius.circular(12),
+                width: 54,
+                height: 54,
+                decoration: const BoxDecoration(
+                  color: Color.fromARGB(249, 229, 36, 36),
+                  shape: BoxShape.circle,
                 ),
-                child: const Icon(
-                  Icons.arrow_forward_ios_rounded,
-                  color: Colors.white,
-                  size: 18,
+                child: Center(
+                  child: SizedBox(
+                    width: 40, // 🔥 increased
+                    height: 40,
+                    child: Image.asset(
+                      'assets/icons/panic_icon.png',
+                      fit: BoxFit.contain,
+                    ),
+                  ),
                 ),
               ),
             ],
