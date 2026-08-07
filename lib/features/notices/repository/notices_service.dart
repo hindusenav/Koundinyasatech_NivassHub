@@ -31,10 +31,7 @@ class NoticesService {
       return ApiResponse.failure(e);
     } catch (e) {
       return ApiResponse.failure(
-        ApiException(
-          message: e.toString(),
-          type: ApiExceptionType.unknown,
-        ),
+        ApiException(message: e.toString(), type: ApiExceptionType.unknown),
       );
     }
   }
@@ -46,6 +43,8 @@ class NoticesService {
       List list = [];
       if (data is List) {
         list = data;
+      } else if (data is Map<String, dynamic> && data["items"] is List) {
+        list = data["items"];
       } else if (data is Map<String, dynamic> && data["notices"] is List) {
         list = data["notices"];
       }
@@ -59,10 +58,7 @@ class NoticesService {
       return ApiResponse.failure(e);
     } catch (e) {
       return ApiResponse.failure(
-        ApiException(
-          message: e.toString(),
-          type: ApiExceptionType.unknown,
-        ),
+        ApiException(message: e.toString(), type: ApiExceptionType.unknown),
       );
     }
   }
@@ -90,10 +86,7 @@ class NoticesService {
       return ApiResponse.failure(e);
     } catch (e) {
       return ApiResponse.failure(
-        ApiException(
-          message: e.toString(),
-          type: ApiExceptionType.unknown,
-        ),
+        ApiException(message: e.toString(), type: ApiExceptionType.unknown),
       );
     }
   }
@@ -106,10 +99,7 @@ class NoticesService {
       return ApiResponse.failure(e);
     } catch (e) {
       return ApiResponse.failure(
-        ApiException(
-          message: e.toString(),
-          type: ApiExceptionType.unknown,
-        ),
+        ApiException(message: e.toString(), type: ApiExceptionType.unknown),
       );
     }
   }
@@ -122,10 +112,7 @@ class NoticesService {
       return ApiResponse.failure(e);
     } catch (e) {
       return ApiResponse.failure(
-        ApiException(
-          message: e.toString(),
-          type: ApiExceptionType.unknown,
-        ),
+        ApiException(message: e.toString(), type: ApiExceptionType.unknown),
       );
     }
   }
@@ -138,10 +125,7 @@ class NoticesService {
       return ApiResponse.failure(e);
     } catch (e) {
       return ApiResponse.failure(
-        ApiException(
-          message: e.toString(),
-          type: ApiExceptionType.unknown,
-        ),
+        ApiException(message: e.toString(), type: ApiExceptionType.unknown),
       );
     }
   }
@@ -154,10 +138,20 @@ class NoticesService {
       return ApiResponse.failure(e);
     } catch (e) {
       return ApiResponse.failure(
-        ApiException(
-          message: e.toString(),
-          type: ApiExceptionType.unknown,
-        ),
+        ApiException(message: e.toString(), type: ApiExceptionType.unknown),
+      );
+    }
+  }
+
+  Future<ApiResponse<void>> unlikePost(String id) async {
+    try {
+      await _api.unlikePost(id);
+      return ApiResponse.success(null);
+    } on ApiException catch (e) {
+      return ApiResponse.failure(e);
+    } catch (e) {
+      return ApiResponse.failure(
+        ApiException(message: e.toString(), type: ApiExceptionType.unknown),
       );
     }
   }
@@ -173,10 +167,7 @@ class NoticesService {
       return ApiResponse.failure(e);
     } catch (e) {
       return ApiResponse.failure(
-        ApiException(
-          message: e.toString(),
-          type: ApiExceptionType.unknown,
-        ),
+        ApiException(message: e.toString(), type: ApiExceptionType.unknown),
       );
     }
   }
@@ -189,10 +180,7 @@ class NoticesService {
       return ApiResponse.failure(e);
     } catch (e) {
       return ApiResponse.failure(
-        ApiException(
-          message: e.toString(),
-          type: ApiExceptionType.unknown,
-        ),
+        ApiException(message: e.toString(), type: ApiExceptionType.unknown),
       );
     }
   }
