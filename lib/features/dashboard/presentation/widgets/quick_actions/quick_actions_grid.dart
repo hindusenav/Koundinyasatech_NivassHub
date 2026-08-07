@@ -11,7 +11,6 @@ class QuickActionsGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<DashboardProvider>();
-
     final actions = provider.home?.data.quickActions ?? [];
 
     if (actions.isEmpty) {
@@ -25,13 +24,14 @@ class QuickActionsGrid extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Row(
-          children: [
+        /// 🔥 HEADER
+        Row(
+          children: const [
             Expanded(
               child: Text(
                 "Quick Actions",
                 style: TextStyle(
-                  fontSize: 22,
+                  fontSize: 20,
                   fontWeight: FontWeight.w700,
                   color: Color(0xff1F2937),
                 ),
@@ -39,14 +39,14 @@ class QuickActionsGrid extends StatelessWidget {
             ),
             Icon(
               Icons.settings_outlined,
-              size: 15,
+              size: 16,
               color: Color(0xff64748B),
             ),
             SizedBox(width: 4),
             Text(
               "Customize",
               style: TextStyle(
-                fontSize: 11,
+                fontSize: 12,
                 fontWeight: FontWeight.w500,
                 color: Color(0xff64748B),
               ),
@@ -54,23 +54,29 @@ class QuickActionsGrid extends StatelessWidget {
           ],
         ),
 
-        SizedBox(height: 18),
+        const SizedBox(height: 20),
 
+        /// 🔥 GRID (IMPROVED)
         GridView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           itemCount: actions.length,
-          gridDelegate:
-              const SliverGridDelegateWithFixedCrossAxisCount(
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 4,
-            crossAxisSpacing: 16,
-            mainAxisSpacing: 16,
-            mainAxisExtent: 96,
+
+            /// 🔥 BETTER SPACING
+            crossAxisSpacing: 18,
+            mainAxisSpacing: 20,
+
+            /// 🔥 MORE HEIGHT FOR BIGGER CARDS
+            mainAxisExtent: 110,
           ),
           itemBuilder: (context, index) {
             return QuickActionCard(
               action: actions[index],
-              onTap: () {},
+              onTap: () {
+                /// 👉 handle click here if needed
+              },
             );
           },
         ),
