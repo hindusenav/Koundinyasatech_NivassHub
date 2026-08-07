@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../../app/app_routes.dart';
 import '../../../../../core/theme/app_colors.dart';
 import '../../provider/dashboard_provider.dart';
 import '../empty/section_empty.dart';
@@ -65,13 +66,10 @@ class ApprovalQueueSection extends StatelessWidget {
               ),
               InkWell(
                 borderRadius: BorderRadius.circular(8),
-                onTap: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Approval queue list coming soon.'),
-                    ),
-                  );
-                },
+                // Only navigation wired here — the Activities screen itself
+                // lives entirely under `lib/features/visitor/` and doesn't
+                // touch this widget's existing layout/data/business logic.
+                onTap: () => Navigator.pushNamed(context, AppRoutes.activities),
                 child: const Padding(
                   padding: EdgeInsets.symmetric(vertical: 4, horizontal: 4),
                   child: Text(
