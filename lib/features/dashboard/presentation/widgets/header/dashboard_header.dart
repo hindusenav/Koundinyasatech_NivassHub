@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../../app/app_routes.dart';
 import '../../../../../core/theme/app_colors.dart';
 import '../../provider/dashboard_provider.dart';
 
@@ -89,11 +90,7 @@ class DashboardHeader extends StatelessWidget {
             ),
           ),
           IconButton(
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Search coming soon.')),
-              );
-            },
+            onPressed: () => Navigator.pushNamed(context, AppRoutes.search),
             icon: const Icon(Icons.search, color: Colors.black87),
           ),
           IconButton(
@@ -107,16 +104,20 @@ class DashboardHeader extends StatelessWidget {
               color: Colors.black87,
             ),
           ),
-          CircleAvatar(
-            radius: 18,
-            backgroundColor: AppColors.tertiary,
-            child: Text(
-              (user?.name.isNotEmpty ?? false)
-                  ? user!.name[0].toUpperCase()
-                  : '?',
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
+          InkWell(
+            borderRadius: BorderRadius.circular(18),
+            onTap: () => Navigator.pushNamed(context, AppRoutes.profile),
+            child: CircleAvatar(
+              radius: 18,
+              backgroundColor: AppColors.tertiary,
+              child: Text(
+                (user?.name.isNotEmpty ?? false)
+                    ? user!.name[0].toUpperCase()
+                    : '?',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ),

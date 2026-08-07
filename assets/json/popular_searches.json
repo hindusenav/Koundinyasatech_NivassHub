@@ -1,0 +1,9 @@
+[
+  { "id": "daily_help", "title": "Daily Help", "iconKey": "daily_help" },
+  { "id": "amenities", "title": "Amenities", "iconKey": "amenities" },
+  { "id": "society_dues", "title": "Society Dues", "iconKey": "society_dues" },
+  { "id": "visitor_pre_approve", "title": "Visitor Pre-Approve", "iconKey": "visitor_pre_approve" },
+  { "id": "resident_directory", "title": "Resident Directory", "iconKey": "resident_directory" },
+  { "id": "message_guard", "title": "Message Guard", "iconKey": "message_guard" },
+  { "id": "services", "title": "Services", "iconKey": "services" }
+]

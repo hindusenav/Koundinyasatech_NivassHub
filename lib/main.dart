@@ -15,6 +15,15 @@ import 'features/dashboard/data/services/dashboard_service.dart';
 import 'features/dashboard/data/services/home_api_service.dart';
 import 'features/dashboard/data/services/home_api_service_base.dart';
 import 'features/dashboard/data/services/mock_home_api_service.dart';
+import 'features/profile/profile_config.dart';
+import 'features/profile/repository/mock_profile_service.dart';
+import 'features/profile/repository/profile_service.dart';
+import 'features/profile/repository/profile_service_base.dart';
+import 'features/quick_actions/repository/mock_quick_actions_service.dart';
+import 'features/quick_actions/repository/quick_actions_repository.dart';
+import 'features/search/repository/mock_search_service.dart';
+import 'features/search/repository/search_service_base.dart';
+import 'features/settings/repository/settings_repository.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -42,6 +51,19 @@ Future<void> main() async {
     homeApiService,
   );
 
+  final ProfileServiceBase profileService =
+      useMockProfileApi ? MockProfileService() : ProfileService(apiClient);
+
+  // Quick Actions and Search have no published API yet (per the API
+  // contract's cover note) — only a mock implementation exists today. Once
+  // a real endpoint ships, construct the real service here instead; the
+  // provider/UI on the other side of `QuickActionsServiceBase`/
+  // `SearchServiceBase` needs no changes.
+  final quickActionsRepository = QuickActionsRepository(MockQuickActionsService());
+  final SearchServiceBase searchService = MockSearchService();
+
+  final settingsRepository = SettingsRepository(localStorageService);
+
   runApp(
     NivasHubApp(
       localStorageService: localStorageService,
@@ -50,6 +72,10 @@ Future<void> main() async {
       apiClient: apiClient,
       authService: authService,
       dashboardRepository: dashboardRepository,
+      profileService: profileService,
+      quickActionsRepository: quickActionsRepository,
+      searchService: searchService,
+      settingsRepository: settingsRepository,
     ),
   );
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../../app/app_routes.dart';
 import '../../provider/dashboard_navigation_provider.dart';
 
 class DashboardBottomNavigation extends StatelessWidget {
@@ -39,7 +40,8 @@ class DashboardBottomNavigation extends StatelessWidget {
             break;
 
           case 4:
-            // More
+            // More — opens the full Quick Actions catalog directly.
+            Navigator.pushNamed(context, AppRoutes.quickActions);
             break;
         }
       },

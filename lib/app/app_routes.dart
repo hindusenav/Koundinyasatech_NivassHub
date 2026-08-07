@@ -66,6 +66,10 @@ class AppRoutes {
   static const String visitorDetail = '/visitor/detail';
   static const String visitorForm = '/visitor/form';
 
+  /// Full gate/delivery activity log, pushed from Home's Approval Queue
+  /// "View all" link (NivasHub API Contract §6.2 — `GET /api/v1/approvals`).
+  static const String activities = '/visitor/activities';
+
   // ---------------------------------------------------------------------
   // Complaints
   // ---------------------------------------------------------------------
@@ -86,4 +90,11 @@ class AppRoutes {
   static const String profile = '/profile';
   static const String editProfile = '/profile/edit';
   static const String settings = '/settings';
+  static const String helpSupport = '/settings/help-support';
+
+  // ---------------------------------------------------------------------
+  // Search / Quick Actions
+  // ---------------------------------------------------------------------
+  static const String search = '/search';
+  static const String quickActions = '/quick-actions';
 }
