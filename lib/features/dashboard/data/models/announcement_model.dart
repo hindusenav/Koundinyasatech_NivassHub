@@ -9,8 +9,8 @@ class AnnouncementModel {
 
   factory AnnouncementModel.fromJson(Map<String, dynamic> json) {
     return AnnouncementModel(
-      title: json['title'] as String,
-      message: json['message'] as String,
+      title: json['title'] as String? ?? '',
+      message: json['message'] as String? ?? '',
     );
   }
 
