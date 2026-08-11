@@ -26,8 +26,8 @@
       },
       {
         "id": 3,
-        "name": "Posts",
-        "icon": "posts"
+        "name": "Pass",
+        "icon": "pass"
       },
       {
         "id": 4,
@@ -41,8 +41,8 @@
       },
       {
         "id": 6,
-        "name": "Directory",
-        "icon": "directory"
+        "name": "Buy/Sell",
+        "icon": "buysell"
       },
       {
         "id": 7,
@@ -61,17 +61,20 @@
       {
         "visitorId": "VIS1001",
         "visitorName": "Blinkit Delivery",
-        "flat": "B-402"
+        "company": "Blinkit",
+        "flat": "User Name"
       },
       {
         "visitorId": "VIS1002",
         "visitorName": "Zepto Delivery",
-        "flat": "B-402"
+        "company": "Zepto",
+        "flat": "User Name"
       },
       {
         "visitorId": "VIS1003",
-        "visitorName": "Amazon Courier",
-        "flat": "B-402"
+        "visitorName": "House Help",
+        "company": "House Help",
+        "flat": "User Name"
       }
     ]
   }

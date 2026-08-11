@@ -1,97 +1,91 @@
-/// Centralized API endpoint paths. Feature services build requests from
-/// these constants — no path should ever be hardcoded as a string literal
-/// inside a service call.
-///
-/// NOTE: every path below other than the "Home Screen" section is a
-/// placeholder until its real backend API contract is available — update it
-/// in one place here once it is. [baseUrl] matches the NivasHub Mobile App
-/// Authentication API Contract (v1.0) dev URL.
+/// Centralized API endpoint paths matching NivaasHub API Contract (Sections 1 to 10).
 class ApiEndpoints {
   ApiEndpoints._();
 
   static const String baseUrl = 'http://localhost:3001/api/v1';
 
   // ---------------------------------------------------------------------
-  // Auth
+  // 1. Authentication Screens
   // ---------------------------------------------------------------------
-  static const String login = '/auth/login';
-  static const String register = '/auth/register';
-  static const String refreshToken = '/auth/refresh';
-  static const String logout = '/auth/logout';
-  static const String forgotPassword = '/auth/forgot-password';
-  static const String resetPassword = '/auth/reset-password';
-  static const String sendOtp = '/auth/send-otp';
-  static const String verifyOtp = '/auth/verify-otp';
-  static const String resendOtp = '/auth/resend-otp';
+  static const String login = '/api/v1/auth/login';
+  static const String register = '/api/v1/auth/register';
+  static const String verifyOtp = '/api/v1/auth/verify-otp';
+  static const String sendOtp = '/api/v1/auth/login';
+  static const String resendOtp = '/api/v1/auth/login';
 
   // ---------------------------------------------------------------------
-  // Dashboard
+  // 2. Profile & Onboarding Screens
   // ---------------------------------------------------------------------
-  static const String dashboardSummary = '/dashboard/summary';
+  static const String userProfile = '/api/v1/users/profile';
+  static const String activeSociety = '/api/v1/users/active-society';
 
   // ---------------------------------------------------------------------
-  // Home Screen (NivasHub Mobile App API Contract v1.0)
+  // 3. Society Management (Admin) Screens
   // ---------------------------------------------------------------------
-  static const String home = '/home';
-  static const String userAddresses = '/user/addresses';
-  static const String addAddress = '/user/address';
-  static const String visitorsPending = '/visitors/pending';
-  static const String banners = '/banners';
-  static const String emergencySos = '/emergency/sos';
+  static const String societies = '/api/v1/societies';
+  static String societyById(String societyId) => '/api/v1/societies/$societyId';
 
   // ---------------------------------------------------------------------
-  // Guard
+  // 4. Roles & Permissions Screens
   // ---------------------------------------------------------------------
-  static const String guardContact = '/guard/contact';
+  static const String roles = '/api/v1/roles';
+  static String roleById(String roleId) => '/api/v1/roles/$roleId';
+  static String updateRole(String roleId) => '/api/v1/roles/$roleId';
+  static const String permissionsMatrix = '/api/v1/permissions/matrix';
+  static const String usersSearch = '/api/v1/users/search';
+  static String assignRole(String userId) =>
+      '/api/v1/users/$userId/assign-role';
 
   // ---------------------------------------------------------------------
-  // Visitor actions (gate approval flow)
+  // 5. Tower & Unit Management Screens
   // ---------------------------------------------------------------------
-  static const String approveVisitor = '/visitors/approve';
-  static const String rejectVisitor = '/visitors/reject';
-
-  // ---------------------------------------------------------------------
-  // Community Feed (Placeholder APIs)
-  // Replace these when backend APIs are available.
-  // ---------------------------------------------------------------------
-  static const String communityPosts = '/community/posts';
-  static const String notices = '/community/notices';
-  static const String communityFeed = '/feed';
-  static const String advertisements = '/advertisements';
-  static const String latestAnnouncement = '/announcements/latest';
-
-  // ---------------------------------------------------------------------
-  // Society management
-  // ---------------------------------------------------------------------
-  static const String societies = '/societies';
-  static String societyById(String id) => '/societies/$id';
-
-  // ---------------------------------------------------------------------
-  // Tower management
-  // ---------------------------------------------------------------------
-  static String towers(String societyId) => '/societies/$societyId/towers';
+  static String towers(String societyId) =>
+      '/api/v1/societies/$societyId/towers';
   static String towerById(String societyId, String towerId) =>
-      '/societies/$societyId/towers/$towerId';
+      '/api/v1/societies/$societyId/towers/$towerId';
+
+  static String units(String societyId) => '/api/v1/societies/$societyId/units';
+  static String unitById(String societyId, String unitId) =>
+      '/api/v1/societies/$societyId/units/$unitId';
 
   // ---------------------------------------------------------------------
-  // Unit management
+  // 6. Home & Dashboard Screens
   // ---------------------------------------------------------------------
-  static String units(String towerId) => '/towers/$towerId/units';
-  static String unitById(String unitId) => '/units/$unitId';
+  static const String home = '/api/v1/dashboard/home';
+  static const String homeDashboard = '/api/v1/dashboard/home';
+  static const String dashboardSummary = '/api/v1/dashboard/home';
+  static const String userAddresses = '/api/v1/users/profile';
+  static const String visitorsPending = '/api/v1/approvals';
+  static const String emergencySos = '/api/v1/emergency/sos';
+  static const String approvals = '/api/v1/approvals';
+  static String visitorAction(String visitorId) =>
+      '/api/v1/visitors/$visitorId/action';
+  static String visitorDetails(String visitorId) =>
+      '/api/v1/visitors/$visitorId';
 
   // ---------------------------------------------------------------------
-  // Resident management
+  // 7. Community Features Screens (Posts, Likes & Comments)
   // ---------------------------------------------------------------------
-  static const String residents = '/residents';
-  static String residentById(String id) => '/residents/$id';
+  static const String posts = '/api/v1/posts';
+  static String postById(String postId) => '/api/v1/posts/$postId';
+  static String postLike(String postId) => '/api/v1/posts/$postId/like';
+  static String postUnlike(String postId) => '/api/v1/posts/$postId/like';
+  static String postComments(String postId) => '/api/v1/posts/$postId/comments';
+  static String getPostComments(String postId) =>
+      '/api/v1/posts/$postId/comments';
+  static String postCommentById(String postId, String commentId) =>
+      '/api/v1/posts/$postId/comments/$commentId';
 
   // ---------------------------------------------------------------------
-  // Visitor management
+  // 8. Community Posts, Polls & Events Creation
   // ---------------------------------------------------------------------
-  static const String visitors = '/visitors';
-  static String visitorById(String id) => '/visitors/$id';
-  static const String visitorCheckIn = '/visitors/check-in';
-  static const String visitorCheckOut = '/visitors/check-out';
+  static const String communityCreatePost = '/api/v1/community/posts';
+  static const String communityCreatePoll = '/api/v1/community/polls';
+  static const String communityCreateEvent = '/api/v1/community/events';
+  static const String createPost = '/api/v1/community/posts';
+  static const String createPoll = '/api/v1/community/polls';
+  static const String createEvent = '/api/v1/community/events';
+  static const String uploadMedia = '/api/v1/profile/images';
 
   /// Approve/reject a visitor from the Home screen's gate-arrival banner
   /// (NivasHub API Contract §6.3 — `POST /api/v1/visitors/{visitorId}/action`).
@@ -108,23 +102,25 @@ class ApiEndpoints {
   static const String activityTypeFilters = '/activities/type-filters';
 
   // ---------------------------------------------------------------------
-  // Complaints
+  // 9. Profile Screens
   // ---------------------------------------------------------------------
-  static const String complaints = '/complaints';
-  static String complaintById(String id) => '/complaints/$id';
+  static const String myProfile = '/api/v1/profile';
+  static const String updateProfile = '/api/v1/profile';
+  static const String profileImages = '/api/v1/profile/images';
+  static const String callingPreference = '/api/v1/profile/calling-preference';
 
   // ---------------------------------------------------------------------
-  // Notices management (CRUD)
+  // 10. Settings & Master Data
   // ---------------------------------------------------------------------
-  static const String noticesManagement = '/notices';
-  static String noticeById(String id) => '/notices/$id';
+  static const String settings = '/api/v1/settings';
+  static const String masterInterests = '/api/v1/master/interests';
 
   // ---------------------------------------------------------------------
-  // Profile / settings
+  // 10 (Notice Board) Screens
   // ---------------------------------------------------------------------
-  static const String profile = '/profile';
-  static const String updateProfile = '/profile/update';
-  static const String changePassword = '/profile/change-password';
+  static const String noticeBoard = '/api/v1/notice-board';
+  static String noticeBoardById(String id) => '/api/v1/notice-board/$id';
+  static String markNoticeRead(String id) => '/api/v1/notice-board/$id/read';
 
   // ---------------------------------------------------------------------
   // Profile / Active Society (NivasHub Mobile App API Contract v1.0, §2)
@@ -136,4 +132,9 @@ class ApiEndpoints {
   // Shared
   // ---------------------------------------------------------------------
   static const String uploadFile = '/upload';
+
+  // Legacy / fallback banner endpoints
+  static const String banners = '/banners';
+  static const String notices = '/api/v1/notice-board';
+  static const String communityPosts = '/api/v1/posts';
 }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class QuickActionModel {
-  final int id;
+  final dynamic id;
   final String name;
   final String icon;
 

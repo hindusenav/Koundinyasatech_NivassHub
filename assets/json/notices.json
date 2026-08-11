@@ -1,23 +1,42 @@
 {
-  "success": true,
+  "status": "success",
+  "message": "Notices fetched successfully",
   "data": [
     {
-      "noticeId": "NOT001",
+      "id": "post_2",
       "title": "Expense report for quarter ending on June 2026",
-      "postedBy": "Admin",
-      "society": "Golden Residency",
-      "date": "25 Jun",
-      "body": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-      "downloadLabel": "Download"
+      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      "type": "Notice",
+      "author": "Admin",
+      "timestamp": "Society 25 Jun",
+      "action": "Download",
+      "attachment": "expense_report_q2_2026.pdf",
+      "priority": "Low",
+      "category": "Admin"
     },
     {
-      "noticeId": "NOT002",
-      "title": "Water supply maintenance notice",
-      "postedBy": "Admin",
-      "society": "Golden Residency",
-      "date": "22 Jun",
-      "body": "Water supply will be temporarily suspended between 10 AM and 2 PM tomorrow for scheduled maintenance work.",
-      "downloadLabel": "Download"
+      "id": "post_3",
+      "title": "Society AGM Minutes - May 2026",
+      "description": "Minutes of the Annual General Meeting held on 15th May 2026 are now available for download.",
+      "type": "Notice",
+      "author": "Security",
+      "timestamp": "Security 25 Jun",
+      "action": "Download",
+      "attachment": "agm_minutes_may_2026.pdf",
+      "priority": "Medium",
+      "category": "Security"
+    },
+    {
+      "id": "post_4",
+      "title": "Water Supply Maintenance Schedule",
+      "description": "Water supply will be interrupted on 10th August 2026 from 10 AM to 2 PM for cleaning.",
+      "type": "Notice",
+      "author": "Society",
+      "timestamp": "Society 26 Jun",
+      "action": "View Details",
+      "attachment": "",
+      "priority": "High",
+      "category": "Society"
     }
   ]
 }
