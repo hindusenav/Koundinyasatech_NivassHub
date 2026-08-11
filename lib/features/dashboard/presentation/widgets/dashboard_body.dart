@@ -22,47 +22,77 @@ class DashboardBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<DashboardProvider>();
+
     final banners = provider.advertisementBanners;
 
-    return SingleChildScrollView(
-      physics: const BouncingScrollPhysics(),
-      child: Padding(
-        padding: EdgeInsets.symmetric(
-          horizontal: Responsive.horizontalPadding(context),
+    return Container(
+      width: double.infinity,
+      color: const Color(0xFFF7F8FC),
+
+      child: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(),
+
+        padding: EdgeInsets.only(
+          left: Responsive.horizontalPadding(context)
+              .clamp(12.0, 14.0),
+          right: Responsive.horizontalPadding(context)
+              .clamp(12.0, 14.0),
+          bottom: 20,
         ),
+
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // HEADER
             const DashboardHeader(),
-            const SizedBox(height: 18),
 
             const VisitorNotificationSection(),
 
+            const SizedBox(height: 8),
+
+            // ONLINE ADVERTISEMENT
             const BannerSlider(),
-            const SizedBox(height: 24),
 
+            const SizedBox(height: 9),
+
+            // QUICK ACTIONS
             const QuickActionsGrid(),
-            const SizedBox(height: 24),
 
+            const SizedBox(height: 9),
+
+            // MAINTENANCE
             const MaintenanceCard(),
-            const SizedBox(height: 24),
 
+            const SizedBox(height: 9),
+
+            // APPROVAL QUEUE
             const ApprovalQueueSection(),
-            const SizedBox(height: 24),
 
+            const SizedBox(height: 9),
+
+            // PANIC
             const PanicSosBanner(),
-            const SizedBox(height: 16),
 
+            const SizedBox(height: 7),
+
+            // OTP
             const GenerateOtpBanner(),
-            const SizedBox(height: 24),
 
+            // ADVERTISEMENT
             if (banners.isNotEmpty) ...[
-              BannerCard(banner: banners.first),
-              const SizedBox(height: 28),
+              const SizedBox(height: 9),
+
+              BannerCard(
+                banner: banners.first,
+              ),
             ],
 
+            const SizedBox(height: 9),
+
+            // COMMUNITY
             const CommunityPostsSection(),
-            const SizedBox(height: 32),
+
+            const SizedBox(height: 12),
           ],
         ),
       ),

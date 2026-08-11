@@ -14,56 +14,63 @@ class BannerCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20),
+      width: double.infinity,
       height: 150,
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
-        color: const Color(0xFFF4F1EA),
-        borderRadius: BorderRadius.circular(20),
+        color: const Color(0xffF6F1E8),
+        borderRadius: BorderRadius.circular(16),
       ),
       child: Stack(
         children: [
           Positioned(
-            left: -16,
-            bottom: -18,
+            left: -8,
+            bottom: -10,
             child: Icon(
               Icons.campaign_rounded,
-              size: 110,
-              color: AppColors.tertiary.withValues(alpha: .85),
+              size: 82,
+              color: AppColors.tertiary,
             ),
           ),
+
           Positioned(
-            left: 58,
-            top: 22,
+            left: 40,
+            top: 16,
             child: Transform.rotate(
-              angle: -0.35,
-              child: Icon(
-                Icons.mail_rounded,
-                size: 28,
-                color: AppColors.error.withValues(alpha: .85),
+              angle: -.35,
+              child: const Icon(
+                Icons.mail,
+                size: 18,
+                color: Colors.red,
               ),
             ),
           ),
-          Positioned(
-            left: 92,
-            top: 54,
+
+          const Positioned(
+            left: 70,
+            top: 42,
             child: Icon(
-              Icons.thumb_up_alt_rounded,
-              size: 24,
-              color: AppColors.primary,
+              Icons.thumb_up,
+              size: 18,
+              color: Color(0xff1E3D7A),
             ),
           ),
-          Positioned(
-            left: 108,
-            top: 20,
+
+          const Positioned(
+            left: 82,
+            top: 14,
             child: Icon(
-              Icons.favorite_rounded,
-              size: 20,
-              color: AppColors.error,
+              Icons.favorite,
+              size: 14,
+              color: Colors.red,
             ),
           ),
+
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 22),
+            padding: const EdgeInsets.only(
+              left: 110,
+              right: 20,
+            ),
             child: Align(
               alignment: Alignment.centerRight,
               child: Text(
@@ -71,10 +78,10 @@ class BannerCard extends StatelessWidget {
                 textAlign: TextAlign.right,
                 maxLines: 2,
                 style: const TextStyle(
-                  color: Color(0xFF1E3D7A),
-                  fontSize: 21,
-                  fontWeight: FontWeight.bold,
-                  height: 1.2,
+                  fontSize: 24,
+                  fontWeight: FontWeight.w700,
+                  color: Color(0xff1E3D7A),
+                  height: 1.1,
                 ),
               ),
             ),
