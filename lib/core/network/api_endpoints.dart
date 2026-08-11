@@ -14,12 +14,6 @@ class ApiEndpoints {
   static const String resendOtp = '/api/v1/auth/login';
 
   // ---------------------------------------------------------------------
-  // 2. Profile & Onboarding Screens
-  // ---------------------------------------------------------------------
-  static const String userProfile = '/api/v1/users/profile';
-  static const String activeSociety = '/api/v1/users/active-society';
-
-  // ---------------------------------------------------------------------
   // 3. Society Management (Admin) Screens
   // ---------------------------------------------------------------------
   static const String societies = '/api/v1/societies';
@@ -57,9 +51,6 @@ class ApiEndpoints {
   static const String userAddresses = '/api/v1/users/profile';
   static const String visitorsPending = '/api/v1/approvals';
   static const String emergencySos = '/api/v1/emergency/sos';
-  static const String approvals = '/api/v1/approvals';
-  static String visitorAction(String visitorId) =>
-      '/api/v1/visitors/$visitorId/action';
   static String visitorDetails(String visitorId) =>
       '/api/v1/visitors/$visitorId';
 
