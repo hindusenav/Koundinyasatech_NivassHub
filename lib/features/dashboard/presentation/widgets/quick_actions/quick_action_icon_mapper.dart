@@ -1,36 +1,37 @@
 import 'package:flutter/material.dart';
 
 class QuickActionIconMapper {
-  const QuickActionIconMapper._();
-
-  static IconData icon(String value) {
-    switch (value.toLowerCase()) {
+  static IconData icon(String name) {
+    switch (name.toLowerCase()) {
       case 'preapprove':
-        return Icons.verified_user_outlined;
+      case 'pre-approve':
+        return Icons.person_add_alt_outlined;
 
       case 'payments':
         return Icons.account_balance_wallet_outlined;
 
       case 'posts':
-        return Icons.article_outlined;
+        return Icons.chat_bubble_outline;
 
       case 'security':
-        return Icons.security_outlined;
+        return Icons.shield_outlined;
 
-      case 'book':
-        return Icons.calendar_month_outlined;
+      case 'booknow':
+      case 'book now':
+        return Icons.event_outlined;
 
       case 'directory':
         return Icons.menu_book_outlined;
 
-      case 'gift':
-        return Icons.card_giftcard_outlined;
+      case 'free trial':
+      case 'freetrial':
+        return Icons.redeem_outlined;
 
-      case 'plus':
-        return Icons.add_circle_outline;
+      case 'view more':
+        return Icons.add;
 
       default:
-        return Icons.apps_outlined;
+        return Icons.grid_view_outlined;
     }
   }
 }
