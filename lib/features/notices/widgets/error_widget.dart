@@ -9,18 +9,15 @@ class ErrorStateWidget extends StatelessWidget {
     super.key,
     required this.message,
     required this.onRetry,
-    this.buttonText,
   });
 
   final String message;
   final VoidCallback onRetry;
-  final String? buttonText;
 
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: SingleChildScrollView(
-        physics: const AlwaysScrollableScrollPhysics(),
+      child: Padding(
         padding: const EdgeInsets.all(AppDimensions.padding24),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -29,45 +26,50 @@ class ErrorStateWidget extends StatelessWidget {
               width: 110,
               height: 110,
               decoration: BoxDecoration(
-                color: AppColors.error.withValues(alpha: 0.08),
+                color: AppColors.error.withOpacity(0.08),
                 shape: BoxShape.circle,
               ),
               child: const Icon(
-                Icons.error_outline_rounded,
-                size: 55,
+                Icons.error_outline,
+                size: 56,
                 color: AppColors.error,
               ),
             ),
-
-            const SizedBox(height: AppDimensions.padding24),
-
-            Text(
-              "Oops!",
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+            const SizedBox(height: AppDimensions.padding20),
+            const Text(
+              AppStrings.somethingWentWrong,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 18,
                 fontWeight: FontWeight.bold,
                 color: AppColors.textPrimary,
               ),
             ),
-
-            const SizedBox(height: AppDimensions.padding12),
-
+            const SizedBox(height: AppDimensions.padding8),
             Text(
-              message.isEmpty ? AppStrings.somethingWentWrong : message,
+              message,
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              style: const TextStyle(
+                fontSize: 14,
                 color: AppColors.textSecondary,
-                height: 1.5,
+                height: 1.4,
               ),
             ),
-
             const SizedBox(height: AppDimensions.padding24),
-
-            SizedBox(
-              width: 180,
-              child: ElevatedButton.icon(
-                onPressed: onRetry,
-                icon: const Icon(Icons.refresh),
-                label: Text(buttonText ?? AppStrings.retry),
+            ElevatedButton.icon(
+              onPressed: onRetry,
+              icon: const Icon(Icons.refresh, size: 18),
+              label: const Text(AppStrings.retry),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                foregroundColor: AppColors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(AppDimensions.radius8),
+                ),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppDimensions.padding24,
+                  vertical: AppDimensions.padding12,
+                ),
               ),
             ),
           ],

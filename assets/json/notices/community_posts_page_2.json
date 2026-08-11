@@ -1,0 +1,49 @@
+{
+  "status": "success",
+  "data": {
+    "posts": [
+      {
+        "id": "post_5",
+        "title": "Independence Day Celebration",
+        "content": "Join us for the Independence Day celebrations at Central Club House.",
+        "description": "Join us for the Independence Day celebrations at Central Club House.",
+        "author": {
+          "name": "Cultural Committee",
+          "flat": "Club House"
+        },
+        "visibility": "All Residents",
+        "createdAt": "2026-08-01T08:00:00Z",
+        "timestamp": "4 days ago",
+        "likesCount": 30,
+        "commentsCount": 12,
+        "media": ["https://images.unsplash.com/photo-1532375810709-75b1da00537c"],
+        "type": "Event",
+        "action": "View Event",
+        "liked": true
+      },
+      {
+        "id": "post_6",
+        "title": "Lost & Found: Car Keys",
+        "content": "Found a set of Hyundai car keys near Tower B elevator. Please contact security gate 1.",
+        "description": "Found a set of Hyundai car keys near Tower B elevator.",
+        "author": {
+          "name": "Rohan Gupta",
+          "flat": "B 203"
+        },
+        "visibility": "All Residents",
+        "createdAt": "2026-07-30T17:45:00Z",
+        "timestamp": "6 days ago",
+        "likesCount": 5,
+        "commentsCount": 3,
+        "media": [],
+        "type": "Post",
+        "action": "View Post",
+        "liked": false
+      }
+    ],
+    "pagination": {
+      "total": 8,
+      "nextOffset": null
+    }
+  }
+}

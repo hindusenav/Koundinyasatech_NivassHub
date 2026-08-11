@@ -69,7 +69,7 @@ flutter:
     - assets/icons/
     - assets/json/
     - assets/icons/quick_actions/
-    
+    - assets/json/notices/
 
   # fonts:
   #   - family: Poppins

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart' show ScrollCacheExtent;
 
 import '../models/feed_item_model.dart';
 import 'advertisement_banner.dart';
@@ -7,15 +6,21 @@ import 'community_post_card.dart';
 import 'load_more_widget.dart';
 import 'notice_card.dart';
 
+/// FeedList component rendering heterogeneous feed items with lazy evaluation,
+/// keying, and load-more indicator.
 class FeedList extends StatelessWidget {
   const FeedList({
     super.key,
     required this.feedItems,
     this.isLoadingMore = false,
+    this.shrinkWrap = false,
+    this.physics,
   });
 
   final List<FeedItemModel> feedItems;
   final bool isLoadingMore;
+  final bool shrinkWrap;
+  final ScrollPhysics? physics;
 
   @override
   Widget build(BuildContext context) {
@@ -23,13 +28,9 @@ class FeedList extends StatelessWidget {
 
     return ListView.builder(
       key: const PageStorageKey("community_feed"),
-
-      physics: const AlwaysScrollableScrollPhysics(),
-
-      scrollCacheExtent: ScrollCacheExtent.pixels(1200),
-
+      shrinkWrap: shrinkWrap,
+      physics: physics ?? const NeverScrollableScrollPhysics(),
       itemCount: itemCount,
-
       itemBuilder: (context, index) {
         if (index >= feedItems.length) {
           return const LoadMoreWidget();
@@ -39,7 +40,6 @@ class FeedList extends StatelessWidget {
 
         return Padding(
           padding: const EdgeInsets.only(bottom: 16),
-
           child: RepaintBoundary(child: _FeedItem(item: item)),
         );
       },
@@ -57,16 +57,19 @@ class _FeedItem extends StatelessWidget {
     switch (item.type) {
       case FeedType.advertisement:
         return AdvertisementBanner(
-          key: ValueKey(item.advertisement!.id),
+          key: ValueKey('ad_${item.advertisement!.id}'),
           advertisement: item.advertisement!,
         );
 
       case FeedType.notice:
-        return NoticeCard(key: ValueKey(item.notice!.id), notice: item.notice!);
+        return NoticeCard(
+          key: ValueKey('notice_${item.notice!.id}'),
+          notice: item.notice!,
+        );
 
       case FeedType.community:
         return CommunityPostCard(
-          key: ValueKey(item.communityPost!.id),
+          key: ValueKey('post_${item.communityPost!.id}'),
           post: item.communityPost!,
         );
     }
