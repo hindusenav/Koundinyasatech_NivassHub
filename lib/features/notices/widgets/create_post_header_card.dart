@@ -39,7 +39,7 @@ class CreateCommunityPostHeaderCard extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         _OptionCard(
-          icon: Icons.bar_chart_outlined,
+          icon: Icons.bar_chart_rounded,
           title: 'Create Poll',
           subtitle: 'Get quick feedback or vote on community matters',
           onTap: () {
@@ -86,7 +86,7 @@ class _OptionCard extends StatelessWidget {
         border: Border.all(color: const Color(0xFFF1F5F9)),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF0F172A).withOpacity(0.04),
+            color: const Color(0xFF0F172A).withValues(alpha: .04),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -105,10 +105,17 @@ class _OptionCard extends StatelessWidget {
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: const Color(0xFFEFF6FF),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(14),
                     border: Border.all(color: const Color(0xFFDBEAFE)),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFF0284C7).withValues(alpha: .06),
+                        blurRadius: 6,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
                   ),
-                  child: Icon(icon, color: const Color(0xFF2563EB), size: 22),
+                  child: Icon(icon, color: const Color(0xFF0284C7), size: 22),
                 ),
                 const SizedBox(width: 14),
                 Expanded(

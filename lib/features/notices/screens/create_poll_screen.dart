@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../dashboard/presentation/widgets/navigation/dashboard_bottom_navigation.dart';
 import '../provider/notices_provider.dart';
 
-//// Screen matching Figma "Community - New Poll"
+/// Screen matching Figma "Community - New Poll"
 class CreatePollScreen extends StatefulWidget {
   const CreatePollScreen({super.key});
 
@@ -13,36 +12,34 @@ class CreatePollScreen extends StatefulWidget {
 }
 
 class _CreatePollScreenState extends State<CreatePollScreen> {
-  final TextEditingController _descController = TextEditingController();
   final TextEditingController _questionController = TextEditingController();
-  final List<TextEditingController> _optionsControllers = [
-    TextEditingController(text: 'Option 1'),
-    TextEditingController(text: 'Option 2'),
+  final List<TextEditingController> _optionControllers = [
+    TextEditingController(),
+    TextEditingController(),
   ];
   String _selectedVisibility = 'All Residents';
   bool _isSubmitting = false;
 
   @override
   void dispose() {
-    _descController.dispose();
     _questionController.dispose();
-    for (var c in _optionsControllers) {
+    for (final c in _optionControllers) {
       c.dispose();
     }
     super.dispose();
   }
 
   void _addOption() {
-    setState(() {
-      _optionsControllers.add(
-        TextEditingController(text: 'Option ${_optionsControllers.length + 1}'),
-      );
-    });
+    if (_optionControllers.length < 6) {
+      setState(() {
+        _optionControllers.add(TextEditingController());
+      });
+    }
   }
 
   Future<void> _submitPoll() async {
     final question = _questionController.text.trim();
-    final options = _optionsControllers
+    final options = _optionControllers
         .map((c) => c.text.trim())
         .where((t) => t.isNotEmpty)
         .toList();
@@ -53,12 +50,9 @@ class _CreatePollScreenState extends State<CreatePollScreen> {
       );
       return;
     }
-
     if (options.length < 2) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('At least two poll options are required.'),
-        ),
+        const SnackBar(content: Text('Please add at least 2 poll options.')),
       );
       return;
     }
@@ -86,7 +80,7 @@ class _CreatePollScreenState extends State<CreatePollScreen> {
         Navigator.of(context).pop();
       }
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Poll created successfully!')),
+        const SnackBar(content: Text('Poll published successfully!')),
       );
     }
   }
@@ -94,14 +88,14 @@ class _CreatePollScreenState extends State<CreatePollScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: const Color(0xFFE0F2FE),
         elevation: 0,
         automaticallyImplyLeading: false,
         titleSpacing: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black87),
+          icon: const Icon(Icons.arrow_back, color: Color(0xFF0F172A)),
           onPressed: () {
             if (Navigator.of(context).canPop()) {
               Navigator.of(context).pop();
@@ -111,7 +105,7 @@ class _CreatePollScreenState extends State<CreatePollScreen> {
         title: const Text(
           'New Poll',
           style: TextStyle(
-            color: Colors.black87,
+            color: Color(0xFF0F172A),
             fontWeight: FontWeight.bold,
             fontSize: 18,
           ),
@@ -138,13 +132,13 @@ class _CreatePollScreenState extends State<CreatePollScreen> {
                       Icon(
                         Icons.info_outline,
                         size: 14,
-                        color: Color(0xFF2563EB),
+                        color: Color(0xFF0284C7),
                       ),
                       SizedBox(width: 4),
                       Text(
                         'Guidelines',
                         style: TextStyle(
-                          color: Color(0xFF2563EB),
+                          color: Color(0xFF0284C7),
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
                         ),
@@ -155,62 +149,6 @@ class _CreatePollScreenState extends State<CreatePollScreen> {
               ),
             ),
           ),
-        ],
-      ),
-      bottomNavigationBar: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              border: Border(top: BorderSide(color: Color(0xFFE2E8F0))),
-            ),
-            child: Row(
-              children: [
-                _MediaIconButton(icon: Icons.image_outlined, onTap: () {}),
-                const SizedBox(width: 8),
-                _MediaIconButton(icon: Icons.camera_alt_outlined, onTap: () {}),
-                const SizedBox(width: 8),
-                _MediaIconButton(icon: Icons.videocam_outlined, onTap: () {}),
-                const SizedBox(width: 8),
-                _MediaIconButton(icon: Icons.mic_none_outlined, onTap: () {}),
-                const Spacer(),
-                Material(
-                  color: const Color(0xFF2563EB),
-                  borderRadius: BorderRadius.circular(8),
-                  child: InkWell(
-                    onTap: _isSubmitting ? null : _submitPoll,
-                    borderRadius: BorderRadius.circular(8),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 24,
-                        vertical: 10,
-                      ),
-                      child: _isSubmitting
-                          ? const SizedBox(
-                              width: 16,
-                              height: 16,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                color: Colors.white,
-                              ),
-                            )
-                          : const Text(
-                              'Create Poll',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14,
-                              ),
-                            ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const DashboardBottomNavigation(),
         ],
       ),
       body: SingleChildScrollView(
@@ -242,7 +180,7 @@ class _CreatePollScreenState extends State<CreatePollScreen> {
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 14,
-                          color: Colors.black87,
+                          color: Color(0xFF0F172A),
                         ),
                       ),
                       Text(
@@ -271,7 +209,7 @@ class _CreatePollScreenState extends State<CreatePollScreen> {
                         _selectedVisibility,
                         style: const TextStyle(
                           fontSize: 12,
-                          color: Colors.black87,
+                          color: Color(0xFF0F172A),
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -279,103 +217,135 @@ class _CreatePollScreenState extends State<CreatePollScreen> {
                       const Icon(
                         Icons.keyboard_arrow_down,
                         size: 16,
-                        color: Colors.black87,
+                        color: Color(0xFF0F172A),
                       ),
                     ],
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: _descController,
-              decoration: const InputDecoration(
-                hintText: 'Add a description to your poll...',
-                hintStyle: TextStyle(color: Color(0xFF94A3B8), fontSize: 14),
-                border: InputBorder.none,
-                focusedBorder: InputBorder.none,
-                enabledBorder: InputBorder.none,
-              ),
+            const SizedBox(height: 20),
+            const Text(
+              'Add a description to your poll...',
+              style: TextStyle(fontSize: 13, color: Color(0xFF64748B)),
             ),
             const SizedBox(height: 12),
             Container(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: const Color(0xFFBAE6FD)),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: const Color(0xFF0284C7), width: 1.5),
               ),
-              child: Row(
-                children: [
-                  Container(
-                    width: 3,
-                    height: 20,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF0284C7),
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: TextField(
-                      controller: _questionController,
-                      decoration: const InputDecoration(
-                        hintText: 'Write your poll question here...',
-                        hintStyle: TextStyle(
-                          color: Color(0xFF0284C7),
-                          fontSize: 14,
+              child: TextField(
+                controller: _questionController,
+                style: const TextStyle(fontSize: 14, color: Color(0xFF0F172A)),
+                decoration: const InputDecoration(
+                  hintText: 'Write your poll question here...',
+                  hintStyle: TextStyle(color: Color(0xFF0284C7), fontSize: 14),
+                  border: InputBorder.none,
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            for (int i = 0; i < _optionControllers.length; i++) ...[
+              Container(
+                margin: const EdgeInsets.only(bottom: 10),
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: const Color(0xFFE2E8F0)),
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: _optionControllers[i],
+                        style: const TextStyle(fontSize: 13, color: Color(0xFF0F172A)),
+                        decoration: InputDecoration(
+                          hintText: 'Option ${i + 1}',
+                          hintStyle: const TextStyle(color: Color(0xFF94A3B8), fontSize: 13),
+                          border: InputBorder.none,
                         ),
-                        border: InputBorder.none,
-                        focusedBorder: InputBorder.none,
-                        enabledBorder: InputBorder.none,
-                        isDense: true,
-                        contentPadding: EdgeInsets.zero,
                       ),
+                    ),
+                    const Icon(Icons.crop_square, color: Color(0xFFCBD5E1), size: 18),
+                  ],
+                ),
+              ),
+            ],
+            const SizedBox(height: 6),
+            GestureDetector(
+              onTap: _addOption,
+              child: const Row(
+                children: [
+                  Icon(Icons.add, color: Color(0xFF0284C7), size: 16),
+                  SizedBox(width: 4),
+                  Text(
+                    'Add Option',
+                    style: TextStyle(
+                      color: Color(0xFF0284C7),
+                      fontWeight: FontWeight.bold,
+                      fontSize: 13,
                     ),
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 16),
-            ...List.generate(_optionsControllers.length, (index) {
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 10),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 14),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: const Color(0xFFE2E8F0)),
-                  ),
-                  child: TextField(
-                    controller: _optionsControllers[index],
-                    decoration: const InputDecoration(
-                      border: InputBorder.none,
-                      focusedBorder: InputBorder.none,
-                      enabledBorder: InputBorder.none,
-                      suffixIcon: Icon(
-                        Icons.check_box_outline_blank,
-                        color: Color(0xFF94A3B8),
-                        size: 18,
-                      ),
+          ],
+        ),
+      ),
+      bottomNavigationBar: SafeArea(
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            border: Border(top: BorderSide(color: Color(0xFFE2E8F0))),
+          ),
+          child: Row(
+            children: [
+              _MediaIconButton(icon: Icons.image_outlined, onTap: () {}),
+              const SizedBox(width: 8),
+              _MediaIconButton(icon: Icons.camera_alt_outlined, onTap: () {}),
+              const SizedBox(width: 8),
+              _MediaIconButton(icon: Icons.videocam_outlined, onTap: () {}),
+              const SizedBox(width: 8),
+              _MediaIconButton(icon: Icons.mic_none_outlined, onTap: () {}),
+              const Spacer(),
+              Material(
+                color: const Color(0xFF0284C7),
+                borderRadius: BorderRadius.circular(8),
+                child: InkWell(
+                  onTap: _isSubmitting ? null : _submitPoll,
+                  borderRadius: BorderRadius.circular(8),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 10,
                     ),
+                    child: _isSubmitting
+                        ? const SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white,
+                            ),
+                          )
+                        : const Text(
+                            'Create Poll',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                            ),
+                          ),
                   ),
-                ),
-              );
-            }),
-            TextButton.icon(
-              onPressed: _addOption,
-              icon: const Icon(Icons.add, size: 18, color: Color(0xFF2563EB)),
-              label: const Text(
-                'Add Option',
-                style: TextStyle(
-                  color: Color(0xFF2563EB),
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -392,11 +362,19 @@ class _MediaIconButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFFF1F5F9),
-        borderRadius: BorderRadius.circular(8),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: const Color(0xFFE2E8F0)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: .03),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: IconButton(
-        icon: Icon(icon, color: const Color(0xFF475569), size: 20),
+        icon: Icon(icon, color: const Color(0xFF334155), size: 18),
         onPressed: onTap,
         constraints: const BoxConstraints(),
         padding: const EdgeInsets.all(8),

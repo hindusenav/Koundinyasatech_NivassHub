@@ -18,45 +18,44 @@ class DashboardBottomNavigation extends StatelessWidget {
       // Safely handled if opened outside Dashboard scope
     }
 
-    final selectedIndex = provider?.selectedIndex ?? 2;
+    final selectedIndex = provider?.selectedIndex ?? 0;
 
     return NavigationBar(
       selectedIndex: selectedIndex,
-      height: 72,
-      elevation: 8,
+      height: 68,
+      backgroundColor: const Color(0xFFE0F2FE),
+      elevation: 0,
+      indicatorColor: const Color(0xFF2563EB),
       labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
       onDestinationSelected: (index) {
         if (provider != null) {
           provider.changeIndex(index);
         }
-        if (Navigator.of(context).canPop()) {
-          Navigator.of(context).pop();
-        }
       },
       destinations: const [
         NavigationDestination(
-          icon: Icon(Icons.home_outlined),
-          selectedIcon: Icon(Icons.home),
+          icon: Icon(Icons.home_outlined, color: Colors.black87),
+          selectedIcon: Icon(Icons.home, color: Colors.white),
           label: 'Home',
         ),
         NavigationDestination(
-          icon: Icon(Icons.badge_outlined),
-          selectedIcon: Icon(Icons.badge),
+          icon: Icon(Icons.person_outline, color: Colors.black87),
+          selectedIcon: Icon(Icons.person, color: Colors.white),
           label: 'Visitors',
         ),
         NavigationDestination(
-          icon: Icon(Icons.groups_outlined),
-          selectedIcon: Icon(Icons.groups),
+          icon: Icon(Icons.groups_outlined, color: Colors.black87),
+          selectedIcon: Icon(Icons.groups, color: Colors.white),
           label: 'Community',
         ),
         NavigationDestination(
-          icon: Icon(Icons.payments_outlined),
-          selectedIcon: Icon(Icons.payments),
+          icon: Icon(Icons.account_balance_wallet_outlined, color: Colors.black87),
+          selectedIcon: Icon(Icons.account_balance_wallet, color: Colors.white),
           label: 'Payments',
         ),
         NavigationDestination(
-          icon: Icon(Icons.more_horiz),
-          selectedIcon: Icon(Icons.more_horiz),
+          icon: Icon(Icons.menu, color: Colors.black87),
+          selectedIcon: Icon(Icons.menu, color: Colors.white),
           label: 'More',
         ),
       ],

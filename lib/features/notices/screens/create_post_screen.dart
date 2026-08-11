@@ -68,7 +68,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
         automaticallyImplyLeading: false,
         titleSpacing: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black87),
+          icon: const Icon(Icons.arrow_back, color: Color(0xFF0F172A)),
           onPressed: () {
             if (Navigator.of(context).canPop()) {
               Navigator.of(context).pop();
@@ -78,7 +78,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
         title: const Text(
           'New Post',
           style: TextStyle(
-            color: Colors.black87,
+            color: Color(0xFF0F172A),
             fontWeight: FontWeight.bold,
             fontSize: 18,
           ),
@@ -105,13 +105,13 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                       Icon(
                         Icons.info_outline,
                         size: 14,
-                        color: Color(0xFF2563EB),
+                        color: Color(0xFF0284C7),
                       ),
                       SizedBox(width: 4),
                       Text(
                         'Guidelines',
                         style: TextStyle(
-                          color: Color(0xFF2563EB),
+                          color: Color(0xFF0284C7),
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
                         ),
@@ -153,7 +153,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 14,
-                          color: Colors.black87,
+                          color: Color(0xFF0F172A),
                         ),
                       ),
                       Text(
@@ -182,7 +182,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                         _selectedVisibility,
                         style: const TextStyle(
                           fontSize: 12,
-                          color: Colors.black87,
+                          color: Color(0xFF0F172A),
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -190,7 +190,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                       const Icon(
                         Icons.keyboard_arrow_down,
                         size: 16,
-                        color: Colors.black87,
+                        color: Color(0xFF0F172A),
                       ),
                     ],
                   ),
@@ -201,7 +201,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
             TextField(
               controller: _contentController,
               maxLines: 8,
-              style: const TextStyle(fontSize: 15, color: Colors.black87),
+              style: const TextStyle(fontSize: 15, color: Color(0xFF0F172A)),
               decoration: const InputDecoration(
                 hintText: 'What do you want to talk about?',
                 hintStyle: TextStyle(color: Color(0xFF94A3B8), fontSize: 15),
@@ -231,14 +231,14 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
               _MediaIconButton(icon: Icons.mic_none_outlined, onTap: () {}),
               const Spacer(),
               Material(
-                color: const Color(0xFF2563EB),
+                color: const Color(0xFF0284C7),
                 borderRadius: BorderRadius.circular(8),
                 child: InkWell(
                   onTap: _isSubmitting ? null : _submitPost,
                   borderRadius: BorderRadius.circular(8),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 24,
+                      horizontal: 22,
                       vertical: 10,
                     ),
                     child: _isSubmitting
@@ -279,11 +279,19 @@ class _MediaIconButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFFF1F5F9),
-        borderRadius: BorderRadius.circular(8),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: const Color(0xFFE2E8F0)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: .03),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: IconButton(
-        icon: Icon(icon, color: const Color(0xFF475569), size: 20),
+        icon: Icon(icon, color: const Color(0xFF334155), size: 18),
         onPressed: onTap,
         constraints: const BoxConstraints(),
         padding: const EdgeInsets.all(8),

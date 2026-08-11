@@ -15,96 +15,77 @@ class QuickActionsGrid extends StatelessWidget {
     final actions = provider.home?.data.quickActions ?? [];
 
     if (actions.isEmpty) {
-  return const Padding(
-    padding: EdgeInsets.symmetric(horizontal: 20),
-    child: SectionEmpty(
-      icon: Icons.grid_view_outlined,
-      title: 'No Quick Actions',
-      message:
-          'Quick actions will appear here when available.',
-    ),
-  );
-}
-
-    final width = MediaQuery.of(context).size.width;
-
-    final crossAxisCount = width > 900
-        ? 6
-        : width > 600
-            ? 4
-            : 4;
+      return const Padding(
+        padding: EdgeInsets.symmetric(horizontal: 20),
+        child: SectionEmpty(
+          icon: Icons.grid_view_outlined,
+          title: 'No Quick Actions',
+          message: 'Quick actions will appear here when available.',
+        ),
+      );
+    }
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Quick Actions',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                'Quick Actions',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
+              ),
+              InkWell(
+                onTap: () {},
+                borderRadius: BorderRadius.circular(12),
+                child: const Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.settings_outlined,
+                      size: 14,
+                      color: Color(0xFF2563EB),
+                    ),
+                    SizedBox(width: 4),
+                    Text(
+                      'Customize',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFF2563EB),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
-
-          const SizedBox(height: 18),
-
+          const SizedBox(height: 14),
           GridView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             itemCount: actions.length,
-            gridDelegate:
-                SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: crossAxisCount,
-              mainAxisSpacing: 16,
-              crossAxisSpacing: 16,
-              childAspectRatio: .78,
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 4,
+              mainAxisSpacing: 14,
+              crossAxisSpacing: 12,
+              childAspectRatio: 0.82,
             ),
             itemBuilder: (context, index) {
               return QuickActionCard(
                 action: actions[index],
-                onTap: () {
-                  _handleAction(
-                    context,
-                    actions[index].name,
-                  );
-                },
+                onTap: () {},
               );
             },
           ),
         ],
       ),
     );
-  }
-
-  void _handleAction(
-    BuildContext context,
-    String action,
-  ) {
-    switch (action) {
-      case 'Pre-Approve':
-        break;
-
-      case 'Payments':
-        break;
-
-      case 'Posts':
-        break;
-
-      case 'Security':
-        break;
-
-      case 'Book Now':
-        break;
-
-      case 'Directory':
-        break;
-
-      case 'Free Trial':
-        break;
-
-      case 'View More':
-        break;
-    }
   }
 }
