@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../../../core/theme/app_colors.dart';
 import '../../../data/models/quick_action_model.dart';
 
 class QuickActionCard extends StatelessWidget {
@@ -16,34 +15,41 @@ class QuickActionCard extends StatelessWidget {
   bool get _isViewMore =>
       action.name.toLowerCase() == "view more";
 
-  bool get _isSponsored =>
+  bool get _isBookNow =>
       action.name.toLowerCase() == "book now";
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(18), // 🔥 smoother
+      borderRadius: BorderRadius.circular(18),
+
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Stack(
             clipBehavior: Clip.none,
             children: [
-              /// 🔥 BIGGER BOX
+              // ===========================================================
+              // EXISTING BOX — NO CHANGES
+              // ===========================================================
+
               Container(
-                width: 70,  // 🔥 increased
+                width: 70,
                 height: 70,
                 decoration: BoxDecoration(
                   color: _isViewMore
                       ? const Color(0xFFFF8A00)
                       : Colors.white,
+
                   borderRadius: BorderRadius.circular(18),
+
                   border: Border.all(
                     color: _isViewMore
                         ? Colors.transparent
                         : const Color(0xffECECEC),
                   ),
+
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black.withOpacity(.06),
@@ -53,14 +59,35 @@ class QuickActionCard extends StatelessWidget {
                   ],
                 ),
 
-                /// 🔥 BIGGER ICON
+                // =========================================================
+                // IMAGE — ONLY BOOK NOW SIZE CHANGED
+                // =========================================================
+
                 child: Center(
                   child: Image.asset(
                     action.assetPath,
-                    width: _isViewMore ? 26 : 30, // 🔥 increased
-                    height: _isViewMore ? 26 : 30,
+
+                    // View More remains 26.
+                    // Other icons remain 30.
+                    // Book Now is increased to 42.
+                    width: _isViewMore
+                        ? 26
+                        : _isBookNow
+                            ? 42
+                            : 30,
+
+                    height: _isViewMore
+                        ? 26
+                        : _isBookNow
+                            ? 42
+                            : 30,
+
                     fit: BoxFit.contain,
-                    color: _isViewMore ? Colors.white : null,
+
+                    color: _isViewMore
+                        ? Colors.white
+                        : null,
+
                     errorBuilder: (_, __, ___) {
                       return const Icon(
                         Icons.image_not_supported_outlined,
@@ -72,38 +99,24 @@ class QuickActionCard extends StatelessWidget {
                 ),
               ),
 
-              /// 🔥 AD BADGE (slightly improved)
-              if (_isSponsored)
-                Positioned(
-                  top: -6,
-                  left: -6,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 5,
-                      vertical: 2,
-                    ),
-                    decoration: BoxDecoration(
-                      color: AppColors.success,
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: const Text(
-                      "AD",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 8,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
+              // ===========================================================
+              // AD BADGE REMOVED
+              // ===========================================================
             ],
           ),
 
-          const SizedBox(height: 8), // 🔥 better spacing
+          // =============================================================
+          // EXISTING GAP — NO CHANGE
+          // =============================================================
 
-          /// TEXT
+          const SizedBox(height: 8),
+
+          // =============================================================
+          // EXISTING TEXT — NO CHANGE
+          // =============================================================
+
           SizedBox(
-            width: 74, // 🔥 slightly wider
+            width: 74,
             child: Text(
               action.name,
               textAlign: TextAlign.center,

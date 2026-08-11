@@ -12,39 +12,48 @@ class NotificationIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      clipBehavior: Clip.none,
-      children: [
-        IconButton(
-          onPressed: onTap,
-          icon: const Icon(
-            Icons.notifications_outlined,
-            size: 28,
+    return GestureDetector(
+      onTap: onTap,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          // =============================================================
+          // CUSTOM NOTIFICATION IMAGE
+          // =============================================================
+          Image.asset(
+            'assets/icons/notification.png',
+            width: 20,
+            height: 20,
+            fit: BoxFit.contain,
           ),
-        ),
-        if (count > 0)
-          Positioned(
-            right: 8,
-            top: 8,
-            child: Container(
-              height: 18,
-              width: 18,
-              decoration: const BoxDecoration(
-                color: Colors.red,
-                shape: BoxShape.circle,
-              ),
-              alignment: Alignment.center,
-              child: Text(
-                '$count',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 10,
-                  fontWeight: FontWeight.bold,
+
+          // =============================================================
+          // NOTIFICATION COUNT
+          // =============================================================
+          if (count > 0)
+            Positioned(
+              right: -4,
+              top: -5,
+              child: Container(
+                width: 14,
+                height: 14,
+                decoration: const BoxDecoration(
+                  color: Colors.red,
+                  shape: BoxShape.circle,
+                ),
+                alignment: Alignment.center,
+                child: Text(
+                  '$count',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 8,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ),
-          ),
-      ],
+        ],
+      ),
     );
   }
 }

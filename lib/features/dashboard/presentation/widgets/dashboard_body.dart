@@ -25,59 +25,72 @@ class DashboardBody extends StatelessWidget {
     final banners = provider.advertisementBanners;
 
     return Container(
-      color: const Color(0xFFF7F8FC), // Figma background
-      child: SafeArea(
-        child: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
-          padding: EdgeInsets.fromLTRB(
-            Responsive.horizontalPadding(context),
-            8,
-            Responsive.horizontalPadding(context),
-            24,
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const DashboardHeader(),
+      width: double.infinity,
+      color: const Color(0xFFF7F8FC),
 
-              const SizedBox(height: 14),
+      child: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(),
 
-              const BannerSlider(),
+        padding: EdgeInsets.only(
+          left: Responsive.horizontalPadding(context)
+              .clamp(12.0, 14.0),
+          right: Responsive.horizontalPadding(context)
+              .clamp(12.0, 14.0),
+          bottom: 20,
+        ),
 
-              const SizedBox(height: 22),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // HEADER
+            const DashboardHeader(),
 
-              const QuickActionsGrid(),
+            const SizedBox(height: 8),
 
-              const SizedBox(height: 22),
+            // ONLINE ADVERTISEMENT
+            const BannerSlider(),
 
-              const MaintenanceCard(),
+            const SizedBox(height: 9),
 
-              const SizedBox(height: 22),
+            // QUICK ACTIONS
+            const QuickActionsGrid(),
 
-              const ApprovalQueueSection(),
+            const SizedBox(height: 9),
 
-              const SizedBox(height: 22),
+            // MAINTENANCE
+            const MaintenanceCard(),
 
-              const PanicSosBanner(),
+            const SizedBox(height: 9),
 
-              const SizedBox(height: 16),
+            // APPROVAL QUEUE
+            const ApprovalQueueSection(),
 
-              const GenerateOtpBanner(),
+            const SizedBox(height: 9),
 
-              const SizedBox(height: 22),
+            // PANIC
+            const PanicSosBanner(),
 
-              if (banners.isNotEmpty) ...[
-                BannerCard(
-                  banner: banners.first,
-                ),
-                const SizedBox(height: 22),
-              ],
+            const SizedBox(height: 7),
 
-              const CommunityPostsSection(),
+            // OTP
+            const GenerateOtpBanner(),
 
-              const SizedBox(height: 28),
+            // ADVERTISEMENT
+            if (banners.isNotEmpty) ...[
+              const SizedBox(height: 9),
+
+              BannerCard(
+                banner: banners.first,
+              ),
             ],
-          ),
+
+            const SizedBox(height: 9),
+
+            // COMMUNITY
+            const CommunityPostsSection(),
+
+            const SizedBox(height: 12),
+          ],
         ),
       ),
     );
