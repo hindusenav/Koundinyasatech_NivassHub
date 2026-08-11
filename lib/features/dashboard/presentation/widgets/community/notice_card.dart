@@ -14,16 +14,18 @@ class NoticeCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20),
-      padding: const EdgeInsets.all(18),
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: Colors.grey.shade200),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: const Color(0xFFE8EDF3),
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: .04),
-            blurRadius: 8,
+            color: Colors.black.withOpacity(.04),
+            blurRadius: 12,
             offset: const Offset(0, 4),
           ),
         ],
@@ -31,68 +33,92 @@ class NoticeCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          /// HEADER
           Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Container(
-                height: 36,
-                width: 36,
+                width: 46,
+                height: 46,
                 decoration: BoxDecoration(
-                  color: Colors.grey.shade100,
-                  borderRadius: BorderRadius.circular(10),
+                  color: const Color(0xFFF4F6FA),
+                  borderRadius: BorderRadius.circular(14),
                 ),
-                child: Icon(
+                child: const Icon(
                   Icons.description_outlined,
-                  color: Colors.grey.shade700,
-                  size: 20,
+                  color: Color(0xFF4B5563),
+                  size: 24,
                 ),
               ),
-              const SizedBox(width: 10),
-              const Text(
-                'Notice',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 15,
+
+              const SizedBox(width: 14),
+
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      "Notice",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: Color(0xFF1F2937),
+                      ),
+                    ),
+
+                    const SizedBox(height: 3),
+
+                    Text(
+                      notice.society,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              const SizedBox(width: 8),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 8,
-                  vertical: 2,
-                ),
-                decoration: BoxDecoration(
-                  color: AppColors.primaryDark,
-                  borderRadius: BorderRadius.circular(6),
-                ),
-                child: Text(
-                  notice.postedBy,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 10,
-                    fontWeight: FontWeight.w600,
+
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 5,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColors.primaryDark,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      notice.postedBy,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ),
-                ),
-              ),
-              const Spacer(),
-              Text(
-                notice.date,
-                style: const TextStyle(
-                  color: Colors.grey,
-                  fontSize: 11,
-                ),
+
+                  const SizedBox(height: 6),
+
+                  Text(
+                    notice.date,
+                    style: const TextStyle(
+                      color: Colors.grey,
+                      fontSize: 11,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
-          Padding(
-            padding: const EdgeInsets.only(left: 46, top: 4),
-            child: Text(
-              notice.society,
-              style: const TextStyle(
-                color: Colors.grey,
-                fontSize: 11.5,
-              ),
-            ),
+
+          const SizedBox(height: 18),
+
+          Divider(
+            color: Colors.grey.shade200,
+            thickness: 1,
           ),
           const SizedBox(height: 12),
           Container(height: 2, color: AppColors.tertiary.withValues(alpha: .6)),
@@ -100,43 +126,59 @@ class NoticeCard extends StatelessWidget {
           Text(
             notice.title,
             style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 14.5,
+              fontSize: 17,
+              fontWeight: FontWeight.w700,
+              color: Color(0xFF1F2937),
             ),
           ),
-          const SizedBox(height: 8),
+
+          const SizedBox(height: 10),
+
           Text(
             notice.body,
-            style: TextStyle(
-              color: Colors.grey.shade700,
-              fontSize: 13,
-              height: 1.4,
+            style: const TextStyle(
+              fontSize: 14,
+              color: Color(0xFF5F6368),
+              height: 1.6,
             ),
           ),
-          const SizedBox(height: 12),
-          OutlinedButton.icon(
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('${notice.downloadLabel} coming soon.'),
+
+          const SizedBox(height: 22),
+
+          SizedBox(
+            width: double.infinity,
+            height: 46,
+            child: OutlinedButton.icon(
+              onPressed: () {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      '${notice.downloadLabel} coming soon.',
+                    ),
+                  ),
+                );
+              },
+              style: OutlinedButton.styleFrom(
+                foregroundColor: AppColors.success,
+                side: BorderSide(
+                  color: AppColors.success.withOpacity(.6),
                 ),
-              );
-            },
-            style: OutlinedButton.styleFrom(
-              foregroundColor: AppColors.success,
-              side: BorderSide(color: AppColors.success),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
               ),
-              minimumSize: Size.zero,
-              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              padding: const EdgeInsets.symmetric(
-                horizontal: 14,
-                vertical: 8,
+              icon: const Icon(
+                Icons.download_rounded,
+                size: 20,
+              ),
+              label: Text(
+                notice.downloadLabel,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 14,
+                ),
               ),
             ),
-            icon: const Icon(Icons.download_outlined, size: 16),
-            label: Text(notice.downloadLabel),
           ),
         ],
       ),

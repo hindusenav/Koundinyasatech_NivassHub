@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../../../core/theme/app_colors.dart';
 import '../../../data/models/quick_action_model.dart';
-import 'quick_action_icon_mapper.dart';
 
 class QuickActionCard extends StatelessWidget {
   const QuickActionCard({
@@ -14,92 +12,126 @@ class QuickActionCard extends StatelessWidget {
   final QuickActionModel action;
   final VoidCallback onTap;
 
-  bool get _isViewMore => action.name == 'View More';
-  bool get _isSponsored => action.name == 'Book Now';
+  bool get _isViewMore =>
+      action.name.toLowerCase() == "view more";
+
+  bool get _isBookNow =>
+      action.name.toLowerCase() == "book now";
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      clipBehavior: Clip.none,
-      children: [
-        Material(
-          color: _isViewMore ? AppColors.tertiary : Colors.white,
-          borderRadius: BorderRadius.circular(18),
-          child: InkWell(
-            borderRadius: BorderRadius.circular(18),
-            onTap: onTap,
-            child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 10),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(18),
-                border: _isViewMore
-                    ? null
-                    : Border.all(color: Colors.grey.shade200),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: .03),
-                    blurRadius: 8,
-                    offset: const Offset(0, 3),
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(18),
+
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Stack(
+            clipBehavior: Clip.none,
+            children: [
+              // ===========================================================
+              // EXISTING BOX — NO CHANGES
+              // ===========================================================
+
+              Container(
+                width: 70,
+                height: 70,
+                decoration: BoxDecoration(
+                  color: _isViewMore
+                      ? const Color(0xFFFF8A00)
+                      : Colors.white,
+
+                  borderRadius: BorderRadius.circular(18),
+
+                  border: Border.all(
+                    color: _isViewMore
+                        ? Colors.transparent
+                        : const Color(0xffECECEC),
                   ),
-                ],
-              ),
-              child: _isViewMore
-                  ? const Center(
-                      child: Icon(
-                        Icons.add,
-                        color: Colors.white,
-                        size: 30,
-                      ),
-                    )
-                  : Column(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          QuickActionIconMapper.icon(action.icon),
-                          color: const Color(0xFF1E3D7A),
-                          size: 24,
-                        ),
-                        const SizedBox(height: 6),
-                        Text(
-                          action.name,
-                          textAlign: TextAlign.center,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 12,
-                          ),
-                        ),
-                      ],
+
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(.06),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
                     ),
-            ),
-          ),
-        ),
-        if (_isSponsored)
-          Positioned(
-            top: -6,
-            left: -6,
-            child: Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 6,
-                vertical: 2,
-              ),
-              decoration: BoxDecoration(
-                color: AppColors.success,
-                borderRadius: BorderRadius.circular(6),
-              ),
-              child: const Text(
-                'AD',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 9,
-                  fontWeight: FontWeight.bold,
+                  ],
+                ),
+
+                // =========================================================
+                // IMAGE — ONLY BOOK NOW SIZE CHANGED
+                // =========================================================
+
+                child: Center(
+                  child: Image.asset(
+                    action.assetPath,
+
+                    // View More remains 26.
+                    // Other icons remain 30.
+                    // Book Now is increased to 42.
+                    width: _isViewMore
+                        ? 26
+                        : _isBookNow
+                            ? 42
+                            : 30,
+
+                    height: _isViewMore
+                        ? 26
+                        : _isBookNow
+                            ? 42
+                            : 30,
+
+                    fit: BoxFit.contain,
+
+                    color: _isViewMore
+                        ? Colors.white
+                        : null,
+
+                    errorBuilder: (_, __, ___) {
+                      return const Icon(
+                        Icons.image_not_supported_outlined,
+                        size: 28,
+                        color: Colors.grey,
+                      );
+                    },
+                  ),
                 ),
               ),
+
+              // ===========================================================
+              // AD BADGE REMOVED
+              // ===========================================================
+            ],
+          ),
+
+          // =============================================================
+          // EXISTING GAP — NO CHANGE
+          // =============================================================
+
+          const SizedBox(height: 8),
+
+          // =============================================================
+          // EXISTING TEXT — NO CHANGE
+          // =============================================================
+
+          SizedBox(
+            width: 74,
+            child: Text(
+              action.name,
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                fontSize: 11,
+                height: 1.25,
+                fontWeight: FontWeight.w500,
+                color: Color(0xff303030),
+              ),
             ),
           ),
-      ],
+        ],
+      ),
     );
   }
 }

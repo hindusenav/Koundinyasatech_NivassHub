@@ -23,57 +23,76 @@ class CommunityPostsSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Row(
-            children: [
-              const Expanded(
-                child: Text(
-                  'Community Posts',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
+        Row(
+          children: [
+            const Expanded(
+              child: Text(
+                'Community Posts',
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.w700,
+                  color: Color(0xFF222222),
                 ),
               ),
-              OutlinedButton.icon(
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Posting coming soon.')),
-                  );
-                },
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: AppColors.success,
-                  side: BorderSide(color: AppColors.success),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
+            ),
+            OutlinedButton.icon(
+              onPressed: () {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Posting coming soon.'),
                   ),
-                  minimumSize: Size.zero,
-                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 14,
-                    vertical: 8,
-                  ),
+                );
+              },
+              style: OutlinedButton.styleFrom(
+                foregroundColor: AppColors.success,
+                backgroundColor: Colors.white,
+                side: BorderSide(
+                  color: AppColors.success.withOpacity(.5),
                 ),
-                icon: const Icon(Icons.edit_outlined, size: 16),
-                label: const Text('New Posts'),
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(24),
+                ),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 10,
+                ),
+                minimumSize: Size.zero,
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
               ),
-            ],
-          ),
+              icon: const Icon(
+                Icons.edit_outlined,
+                size: 18,
+              ),
+              label: const Text(
+                'New Posts',
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 13,
+                ),
+              ),
+            ),
+          ],
         ),
-        const SizedBox(height: 16),
+
+        const SizedBox(height: 20),
+
         if (meeting != null) ...[
           CommunityMeetingCard(meeting: meeting),
-          const SizedBox(height: 16),
+          const SizedBox(height: 20),
         ],
-        for (var i = 0; i < notices.length; i++) ...[
+
+        for (int i = 0; i < notices.length; i++) ...[
           NoticeCard(notice: notices[i]),
-          const SizedBox(height: 16),
+          const SizedBox(height: 20),
+
           if (i == 0 && banners.isNotEmpty) ...[
             BannerCard(
-              banner: banners.length > 1 ? banners[1] : banners.first,
+              banner: banners.length > 1
+                  ? banners[1]
+                  : banners.first,
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 20),
           ],
         ],
       ],
