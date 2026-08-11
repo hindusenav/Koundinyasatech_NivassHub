@@ -41,6 +41,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             icon: Icon(AppIcons.notification),
             onPressed: () {},
           ),
+          
         ],
       ),
       body: RefreshIndicator(
