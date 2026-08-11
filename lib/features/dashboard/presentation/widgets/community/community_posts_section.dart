@@ -47,7 +47,7 @@ class CommunityPostsSection extends StatelessWidget {
                 foregroundColor: AppColors.success,
                 backgroundColor: Colors.white,
                 side: BorderSide(
-                  color: AppColors.success.withOpacity(.5),
+                  color: AppColors.success.withValues(alpha: .5),
                 ),
                 elevation: 0,
                 shape: RoundedRectangleBorder(
