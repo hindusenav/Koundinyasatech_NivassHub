@@ -14,7 +14,7 @@ import '../models/visitor_notification_model.dart';
 /// The urgent, red-outlined gate-arrival card that slides down from the top
 /// of the Home screen. Purely presentational — no `Provider`/business logic
 /// here, only data + callbacks — so it can be previewed/tested in
-/// isolation and `VisitorNotificationOverlay` stays the single place that
+/// isolation and `VisitorNotificationSection` stays the single place that
 /// owns state.
 class VisitorNotificationBanner extends StatelessWidget {
   const VisitorNotificationBanner({
@@ -25,6 +25,7 @@ class VisitorNotificationBanner extends StatelessWidget {
     required this.onApprove,
     required this.onReject,
     required this.onClose,
+    required this.onTap,
   });
 
   final VisitorNotificationModel notification;
@@ -33,6 +34,12 @@ class VisitorNotificationBanner extends StatelessWidget {
   final VoidCallback onApprove;
   final VoidCallback onReject;
   final VoidCallback onClose;
+
+  /// Tapping the card body (anywhere except the Approve/Reject buttons or
+  /// the close icon, which intercept their own taps first) opens the
+  /// "Delivery Details" bottom sheet — see
+  /// `VisitorNotificationSection._handleTap`.
+  final VoidCallback onTap;
 
   bool get _isBusy => isApproving || isRejecting;
 
@@ -44,96 +51,103 @@ class VisitorNotificationBanner extends StatelessWidget {
     return Material(
       color: Colors.transparent,
       child: Container(
-        padding: AppSpacing.all(AppSpacing.md),
         decoration: BoxDecoration(
           color: surfaceColor,
           borderRadius: AppRadius.radiusLg,
           border: Border.all(color: AppColors.error, width: 1.5),
           boxShadow: isDark ? AppShadows.darkMd : AppShadows.lg,
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: AppRadius.radiusLg,
+          child: Padding(
+            padding: AppSpacing.all(AppSpacing.md),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _NotificationAvatar(company: notification.company),
-                AppSpacing.gapWSm,
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _NotificationAvatar(company: notification.company),
+                    AppSpacing.gapWSm,
+                    Expanded(
+                      child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Expanded(
-                            child: Text(
-                              notification.title,
-                              style: AppTextStyles.titleSmall.copyWith(
-                                color: context.colorScheme.onSurface,
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  notification.title,
+                                  style: AppTextStyles.titleSmall.copyWith(
+                                    color: context.colorScheme.onSurface,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                               ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
+                              AppSpacing.gapWXs,
+                              Text(
+                                notification.time,
+                                style: AppTextStyles.labelSmall.copyWith(color: AppColors.grey500),
+                              ),
+                            ],
                           ),
-                          AppSpacing.gapWXs,
+                          AppSpacing.gapXs,
                           Text(
-                            notification.time,
-                            style: AppTextStyles.labelSmall.copyWith(color: AppColors.grey500),
+                            notification.subtitle,
+                            style: AppTextStyles.bodySmall.copyWith(color: AppColors.grey500),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ],
                       ),
-                      AppSpacing.gapXs,
-                      Text(
-                        notification.subtitle,
-                        style: AppTextStyles.bodySmall.copyWith(color: AppColors.grey500),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
+                    ),
+                    AppSpacing.gapWXs,
+                    InkWell(
+                      onTap: onClose,
+                      borderRadius: AppRadius.radiusFull,
+                      child: CircleAvatar(
+                        radius: AppDimensions.iconSm,
+                        backgroundColor: AppColors.grey100,
+                        child: Icon(AppIcons.close, size: AppDimensions.iconXs, color: AppColors.grey600),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-                AppSpacing.gapWXs,
-                InkWell(
-                  onTap: onClose,
-                  borderRadius: AppRadius.radiusFull,
-                  child: CircleAvatar(
-                    radius: AppDimensions.iconSm,
-                    backgroundColor: AppColors.grey100,
-                    child: Icon(AppIcons.close, size: AppDimensions.iconXs, color: AppColors.grey600),
-                  ),
-                ),
-              ],
-            ),
-            AppSpacing.gapMd,
-            Row(
-              children: [
-                Expanded(
-                  child: CustomButton(
-                    label: 'Approve',
-                    icon: AppIcons.check,
-                    size: CustomButtonSize.small,
-                    isLoading: isApproving,
-                    backgroundColor: AppColors.success,
-                    foregroundColor: AppColors.white,
-                    onPressed: _isBusy ? null : onApprove,
-                  ),
-                ),
-                AppSpacing.gapWSm,
-                Expanded(
-                  child: CustomButton(
-                    label: 'Reject Entry',
-                    size: CustomButtonSize.small,
-                    isLoading: isRejecting,
-                    backgroundColor: AppColors.error,
-                    foregroundColor: AppColors.white,
-                    onPressed: _isBusy ? null : onReject,
-                  ),
+                AppSpacing.gapMd,
+                Row(
+                  children: [
+                    Expanded(
+                      child: CustomButton(
+                        label: 'Approve',
+                        icon: AppIcons.check,
+                        size: CustomButtonSize.small,
+                        isLoading: isApproving,
+                        backgroundColor: AppColors.success,
+                        foregroundColor: AppColors.white,
+                        onPressed: _isBusy ? null : onApprove,
+                      ),
+                    ),
+                    AppSpacing.gapWSm,
+                    Expanded(
+                      child: CustomButton(
+                        label: 'Reject Entry',
+                        size: CustomButtonSize.small,
+                        isLoading: isRejecting,
+                        backgroundColor: AppColors.error,
+                        foregroundColor: AppColors.white,
+                        onPressed: _isBusy ? null : onReject,
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
-          ],
+          ),
         ),
       ),
     );
