@@ -21,7 +21,6 @@ class AdvertisementDetailsScreen extends StatelessWidget {
       projectName.toLowerCase().contains('luxury');
 
   void _handleBackPress(BuildContext context) {
-    // If coming from home or ads details, pressing back goes to Notice Board screen
     ApiClient? apiClient;
     try {
       apiClient = context.read<ApiClient>();
@@ -64,13 +63,13 @@ class AdvertisementDetailsScreen extends StatelessWidget {
           backgroundColor: const Color(0xFFE0F2FE),
           elevation: 0,
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.black87),
+            icon: const Icon(Icons.arrow_back, color: Color(0xFF0F172A)),
             onPressed: () => _handleBackPress(context),
           ),
           title: const Text(
             'Advertisement Details',
             style: TextStyle(
-              color: Colors.black87,
+              color: Color(0xFF0F172A),
               fontWeight: FontWeight.bold,
               fontSize: 18,
             ),
@@ -185,7 +184,7 @@ class AdvertisementDetailsScreen extends StatelessWidget {
               ),
               const SizedBox(height: 16),
 
-              // Project Title & Price Header Row
+              // Project Title & Price Header Row (for Century Bliss)
               if (!_isNikoo) ...[
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -265,7 +264,7 @@ class AdvertisementDetailsScreen extends StatelessWidget {
               // Bottom Action Buttons: Schedule a Visit & Download Brochure
               SizedBox(
                 width: double.infinity,
-                height: 44,
+                height: 46,
                 child: ElevatedButton(
                   onPressed: () {
                     Navigator.of(context).push(
@@ -298,7 +297,7 @@ class AdvertisementDetailsScreen extends StatelessWidget {
 
               SizedBox(
                 width: double.infinity,
-                height: 44,
+                height: 46,
                 child: ElevatedButton.icon(
                   onPressed: () {
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -457,19 +456,19 @@ class AdvertisementDetailsScreen extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // 4 Stat grid items matching Figma
+        // 4 Stat grid items matching Figma AD 2
         Row(
           children: [
-            Expanded(child: _buildStatItem('🏠', '6 Towers', 'Development')),
-            const SizedBox(width: 6),
-            Expanded(child: _buildStatItem('🏢', '2B+G+34', 'Floors')),
-            const SizedBox(width: 6),
-            Expanded(child: _buildStatItem('🏞️', '11.5 Acres', 'Total Area')),
-            const SizedBox(width: 6),
-            Expanded(child: _buildStatItem('🔑', '1,000+', 'Apartments')),
+            Expanded(child: _buildStatItem(Icons.home_outlined, '6 Towers', 'Development')),
+            const SizedBox(width: 8),
+            Expanded(child: _buildStatItem(Icons.grid_view_rounded, '2B+G+34', 'Floors')),
+            const SizedBox(width: 8),
+            Expanded(child: _buildStatItem(Icons.map_outlined, '11.5 Acres', 'Total Area')),
+            const SizedBox(width: 8),
+            Expanded(child: _buildStatItem(Icons.people_outline_rounded, '1,000+', 'Apartments')),
           ],
         ),
-        const SizedBox(height: 18),
+        const SizedBox(height: 20),
 
         // Pricing details section
         const Text(
@@ -477,84 +476,151 @@ class AdvertisementDetailsScreen extends StatelessWidget {
           style: TextStyle(
             fontSize: 10,
             fontWeight: FontWeight.bold,
-            color: Colors.grey,
+            color: Color(0xFF64748B),
             letterSpacing: 0.5,
           ),
         ),
         const SizedBox(height: 2),
-        const Text(
-          '₹93L Onwards',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w900,
-            color: Colors.black87,
+        RichText(
+          text: const TextSpan(
+            children: [
+              TextSpan(
+                text: '₹93L ',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w900,
+                  color: Color(0xFF0F172A),
+                ),
+              ),
+              TextSpan(
+                text: 'Onwards',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                  color: Color(0xFF64748B),
+                ),
+              ),
+            ],
           ),
         ),
         const SizedBox(height: 20),
 
-        const Text('Project Highlights', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+        // Project Highlights Header
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: const [
+            Text(
+              'Project Highlights',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+                color: Color(0xFF0F172A),
+              ),
+            ),
+          ],
+        ),
         const SizedBox(height: 12),
+
+        // 2x3 Grid of Project Highlights
         GridView.count(
           crossAxisCount: 2,
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          childAspectRatio: 2.3,
+          childAspectRatio: 2.2,
           mainAxisSpacing: 10,
           crossAxisSpacing: 10,
           children: const [
-            _HighlightCard(icon: Icons.brightness_7_outlined, title: 'Rooftop Pool', sub: 'Stunning city views'),
-            _HighlightCard(icon: Icons.account_balance_outlined, title: 'Clubhouse', sub: '40,000 sq.ft luxury'),
-            _HighlightCard(icon: Icons.school_outlined, title: 'School & Retail', sub: 'Within the campus'),
-            _HighlightCard(icon: Icons.favorite_outline, title: 'Lush Greens', sub: 'Landscaped areas'),
+            _HighlightCard(icon: Icons.wb_sunny_outlined, title: 'Rooftop Pool', sub: 'Stunning city views'),
+            _HighlightCard(icon: Icons.workspace_premium_outlined, title: 'Clubhouse', sub: '40,000 sq.ft luxury'),
+            _HighlightCard(icon: Icons.menu_book_outlined, title: 'School & Retail', sub: 'Within the campus'),
+            _HighlightCard(icon: Icons.favorite_border_outlined, title: 'Lush Greens', sub: 'Landscaped areas'),
             _HighlightCard(icon: Icons.location_on_outlined, title: 'Metro Access', sub: 'Phase 2B Line'),
-            _HighlightCard(icon: Icons.business_center_outlined, title: 'Manyata Tech', sub: 'Just 10 mins away'),
+            _HighlightCard(icon: Icons.work_outline_rounded, title: 'Manyata Tech', sub: 'Just 10 mins away'),
           ],
         ),
         const SizedBox(height: 20),
 
-        const Text('Location Advantages', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
-        const SizedBox(height: 10),
+        // Location Advantages
+        const Text(
+          'Location Advantages',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 16,
+            color: Color(0xFF0F172A),
+          ),
+        ),
+        const SizedBox(height: 12),
         Container(
-          padding: const EdgeInsets.all(12),
+          padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(16),
             border: Border.all(color: const Color(0xFFE2E8F0)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: .02),
+                blurRadius: 6,
+                offset: const Offset(0, 2),
+              ),
+            ],
           ),
           child: Column(
             children: [
               _buildAdvantageItem('1 km from Bhartiya City Township'),
-              const Divider(height: 16),
+              const Divider(height: 20, color: Color(0xFFF1F5F9)),
               _buildAdvantageItem('Near Hebbal, Yelahanka & Airport Corridor'),
-              const Divider(height: 16),
+              const Divider(height: 20, color: Color(0xFFF1F5F9)),
               _buildAdvantageItem('Upcoming Metro — Phase 2B Airport Line'),
-              const Divider(height: 16),
+              const Divider(height: 20, color: Color(0xFFF1F5F9)),
               _buildAdvantageItem('10 mins to Manyata Tech Park'),
             ],
           ),
         ),
         const SizedBox(height: 20),
 
-        const Text('About This Project', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
-        const SizedBox(height: 8),
+        // About This Project
+        const Text(
+          'About This Project',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 16,
+            color: Color(0xFF0F172A),
+          ),
+        ),
+        const SizedBox(height: 12),
         Container(
-          padding: const EdgeInsets.all(14),
+          padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(16),
             border: Border.all(color: const Color(0xFFE2E8F0)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: .02),
+                blurRadius: 6,
+                offset: const Offset(0, 2),
+              ),
+            ],
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
+            children: const [
+              Text(
                 'Enjoy luxury living at Bhartiya – Nikoo Homes, Thanisandra (Nikoo 6)!',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12.5, color: Colors.black87),
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 13,
+                  color: Color(0xFF0F172A),
+                ),
               ),
-              const SizedBox(height: 6),
+              SizedBox(height: 6),
               Text(
                 'Here\'s the biggest residential launch of the year. Live in a premium residential development near Bhartiya City, designed for luxury, convenience, and long-term value.',
-                style: TextStyle(fontSize: 12, color: Colors.grey.shade700, height: 1.4),
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Color(0xFF475569),
+                  height: 1.45,
+                ),
               ),
             ],
           ),
@@ -595,20 +661,48 @@ class AdvertisementDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildStatItem(String emoji, String main, String sub) {
+  Widget _buildStatItem(IconData icon, String main, String sub) {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
+      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(12),
         border: Border.all(color: const Color(0xFFE2E8F0)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: .02),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
         children: [
-          Text(emoji, style: const TextStyle(fontSize: 16)),
-          const SizedBox(height: 4),
-          Text(main, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 11)),
-          Text(sub, style: const TextStyle(color: Colors.grey, fontSize: 9)),
+          Container(
+            padding: const EdgeInsets.all(6),
+            decoration: const BoxDecoration(
+              color: Color(0xFFFFFBEB),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(icon, color: const Color(0xFFD97706), size: 16),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            main,
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 11,
+              color: Color(0xFF0F172A),
+            ),
+          ),
+          const SizedBox(height: 1),
+          Text(
+            sub,
+            style: const TextStyle(
+              color: Color(0xFF94A3B8),
+              fontSize: 9.5,
+            ),
+          ),
         ],
       ),
     );
@@ -618,18 +712,22 @@ class AdvertisementDetailsScreen extends StatelessWidget {
     return Row(
       children: [
         Container(
-          padding: const EdgeInsets.all(4),
+          padding: const EdgeInsets.all(6),
           decoration: const BoxDecoration(
             color: Color(0xFFD1FAE5),
             shape: BoxShape.circle,
           ),
-          child: const Icon(Icons.location_on, size: 12, color: Color(0xFF059669)),
+          child: const Icon(Icons.location_on, size: 14, color: Color(0xFF059669)),
         ),
-        const SizedBox(width: 10),
+        const SizedBox(width: 12),
         Expanded(
           child: Text(
             text,
-            style: const TextStyle(fontSize: 12, color: Colors.black87, fontWeight: FontWeight.w500),
+            style: const TextStyle(
+              fontSize: 12,
+              color: Color(0xFF334155),
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ),
       ],
@@ -646,23 +744,52 @@ class _HighlightCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(12),
         border: Border.all(color: const Color(0xFFE2E8F0)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: .02),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Row(
         children: [
-          Icon(icon, color: const Color(0xFF2563EB), size: 20),
-          const SizedBox(width: 8),
+          Container(
+            padding: const EdgeInsets.all(6),
+            decoration: const BoxDecoration(
+              color: Color(0xFFEFF6FF),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(icon, color: const Color(0xFF0284C7), size: 16),
+          ),
+          const SizedBox(width: 10),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 11.5)),
-                Text(sub, style: const TextStyle(color: Colors.grey, fontSize: 9.5), maxLines: 1),
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 11.5,
+                    color: Color(0xFF0F172A),
+                  ),
+                ),
+                Text(
+                  sub,
+                  style: const TextStyle(
+                    color: Color(0xFF94A3B8),
+                    fontSize: 9.5,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ],
             ),
           ),
