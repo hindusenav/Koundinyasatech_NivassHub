@@ -65,6 +65,7 @@ class AppIcons {
   // Contact / forms
   // -----------------------------------------------------------------------
   static const IconData phone = Icons.phone_rounded;
+  static const IconData sms = Icons.sms_outlined;
   static const IconData email = Icons.email_outlined;
   static const IconData location = Icons.location_on_outlined;
   static const IconData calendar = Icons.calendar_today_rounded;

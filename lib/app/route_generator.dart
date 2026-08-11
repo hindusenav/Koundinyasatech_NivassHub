@@ -5,7 +5,6 @@ import '../features/auth/screens/otp_verification_screen.dart';
 import '../features/auth/screens/otp_verification_success_screen.dart';
 import '../features/auth/screens/register_screen.dart';
 import '../features/dashboard/presentation/screens/home_dashboard_screen.dart';
-import '../features/notifications/widgets/visitor_notification_overlay.dart';
 import '../features/onboarding/screens/onboarding_screen_two.dart';
 import '../features/profile/screens/profile_screen.dart';
 import '../features/quick_actions/screens/quick_actions_screen.dart';
@@ -82,10 +81,7 @@ class RouteGenerator {
       case AppRoutes.dashboard:
         return MaterialPageRoute(
           settings: settings,
-          // `HomeDashboardScreen` itself is untouched — the visitor
-          // gate-arrival banner is layered on top by this wrapper alone,
-          // entirely from `lib/features/notifications/`.
-          builder: (_) => const VisitorNotificationOverlay(child: HomeDashboardScreen()),
+          builder: (_) => const HomeDashboardScreen(),
         );
       case AppRoutes.quickActions:
         return MaterialPageRoute(

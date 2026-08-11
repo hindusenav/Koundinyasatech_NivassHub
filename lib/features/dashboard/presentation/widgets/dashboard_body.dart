@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../core/utils/responsive.dart';
+import '../../../notifications/widgets/visitor_notification_section.dart';
 import '../provider/dashboard_provider.dart';
 import 'approval_queue/approval_queue_section.dart';
 import 'banner/banner_card.dart';
@@ -34,6 +35,8 @@ class DashboardBody extends StatelessWidget {
           children: [
             const DashboardHeader(),
             const SizedBox(height: 18),
+
+            const VisitorNotificationSection(),
 
             const BannerSlider(),
             const SizedBox(height: 24),
