@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../../app/app_routes.dart';
+import '../../../../../shared/widgets/feedback/custom_snackbar.dart';
 import '../../provider/dashboard_provider.dart';
 
 class DashboardHeader extends StatelessWidget {
@@ -103,9 +104,7 @@ class DashboardHeader extends StatelessWidget {
 
                             GestureDetector(
                               behavior: HitTestBehavior.opaque,
-                              onTap: () {
-                                // TODO: Chat action
-                              },
+                              onTap: () => CustomSnackbar.info(context, 'Messages coming soon.'),
                               child: SizedBox(
                                 width: 20,
                                 height: 20,
@@ -183,9 +182,7 @@ class DashboardHeader extends StatelessWidget {
 
                   GestureDetector(
                     behavior: HitTestBehavior.opaque,
-                    onTap: () {
-                      // TODO: Notification action
-                    },
+                    onTap: () => CustomSnackbar.info(context, 'Notifications coming soon.'),
                     child: SizedBox(
                       width: 22,
                       height: 22,
