@@ -24,7 +24,7 @@ class NoticeCard extends StatelessWidget {
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(.04),
+            color: Colors.black.withValues(alpha: .04),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -161,7 +161,7 @@ class NoticeCard extends StatelessWidget {
               style: OutlinedButton.styleFrom(
                 foregroundColor: AppColors.success,
                 side: BorderSide(
-                  color: AppColors.success.withOpacity(.6),
+                  color: AppColors.success.withValues(alpha: .6),
                 ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(14),

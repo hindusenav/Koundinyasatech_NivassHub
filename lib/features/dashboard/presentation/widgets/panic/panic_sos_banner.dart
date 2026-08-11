@@ -62,7 +62,7 @@ class _PanicSosBannerState extends State<PanicSosBanner> {
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.redAccent.withOpacity(0.20),
+                color: Colors.redAccent.withValues(alpha: 0.20),
                 blurRadius: 10,
                 offset: const Offset(0, 4),
               ),
