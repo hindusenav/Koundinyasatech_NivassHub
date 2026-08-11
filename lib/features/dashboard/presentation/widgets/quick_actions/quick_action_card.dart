@@ -52,7 +52,7 @@ class QuickActionCard extends StatelessWidget {
 
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(.06),
+                      color: Colors.black.withValues(alpha: .06),
                       blurRadius: 10,
                       offset: const Offset(0, 4),
                     ),
@@ -88,7 +88,7 @@ class QuickActionCard extends StatelessWidget {
                         ? Colors.white
                         : null,
 
-                    errorBuilder: (_, __, ___) {
+                    errorBuilder: (_, _, _) {
                       return const Icon(
                         Icons.image_not_supported_outlined,
                         size: 28,
