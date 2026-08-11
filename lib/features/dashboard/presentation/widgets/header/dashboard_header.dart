@@ -1,8 +1,6 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../../core/theme/app_colors.dart';
 import '../../provider/dashboard_provider.dart';
 
 class DashboardHeader extends StatelessWidget {
@@ -11,112 +9,89 @@ class DashboardHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<DashboardProvider>();
-
     final user = provider.home?.data.user;
-    final addresses = provider.addresses;
-    final flatLabel = addresses.isNotEmpty
-        ? addresses
-            .firstWhere(
-              (e) => e.isDefault,
-              orElse: () => addresses.first,
-            )
-            .flatNumber
-        : (user?.flatNumber ?? '');
+
+    final name = (user?.name.isNotEmpty ?? false) ? user!.name : 'User name';
+    final flat = (user?.flatNumber.isNotEmpty ?? false) ? user!.flatNumber : 'B - 403';
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(0, 18, 0, 0),
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          CircleAvatar(
-            radius: 20,
-            backgroundColor: AppColors.grey200,
-            backgroundImage: (user != null && user.profileImage.isNotEmpty)
-                ? CachedNetworkImageProvider(user.profileImage)
-                : null,
-            onBackgroundImageError:
-                (user != null && user.profileImage.isNotEmpty)
-                    ? (_, _) {}
-                    : null,
-            child: (user == null || user.profileImage.isEmpty)
-                ? const Icon(Icons.person_outline, color: AppColors.grey500)
-                : null,
-          ),
-          const SizedBox(width: 10),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'Hello! ${user?.name ?? 'there'} \u{1F44B}',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
-                  ),
+                Row(
+                  children: [
+                    Text(
+                      'Hello! $name',
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    const Text('👋', style: TextStyle(fontSize: 14)),
+                  ],
                 ),
-                const SizedBox(height: 3),
-                InkWell(
-                  borderRadius: BorderRadius.circular(8),
-                  onTap: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Switch flat coming soon.'),
+                const SizedBox(height: 4),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(
+                      Icons.home_work_outlined,
+                      size: 14,
+                      color: Colors.black54,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      flat,
+                      style: const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.black54,
                       ),
-                    );
-                  },
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        flatLabel,
-                        style: const TextStyle(
-                          fontSize: 13,
-                          color: Colors.grey,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      const Icon(
-                        Icons.keyboard_arrow_down_rounded,
-                        size: 18,
-                        color: Colors.grey,
-                      ),
-                    ],
-                  ),
+                    ),
+                    const SizedBox(width: 2),
+                    const Icon(
+                      Icons.keyboard_arrow_down,
+                      size: 16,
+                      color: Colors.black54,
+                    ),
+                  ],
                 ),
               ],
             ),
           ),
           IconButton(
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Search coming soon.')),
-              );
-            },
-            icon: const Icon(Icons.search, color: Colors.black87),
+            onPressed: () {},
+            icon: const Icon(Icons.search, color: Colors.black87, size: 22),
+            constraints: const BoxConstraints(),
+            padding: const EdgeInsets.all(8),
           ),
           IconButton(
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Messages coming soon.')),
-              );
-            },
+            onPressed: () {},
             icon: const Icon(
               Icons.chat_bubble_outline,
               color: Colors.black87,
+              size: 20,
             ),
+            constraints: const BoxConstraints(),
+            padding: const EdgeInsets.all(8),
           ),
-          CircleAvatar(
-            radius: 18,
-            backgroundColor: AppColors.tertiary,
+          const SizedBox(width: 4),
+          const CircleAvatar(
+            radius: 16,
+            backgroundColor: Color(0xFFD97706),
             child: Text(
-              (user?.name.isNotEmpty ?? false)
-                  ? user!.name[0].toUpperCase()
-                  : '?',
-              style: const TextStyle(
+              'A',
+              style: TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
+                fontSize: 14,
               ),
             ),
           ),

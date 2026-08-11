@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../dashboard/presentation/widgets/navigation/dashboard_bottom_navigation.dart';
 import '../provider/notices_provider.dart';
 
 /// Screen matching Figma "Community - New Event"
@@ -78,14 +77,14 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: const Color(0xFFE0F2FE),
         elevation: 0,
         automaticallyImplyLeading: false,
         titleSpacing: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black87),
+          icon: const Icon(Icons.arrow_back, color: Color(0xFF0F172A)),
           onPressed: () {
             if (Navigator.of(context).canPop()) {
               Navigator.of(context).pop();
@@ -95,7 +94,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
         title: const Text(
           'New Event',
           style: TextStyle(
-            color: Colors.black87,
+            color: Color(0xFF0F172A),
             fontWeight: FontWeight.bold,
             fontSize: 18,
           ),
@@ -122,13 +121,13 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                       Icon(
                         Icons.info_outline,
                         size: 14,
-                        color: Color(0xFF2563EB),
+                        color: Color(0xFF0284C7),
                       ),
                       SizedBox(width: 4),
                       Text(
                         'Guidelines',
                         style: TextStyle(
-                          color: Color(0xFF2563EB),
+                          color: Color(0xFF0284C7),
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
                         ),
@@ -139,62 +138,6 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
               ),
             ),
           ),
-        ],
-      ),
-      bottomNavigationBar: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              border: Border(top: BorderSide(color: Color(0xFFE2E8F0))),
-            ),
-            child: Row(
-              children: [
-                _MediaIconButton(icon: Icons.image_outlined, onTap: () {}),
-                const SizedBox(width: 8),
-                _MediaIconButton(icon: Icons.camera_alt_outlined, onTap: () {}),
-                const SizedBox(width: 8),
-                _MediaIconButton(icon: Icons.videocam_outlined, onTap: () {}),
-                const SizedBox(width: 8),
-                _MediaIconButton(icon: Icons.mic_none_outlined, onTap: () {}),
-                const Spacer(),
-                Material(
-                  color: const Color(0xFF2563EB),
-                  borderRadius: BorderRadius.circular(8),
-                  child: InkWell(
-                    onTap: _isSubmitting ? null : _submitEvent,
-                    borderRadius: BorderRadius.circular(8),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 24,
-                        vertical: 10,
-                      ),
-                      child: _isSubmitting
-                          ? const SizedBox(
-                              width: 16,
-                              height: 16,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                color: Colors.white,
-                              ),
-                            )
-                          : const Text(
-                              'Publish Event',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14,
-                              ),
-                            ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const DashboardBottomNavigation(),
         ],
       ),
       body: SingleChildScrollView(
@@ -226,7 +169,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 14,
-                          color: Colors.black87,
+                          color: Color(0xFF0F172A),
                         ),
                       ),
                       Text(
@@ -255,7 +198,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                         _selectedVisibility,
                         style: const TextStyle(
                           fontSize: 12,
-                          color: Colors.black87,
+                          color: Color(0xFF0F172A),
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -263,7 +206,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                       const Icon(
                         Icons.keyboard_arrow_down,
                         size: 16,
-                        color: Colors.black87,
+                        color: Color(0xFF0F172A),
                       ),
                     ],
                   ),
@@ -315,6 +258,58 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
           ],
         ),
       ),
+      bottomNavigationBar: SafeArea(
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            border: Border(top: BorderSide(color: Color(0xFFE2E8F0))),
+          ),
+          child: Row(
+            children: [
+              _MediaIconButton(icon: Icons.image_outlined, onTap: () {}),
+              const SizedBox(width: 8),
+              _MediaIconButton(icon: Icons.camera_alt_outlined, onTap: () {}),
+              const SizedBox(width: 8),
+              _MediaIconButton(icon: Icons.videocam_outlined, onTap: () {}),
+              const SizedBox(width: 8),
+              _MediaIconButton(icon: Icons.mic_none_outlined, onTap: () {}),
+              const Spacer(),
+              Material(
+                color: const Color(0xFF0284C7),
+                borderRadius: BorderRadius.circular(8),
+                child: InkWell(
+                  onTap: _isSubmitting ? null : _submitEvent,
+                  borderRadius: BorderRadius.circular(8),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 10,
+                    ),
+                    child: _isSubmitting
+                        ? const SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white,
+                            ),
+                          )
+                        : const Text(
+                            'Publish Event',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                            ),
+                          ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
@@ -329,11 +324,19 @@ class _MediaIconButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFFF1F5F9),
-        borderRadius: BorderRadius.circular(8),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: const Color(0xFFE2E8F0)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: .03),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: IconButton(
-        icon: Icon(icon, color: const Color(0xFF475569), size: 20),
+        icon: Icon(icon, color: const Color(0xFF334155), size: 18),
         onPressed: onTap,
         constraints: const BoxConstraints(),
         padding: const EdgeInsets.all(8),
@@ -359,23 +362,31 @@ class _EventConfigTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(10),
+      borderRadius: BorderRadius.circular(12),
       child: Container(
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(12),
           border: Border.all(color: const Color(0xFFE2E8F0)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: .02),
+              blurRadius: 6,
+              offset: const Offset(0, 2),
+            ),
+          ],
         ),
         child: Row(
           children: [
             Container(
-              padding: const EdgeInsets.all(8),
+              padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
                 color: const Color(0xFFEFF6FF),
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: const Color(0xFFDBEAFE)),
               ),
-              child: Icon(icon, color: const Color(0xFF2563EB), size: 20),
+              child: Icon(icon, color: const Color(0xFF0284C7), size: 20),
             ),
             const SizedBox(width: 14),
             Expanded(
@@ -387,7 +398,7 @@ class _EventConfigTile extends StatelessWidget {
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 14,
-                      color: Colors.black87,
+                      color: Color(0xFF0F172A),
                     ),
                   ),
                   const SizedBox(height: 2),
@@ -398,7 +409,7 @@ class _EventConfigTile extends StatelessWidget {
                 ],
               ),
             ),
-            const Icon(Icons.chevron_right, color: Colors.grey, size: 20),
+            const Icon(Icons.chevron_right, color: Color(0xFF64748B), size: 20),
           ],
         ),
       ),

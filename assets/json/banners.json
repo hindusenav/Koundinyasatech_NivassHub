@@ -2,6 +2,24 @@
   "status": "success",
   "data": [
     {
+      "bannerId": "ad_century",
+      "title": "Century Bliss",
+      "subtitle": "Freespirited 2 & 3 Bed Homes",
+      "price": "₹93.5 L*",
+      "image": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750",
+      "redirectUrl": "https://centurybliss.com",
+      "description": "A thoughtfully planned community built around the way you truly want to live."
+    },
+    {
+      "bannerId": "ad_nikoo",
+      "title": "Enjoy Luxury Living @ Nikoo Homes",
+      "subtitle": "by Bhartiya City",
+      "price": "₹93L Onwards",
+      "image": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00",
+      "redirectUrl": "https://nikoohomes.com",
+      "description": "Enjoy luxury living at Bhartiya - Nikoo Homes, Thanisandra!"
+    },
+    {
       "bannerId": "ad_1",
       "title": "Online Advertising",
       "subtitle": "Reach thousands of residential homeowners today",
