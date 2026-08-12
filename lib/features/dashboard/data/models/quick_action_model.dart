@@ -37,6 +37,7 @@ class QuickActionModel {
       return 'assets/icons/quick_actions/payments.png';
 
     case 'posts':
+    case 'pass':
       return 'assets/icons/quick_actions/posts.png';
 
     case 'security':
@@ -46,6 +47,7 @@ class QuickActionModel {
       return 'assets/icons/quick_actions/book_now.png';
 
     case 'directory':
+    case 'buysell':
       return 'assets/icons/quick_actions/directory.png';
 
     case 'gift':

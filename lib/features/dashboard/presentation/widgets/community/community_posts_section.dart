@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../../app/app_routes.dart';
 import '../../../../../core/theme/app_colors.dart';
+import '../../../../notices/screens/community_posts_selection_screen.dart';
 import '../../provider/dashboard_provider.dart';
 import '../banner/banner_card.dart';
 import 'community_meeting_card.dart';
@@ -11,6 +13,14 @@ class CommunityPostsSection extends StatelessWidget {
   const CommunityPostsSection({
     super.key,
   });
+
+  void _navigateToNewPostsSelection(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => const CommunityPostsSelectionScreen(),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,14 +45,19 @@ class CommunityPostsSection extends StatelessWidget {
                 ),
               ),
             ),
+            TextButton(
+              onPressed: () =>
+                  Navigator.pushNamed(context, AppRoutes.noticeList),
+              child: const Text(
+                'View all',
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 13,
+                ),
+              ),
+            ),
             OutlinedButton.icon(
-              onPressed: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Posting coming soon.'),
-                  ),
-                );
-              },
+              onPressed: () => _navigateToNewPostsSelection(context),
               style: OutlinedButton.styleFrom(
                 foregroundColor: AppColors.success,
                 backgroundColor: Colors.white,

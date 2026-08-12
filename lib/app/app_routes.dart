@@ -78,11 +78,11 @@ class AppRoutes {
   static const String complaintForm = '/complaint/form';
 
   // ---------------------------------------------------------------------
-  // Notices
+  // Notices / Community Feed
   // ---------------------------------------------------------------------
+  /// Full Notice Board, pushed from Home's Community Posts section
+  /// ("View all" / "New Posts").
   static const String noticeList = '/notice';
-  static const String noticeDetail = '/notice/detail';
-  static const String noticeForm = '/notice/form';
 
   // ---------------------------------------------------------------------
   // Profile / settings

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/constants/app_dimensions.dart';
-import '../models/notice_model.dart';
+import '../models/feed_notice_model.dart';
 
 /// Pixel-perfect Notice Card component matching updated API contract & Figma spec:
 /// Header: Notice Icon + Category/Author Badge + Timestamp + More menu
@@ -10,7 +10,7 @@ import '../models/notice_model.dart';
 class NoticeCard extends StatelessWidget {
   const NoticeCard({super.key, required this.notice});
 
-  final NoticeModel notice;
+  final FeedNoticeModel notice;
 
   @override
   Widget build(BuildContext context) {

@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../core/constants/app_strings.dart';
 import '../../../core/network/api_client.dart';
-import '../../dashboard/data/models/banner_model.dart';
-import '../../dashboard/data/models/notice_model.dart';
-import '../../dashboard/presentation/widgets/banner/banner_card.dart';
-import '../../dashboard/presentation/widgets/community/notice_card.dart';
+import '../../../shared/widgets/loaders/loader.dart';
+import '../../../shared/widgets/states/custom_error_widget.dart';
+import '../../../shared/widgets/states/empty_state.dart';
 import '../../dashboard/presentation/widgets/navigation/dashboard_bottom_navigation.dart';
 import '../provider/notices_provider.dart';
+import '../widgets/feed_list.dart';
 
 class NoticesScreen extends StatelessWidget {
   const NoticesScreen({super.key, required this.apiClient});
@@ -31,38 +32,46 @@ class _NoticeBoardView extends StatefulWidget {
 }
 
 class _NoticeBoardViewState extends State<_NoticeBoardView> {
-  String _selectedFilter = 'All';
+  final ScrollController _scrollController = ScrollController();
 
-  final List<String> _filters = ['All', 'Unread', 'Promotions', 'Community'];
+  // Chip label -> provider filter. Two of the original chips ("Unread",
+  // "Promotions") had no corresponding concept in FeedCategoryFilter, so the
+  // chip set now matches what the provider can actually filter by.
+  static const Map<String, FeedCategoryFilter> _filters = {
+    'All': FeedCategoryFilter.all,
+    'Notices': FeedCategoryFilter.notices,
+    'Posts': FeedCategoryFilter.posts,
+  };
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (!_scrollController.hasClients) return;
+    final nearBottom = _scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200;
+    if (!nearBottom) return;
+
+    final provider = context.read<NoticesProvider>();
+    if (provider.hasMorePosts && !provider.isLoadingMore && !provider.isLoading) {
+      provider.loadMore();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<NoticesProvider>();
-
-    final List<NoticeModel> notices = provider.notices.isNotEmpty
-        ? provider.notices
-            .map((n) => NoticeModel(
-                  noticeId: n.id,
-                  title: n.title,
-                  postedBy: n.author.isNotEmpty ? n.author : 'Admin',
-                  society: n.date.isNotEmpty ? n.date : 'Society 25 Jun',
-                  date: n.timestamp.isNotEmpty ? n.timestamp : 'Society 25 Jun',
-                  body: n.description,
-                  downloadLabel: n.action.isNotEmpty ? n.action : 'Download',
-                ))
-            .toList()
-        : _fallbackNotices();
-
-    final List<BannerModel> banners = provider.banners.isNotEmpty
-        ? provider.banners
-            .map((ad) => BannerModel(
-                  bannerId: ad.bannerId,
-                  title: ad.title,
-                  image: ad.image,
-                  redirectUrl: ad.redirectUrl,
-                ))
-            .toList()
-        : _fallbackBanners();
+    final feedItems = provider.filteredFeedItems;
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
@@ -77,9 +86,9 @@ class _NoticeBoardViewState extends State<_NoticeBoardView> {
             }
           },
         ),
-        title: const Text(
-          'Notice Board',
-          style: TextStyle(
+        title: Text(
+          AppStrings.communityFeed,
+          style: const TextStyle(
             color: Colors.black87,
             fontWeight: FontWeight.bold,
             fontSize: 18,
@@ -91,6 +100,7 @@ class _NoticeBoardViewState extends State<_NoticeBoardView> {
         child: RefreshIndicator(
           onRefresh: provider.refreshFeed,
           child: SingleChildScrollView(
+            controller: _scrollController,
             physics: const AlwaysScrollableScrollPhysics(),
             padding: const EdgeInsets.symmetric(vertical: 12),
             child: Column(
@@ -101,12 +111,12 @@ class _NoticeBoardViewState extends State<_NoticeBoardView> {
                   scrollDirection: Axis.horizontal,
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Row(
-                    children: _filters.map((filter) {
-                      final isSelected = _selectedFilter == filter;
+                    children: _filters.entries.map((entry) {
+                      final isSelected = provider.selectedFilter == entry.value;
                       return Padding(
                         padding: const EdgeInsets.only(right: 8),
                         child: InkWell(
-                          onTap: () => setState(() => _selectedFilter = filter),
+                          onTap: () => provider.setFilter(entry.value),
                           borderRadius: BorderRadius.circular(20),
                           child: Container(
                             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -118,7 +128,7 @@ class _NoticeBoardViewState extends State<_NoticeBoardView> {
                               ),
                             ),
                             child: Text(
-                              filter,
+                              entry.key,
                               style: TextStyle(
                                 color: isSelected ? Colors.white : Colors.black87,
                                 fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
@@ -133,66 +143,51 @@ class _NoticeBoardViewState extends State<_NoticeBoardView> {
                 ),
                 const SizedBox(height: 12),
 
-                // Unread Notice Alert Banner
-                Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 16),
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFFEF2F2),
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: const Color(0xFFFECACA)),
+                if (provider.isLoading && feedItems.isEmpty) ...[
+                  const SizedBox(height: 60),
+                  const Loader(message: 'Loading feed...'),
+                ] else if (provider.hasError && feedItems.isEmpty) ...[
+                  const SizedBox(height: 40),
+                  CustomErrorWidget(
+                    message: provider.errorMessage ?? 'Something went wrong.',
+                    onRetry: provider.retry,
                   ),
-                  child: Row(
-                    children: const [
-                      Icon(Icons.circle, color: Color(0xFFEF4444), size: 8),
-                      SizedBox(width: 8),
-                      Text(
-                        '1 Unread Notice',
-                        style: TextStyle(
-                          color: Color(0xFFDC2626),
-                          fontWeight: FontWeight.bold,
-                          fontSize: 12,
+                ] else if (feedItems.isEmpty) ...[
+                  const SizedBox(height: 40),
+                  EmptyState(title: 'No posts yet', message: AppStrings.emptyFeed),
+                ] else ...[
+                  // Unread Notice Alert Banner
+                  Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 16),
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFFEF2F2),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: const Color(0xFFFECACA)),
+                    ),
+                    child: Row(
+                      children: const [
+                        Icon(Icons.circle, color: Color(0xFFEF4444), size: 8),
+                        SizedBox(width: 8),
+                        Text(
+                          '1 Unread Notice',
+                          style: TextStyle(
+                            color: Color(0xFFDC2626),
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-                const SizedBox(height: 16),
+                  const SizedBox(height: 16),
 
-                // Notice 1
-                if (notices.isNotEmpty) ...[
-                  NoticeCard(notice: notices[0]),
-                  const SizedBox(height: 14),
-                ],
-
-                // Notice 2
-                if (notices.length > 1) ...[
-                  NoticeCard(notice: notices[1]),
-                  const SizedBox(height: 14),
-                ],
-
-                // Ad Card 1 (Century Bliss)
-                if (banners.isNotEmpty) ...[
-                  BannerCard(banner: banners[0]),
-                  const SizedBox(height: 14),
-                ],
-
-                // Ad Card 2 (Nikoo Homes)
-                if (banners.length > 1) ...[
-                  BannerCard(banner: banners[1]),
-                  const SizedBox(height: 14),
-                ],
-
-                // Notice 3
-                if (notices.length > 2) ...[
-                  NoticeCard(notice: notices[2]),
-                  const SizedBox(height: 14),
-                ],
-
-                // Any remaining notices
-                for (var i = 3; i < notices.length; i++) ...[
-                  NoticeCard(notice: notices[i]),
-                  const SizedBox(height: 14),
+                  FeedList(
+                    feedItems: feedItems,
+                    isLoadingMore: provider.isLoadingMore,
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                  ),
                 ],
 
                 const SizedBox(height: 24),
@@ -202,57 +197,5 @@ class _NoticeBoardViewState extends State<_NoticeBoardView> {
         ),
       ),
     );
-  }
-
-  static List<NoticeModel> _fallbackNotices() {
-    return const [
-      NoticeModel(
-        noticeId: 'not_1',
-        title: 'Expense report for quarter ending on June 2026',
-        postedBy: 'Admin',
-        society: 'Society 25 Jun',
-        date: 'Society 25 Jun',
-        body:
-            'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-        downloadLabel: 'Download',
-      ),
-      NoticeModel(
-        noticeId: 'not_2',
-        title: 'Swimming Pool under maintenance',
-        postedBy: 'Admin',
-        society: 'Society 25 Jun',
-        date: 'Society 25 Jun',
-        body:
-            'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-        downloadLabel: 'Download',
-      ),
-      NoticeModel(
-        noticeId: 'not_3',
-        title: 'B- Building parking under restoration',
-        postedBy: 'Admin',
-        society: 'Society 25 Jun',
-        date: 'Society 25 Jun',
-        body:
-            'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-        downloadLabel: 'Download',
-      ),
-    ];
-  }
-
-  static List<BannerModel> _fallbackBanners() {
-    return const [
-      BannerModel(
-        bannerId: 'ad_century',
-        title: 'Century Bliss',
-        image: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750',
-        redirectUrl: '',
-      ),
-      BannerModel(
-        bannerId: 'ad_nikoo',
-        title: 'Enjoy Luxury Living @ Nikoo Homes',
-        image: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00',
-        redirectUrl: '',
-      ),
-    ];
   }
 }

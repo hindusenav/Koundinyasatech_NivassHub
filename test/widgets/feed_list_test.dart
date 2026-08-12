@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_nivasshub/features/notices/models/advertisement_model.dart';
 import 'package:flutter_nivasshub/features/notices/models/community_post_model.dart';
 import 'package:flutter_nivasshub/features/notices/models/feed_item_model.dart';
-import 'package:flutter_nivasshub/features/notices/models/notice_model.dart';
+import 'package:flutter_nivasshub/features/notices/models/feed_notice_model.dart';
 
 import 'package:flutter_nivasshub/features/notices/widgets/feed_list.dart';
 
@@ -32,7 +32,7 @@ void main() {
     ),
 
     FeedItemModel.notice(
-      const NoticeModel(
+      const FeedNoticeModel(
         id: '1',
         title: 'Water Maintenance',
         description: 'Water supply unavailable tomorrow.',
