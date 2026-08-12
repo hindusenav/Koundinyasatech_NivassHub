@@ -5,7 +5,7 @@ import 'package:flutter_nivasshub/core/network/api_response.dart';
 
 import 'package:flutter_nivasshub/features/notices/models/advertisement_model.dart';
 import 'package:flutter_nivasshub/features/notices/models/community_post_model.dart';
-import 'package:flutter_nivasshub/features/notices/models/notice_model.dart';
+import 'package:flutter_nivasshub/features/notices/models/feed_notice_model.dart';
 
 import 'package:flutter_nivasshub/features/notices/repository/notices_api_service.dart';
 import 'package:flutter_nivasshub/features/notices/repository/notices_service.dart';
@@ -35,11 +35,11 @@ void main() {
   });
 
   group('Notice API', () {
-    test('Returns ApiResponse<List<NoticeModel>>', () async {
-      final ApiResponse<List<NoticeModel>> response = await service
+    test('Returns ApiResponse<List<FeedNoticeModel>>', () async {
+      final ApiResponse<List<FeedNoticeModel>> response = await service
           .getNotices();
 
-      expect(response, isA<ApiResponse<List<NoticeModel>>>());
+      expect(response, isA<ApiResponse<List<FeedNoticeModel>>>());
     });
 
     test('Response success flag is available', () async {
@@ -74,7 +74,7 @@ void main() {
     test('Notice response type', () async {
       final response = await service.getNotices();
 
-      expect(response.runtimeType, ApiResponse<List<NoticeModel>>);
+      expect(response.runtimeType, ApiResponse<List<FeedNoticeModel>>);
     });
 
     test('Community response type', () async {

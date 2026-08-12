@@ -59,6 +59,9 @@ class _CreatePollScreenState extends State<CreatePollScreen> {
 
     setState(() => _isSubmitting = true);
 
+    bool success = false;
+    String? errorMessage;
+
     try {
       NoticesProvider? provider;
       try {
@@ -66,22 +69,37 @@ class _CreatePollScreenState extends State<CreatePollScreen> {
       } catch (_) {}
 
       if (provider != null) {
-        await provider.createPoll(
+        success = await provider.createPoll(
           question: question,
           options: options,
           visibility: _selectedVisibility,
         );
+        errorMessage = provider.errorMessage;
+      } else {
+        errorMessage = 'Unable to publish right now. Please try again.';
       }
-    } catch (_) {}
+    } catch (_) {
+      errorMessage = 'Unable to publish right now. Please try again.';
+    }
 
     if (mounted) {
       setState(() => _isSubmitting = false);
-      if (Navigator.of(context).canPop()) {
-        Navigator.of(context).pop();
+      if (success) {
+        if (Navigator.of(context).canPop()) {
+          Navigator.of(context).pop();
+        }
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Poll published successfully!')),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              errorMessage ?? 'Failed to publish poll. Please try again.',
+            ),
+          ),
+        );
       }
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Poll published successfully!')),
-      );
     }
   }
 

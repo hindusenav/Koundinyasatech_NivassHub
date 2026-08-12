@@ -2,7 +2,7 @@
 class ApiEndpoints {
   ApiEndpoints._();
 
-  static const String baseUrl = 'http://localhost:3001/api/v1';
+  static const String baseUrl = 'http://localhost:3001';
 
   // ---------------------------------------------------------------------
   // 1. Authentication Screens
@@ -46,8 +46,6 @@ class ApiEndpoints {
   // 6. Home & Dashboard Screens
   // ---------------------------------------------------------------------
   static const String home = '/api/v1/dashboard/home';
-  static const String homeDashboard = '/api/v1/dashboard/home';
-  static const String dashboardSummary = '/api/v1/dashboard/home';
   static const String userAddresses = '/api/v1/users/profile';
   static const String visitorsPending = '/api/v1/approvals';
   static const String emergencySos = '/api/v1/emergency/sos';
@@ -73,19 +71,15 @@ class ApiEndpoints {
   static const String communityCreatePost = '/api/v1/community/posts';
   static const String communityCreatePoll = '/api/v1/community/polls';
   static const String communityCreateEvent = '/api/v1/community/events';
-  static const String createPost = '/api/v1/community/posts';
-  static const String createPoll = '/api/v1/community/polls';
-  static const String createEvent = '/api/v1/community/events';
-  static const String uploadMedia = '/api/v1/profile/images';
 
   /// Approve/reject a visitor from the Home screen's gate-arrival banner
   /// (NivasHub API Contract §6.3 — `POST /api/v1/visitors/{visitorId}/action`).
   /// Still mock-only — see `MockVisitorNotificationService`.
-  static String visitorAction(String visitorId) => '/visitors/$visitorId/action';
+  static String visitorAction(String visitorId) => '/api/v1/visitors/$visitorId/action';
 
   /// Activities screen's gate/delivery log (NivasHub API Contract §6.2).
   /// Still mock-only — see `MockVisitorActivityService`.
-  static const String approvals = '/approvals';
+  static const String approvals = '/api/v1/approvals';
 
   /// "Filter Activity by Type" bottom sheet's option catalog. Not in the
   /// API contract at all yet (no Figma/endpoint published) — still
@@ -116,16 +110,14 @@ class ApiEndpoints {
   // ---------------------------------------------------------------------
   // Profile / Active Society (NivasHub Mobile App API Contract v1.0, §2)
   // ---------------------------------------------------------------------
-  static const String userProfile = '/users/profile';
-  static const String activeSociety = '/users/active-society';
+  static const String userProfile = '/api/v1/users/profile';
+  static const String activeSociety = '/api/v1/users/active-society';
 
   // ---------------------------------------------------------------------
   // Shared
   // ---------------------------------------------------------------------
   static const String uploadFile = '/upload';
 
-  // Legacy / fallback banner endpoints
+  // Legacy / fallback banner endpoint
   static const String banners = '/banners';
-  static const String notices = '/api/v1/notice-board';
-  static const String communityPosts = '/api/v1/posts';
 }

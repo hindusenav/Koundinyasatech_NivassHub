@@ -3,7 +3,7 @@ import '../../../core/network/api_response.dart';
 
 import '../models/advertisement_model.dart';
 import '../models/community_post_model.dart';
-import '../models/notice_model.dart';
+import '../models/feed_notice_model.dart';
 import 'notices_api_service_base.dart';
 
 class NoticesService {
@@ -36,7 +36,7 @@ class NoticesService {
     }
   }
 
-  Future<ApiResponse<List<NoticeModel>>> getNotices() async {
+  Future<ApiResponse<List<FeedNoticeModel>>> getNotices() async {
     try {
       final json = await _api.getNotices();
       final dynamic data = json["data"];
@@ -51,7 +51,7 @@ class NoticesService {
 
       return ApiResponse.success(
         list
-            .map((e) => NoticeModel.fromJson(e as Map<String, dynamic>))
+            .map((e) => FeedNoticeModel.fromJson(e as Map<String, dynamic>))
             .toList(),
       );
     } on ApiException catch (e) {

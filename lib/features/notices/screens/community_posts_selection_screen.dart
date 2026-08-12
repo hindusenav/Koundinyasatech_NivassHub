@@ -1,11 +1,29 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import '../../../core/network/api_client.dart';
 import '../../dashboard/presentation/widgets/navigation/dashboard_bottom_navigation.dart';
+import '../provider/notices_provider.dart';
 import '../widgets/create_post_header_card.dart';
 
 class CommunityPostsSelectionScreen extends StatelessWidget {
   const CommunityPostsSelectionScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    // Screen-scoped, same as NoticesScreen — CreatePostScreen/CreatePollScreen/
+    // CreateEventScreen (pushed from this screen) look up NoticesProvider via
+    // Provider.of, so it must be available somewhere above them in the tree.
+    return ChangeNotifierProvider<NoticesProvider>(
+      create: (context) => NoticesProvider(apiClient: context.read<ApiClient>()),
+      child: const _CommunityPostsSelectionView(),
+    );
+  }
+}
+
+class _CommunityPostsSelectionView extends StatelessWidget {
+  const _CommunityPostsSelectionView();
 
   @override
   Widget build(BuildContext context) {

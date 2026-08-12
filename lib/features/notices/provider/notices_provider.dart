@@ -4,7 +4,7 @@ import '../../../core/network/api_client.dart';
 import '../models/advertisement_model.dart';
 import '../models/community_post_model.dart';
 import '../models/feed_item_model.dart';
-import '../models/notice_model.dart';
+import '../models/feed_notice_model.dart';
 import '../notices_config.dart';
 import '../repository/mock_notices_api_service.dart';
 import '../repository/notices_api_service.dart';
@@ -32,7 +32,7 @@ class NoticesProvider extends ChangeNotifier {
   FeedCategoryFilter _selectedFilter = FeedCategoryFilter.all;
 
   final List<FeedItemModel> _feedItems = [];
-  final List<NoticeModel> _notices = [];
+  final List<FeedNoticeModel> _notices = [];
   final List<AdvertisementModel> _banners = [];
 
   bool get isLoading => _isLoading;
@@ -45,7 +45,7 @@ class NoticesProvider extends ChangeNotifier {
   FeedCategoryFilter get selectedFilter => _selectedFilter;
 
   List<FeedItemModel> get feedItems => List.unmodifiable(_feedItems);
-  List<NoticeModel> get notices => List.unmodifiable(_notices);
+  List<FeedNoticeModel> get notices => List.unmodifiable(_notices);
   List<AdvertisementModel> get banners => List.unmodifiable(_banners);
 
   List<FeedItemModel> get filteredFeedItems {
