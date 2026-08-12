@@ -14,21 +14,31 @@ class HomeDashboardScreen extends StatelessWidget {
     super.key,
   });
 
+  static const Color _backgroundColor = Color(0xFFF7F8FC);
+
   @override
   Widget build(BuildContext context) {
     return Consumer<DashboardProvider>(
       builder: (context, provider, child) {
         return Scaffold(
-          backgroundColor: const Color(0xffF5F7FA),
+          backgroundColor: _backgroundColor,
 
+          // ------------------------------------------------------------
+          // DASHBOARD BODY
+          // ------------------------------------------------------------
           body: SafeArea(
+            bottom: false,
             child: RefreshIndicator(
+              color: const Color(0xFF1976D2),
+              backgroundColor: Colors.white,
               onRefresh: provider.refresh,
               child: _buildBody(provider),
             ),
           ),
 
-          // ✅ Step 7.10.4
+          // ------------------------------------------------------------
+          // BOTTOM NAVIGATION
+          // ------------------------------------------------------------
           bottomNavigationBar: const DashboardBottomNavigation(),
         );
       },

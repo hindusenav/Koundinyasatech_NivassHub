@@ -15,11 +15,11 @@ class VisitorModel {
 
   factory VisitorModel.fromJson(Map<String, dynamic> json) {
     return VisitorModel(
-      visitorId: json['visitorId'] as String,
-      visitorName: json['visitorName'] as String,
-      flat: json['flat'] as String,
-      visitorType: json['visitorType'] as String? ?? 'Visitor',
-      time: json['time'] as String? ?? '',
+      visitorId: json['visitorId'] as String? ?? json['id'] as String? ?? '',
+      visitorName: json['visitorName'] as String? ?? json['name'] as String? ?? '',
+      flat: json['flat'] as String? ?? '',
+      visitorType: json['visitorType'] as String? ?? json['type'] as String? ?? 'Visitor',
+      time: json['time'] as String? ?? json['timestamp'] as String? ?? '',
     );
   }
 

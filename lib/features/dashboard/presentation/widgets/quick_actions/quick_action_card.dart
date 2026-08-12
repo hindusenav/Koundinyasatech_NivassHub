@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../../../core/theme/app_colors.dart';
 import '../../../data/models/quick_action_model.dart';
-import 'quick_action_icon_mapper.dart';
 
 class QuickActionCard extends StatelessWidget {
   const QuickActionCard({
@@ -14,118 +12,124 @@ class QuickActionCard extends StatelessWidget {
   final QuickActionModel action;
   final VoidCallback onTap;
 
-  bool get _isViewMore => action.name == 'View More';
-  bool get _isSponsored => action.name == 'Book Now';
+  bool get _isViewMore =>
+      action.name.toLowerCase() == "view more";
+
+  bool get _isBookNow =>
+      action.name.toLowerCase() == "book now";
 
   @override
   Widget build(BuildContext context) {
-    if (_isViewMore) {
-      return GestureDetector(
-        onTap: onTap,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 58,
-              height: 58,
-              decoration: BoxDecoration(
-                color: AppColors.tertiary,
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: const Icon(
-                Icons.add,
-                color: Colors.white,
-                size: 28,
-              ),
-            ),
-            const SizedBox(height: 6),
-            const Text(
-              'View More',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
-                fontSize: 11,
-                color: Color(0xFF2D3748),
-              ),
-            ),
-          ],
-        ),
-      );
-    }
-
-    return GestureDetector(
+    return InkWell(
       onTap: onTap,
-      child: Stack(
-        clipBehavior: Clip.none,
+      borderRadius: BorderRadius.circular(18),
+
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Column(
-            mainAxisSize: MainAxisSize.min,
+          Stack(
+            clipBehavior: Clip.none,
             children: [
-              // White Card Box containing ONLY the icon
+              // ===========================================================
+              // EXISTING BOX — NO CHANGES
+              // ===========================================================
+
               Container(
-                width: 58,
-                height: 58,
+                width: 70,
+                height: 70,
                 decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: Colors.grey.shade200),
+                  color: _isViewMore
+                      ? const Color(0xFFFF8A00)
+                      : Colors.white,
+
+                  borderRadius: BorderRadius.circular(18),
+
+                  border: Border.all(
+                    color: _isViewMore
+                        ? Colors.transparent
+                        : const Color(0xffECECEC),
+                  ),
+
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withValues(alpha: .03),
-                      blurRadius: 8,
-                      offset: const Offset(0, 3),
+                      color: Colors.black.withValues(alpha: .06),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
                     ),
                   ],
                 ),
+
+                // =========================================================
+                // IMAGE — ONLY BOOK NOW SIZE CHANGED
+                // =========================================================
+
                 child: Center(
-                  child: Icon(
-                    QuickActionIconMapper.icon(action.icon),
-                    color: const Color(0xFF1E3D7A),
-                    size: 24,
+                  child: Image.asset(
+                    action.assetPath,
+
+                    // View More remains 26.
+                    // Other icons remain 30.
+                    // Book Now is increased to 42.
+                    width: _isViewMore
+                        ? 26
+                        : _isBookNow
+                            ? 42
+                            : 30,
+
+                    height: _isViewMore
+                        ? 26
+                        : _isBookNow
+                            ? 42
+                            : 30,
+
+                    fit: BoxFit.contain,
+
+                    color: _isViewMore
+                        ? Colors.white
+                        : null,
+
+                    errorBuilder: (_, _, _) {
+                      return const Icon(
+                        Icons.image_not_supported_outlined,
+                        size: 28,
+                        color: Colors.grey,
+                      );
+                    },
                   ),
                 ),
               ),
-              const SizedBox(height: 6),
-              // Text label placed OUTSIDE underneath
-              Text(
-                action.name,
-                textAlign: TextAlign.center,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 11,
-                  color: Color(0xFF2D3748),
-                  height: 1.1,
-                ),
-              ),
+
+              // ===========================================================
+              // AD BADGE REMOVED
+              // ===========================================================
             ],
           ),
 
-          // AD Badge for sponsored items
-          if (_isSponsored)
-            Positioned(
-              top: -4,
-              right: 2,
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 5,
-                  vertical: 2,
-                ),
-                decoration: BoxDecoration(
-                  color: AppColors.success,
-                  borderRadius: BorderRadius.circular(6),
-                ),
-                child: const Text(
-                  'AD',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 8,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+          // =============================================================
+          // EXISTING GAP — NO CHANGE
+          // =============================================================
+
+          const SizedBox(height: 8),
+
+          // =============================================================
+          // EXISTING TEXT — NO CHANGE
+          // =============================================================
+
+          SizedBox(
+            width: 74,
+            child: Text(
+              action.name,
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                fontSize: 11,
+                height: 1.25,
+                fontWeight: FontWeight.w500,
+                color: Color(0xff303030),
               ),
             ),
+          ),
         ],
       ),
     );

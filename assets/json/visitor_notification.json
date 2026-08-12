@@ -1,0 +1,15 @@
+{
+  "success": true,
+  "notification": {
+    "id": "NT001",
+    "type": "visitor",
+    "company": "Blinkit",
+    "visitorName": "Aman",
+    "gate": "Main Gate",
+    "message": "Arrived at Gate",
+    "status": "Awaiting Approval",
+    "time": "Just now",
+    "logo": "assets/images/blinkit.png",
+    "avatar": "assets/images/delivery_boy.png"
+  }
+}
