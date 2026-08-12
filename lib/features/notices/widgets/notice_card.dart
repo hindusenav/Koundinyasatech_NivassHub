@@ -1,16 +1,12 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/constants/app_dimensions.dart';
-import '../models/feed_notice_model.dart';
+import '../models/notice_model.dart';
 
-/// Pixel-perfect Notice Card component matching updated API contract & Figma spec:
-/// Header: Notice Icon + Category/Author Badge + Timestamp + More menu
-/// Body: Title + Description
-/// Action: Outlined Action button (Download / View Details / Issue Now)
 class NoticeCard extends StatelessWidget {
   const NoticeCard({super.key, required this.notice});
 
-  final FeedNoticeModel notice;
+  final NoticeModel notice;
 
   @override
   Widget build(BuildContext context) {
@@ -31,9 +27,6 @@ class NoticeCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          //----------------------------------------------------------
-          // Header: Icon + Category/Author + Timestamp + Actions
-          //----------------------------------------------------------
           Row(
             children: [
               Container(
@@ -76,10 +69,7 @@ class NoticeCard extends StatelessWidget {
               const Spacer(),
               Text(
                 notice.timestamp.isNotEmpty ? notice.timestamp : notice.date,
-                style: TextStyle(
-                  color: Colors.grey.shade500,
-                  fontSize: 12,
-                ),
+                style: TextStyle(color: Colors.grey.shade500, fontSize: 12),
               ),
               IconButton(
                 padding: EdgeInsets.zero,
@@ -94,10 +84,6 @@ class NoticeCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 12),
-
-          //----------------------------------------------------------
-          // Title & Description
-          //----------------------------------------------------------
           Text(
             notice.title,
             style: const TextStyle(
@@ -119,10 +105,6 @@ class NoticeCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 14),
-
-          //----------------------------------------------------------
-          // Action: Outlined Action Button (e.g. Download / View Details)
-          //----------------------------------------------------------
           OutlinedButton.icon(
             onPressed: () {},
             style: OutlinedButton.styleFrom(

@@ -119,8 +119,13 @@ class RouteGenerator {
       case AppRoutes.noticeList:
         return MaterialPageRoute(
           settings: settings,
-          builder: (context) =>
-              NoticesScreen(apiClient: context.read<ApiClient>()),
+          builder: (context) {
+            ApiClient? apiClient;
+            try {
+              apiClient = context.read<ApiClient>();
+            } catch (_) {}
+            return NoticesScreen(apiClient: apiClient ?? ApiClient());
+          },
         );
       // Additional feature route cases are added here as their screens land.
       default:
