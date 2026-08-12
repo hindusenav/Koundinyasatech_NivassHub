@@ -9,11 +9,7 @@ import '../widgets/animated_wordmark.dart';
 import '../widgets/converging_house_painter.dart';
 import '../widgets/floating_particles.dart';
 
-/// Premium animated intro: residents (glowing dots) converge from every
-/// direction and morph into a house silhouette, a gradient ring draws
-/// itself around it with a trail of sparks, the polished NIVASS mark fades
-/// in to replace the abstract shape, then the wordmark and tagline reveal
-/// before the whole scene fades into the Welcome screen.
+
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 

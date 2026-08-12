@@ -1,0 +1,10 @@
+[
+  { "id": "cab", "label": "Cab", "iconKey": "cab_auto" },
+  { "id": "delivery", "label": "Delivery", "iconKey": "allow_delivery" },
+  { "id": "guest", "label": "Guest", "iconKey": "invite_guest" },
+  { "id": "daily_help", "label": "Daily Help", "iconKey": "daily_help" },
+  { "id": "parcel", "label": "Parcel", "iconKey": "parcel" },
+  { "id": "vehicle", "label": "Vehicle", "iconKey": "my_vehicles" },
+  { "id": "kid", "label": "Kid", "iconKey": "allow_kid_exit" },
+  { "id": "others", "label": "Others", "iconKey": "others" }
+]

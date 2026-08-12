@@ -1,105 +1,60 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 
-class SettingsModel {
-  final String userName;
-  final String hubId;
-  final int familyCount;
-  final int dailyHelpCount;
-  final int vehicleCount;
-  final int petCount;
-  final String currentFlat;
+import '../repository/settings_repository.dart';
 
-  SettingsModel({
-    this.userName = 'Resident',
-    this.hubId = 'NH-101',
-    this.familyCount = 0,
-    this.dailyHelpCount = 0,
-    this.vehicleCount = 0,
-    this.petCount = 0,
-    this.currentFlat = 'Flat A-101',
-  });
-}
-
+/// Owns the Push Notifications preference. Seeded synchronously from
+/// [SettingsRepository] at construction — `LocalStorageService` is already
+/// initialized by the time providers are built in `app.dart`, so there's no
+/// async gap to await here.
 class SettingsProvider extends ChangeNotifier {
-  SettingsModel _settings = SettingsModel();
-  bool _isLoading = false;
+  SettingsProvider(this._repository)
+      : _notificationsEnabled = _repository.getNotificationsEnabled(),
+        _familyCount = _repository.getFamilyCount(),
+        _dailyHelpCount = _repository.getDailyHelpCount(),
+        _vehicleCount = _repository.getVehicleCount(),
+        _petCount = _repository.getPetCount();
 
-  SettingsModel get settings => _settings;
-  bool get isLoading => _isLoading;
+  final SettingsRepository _repository;
 
-  Future<void> loadSettings() async {
-    _isLoading = true;
+  bool _notificationsEnabled;
+  int _familyCount;
+  int _dailyHelpCount;
+  int _vehicleCount;
+  int _petCount;
+
+  bool get notificationsEnabled => _notificationsEnabled;
+  int get familyCount => _familyCount;
+  int get dailyHelpCount => _dailyHelpCount;
+  int get vehicleCount => _vehicleCount;
+  int get petCount => _petCount;
+
+  Future<void> setNotificationsEnabled(bool value) async {
+    _notificationsEnabled = value;
     notifyListeners();
-
-    // Simulate quick loading delay
-    await Future.delayed(const Duration(milliseconds: 200));
-
-    _isLoading = false;
-    notifyListeners();
+    await _repository.setNotificationsEnabled(value);
   }
 
-  void addFamilyMember() {
-    _settings = SettingsModel(
-      userName: _settings.userName,
-      hubId: _settings.hubId,
-      familyCount: _settings.familyCount + 1,
-      dailyHelpCount: _settings.dailyHelpCount,
-      vehicleCount: _settings.vehicleCount,
-      petCount: _settings.petCount,
-      currentFlat: _settings.currentFlat,
-    );
+  Future<void> addFamilyMember() async {
+    _familyCount++;
     notifyListeners();
+    await _repository.setFamilyCount(_familyCount);
   }
 
-  void addDailyHelp() {
-    _settings = SettingsModel(
-      userName: _settings.userName,
-      hubId: _settings.hubId,
-      familyCount: _settings.familyCount,
-      dailyHelpCount: _settings.dailyHelpCount + 1,
-      vehicleCount: _settings.vehicleCount,
-      petCount: _settings.petCount,
-      currentFlat: _settings.currentFlat,
-    );
+  Future<void> addDailyHelp() async {
+    _dailyHelpCount++;
     notifyListeners();
+    await _repository.setDailyHelpCount(_dailyHelpCount);
   }
 
-  void addVehicle() {
-    _settings = SettingsModel(
-      userName: _settings.userName,
-      hubId: _settings.hubId,
-      familyCount: _settings.familyCount,
-      dailyHelpCount: _settings.dailyHelpCount,
-      vehicleCount: _settings.vehicleCount + 1,
-      petCount: _settings.petCount,
-      currentFlat: _settings.currentFlat,
-    );
+  Future<void> addVehicle() async {
+    _vehicleCount++;
     notifyListeners();
+    await _repository.setVehicleCount(_vehicleCount);
   }
 
-  void addPet() {
-    _settings = SettingsModel(
-      userName: _settings.userName,
-      hubId: _settings.hubId,
-      familyCount: _settings.familyCount,
-      dailyHelpCount: _settings.dailyHelpCount,
-      vehicleCount: _settings.vehicleCount,
-      petCount: _settings.petCount + 1,
-      currentFlat: _settings.currentFlat,
-    );
+  Future<void> addPet() async {
+    _petCount++;
     notifyListeners();
-  }
-
-  void updateFlat(String newFlat) {
-    _settings = SettingsModel(
-      userName: _settings.userName,
-      hubId: _settings.hubId,
-      familyCount: _settings.familyCount,
-      dailyHelpCount: _settings.dailyHelpCount,
-      vehicleCount: _settings.vehicleCount,
-      petCount: _settings.petCount,
-      currentFlat: newFlat,
-    );
-    notifyListeners();
+    await _repository.setPetCount(_petCount);
   }
 }

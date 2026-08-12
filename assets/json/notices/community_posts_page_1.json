@@ -1,0 +1,137 @@
+{
+  "status": "success",
+  "message": "Community posts fetched successfully",
+  "data": {
+    "posts": [
+      {
+        "id": "post_1",
+        "title": "Community Meeting",
+        "content": "Join us this Friday at 7 PM for the monthly town hall meeting in the main clubhouse.",
+        "description": "Join us this Friday at 7 PM for the monthly town hall meeting in the main clubhouse.",
+        "author": {
+          "name": "Admin",
+          "flat": "Society 25 Jun"
+        },
+        "visibility": "All Residents",
+        "createdAt": "2026-08-05T10:30:00Z",
+        "timestamp": "Society 25 Jun",
+        "likesCount": 12,
+        "commentsCount": 4,
+        "media": [],
+        "type": "Event",
+        "action": "Issue Now",
+        "liked": false
+      },
+      {
+        "id": "post_2",
+        "title": "Expense report for quarter ending on June 2026",
+        "content": "Expense report for quarter ending on June 2026. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        "author": {
+          "name": "Admin",
+          "flat": "Society 25 Jun"
+        },
+        "visibility": "All Residents",
+        "createdAt": "2026-08-04T14:20:00Z",
+        "timestamp": "Society 25 Jun",
+        "likesCount": 8,
+        "commentsCount": 1,
+        "media": [],
+        "type": "Notice",
+        "action": "Download",
+        "liked": false
+      },
+      {
+        "id": "post_3",
+        "title": "Which day is best for the society sports event?",
+        "content": "Which day is best for the society sports event?",
+        "description": "Which day is best for the society sports event?",
+        "author": {
+          "name": "Hindu",
+          "flat": "C 104"
+        },
+        "visibility": "All Residents",
+        "createdAt": "2026-08-03T11:00:00Z",
+        "timestamp": "2 days ago",
+        "likesCount": 15,
+        "commentsCount": 6,
+        "media": [],
+        "type": "Poll",
+        "action": "Vote Now",
+        "pollOptions": ["Saturday", "Sunday", "Next Weekend"],
+        "liked": true
+      },
+      {
+        "id": "post_4",
+        "title": "Water supply maintenance alert",
+        "content": "Water supply will be interrupted tomorrow from 10:00 AM to 1:00 PM for overhead tank cleaning.",
+        "description": "Water supply will be interrupted tomorrow from 10:00 AM to 1:00 PM for overhead tank cleaning.",
+        "author": {
+          "name": "Hindu",
+          "flat": "C 104"
+        },
+        "visibility": "All Residents",
+        "createdAt": "2026-08-02T09:15:00Z",
+        "timestamp": "3 days ago",
+        "likesCount": 24,
+        "commentsCount": 9,
+        "media": ["https://images.unsplash.com/photo-1542314831-068cd1dbfeeb"],
+        "type": "Post",
+        "action": "View Post",
+        "liked": false
+      },
+      {
+        "id": "post_123",
+        "title": "Community Meeting",
+        "content": "What do you want to talk about? Join us this Friday at 7 PM for the monthly town hall.",
+        "author": {
+          "name": "Hindu",
+          "flat": "C 104"
+        },
+        "visibility": "All Residents",
+        "createdAt": "2026-08-05T10:30:00Z",
+        "likesCount": 5,
+        "commentsCount": 2,
+        "media": [],
+        "type": "Event",
+        "action": "Issue Now"
+      },
+      {
+        "id": "post_124",
+        "title": "Plumber Recommendation Needed",
+        "content": "Does anyone know a good plumber nearby? Need one urgently for flat B-402.",
+        "author": {
+          "name": "Ravi Kumar",
+          "flat": "B 402"
+        },
+        "visibility": "All Residents",
+        "createdAt": "2026-08-04T09:30:00Z",
+        "likesCount": 4,
+        "commentsCount": 7,
+        "media": [],
+        "type": "Post",
+        "action": "Reply"
+      },
+      {
+        "id": "post_125",
+        "title": "Garden Cleanup Drive",
+        "content": "Sharing photos from yesterday's community garden cleanup drive!",
+        "author": {
+          "name": "Priya Sharma",
+          "flat": "A 201"
+        },
+        "visibility": "All Residents",
+        "createdAt": "2026-08-03T11:15:00Z",
+        "likesCount": 25,
+        "commentsCount": 5,
+        "media": ["https://dummyimage.com/garden.png"],
+        "type": "Post",
+        "action": "View Post"
+      }
+    ],
+    "pagination": {
+      "total": 45,
+      "nextOffset": 10
+    }
+  }
+}

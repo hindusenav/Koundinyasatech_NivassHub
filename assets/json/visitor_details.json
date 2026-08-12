@@ -1,0 +1,14 @@
+{
+  "success": true,
+  "details": {
+    "id": "NT001",
+    "name": "Aman",
+    "photoUrl": null,
+    "status": "LEFT",
+    "company": "Blinkit",
+    "entryTime": "09:26 AM, 30 Jun",
+    "exitTime": "09:26 AM, 30 Jun",
+    "approvedBy": "Parmesh",
+    "phoneNumber": "+911234567890"
+  }
+}
