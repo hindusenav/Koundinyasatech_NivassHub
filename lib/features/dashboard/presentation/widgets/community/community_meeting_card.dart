@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../../../core/theme/app_colors.dart';
 import '../../../data/models/community_meeting_model.dart';
 
 class CommunityMeetingCard extends StatelessWidget {
@@ -14,19 +13,20 @@ class CommunityMeetingCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16),
       width: double.infinity,
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: const Color(0xFFF5F9FF),
-        borderRadius: BorderRadius.circular(20),
+        color: const Color(0xFFEFF6FF),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: const Color(0xFFD9E8FF),
+          color: const Color(0xFFBAE6FD),
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: .04),
-            blurRadius: 12,
-            offset: const Offset(0, 5),
+            color: Colors.black.withValues(alpha: .02),
+            blurRadius: 6,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
@@ -35,73 +35,60 @@ class CommunityMeetingCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              Container(
-                height: 46,
-                width: 46,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                child: const Center(
-                  child: Text(
-                    "🎉",
-                    style: TextStyle(fontSize: 24),
-                  ),
-                ),
+              const Icon(
+                Icons.campaign_outlined,
+                color: Color(0xFF0284C7),
+                size: 20,
               ),
-
-              const SizedBox(width: 14),
-
+              const SizedBox(width: 8),
               Expanded(
                 child: Text(
                   meeting.title,
                   style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
-                    color: Color(0xFF1F2937),
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF0F172A),
                   ),
                 ),
               ),
             ],
           ),
-
-          const SizedBox(height: 18),
-
+          const SizedBox(height: 8),
           Text(
             meeting.message,
             style: const TextStyle(
-              fontSize: 14,
-              height: 1.6,
-              color: Color(0xFF5F6368),
+              fontSize: 12.5,
+              height: 1.4,
+              color: Color(0xFF334155),
             ),
           ),
-
-          const SizedBox(height: 22),
-
+          const SizedBox(height: 12),
           SizedBox(
-            width: double.infinity,
-            height: 46,
+            height: 32,
             child: ElevatedButton(
               onPressed: () {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
-                    content: Text("RSVP recorded (mock)."),
+                    content: Text("RSVP recorded successfully!"),
+                    backgroundColor: Color(0xFF059669),
                   ),
                 );
               },
               style: ElevatedButton.styleFrom(
                 elevation: 0,
-                backgroundColor: AppColors.tertiary,
+                backgroundColor: const Color(0xFFE57C00),
                 foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(horizontal: 16),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: BorderRadius.circular(16),
                 ),
               ),
               child: Text(
-                meeting.ctaLabel,
+                meeting.ctaLabel.toUpperCase(),
                 style: const TextStyle(
-                  fontWeight: FontWeight.w700,
-                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 11,
+                  letterSpacing: 0.5,
                 ),
               ),
             ),
