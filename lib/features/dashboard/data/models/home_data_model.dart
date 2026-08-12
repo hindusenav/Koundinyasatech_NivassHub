@@ -22,16 +22,22 @@ class HomeDataModel {
 
   factory HomeDataModel.fromJson(Map<String, dynamic> json) {
     return HomeDataModel(
-      user: UserModel.fromJson(json['user']),
-      banner: BannerModel.fromJson(json['banner']),
-      quickActions: (json['quickActions'] as List)
-          .map((e) => QuickActionModel.fromJson(e))
-          .toList(),
-      maintenanceMessage: json['maintenanceMessage'] as String,
-      approvalQueueCount: json['approvalQueueCount'] as int,
-      approvalQueue: (json['approvalQueue'] as List)
-          .map((e) => VisitorModel.fromJson(e))
-          .toList(),
+      user: UserModel.fromJson((json['user'] as Map<String, dynamic>?) ?? {}),
+      banner: BannerModel.fromJson(
+        (json['banner'] as Map<String, dynamic>?) ?? {},
+      ),
+      quickActions:
+          ((json['quickActions'] as List<dynamic>?) ?? [])
+              .map(
+                (e) => QuickActionModel.fromJson((e as Map<String, dynamic>)),
+              )
+              .toList(),
+      maintenanceMessage: json['maintenanceMessage'] as String? ?? '',
+      approvalQueueCount: (json['approvalQueueCount'] as num?)?.toInt() ?? 0,
+      approvalQueue:
+          ((json['approvalQueue'] as List<dynamic>?) ?? [])
+              .map((e) => VisitorModel.fromJson((e as Map<String, dynamic>)))
+              .toList(),
     );
   }
 

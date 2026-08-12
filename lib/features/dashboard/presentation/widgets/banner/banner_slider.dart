@@ -19,7 +19,6 @@ class _BannerSliderState extends State<BannerSlider> {
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<DashboardProvider>();
-
     final banners = provider.advertisementBanners;
 
     if (banners.isEmpty) {
@@ -31,24 +30,44 @@ class _BannerSliderState extends State<BannerSlider> {
         CarouselSlider.builder(
           itemCount: banners.length,
           itemBuilder: (context, index, realIndex) {
-            return BannerCard(
-              banner: banners[index],
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 0),
+              child: BannerCard(
+                banner: banners[index],
+              ),
             );
           },
           options: CarouselOptions(
-            height: 180,
-            viewportFraction: .92,
-            enlargeCenterPage: true,
+            height: 112,
+
+            // Figma uses almost full available width.
+            viewportFraction: 1.0,
+
+            enlargeCenterPage: false,
+
+            enableInfiniteScroll: banners.length > 1,
+
             autoPlay: banners.length > 1,
+
             autoPlayInterval: const Duration(seconds: 4),
+
+            autoPlayAnimationDuration:
+                const Duration(milliseconds: 450),
+
+            autoPlayCurve: Curves.easeInOut,
+
             onPageChanged: (index, reason) {
+              if (!mounted) return;
+
               setState(() {
                 currentIndex = index;
               });
             },
           ),
         ),
-        const SizedBox(height: 12),
+
+        const SizedBox(height: 7),
+
         BannerIndicator(
           currentIndex: currentIndex,
           count: banners.length,

@@ -1,13 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../core/network/api_client.dart';
 import '../features/auth/screens/create_profile_screen.dart';
 import '../features/auth/screens/login_screen.dart';
 import '../features/auth/screens/otp_verification_screen.dart';
 import '../features/auth/screens/otp_verification_success_screen.dart';
 import '../features/auth/screens/register_screen.dart';
 import '../features/dashboard/presentation/screens/home_dashboard_screen.dart';
+import '../features/notices/screens/notices_screen.dart';
 import '../features/onboarding/screens/onboarding_screen_two.dart';
 import '../features/profile/screens/profile_screen.dart';
+import '../features/quick_actions/screens/quick_actions_screen.dart';
+import '../features/search/screens/search_screen.dart';
+import '../features/settings/screens/help_support_screen.dart';
+import '../features/settings/screens/settings_screen.dart';
 import '../features/splash/screens/splash_screen.dart';
+import '../features/visitor/screens/activities_screen.dart';
 import '../features/welcome/screens/welcome_screen.dart';
 import 'app_routes.dart';
 
@@ -78,11 +86,42 @@ class RouteGenerator {
           settings: settings,
           builder: (_) => const HomeDashboardScreen(),
         );
-        case AppRoutes.profile:
-           return MaterialPageRoute(
-             settings: settings,
-             builder: (_) => const ProfileScreen(),
-         );
+      case AppRoutes.quickActions:
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => const QuickActionsScreen(),
+        );
+      case AppRoutes.search:
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => const SearchScreen(),
+        );
+      case AppRoutes.profile:
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => const ProfileScreen(),
+        );
+      case AppRoutes.settings:
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => const SettingsScreen(),
+        );
+      case AppRoutes.helpSupport:
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => const HelpSupportScreen(),
+        );
+      case AppRoutes.activities:
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => const ActivitiesScreen(),
+        );
+      case AppRoutes.noticeList:
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (context) =>
+              NoticesScreen(apiClient: context.read<ApiClient>()),
+        );
       // Additional feature route cases are added here as their screens land.
       default:
         return _unknownRoute(settings);

@@ -1,18 +1,15 @@
 import 'package:flutter/material.dart';
 
-import '../../../../../core/theme/app_colors.dart';
-
 class GenerateOtpBanner extends StatelessWidget {
-  const GenerateOtpBanner({
-    super.key,
-  });
+  const GenerateOtpBanner({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Material(
       color: Colors.transparent,
+      borderRadius: BorderRadius.circular(12),
       child: InkWell(
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(12),
         onTap: () {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -21,52 +18,83 @@ class GenerateOtpBanner extends StatelessWidget {
           );
         },
         child: Container(
-          margin: const EdgeInsets.symmetric(horizontal: 20),
-          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+          height: 78,
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 12,
+          ),
           decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
             gradient: const LinearGradient(
-              colors: [AppColors.secondary, AppColors.secondaryDark],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
+              colors: [
+                Color(0xFF26A69A),
+                Color(0xFF0F9D8A),
+              ],
             ),
-            borderRadius: BorderRadius.circular(18),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: .12),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
           ),
           child: Row(
             children: [
+              /// TEXT
               const Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Generate OTP / QR Code',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 15,
+                child: Padding(
+                  padding: EdgeInsets.only(left: 2),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Generate OTP / QR Code',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 0.2,
+                        ),
                       ),
-                    ),
-                    SizedBox(height: 2),
-                    Text(
-                      'Invite guests for smooth gate entry',
-                      style: TextStyle(
-                        color: Colors.white70,
-                        fontSize: 11.5,
+                      SizedBox(height: 4),
+                      Text(
+                        'Invite guests for smooth gate entry',
+                        style: TextStyle(
+                          color: Colors.white70,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w500,
+                          height: 1.2,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
+
               const SizedBox(width: 12),
+
+              /// QR BOX
               Container(
-                height: 42,
-                width: 42,
+                width: 50,
+                height: 60,
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: const Icon(
-                  Icons.qr_code_2_rounded,
-                  color: AppColors.secondaryDark,
+                alignment: Alignment.center,
+                child: Padding(
+                  padding: const EdgeInsets.all(3),
+                  child: Image.asset(
+                    'assets/icons/qr_icon.png',
+                    width: 50,
+                    height: 60,
+                    fit: BoxFit.contain,
+                  ),
                 ),
               ),
             ],

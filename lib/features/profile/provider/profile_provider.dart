@@ -1,87 +1,60 @@
-import 'package:flutter/material.dart';
-import '../repository/profile_repository.dart';
-import '../models/profile_model.dart';
-import '../models/address_model.dart';
+import 'package:flutter/foundation.dart';
 
+import '../models/active_society_model.dart';
+import '../models/user_profile_model.dart';
+import '../repository/profile_service_base.dart';
+
+/// Owns the Profile screen's data — loads the profile and active-society
+/// calls concurrently and only surfaces a blocking error if **both** fail;
+/// a partial success still renders whatever loaded (mirrors
+/// `NoticesProvider._fetchFeed`'s "allFailed" pattern).
 class ProfileProvider extends ChangeNotifier {
-  final ProfileRepository repository;
+  ProfileProvider(this._service);
 
-  ProfileProvider(this.repository);
+  final ProfileServiceBase _service;
 
-  ProfileModel? profile;
-  AddressModel? address;
+  bool _isLoading = false;
+  String? _errorMessage;
+  UserProfileModel? _profile;
+  ActiveSocietyModel? _activeSociety;
+  bool _profileFailed = false;
+  bool _activeSocietyFailed = false;
 
-  bool isLoading = false;
-  String? error;
+  bool get isLoading => _isLoading;
+  bool get hasError => _errorMessage != null;
+  String? get errorMessage => _errorMessage;
+  UserProfileModel? get profile => _profile;
+  ActiveSocietyModel? get activeSociety => _activeSociety;
+  bool get profileFailed => _profileFailed;
+  bool get activeSocietyFailed => _activeSocietyFailed;
 
-  /// 🔹 Load Profile
   Future<void> loadProfile() async {
-    isLoading = true;
-    error = null;
+    _isLoading = true;
+    _errorMessage = null;
     notifyListeners();
 
-    try {
-      profile = await repository.getProfile();
-    } catch (e) {
-      error = e.toString();
+    final profileFuture = _service.getProfile();
+    final societyFuture = _service.getActiveSociety();
+
+    final profileResponse = await profileFuture;
+    final societyResponse = await societyFuture;
+
+    final allFailed = profileResponse.isFailure && societyResponse.isFailure;
+    if (allFailed) {
+      _errorMessage = profileResponse.message ??
+          societyResponse.message ??
+          'Something went wrong. Please try again.';
+    } else {
+      _errorMessage = null;
+      if (profileResponse.isSuccess) _profile = profileResponse.data;
+      if (societyResponse.isSuccess) _activeSociety = societyResponse.data;
     }
+    _profileFailed = profileResponse.isFailure;
+    _activeSocietyFailed = societyResponse.isFailure;
 
-    isLoading = false;
+    _isLoading = false;
     notifyListeners();
   }
 
-  /// 🔹 Load Address
-  Future<void> loadAddress() async {
-    isLoading = true;
-    error = null;
-    notifyListeners();
-
-    try {
-      address = await repository.getAddress();
-    } catch (e) {
-      error = e.toString();
-    }
-
-    isLoading = false;
-    notifyListeners();
-  }
-
-  /// 🔹 UPDATE PROFILE ✅ (FINAL FIX - SAFE & FLEXIBLE)
-  Future<void> updateProfile({
-    String? name,
-    String? mobile,
-    String? email,
-  }) async {
-    if (profile == null) return;
-
-    isLoading = true;
-    error = null;
-    notifyListeners();
-
-    try {
-      final updated = profile!.copyWith(
-        name: name,
-        mobile: mobile,
-        email: email,
-      );
-
-      await repository.updateProfile(updated);
-
-      /// ✅ Update local state
-      profile = updated;
-    } catch (e) {
-      error = e.toString();
-    }
-
-    isLoading = false;
-    notifyListeners();
-  }
-
-  /// 🔹 CLEAR PROFILE
-  void clearProfile() {
-    profile = null;
-    address = null;
-    error = null;
-    notifyListeners();
-  }
+  Future<void> retry() => loadProfile();
 }

@@ -1,17 +1,41 @@
 {
-  "success": true,
+  "status": "success",
   "data": [
     {
-      "bannerId": "BNR001",
-      "title": "Online Advertising",
-      "image": "https://dummyimage.com/banner.png",
-      "redirectUrl": ""
+      "bannerId": "ad_century",
+      "title": "Century Bliss",
+      "subtitle": "Freespirited 2 & 3 Bed Homes",
+      "price": "₹93.5 L*",
+      "image": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750",
+      "redirectUrl": "https://centurybliss.com",
+      "description": "A thoughtfully planned community built around the way you truly want to live."
     },
     {
-      "bannerId": "BNR002",
-      "title": "Community Event",
-      "image": "https://dummyimage.com/banner2.png",
-      "redirectUrl": ""
+      "bannerId": "ad_nikoo",
+      "title": "Enjoy Luxury Living @ Nikoo Homes",
+      "subtitle": "by Bhartiya City",
+      "price": "₹93L Onwards",
+      "image": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00",
+      "redirectUrl": "https://nikoohomes.com",
+      "description": "Enjoy luxury living at Bhartiya - Nikoo Homes, Thanisandra!"
+    },
+    {
+      "bannerId": "ad_1",
+      "title": "Online Advertising",
+      "subtitle": "Reach thousands of residential homeowners today",
+      "price": "Starting from ₹999/mo",
+      "image": "assets/images/ad_banner.png",
+      "redirectUrl": "https://nivaashub.com/ads",
+      "description": "Promote your services directly to verified society members."
+    },
+    {
+      "bannerId": "ad_2",
+      "title": "ALTURA",
+      "subtitle": "2 & 3 BHK Homes",
+      "price": "₹1.30 Crore Onwards",
+      "image": "assets/images/ad_altura.png",
+      "redirectUrl": "https://altura-residences.com",
+      "description": "Luxury living in the heart of the city with world-class amenities."
     }
   ]
 }
