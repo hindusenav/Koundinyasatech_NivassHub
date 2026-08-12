@@ -17,7 +17,7 @@ class AdvertisementBanner extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
+            color: Colors.black.withValues(alpha: 0.08),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -47,7 +47,7 @@ class AdvertisementBanner extends StatelessWidget {
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
-                  colors: [Colors.transparent, Colors.black.withOpacity(0.85)],
+                  colors: [Colors.transparent, Colors.black.withValues(alpha: 0.85)],
                 ),
               ),
             ),
@@ -58,7 +58,7 @@ class AdvertisementBanner extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
               decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.5),
+                color: Colors.black.withValues(alpha: 0.5),
                 borderRadius: BorderRadius.circular(4),
               ),
               child: const Text(
@@ -101,7 +101,7 @@ class AdvertisementBanner extends StatelessWidget {
                             : '2 & 3 BHK Homes',
                         style: TextStyle(
                           fontSize: 12,
-                          color: Colors.white.withOpacity(0.9),
+                          color: Colors.white.withValues(alpha: 0.9),
                           fontWeight: FontWeight.w500,
                         ),
                       ),

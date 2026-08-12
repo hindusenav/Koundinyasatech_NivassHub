@@ -14,7 +14,7 @@ class CreateEventScreen extends StatefulWidget {
 class _CreateEventScreenState extends State<CreateEventScreen> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _detailsController = TextEditingController();
-  String _selectedVisibility = 'All Residents';
+  final String _selectedVisibility = 'All Residents';
   String _selectedDateTime = 'Configure event start, end, and duration';
   String _selectedVenue = 'Set the location, park block, or clubhouse';
   bool _isSubmitting = false;
