@@ -7,8 +7,9 @@ import '../models/address_model.dart';
 class ProfileRepository {
 
   Future<ProfileModel> getProfile() async {
-    final response =
-        await rootBundle.loadString('assets/mock/profile/profile.json');
+   // Change from: 'assets/mock/profile/profile.json'
+// To:
+final String response = await rootBundle.loadString('assets/json/profile.json');
 
     final data = json.decode(response);
 
@@ -17,7 +18,7 @@ class ProfileRepository {
 
   Future<AddressModel> getAddress() async {
     final response =
-        await rootBundle.loadString('assets/mock/profile/address.json');
+        await rootBundle.loadString('assets/json/profile/address.json');
 
     final data = json.decode(response);
 

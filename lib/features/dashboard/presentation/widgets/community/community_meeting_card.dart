@@ -19,7 +19,7 @@ class CommunityMeetingCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.infoLight,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: AppColors.info.withOpacity(.3)),
+        border: Border.all(color: AppColors.info.withValues(alpha: .3)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
