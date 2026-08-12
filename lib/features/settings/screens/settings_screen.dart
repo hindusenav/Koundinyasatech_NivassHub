@@ -18,12 +18,27 @@ import '../../../shared/widgets/common/section_title.dart';
 import '../../../shared/widgets/dialogs/confirmation_dialog.dart';
 import '../../profile/provider/profile_provider.dart';
 import '../provider/settings_provider.dart';
+import '../widgets/household_card.dart';
 
 /// Preferences, support, and logout. Dark Mode reads/writes the app-wide
 /// `ThemeModeProvider` directly (not `SettingsProvider`) so there is a
 /// single source of truth for the live theme.
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
+
+  Future<void> _addHouseholdItem(
+    BuildContext context, {
+    required String label,
+    required Future<void> Function() onConfirm,
+  }) async {
+    final confirmed = await ConfirmationDialog.show(
+      context,
+      title: 'Add $label',
+      message: 'Add a $label to your household?',
+    );
+    if (!confirmed) return;
+    await onConfirm();
+  }
 
   Future<void> _handleLogout(BuildContext context) async {
     final secureStorageService = context.read<SecureStorageService>();
@@ -95,6 +110,58 @@ class SettingsScreen extends StatelessWidget {
                   ),
                 ],
               ),
+            ),
+            const SizedBox(height: 24),
+            const SectionTitle(title: 'Household'),
+            GridView.count(
+              crossAxisCount: 2,
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              mainAxisSpacing: 8,
+              crossAxisSpacing: 8,
+              childAspectRatio: 2.4,
+              children: [
+                HouseholdCard(
+                  title: 'Family',
+                  subtitle: '${settings.familyCount} member(s)',
+                  icon: AppIcons.family,
+                  onAdd: () => _addHouseholdItem(
+                    context,
+                    label: 'family member',
+                    onConfirm: settings.addFamilyMember,
+                  ),
+                ),
+                HouseholdCard(
+                  title: 'Daily Help',
+                  subtitle: '${settings.dailyHelpCount} registered',
+                  icon: AppIcons.dailyHelp,
+                  onAdd: () => _addHouseholdItem(
+                    context,
+                    label: 'daily help',
+                    onConfirm: settings.addDailyHelp,
+                  ),
+                ),
+                HouseholdCard(
+                  title: 'Vehicles',
+                  subtitle: '${settings.vehicleCount} registered',
+                  icon: AppIcons.vehicle,
+                  onAdd: () => _addHouseholdItem(
+                    context,
+                    label: 'vehicle',
+                    onConfirm: settings.addVehicle,
+                  ),
+                ),
+                HouseholdCard(
+                  title: 'Pets',
+                  subtitle: '${settings.petCount} registered',
+                  icon: AppIcons.pet,
+                  onAdd: () => _addHouseholdItem(
+                    context,
+                    label: 'pet',
+                    onConfirm: settings.addPet,
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 24),
             const SectionTitle(title: 'Support'),

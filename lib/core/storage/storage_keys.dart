@@ -19,4 +19,8 @@ class StorageKeys {
   static const String cachedUserProfile = 'cached_user_profile';
   static const String rememberedEmail = 'remembered_email';
   static const String notificationsEnabled = 'notifications_enabled';
+  static const String familyCount = 'household_family_count';
+  static const String dailyHelpCount = 'household_daily_help_count';
+  static const String vehicleCount = 'household_vehicle_count';
+  static const String petCount = 'household_pet_count';
 }
