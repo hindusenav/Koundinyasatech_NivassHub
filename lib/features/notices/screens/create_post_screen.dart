@@ -13,7 +13,7 @@ class CreatePostScreen extends StatefulWidget {
 
 class _CreatePostScreenState extends State<CreatePostScreen> {
   final TextEditingController _contentController = TextEditingController();
-  String _selectedVisibility = 'All Residents';
+  final String _selectedVisibility = 'All Residents';
   bool _isSubmitting = false;
 
   @override
