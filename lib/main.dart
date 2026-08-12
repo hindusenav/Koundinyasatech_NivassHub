@@ -21,9 +21,11 @@ import 'features/dashboard/data/services/home_api_service.dart';
 import 'features/dashboard/data/services/home_api_service_base.dart';
 import 'features/dashboard/data/services/mock_home_api_service.dart';
 
-/// ✅ FIXED IMPORTS (VERY IMPORTANT)
 import 'features/profile/provider/profile_provider.dart';
 import 'features/profile/repository/profile_repository.dart';
+
+// ✅ ADDED SETTINGS PROVIDER IMPORT
+import 'features/settings/provider/settings_provider.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -51,12 +53,15 @@ Future<void> main() async {
     homeApiService,
   );
 
-  /// ✅ CORRECT PROVIDER SETUP
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(
           create: (_) => ProfileProvider(ProfileRepository()),
+        ),
+        // ✅ ADDED SETTINGS PROVIDER HERE
+        ChangeNotifierProvider(
+          create: (_) => SettingsProvider(),
         ),
       ],
       child: NivasHubApp(

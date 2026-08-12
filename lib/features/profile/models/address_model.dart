@@ -23,7 +23,7 @@ class AddressModel {
 
   factory AddressModel.fromJson(Map<String, dynamic> json) {
     return AddressModel(
-      flatNo: json['flat_no'] ?? '',
+      flatNo: json['flat_no'] ?? json['flatNo'] ?? '',
       society: json['society'] ?? '',
       wing: json['wing'] ?? '',
       street: json['street'] ?? '',
@@ -31,7 +31,21 @@ class AddressModel {
       landmark: json['landmark'] ?? '',
       city: json['city'] ?? '',
       state: json['state'] ?? '',
-      pincode: json['pincode'] ?? '',
+      pincode: json['pincode'] ?? json['pin_code'] ?? '',
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'flat_no': flatNo,
+      'society': society,
+      'wing': wing,
+      'street': street,
+      'area': area,
+      'landmark': landmark,
+      'city': city,
+      'state': state,
+      'pin_code': pincode,
+    };
   }
 }
