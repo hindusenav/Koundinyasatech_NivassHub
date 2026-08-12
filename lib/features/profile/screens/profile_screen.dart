@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../app/app_routes.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_dimensions.dart';
 import '../../../core/theme/app_icons.dart';
@@ -25,7 +26,15 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppBar(title: 'My Profile'),
+      appBar: CustomAppBar(
+        title: 'My Profile',
+        actions: [
+          IconButton(
+            icon: Icon(AppIcons.settings),
+            onPressed: () => Navigator.pushNamed(context, AppRoutes.settings),
+          ),
+        ],
+      ),
       body: SafeArea(
         child: Consumer<ProfileProvider>(
           builder: (context, provider, _) {

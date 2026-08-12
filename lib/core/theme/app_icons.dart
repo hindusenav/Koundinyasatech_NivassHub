@@ -31,6 +31,10 @@ class AppIcons {
   static const IconData notice = Icons.campaign_rounded;
   static const IconData profile = Icons.person_rounded;
   static const IconData settings = Icons.settings_rounded;
+  static const IconData family = Icons.groups_rounded;
+  static const IconData dailyHelp = Icons.cleaning_services_rounded;
+  static const IconData vehicle = Icons.directions_car_rounded;
+  static const IconData pet = Icons.pets_rounded;
 
   // -----------------------------------------------------------------------
   // Actions
