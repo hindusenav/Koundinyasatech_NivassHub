@@ -26,17 +26,13 @@ class AdvertisementDetailsScreen extends StatelessWidget {
       apiClient = context.read<ApiClient>();
     } catch (_) {}
 
-    if (apiClient != null) {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(
-          builder: (_) => NoticesScreen(apiClient: apiClient!),
-        ),
-      );
-    } else {
-      if (Navigator.of(context).canPop()) {
-        Navigator.of(context).pop();
-      }
-    }
+    apiClient ??= ApiClient();
+
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(
+        builder: (_) => NoticesScreen(apiClient: apiClient!),
+      ),
+    );
   }
 
   @override

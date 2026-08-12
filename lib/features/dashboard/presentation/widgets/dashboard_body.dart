@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 import '../../../../core/utils/responsive.dart';
 import '../../../notifications/widgets/visitor_notification_section.dart';
-import '../provider/dashboard_provider.dart';
 import 'approval_queue/approval_queue_section.dart';
-import 'banner/banner_card.dart';
 import 'banner/banner_slider.dart';
 import 'community/community_posts_section.dart';
 import 'header/dashboard_header.dart';
@@ -21,25 +18,16 @@ class DashboardBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final provider = context.watch<DashboardProvider>();
-
-    final banners = provider.advertisementBanners;
-
     return Container(
       width: double.infinity,
       color: const Color(0xFFF7F8FC),
-
       child: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
-
         padding: EdgeInsets.only(
-          left: Responsive.horizontalPadding(context)
-              .clamp(12.0, 14.0),
-          right: Responsive.horizontalPadding(context)
-              .clamp(12.0, 14.0),
+          left: Responsive.horizontalPadding(context).clamp(12.0, 14.0),
+          right: Responsive.horizontalPadding(context).clamp(12.0, 14.0),
           bottom: 20,
         ),
-
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -50,7 +38,7 @@ class DashboardBody extends StatelessWidget {
 
             const SizedBox(height: 8),
 
-            // ONLINE ADVERTISEMENT
+            // ONLINE ADVERTISEMENT SLIDER
             const BannerSlider(),
 
             const SizedBox(height: 9),
@@ -70,26 +58,17 @@ class DashboardBody extends StatelessWidget {
 
             const SizedBox(height: 9),
 
-            // PANIC
+            // PANIC / SOS
             const PanicSosBanner(),
 
             const SizedBox(height: 7),
 
-            // OTP
+            // OTP / QR CODE GATE ENTRY
             const GenerateOtpBanner(),
 
-            // ADVERTISEMENT
-            if (banners.isNotEmpty) ...[
-              const SizedBox(height: 9),
+            const SizedBox(height: 16),
 
-              BannerCard(
-                banner: banners.first,
-              ),
-            ],
-
-            const SizedBox(height: 9),
-
-            // COMMUNITY
+            // COMMUNITY POSTS & NOTICE BOARD SECTION (Matching Figma order 100%)
             const CommunityPostsSection(),
 
             const SizedBox(height: 12),
