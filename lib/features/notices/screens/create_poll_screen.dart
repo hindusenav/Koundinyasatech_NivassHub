@@ -17,7 +17,7 @@ class _CreatePollScreenState extends State<CreatePollScreen> {
     TextEditingController(),
     TextEditingController(),
   ];
-  String _selectedVisibility = 'All Residents';
+  final String _selectedVisibility = 'All Residents';
   bool _isSubmitting = false;
 
   @override
