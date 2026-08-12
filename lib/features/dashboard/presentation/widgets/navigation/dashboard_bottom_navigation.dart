@@ -58,7 +58,10 @@ class DashboardBottomNavigation extends StatelessWidget {
         onTap: () {
           provider.changeIndex(index);
 
-          if (index == 4) {
+          if (index == 2) {
+            // Community — opens the full Community Feed / Notice Board.
+            Navigator.pushNamed(context, AppRoutes.noticeList);
+          } else if (index == 4) {
             // More — opens the full Quick Actions catalog directly.
             Navigator.pushNamed(context, AppRoutes.quickActions);
           }

@@ -1,13 +1,13 @@
 import 'advertisement_model.dart';
 import 'community_post_model.dart';
-import 'notice_model.dart';
+import 'feed_notice_model.dart';
 
 enum FeedType { advertisement, notice, community }
 
 class FeedItemModel {
   final FeedType type;
   final AdvertisementModel? advertisement;
-  final NoticeModel? notice;
+  final FeedNoticeModel? notice;
   final CommunityPostModel? communityPost;
 
   const FeedItemModel({
@@ -20,7 +20,7 @@ class FeedItemModel {
   const FeedItemModel.advertisement(AdvertisementModel advertisement)
     : this(type: FeedType.advertisement, advertisement: advertisement);
 
-  const FeedItemModel.notice(NoticeModel notice)
+  const FeedItemModel.notice(FeedNoticeModel notice)
     : this(type: FeedType.notice, notice: notice);
 
   const FeedItemModel.communityPost(CommunityPostModel communityPost)

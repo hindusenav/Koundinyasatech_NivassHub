@@ -1,4 +1,4 @@
-class NoticeModel {
+class FeedNoticeModel {
   final String id;
   final String title;
   final String description;
@@ -11,7 +11,7 @@ class NoticeModel {
   final String timestamp;
   final String action;
 
-  const NoticeModel({
+  const FeedNoticeModel({
     required this.id,
     required this.title,
     required this.description,
@@ -27,11 +27,11 @@ class NoticeModel {
 
   bool get hasAttachment => attachment.isNotEmpty;
 
-  factory NoticeModel.fromJson(Map<String, dynamic> json) {
+  factory FeedNoticeModel.fromJson(Map<String, dynamic> json) {
     final authorName =
         json['author']?.toString() ?? json['category']?.toString() ?? 'Admin';
     final ts = json['timestamp']?.toString() ?? json['date']?.toString() ?? '';
-    return NoticeModel(
+    return FeedNoticeModel(
       id: json['id']?.toString() ?? '',
       title: json['title']?.toString() ?? '',
       description: json['description']?.toString() ?? '',

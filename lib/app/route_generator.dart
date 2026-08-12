@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../core/network/api_client.dart';
 import '../features/auth/screens/create_profile_screen.dart';
 import '../features/auth/screens/login_screen.dart';
 import '../features/auth/screens/otp_verification_screen.dart';
 import '../features/auth/screens/otp_verification_success_screen.dart';
 import '../features/auth/screens/register_screen.dart';
 import '../features/dashboard/presentation/screens/home_dashboard_screen.dart';
+import '../features/notices/screens/notices_screen.dart';
 import '../features/onboarding/screens/onboarding_screen_two.dart';
 import '../features/profile/screens/profile_screen.dart';
 import '../features/quick_actions/screens/quick_actions_screen.dart';
@@ -112,6 +115,12 @@ class RouteGenerator {
         return MaterialPageRoute(
           settings: settings,
           builder: (_) => const ActivitiesScreen(),
+        );
+      case AppRoutes.noticeList:
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (context) =>
+              NoticesScreen(apiClient: context.read<ApiClient>()),
         );
       // Additional feature route cases are added here as their screens land.
       default:

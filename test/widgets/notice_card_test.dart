@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:flutter_nivasshub/features/notices/models/notice_model.dart';
+import 'package:flutter_nivasshub/features/notices/models/feed_notice_model.dart';
 import 'package:flutter_nivasshub/features/notices/widgets/notice_card.dart';
 
 void main() {
   group('NoticeCard Widget Test', () {
-    const NoticeModel notice = NoticeModel(
+    const FeedNoticeModel notice = FeedNoticeModel(
       id: '1',
       title: 'Water Supply Maintenance',
       description: 'Water supply will be unavailable from 10:00 AM to 2:00 PM.',
