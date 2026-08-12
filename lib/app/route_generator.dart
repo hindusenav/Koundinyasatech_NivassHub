@@ -6,6 +6,7 @@ import '../features/auth/screens/otp_verification_success_screen.dart';
 import '../features/auth/screens/register_screen.dart';
 import '../features/dashboard/presentation/screens/home_dashboard_screen.dart';
 import '../features/onboarding/screens/onboarding_screen_two.dart';
+import '../features/profile/screens/profile_screen.dart';
 import '../features/splash/screens/splash_screen.dart';
 import '../features/welcome/screens/welcome_screen.dart';
 import 'app_routes.dart';
@@ -77,6 +78,11 @@ class RouteGenerator {
           settings: settings,
           builder: (_) => const HomeDashboardScreen(),
         );
+        case AppRoutes.profile:
+           return MaterialPageRoute(
+             settings: settings,
+             builder: (_) => const ProfileScreen(),
+         );
       // Additional feature route cases are added here as their screens land.
       default:
         return _unknownRoute(settings);

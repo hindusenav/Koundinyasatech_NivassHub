@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../core/utils/responsive.dart';
+import '../../../profile/screens/profile_screen.dart'; // 1. Import your ProfileScreen here
 import '../provider/dashboard_provider.dart';
 import 'approval_queue/approval_queue_section.dart';
 import 'banner/banner_card.dart';
@@ -32,7 +33,17 @@ class DashboardBody extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const DashboardHeader(),
+            // 2. Added navigation inside onProfileTap
+            DashboardHeader(
+              onProfileTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const ProfileScreen(),
+                  ),
+                );
+              },
+            ),
             const SizedBox(height: 18),
 
             const BannerSlider(),
