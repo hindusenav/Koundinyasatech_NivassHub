@@ -1,0 +1,12 @@
+{
+  "status": true,
+  "message": "Profile fetched successfully",
+  "data": {
+    "id": 1,
+    "name": "Sireesha",
+    "mobile": "9876543210",
+    "email": "sireesha@gmail.com",
+    "profile_image": "https://i.pravatar.cc/150?img=5",
+    "username": "siri_user"
+  }
+}
