@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
-import '../../../core/constants/app_strings.dart';
 import '../../../core/network/api_client.dart';
 import '../../../shared/widgets/loaders/loader.dart';
 import '../../../shared/widgets/states/custom_error_widget.dart';
@@ -33,15 +33,9 @@ class _NoticeBoardView extends StatefulWidget {
 
 class _NoticeBoardViewState extends State<_NoticeBoardView> {
   final ScrollController _scrollController = ScrollController();
+  String _selectedFilter = 'All';
 
-  // Chip label -> provider filter. Two of the original chips ("Unread",
-  // "Promotions") had no corresponding concept in FeedCategoryFilter, so the
-  // chip set now matches what the provider can actually filter by.
-  static const Map<String, FeedCategoryFilter> _filters = {
-    'All': FeedCategoryFilter.all,
-    'Notices': FeedCategoryFilter.notices,
-    'Posts': FeedCategoryFilter.posts,
-  };
+  final List<String> _filters = ['All', 'Unread', 'Promotions', 'Community'];
 
   @override
   void initState() {
@@ -71,128 +65,202 @@ class _NoticeBoardViewState extends State<_NoticeBoardView> {
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<NoticesProvider>();
-    final feedItems = provider.filteredFeedItems;
+    final feedItems = provider.feedItems;
+    final statusBarHeight = MediaQuery.of(context).padding.top;
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
-      appBar: AppBar(
-        backgroundColor: const Color(0xFFE0F2FE),
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black87),
-          onPressed: () {
-            if (Navigator.of(context).canPop()) {
-              Navigator.of(context).pop();
-            }
-          },
-        ),
-        title: Text(
-          AppStrings.communityFeed,
-          style: const TextStyle(
-            color: Colors.black87,
-            fontWeight: FontWeight.bold,
-            fontSize: 18,
-          ),
-        ),
-      ),
       bottomNavigationBar: const DashboardBottomNavigation(),
-      body: SafeArea(
-        child: RefreshIndicator(
-          onRefresh: provider.refreshFeed,
-          child: SingleChildScrollView(
-            controller: _scrollController,
-            physics: const AlwaysScrollableScrollPhysics(),
-            padding: const EdgeInsets.symmetric(vertical: 12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Filter Chips Bar
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Row(
-                    children: _filters.entries.map((entry) {
-                      final isSelected = provider.selectedFilter == entry.value;
-                      return Padding(
-                        padding: const EdgeInsets.only(right: 8),
-                        child: InkWell(
-                          onTap: () => provider.setFilter(entry.value),
-                          borderRadius: BorderRadius.circular(20),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                            decoration: BoxDecoration(
-                              color: isSelected ? const Color(0xFFE57C00) : Colors.white,
-                              borderRadius: BorderRadius.circular(20),
-                              border: Border.all(
-                                color: isSelected ? const Color(0xFFE57C00) : const Color(0xFFCBD5E1),
-                              ),
-                            ),
-                            child: Text(
-                              entry.key,
-                              style: TextStyle(
-                                color: isSelected ? Colors.white : Colors.black87,
-                                fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                                fontSize: 12,
-                              ),
-                            ),
-                          ),
-                        ),
-                      );
-                    }).toList(),
-                  ),
+      body: AnnotatedRegion<SystemUiOverlayStyle>(
+        value: const SystemUiOverlayStyle(
+          statusBarColor: Colors.transparent,
+          statusBarIconBrightness: Brightness.dark,
+          statusBarBrightness: Brightness.light,
+        ),
+        child: SafeArea(
+          top: false,
+          child: Column(
+            children: [
+              // =====================================================
+              // APP BAR HEADER MATCHING FIGMA HIGHLIGHTED BOX
+              // =====================================================
+              Container(
+                width: double.infinity,
+                padding: EdgeInsets.only(
+                  top: statusBarHeight > 0 ? statusBarHeight + 4 : 12,
+                  left: 8,
+                  right: 16,
+                  bottom: 12,
                 ),
-                const SizedBox(height: 12),
-
-                if (provider.isLoading && feedItems.isEmpty) ...[
-                  const SizedBox(height: 60),
-                  const Loader(message: 'Loading feed...'),
-                ] else if (provider.hasError && feedItems.isEmpty) ...[
-                  const SizedBox(height: 40),
-                  CustomErrorWidget(
-                    message: provider.errorMessage ?? 'Something went wrong.',
-                    onRetry: provider.retry,
+                decoration: const BoxDecoration(
+                  color: Color(0xFFC7E1F8),
+                  borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(20),
+                    bottomRight: Radius.circular(20),
                   ),
-                ] else if (feedItems.isEmpty) ...[
-                  const SizedBox(height: 40),
-                  EmptyState(title: 'No posts yet', message: AppStrings.emptyFeed),
-                ] else ...[
-                  // Unread Notice Alert Banner
-                  Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 16),
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFFEF2F2),
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: const Color(0xFFFECACA)),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Color(0x12000000),
+                      blurRadius: 6,
+                      spreadRadius: 0,
+                      offset: Offset(0, 2),
                     ),
-                    child: Row(
-                      children: const [
-                        Icon(Icons.circle, color: Color(0xFFEF4444), size: 8),
-                        SizedBox(width: 8),
-                        Text(
-                          '1 Unread Notice',
-                          style: TextStyle(
-                            color: Color(0xFFDC2626),
-                            fontWeight: FontWeight.bold,
-                            fontSize: 12,
+                  ],
+                ),
+                child: Row(
+                  children: [
+                    IconButton(
+                      icon: const Icon(
+                        Icons.arrow_back,
+                        color: Color(0xFF0F172A),
+                        size: 22,
+                      ),
+                      onPressed: () {
+                        if (Navigator.of(context).canPop()) {
+                          Navigator.of(context).pop();
+                        }
+                      },
+                    ),
+                    const SizedBox(width: 4),
+                    const Text(
+                      'Notice Board',
+                      style: TextStyle(
+                        color: Color(0xFF0F172A),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              // =====================================================
+              // MAIN SCROLLABLE CONTENT BODY
+              // =====================================================
+              Expanded(
+                child: RefreshIndicator(
+                  onRefresh: provider.refreshFeed,
+                  child: SingleChildScrollView(
+                    controller: _scrollController,
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Filter Chips Bar matching Figma ['All', 'Unread', 'Promotions', 'Community']
+                        SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: Row(
+                            children: _filters.map((filter) {
+                              final isSelected = _selectedFilter == filter;
+                              return Padding(
+                                padding: const EdgeInsets.only(right: 8),
+                                child: InkWell(
+                                  onTap: () => setState(() => _selectedFilter = filter),
+                                  borderRadius: BorderRadius.circular(20),
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 16,
+                                      vertical: 8,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: isSelected
+                                          ? const Color(0xFFE57C00)
+                                          : Colors.white,
+                                      borderRadius: BorderRadius.circular(20),
+                                      border: Border.all(
+                                        color: isSelected
+                                            ? const Color(0xFFE57C00)
+                                            : const Color(0xFFCBD5E1),
+                                      ),
+                                    ),
+                                    child: Text(
+                                      filter,
+                                      style: TextStyle(
+                                        color: isSelected
+                                            ? Colors.white
+                                            : const Color(0xFF0F172A),
+                                        fontWeight: isSelected
+                                            ? FontWeight.bold
+                                            : FontWeight.w500,
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              );
+                            }).toList(),
                           ),
                         ),
+                        const SizedBox(height: 14),
+
+                        if (provider.isLoading && feedItems.isEmpty) ...[
+                          const SizedBox(height: 60),
+                          const Loader(message: 'Loading feed...'),
+                        ] else if (provider.hasError && feedItems.isEmpty) ...[
+                          const SizedBox(height: 40),
+                          CustomErrorWidget(
+                            message:
+                                provider.errorMessage ?? 'Something went wrong.',
+                            onRetry: provider.retry,
+                          ),
+                        ] else if (feedItems.isEmpty) ...[
+                          const SizedBox(height: 40),
+                          const EmptyState(
+                            title: 'No posts yet',
+                            message: 'No notices or posts available.',
+                          ),
+                        ] else ...[
+                          // Unread Notice Alert Banner matching Figma
+                          Container(
+                            margin: const EdgeInsets.symmetric(horizontal: 16),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 14,
+                              vertical: 10,
+                            ),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFFEF2F2),
+                              borderRadius: BorderRadius.circular(8),
+                              border:
+                                  Border.all(color: const Color(0xFFFECACA)),
+                            ),
+                            child: Row(
+                              children: const [
+                                Icon(
+                                  Icons.circle,
+                                  color: Color(0xFFEF4444),
+                                  size: 8,
+                                ),
+                                SizedBox(width: 8),
+                                Text(
+                                  '1 Unread Notice',
+                                  style: TextStyle(
+                                    color: Color(0xFFDC2626),
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+
+                          FeedList(
+                            feedItems: feedItems,
+                            isLoadingMore: provider.isLoadingMore,
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                          ),
+                        ],
+
+                        const SizedBox(height: 24),
                       ],
                     ),
                   ),
-                  const SizedBox(height: 16),
-
-                  FeedList(
-                    feedItems: feedItems,
-                    isLoadingMore: provider.isLoadingMore,
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                  ),
-                ],
-
-                const SizedBox(height: 24),
-              ],
-            ),
+                ),
+              ),
+            ],
           ),
         ),
       ),
