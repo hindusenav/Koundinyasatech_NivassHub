@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import '../../../../core/utils/responsive.dart';
 import '../../../notifications/widgets/visitor_notification_section.dart';
+import '../provider/dashboard_provider.dart';
 import 'approval_queue/approval_queue_section.dart';
+import 'banner/banner_card.dart';
 import 'banner/banner_slider.dart';
 import 'community/community_posts_section.dart';
 import 'header/dashboard_header.dart';
@@ -17,56 +21,139 @@ class DashboardBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final provider = context.watch<DashboardProvider>();
+
+    final banners = provider.advertisementBanners;
+
+    // ============================================================
+    // RESPONSIVE CONTENT PADDING
+    // ============================================================
+
+    final horizontalPadding =
+        Responsive.horizontalPadding(context).clamp(12.0, 14.0);
+
     return Container(
       width: double.infinity,
       color: const Color(0xFFF7F8FC),
+
       child: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
-        padding: const EdgeInsets.only(bottom: 24),
+
+        // ========================================================
+        // IMPORTANT:
+        // NO LEFT / RIGHT PADDING HERE
+        //
+        // This allows DashboardHeader to reach both screen edges.
+        // ========================================================
+
+        padding: const EdgeInsets.only(
+          bottom: 20,
+        ),
+
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: const [
-            // TOP HEADER
-            DashboardHeader(),
+          children: [
+            // ======================================================
+            // HEADER
+            //
+            // FULL SCREEN WIDTH
+            // NO SIDE GAP
+            // ======================================================
 
-            VisitorNotificationSection(),
+            const DashboardHeader(),
 
-            SizedBox(height: 12),
+            // ======================================================
+            // REST OF DASHBOARD
+            //
+            // SIDE PADDING STARTS FROM HERE
+            // ======================================================
 
-            // ONLINE ADVERTISEMENT SLIDER BANNER
-            BannerSlider(),
+            Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: horizontalPadding,
+              ),
 
-            SizedBox(height: 14),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // ==================================================
+                  // VISITOR NOTIFICATION
+                  // ==================================================
 
-            // QUICK ACTIONS GRID
-            QuickActionsGrid(),
+                  const VisitorNotificationSection(),
 
-            SizedBox(height: 14),
+                  const SizedBox(height: 8),
 
-            // MAINTENANCE ALERT BANNER
-            MaintenanceCard(),
+                  // ==================================================
+                  // ONLINE ADVERTISEMENT
+                  // ==================================================
 
-            SizedBox(height: 14),
+                  const BannerSlider(),
 
-            // APPROVAL QUEUE CAROUSEL
-            ApprovalQueueSection(),
+                  const SizedBox(height: 9),
 
-            SizedBox(height: 14),
+                  // ==================================================
+                  // QUICK ACTIONS
+                  // ==================================================
 
-            // PANIC / SOS SLIDER BANNER
-            PanicSosBanner(),
+                  const QuickActionsGrid(),
 
-            SizedBox(height: 12),
+                  const SizedBox(height: 9),
 
-            // OTP / QR CODE GATE ENTRY BANNER
-            GenerateOtpBanner(),
+                  // ==================================================
+                  // MAINTENANCE
+                  // ==================================================
 
-            SizedBox(height: 18),
+                  const MaintenanceCard(),
 
-            // COMMUNITY POSTS & NOTICE BOARD SECTION (Aligned to main container bounds matching Image 2)
-            CommunityPostsSection(),
+                  const SizedBox(height: 9),
 
-            SizedBox(height: 16),
+                  // ==================================================
+                  // APPROVAL QUEUE
+                  // ==================================================
+
+                  const ApprovalQueueSection(),
+
+                  const SizedBox(height: 9),
+
+                  // ==================================================
+                  // PANIC
+                  // ==================================================
+
+                  const PanicSosBanner(),
+
+                  const SizedBox(height: 7),
+
+                  // ==================================================
+                  // OTP
+                  // ==================================================
+
+                  const GenerateOtpBanner(),
+
+                  // ==================================================
+                  // ADVERTISEMENT
+                  // ==================================================
+
+                  if (banners.isNotEmpty) ...[
+                    const SizedBox(height: 9),
+
+                    BannerCard(
+                      banner: banners.first,
+                    ),
+                  ],
+
+                  const SizedBox(height: 9),
+
+                  // ==================================================
+                  // COMMUNITY
+                  // ==================================================
+
+                  const CommunityPostsSection(),
+
+                  const SizedBox(height: 12),
+                ],
+              ),
+            ),
           ],
         ),
       ),
