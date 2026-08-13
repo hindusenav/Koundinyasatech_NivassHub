@@ -5,8 +5,10 @@ import 'package:provider/provider.dart';
 import '../../../core/network/api_client.dart';
 import '../../../shared/widgets/loaders/loader.dart';
 import '../../../shared/widgets/states/custom_error_widget.dart';
-import '../../../shared/widgets/states/empty_state.dart';
 import '../../dashboard/presentation/widgets/navigation/dashboard_bottom_navigation.dart';
+import '../models/advertisement_model.dart';
+import '../models/feed_item_model.dart';
+import '../models/feed_notice_model.dart';
 import '../provider/notices_provider.dart';
 import '../widgets/feed_list.dart';
 
@@ -37,6 +39,74 @@ class _NoticeBoardViewState extends State<_NoticeBoardView> {
 
   final List<String> _filters = ['All', 'Unread', 'Promotions', 'Community'];
 
+  static const List<FeedItemModel> _figmaDefaultFeed = [
+    FeedItemModel.notice(
+      FeedNoticeModel(
+        id: 'not_1',
+        title: 'Expense report for quarter ending on June 2026',
+        description:
+            'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+        date: 'Society 25 Jun',
+        attachment: '',
+        author: 'Admin',
+        category: 'Society 25 Jun',
+        action: 'Download',
+      ),
+    ),
+    FeedItemModel.notice(
+      FeedNoticeModel(
+        id: 'not_2',
+        title: 'Swimming Pool under maintenance',
+        description:
+            'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+        date: 'Society 25 Jun',
+        attachment: '',
+        author: 'Admin',
+        category: 'Society 25 Jun',
+        action: 'Download',
+      ),
+    ),
+    FeedItemModel.advertisement(
+      AdvertisementModel(
+        bannerId: 'ad_1',
+        title: 'Century Bliss',
+        subtitle: 'Yelahanka–Doddaballapura Main Road',
+        price: '₹1.30 Crore Onwards',
+        image:
+            'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=600&q=80',
+        redirectUrl: '',
+        description:
+            'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+      ),
+    ),
+    FeedItemModel.advertisement(
+      AdvertisementModel(
+        bannerId: 'ad_2',
+        title: 'Enjoy Luxury Living @ Nikoo Homes',
+        subtitle: 'by Bhartiya City',
+        price: '₹93 Lakhs Onwards',
+        image:
+            'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=600&q=80',
+        redirectUrl: '',
+        description:
+            'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+      ),
+    ),
+    FeedItemModel.notice(
+      FeedNoticeModel(
+        id: 'not_3',
+        title: 'B- Building parking under restoration',
+        description:
+            'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+        date: 'Society 25 Jun',
+        attachment: '',
+        author: 'Admin',
+        category: 'Society 25 Jun',
+        action: 'Download',
+      ),
+    ),
+  ];
+
   @override
   void initState() {
     super.initState();
@@ -62,10 +132,38 @@ class _NoticeBoardViewState extends State<_NoticeBoardView> {
     }
   }
 
+  List<FeedItemModel> _getFilteredItems(List<FeedItemModel> rawItems) {
+    final baseItems = rawItems.isEmpty ? _figmaDefaultFeed : rawItems;
+
+    if (_selectedFilter == 'Unread') {
+      return baseItems
+          .where(
+            (item) =>
+                item.type == FeedType.notice &&
+                (item.notice?.id == 'not_1' ||
+                    item.notice?.title.contains('Expense') == true),
+          )
+          .toList();
+    } else if (_selectedFilter == 'Promotions') {
+      return baseItems
+          .where((item) => item.type == FeedType.advertisement)
+          .toList();
+    } else if (_selectedFilter == 'Community') {
+      return baseItems
+          .where(
+            (item) =>
+                item.type == FeedType.community || item.type == FeedType.notice,
+          )
+          .toList();
+    }
+    return baseItems;
+  }
+
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<NoticesProvider>();
-    final feedItems = provider.feedItems;
+    final rawFeedItems = provider.feedItems;
+    final displayItems = _getFilteredItems(rawFeedItems);
     final statusBarHeight = MediaQuery.of(context).padding.top;
 
     return Scaffold(
@@ -82,13 +180,13 @@ class _NoticeBoardViewState extends State<_NoticeBoardView> {
           child: Column(
             children: [
               // =====================================================
-              // APP BAR HEADER MATCHING FIGMA HIGHLIGHTED BOX
+              // APP BAR HEADER MATCHING FIGMA DESIGN
               // =====================================================
               Container(
                 width: double.infinity,
                 padding: EdgeInsets.only(
-                  top: statusBarHeight > 0 ? statusBarHeight + 4 : 12,
-                  left: 8,
+                  top: statusBarHeight > 0 ? statusBarHeight + 6 : 14,
+                  left: 6,
                   right: 16,
                   bottom: 12,
                 ),
@@ -100,7 +198,7 @@ class _NoticeBoardViewState extends State<_NoticeBoardView> {
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: Color(0x12000000),
+                      color: Color(0x10000000),
                       blurRadius: 6,
                       spreadRadius: 0,
                       offset: Offset(0, 2),
@@ -195,21 +293,15 @@ class _NoticeBoardViewState extends State<_NoticeBoardView> {
                         ),
                         const SizedBox(height: 14),
 
-                        if (provider.isLoading && feedItems.isEmpty) ...[
+                        if (provider.isLoading && rawFeedItems.isEmpty) ...[
                           const SizedBox(height: 60),
                           const Loader(message: 'Loading feed...'),
-                        ] else if (provider.hasError && feedItems.isEmpty) ...[
+                        ] else if (provider.hasError && rawFeedItems.isEmpty) ...[
                           const SizedBox(height: 40),
                           CustomErrorWidget(
                             message:
                                 provider.errorMessage ?? 'Something went wrong.',
                             onRetry: provider.retry,
-                          ),
-                        ] else if (feedItems.isEmpty) ...[
-                          const SizedBox(height: 40),
-                          const EmptyState(
-                            title: 'No posts yet',
-                            message: 'No notices or posts available.',
                           ),
                         ] else ...[
                           // Unread Notice Alert Banner matching Figma
@@ -247,7 +339,7 @@ class _NoticeBoardViewState extends State<_NoticeBoardView> {
                           const SizedBox(height: 16),
 
                           FeedList(
-                            feedItems: feedItems,
+                            feedItems: displayItems,
                             isLoadingMore: provider.isLoadingMore,
                             shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(),

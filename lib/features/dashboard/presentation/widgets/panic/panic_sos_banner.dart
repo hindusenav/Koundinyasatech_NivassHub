@@ -71,7 +71,6 @@ class _PanicSosBannerState extends State<PanicSosBanner> {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              /// 🔴 LEFT ICON (🔥 MUCH BIGGER)
               Container(
                 width: 54,
                 height: 54,
@@ -81,7 +80,7 @@ class _PanicSosBannerState extends State<PanicSosBanner> {
                 ),
                 child: Center(
                   child: SizedBox(
-                    width: 45, // 🔥 increased
+                    width: 45,
                     height: 45,
                     child: Image.asset(
                       'assets/icons/arrow_icon.png',
@@ -93,7 +92,6 @@ class _PanicSosBannerState extends State<PanicSosBanner> {
 
               const SizedBox(width: 12),
 
-              /// 📝 TEXT
               const Expanded(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -125,7 +123,6 @@ class _PanicSosBannerState extends State<PanicSosBanner> {
 
               const SizedBox(width: 10),
 
-              /// 🔴 RIGHT ICON (🔥 MUCH BIGGER)
               Container(
                 width: 54,
                 height: 54,
@@ -135,7 +132,7 @@ class _PanicSosBannerState extends State<PanicSosBanner> {
                 ),
                 child: Center(
                   child: SizedBox(
-                    width: 40, // 🔥 increased
+                    width: 40,
                     height: 40,
                     child: Image.asset(
                       'assets/icons/panic_icon.png',
