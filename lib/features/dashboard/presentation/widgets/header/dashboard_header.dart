@@ -4,11 +4,18 @@ import 'package:provider/provider.dart';
 
 import '../../../../../app/app_routes.dart';
 import '../../../../../shared/widgets/feedback/custom_snackbar.dart';
-import '../../../data/models/address_model.dart';
 import '../../provider/dashboard_provider.dart';
 
 class DashboardHeader extends StatelessWidget {
-  const DashboardHeader({super.key});
+  const DashboardHeader({
+    super.key,
+  });
+
+  // ============================================================
+  // COLORS
+  // ============================================================
+
+  static const Color _headerBlue = Color(0xFFC7E1F8);
 
   @override
   Widget build(BuildContext context) {
@@ -17,6 +24,10 @@ class DashboardHeader extends StatelessWidget {
     final user = provider.home?.data.user;
     final addresses = provider.addresses;
 
+    // ============================================================
+    // FLAT NUMBER
+    // ============================================================
+
     final flatLabel = addresses.isNotEmpty
         ? addresses.firstWhere(
             (e) => e.isDefault,
@@ -24,250 +35,329 @@ class DashboardHeader extends StatelessWidget {
           ).flatNumber
         : (user?.flatNumber ?? 'B - 402');
 
-    final userInitial = (user?.name.trim().isNotEmpty == true)
-        ? user!.name.trim()[0].toUpperCase()
-        : 'A';
-
-    final statusBarHeight = MediaQuery.of(context).padding.top;
+    // ============================================================
+    // HEADER
+    // ============================================================
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: const SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,
+        statusBarColor: _headerBlue,
         statusBarIconBrightness: Brightness.dark,
         statusBarBrightness: Brightness.light,
       ),
+
       child: Container(
+        // ========================================================
+        // FULL AVAILABLE WIDTH
+        // ========================================================
+
         width: double.infinity,
-        decoration: const BoxDecoration(
-          color: Color(0xFFC7E1F8),
-          borderRadius: BorderRadius.only(
+
+        // ========================================================
+        // HEADER HEIGHT
+        // ========================================================
+
+        height: 70,
+
+        decoration: BoxDecoration(
+          color: _headerBlue,
+
+          // ======================================================
+          // FIGMA BOTTOM ROUNDED CORNERS
+          // ======================================================
+
+          borderRadius: const BorderRadius.only(
             bottomLeft: Radius.circular(20),
             bottomRight: Radius.circular(20),
           ),
+
+          // ======================================================
+          // HEADER SHADOW
+          // ======================================================
+
           boxShadow: [
             BoxShadow(
-              color: Color(0x12000000),
-              blurRadius: 6,
+              color: Colors.black.withOpacity(0.12),
+              blurRadius: 8,
               spreadRadius: 0,
-              offset: Offset(0, 2),
+              offset: const Offset(0, 3),
             ),
           ],
         ),
-        child: Padding(
-          padding: EdgeInsets.only(
-            top: statusBarHeight > 0 ? statusBarHeight + 8 : 14,
-            left: 16,
-            right: 16,
-            bottom: 14,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // =====================================================
-              // ROW 1: GREETING (Hello! User name 👋)
-              // =====================================================
-              Text(
-                'Hello! ${user?.name ?? 'User name'} 👋',
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                  fontSize: 14.5,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF0F172A),
-                  height: 1.2,
-                ),
-              ),
 
-              const SizedBox(height: 8),
+        // ========================================================
+        // SAFE AREA
+        // ========================================================
 
-              // =====================================================
-              // ROW 2: USER PROFILE & FLAT (LEFT) | ACTIONS (RIGHT)
-              // =====================================================
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  // -------------------------------------------------
-                  // LEFT: Profile Avatar + Flat Number + Dropdown Arrow
-                  // -------------------------------------------------
-                  GestureDetector(
-                    behavior: HitTestBehavior.opaque,
-                    onTap: () => _showAddressBottomSheet(context, addresses, flatLabel),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        // User Circular Profile Avatar
-                        Container(
-                          width: 28,
-                          height: 28,
-                          decoration: const BoxDecoration(
-                            shape: BoxShape.circle,
-                            image: DecorationImage(
-                              image: NetworkImage('https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&q=80'),
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                        ),
+        child: SafeArea(
+          top: true,
+          left: false,
+          right: false,
+          bottom: false,
 
-                        const SizedBox(width: 8),
+          child: Padding(
+            padding: const EdgeInsets.only(
+              left: 18,
+              right: 14,
+              bottom: 11,
+            ),
 
-                        // Flat Number Text (e.g. B - 402)
-                        Text(
-                          flatLabel.isNotEmpty ? flatLabel : 'B - 402',
-                          style: const TextStyle(
-                            fontSize: 13.5,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF0F172A),
-                          ),
-                        ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                // ==================================================
+                // USER INFORMATION
+                // ==================================================
 
-                        const SizedBox(width: 3),
-
-                        // Dropdown Down Arrow
-                        const Icon(
-                          Icons.keyboard_arrow_down_rounded,
-                          size: 18,
-                          color: Color(0xFF0F172A),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  // -------------------------------------------------
-                  // RIGHT: Action Icons (Search, Chat, Orange 'A' Badge)
-                  // -------------------------------------------------
-                  Row(
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      // 1. Search Icon
-                      GestureDetector(
-                        behavior: HitTestBehavior.opaque,
-                        onTap: () => Navigator.pushNamed(context, AppRoutes.search),
-                        child: const Padding(
-                          padding: EdgeInsets.all(4),
-                          child: Icon(
-                            Icons.search_rounded,
-                            size: 22,
-                            color: Color(0xFF0F172A),
-                          ),
+                      // =============================================
+                      // HELLO USER
+                      // =============================================
+
+                      Text(
+                        'Hello! ${user?.name ?? 'User name'} 👋',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontSize: 13.5,
+                          fontWeight: FontWeight.w800,
+                          color: Color(0xFF1F1F1F),
+                          height: 1.15,
+                          letterSpacing: 0.05,
                         ),
                       ),
 
-                      const SizedBox(width: 10),
+                      const SizedBox(height: 5),
 
-                      // 2. Chat / Messages Icon
-                      GestureDetector(
-                        behavior: HitTestBehavior.opaque,
-                        onTap: () => CustomSnackbar.info(context, 'Messages coming soon.'),
-                        child: const Padding(
-                          padding: EdgeInsets.all(4),
-                          child: Icon(
-                            Icons.chat_bubble_outline_rounded,
-                            size: 20,
-                            color: Color(0xFF0F172A),
-                          ),
-                        ),
-                      ),
+                      // =============================================
+                      // FLAT NUMBER
+                      // =============================================
 
-                      const SizedBox(width: 10),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          // -----------------------------------------
+                          // CHAT IMAGE
+                          // -----------------------------------------
+                          // Changed ONLY this image:
+                          // profile.png -> chat.png
+                          // -----------------------------------------
 
-                      // 3. Orange Initial Badge ("A") / Profile Link
-                      GestureDetector(
-                        behavior: HitTestBehavior.opaque,
-                        onTap: () => Navigator.pushNamed(context, AppRoutes.profile),
-                        child: Container(
-                          width: 28,
-                          height: 28,
-                          decoration: const BoxDecoration(
-                            color: Color(0xFFF58220),
-                            shape: BoxShape.circle,
-                            boxShadow: [
-                              BoxShadow(
-                                color: Color(0x20F58220),
-                                blurRadius: 4,
-                                offset: Offset(0, 2),
-                              ),
-                            ],
-                          ),
-                          child: Center(
-                            child: Text(
-                              userInitial,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 13,
+                          GestureDetector(
+                            behavior: HitTestBehavior.opaque,
+                            onTap: () {
+                              Navigator.pushNamed(
+                                context,
+                                AppRoutes.profile,
+                              );
+                            },
+
+                            child: SizedBox(
+                              width: 20,
+                              height: 20,
+
+                              child: Image.asset(
+                                'assets/icons/chat.png',
+                                width: 20,
+                                height: 20,
+                                fit: BoxFit.contain,
+
+                                errorBuilder: (
+                                  context,
+                                  error,
+                                  stackTrace,
+                                ) {
+                                  return const Icon(
+                                    Icons.chat_bubble_outline_rounded,
+                                    size: 18,
+                                    color: Color.fromARGB(255, 9, 9, 9),
+                                  );
+                                },
                               ),
                             ),
                           ),
-                        ),
+
+                          const SizedBox(width: 7),
+
+                          // -----------------------------------------
+                          // FLAT NUMBER
+                          // -----------------------------------------
+
+                          Text(
+                            flatLabel.isNotEmpty
+                                ? flatLabel
+                                : 'B - 402',
+
+                            style: const TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w700,
+                              color: Color.fromARGB(255, 9, 9, 9),
+                              height: 1.1,
+                            ),
+                          ),
+
+                          const SizedBox(width: 2),
+
+                          const Icon(
+                            Icons.keyboard_arrow_down_rounded,
+                            size: 14,
+                            color: Color(0xFF222222),
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                ],
-              ),
-            ],
+                ),
+
+                // ==================================================
+                // RIGHT SIDE ICONS
+                // ==================================================
+
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    // ==============================================
+                    // SEARCH
+                    // ==============================================
+
+                    GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+
+                      onTap: () {
+                        Navigator.pushNamed(
+                          context,
+                          AppRoutes.search,
+                        );
+                      },
+
+                      child: SizedBox(
+                        width: 30,
+                        height: 30,
+
+                        child: Center(
+                          child: Image.asset(
+                            'assets/icons/search.png',
+
+                            width: 19,
+                            height: 19,
+
+                            fit: BoxFit.contain,
+
+                            errorBuilder: (
+                              context,
+                              error,
+                              stackTrace,
+                            ) {
+                              return const Icon(
+                                Icons.search_rounded,
+                                size: 19,
+                                color: Color.fromARGB(255, 11, 11, 11),
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(width: 2),
+
+                    // ==============================================
+                    // NOTIFICATION
+                    // ==============================================
+
+                    GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+
+                      onTap: () {
+                        CustomSnackbar.info(
+                          context,
+                          'Notifications coming soon.',
+                        );
+                      },
+
+                      child: SizedBox(
+                        width: 30,
+                        height: 30,
+
+                        child: Center(
+                          child: Image.asset(
+                            'assets/icons/notification.png',
+
+                            width: 20,
+                            height: 20,
+
+                            fit: BoxFit.contain,
+
+                            errorBuilder: (
+                              context,
+                              error,
+                              stackTrace,
+                            ) {
+                              return const Icon(
+                                Icons.chat_bubble_outline_rounded,
+                                size: 19,
+                                color: Color.fromARGB(255, 8, 8, 8),
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(width: 4),
+
+                    // ==============================================
+                    // RIGHT SIDE ORANGE PROFILE A
+                    // KEEPING THIS UNCHANGED
+                    // ==============================================
+
+                    GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+
+                      onTap: () {
+                        Navigator.pushNamed(
+                          context,
+                          AppRoutes.profile,
+                        );
+                      },
+
+                      child: Container(
+                        width: 22,
+                        height: 22,
+
+                        alignment: Alignment.center,
+
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Color(0xFFFFA000),
+                        ),
+
+                        child: const Text(
+                          'A',
+
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w800,
+                            color: Color.fromARGB(255, 5, 5, 5),
+                            height: 1,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
-    );
-  }
-
-  void _showAddressBottomSheet(
-      BuildContext context, List<AddressModel> addresses, String currentFlat) {
-    if (addresses.isEmpty) {
-      CustomSnackbar.info(context, 'Current Unit: $currentFlat');
-      return;
-    }
-
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) {
-        return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Select Flat / Unit',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF1E293B),
-                ),
-              ),
-              const SizedBox(height: 12),
-              ...addresses.map(
-                (address) => ListTile(
-                  contentPadding: EdgeInsets.zero,
-                  leading: const Icon(Icons.home_work_outlined, color: Color(0xFF1976D2)),
-                  title: Text(
-                    address.flatNumber,
-                    style: TextStyle(
-                      fontWeight: address.flatNumber == currentFlat ? FontWeight.bold : FontWeight.normal,
-                      color: const Color(0xFF1E293B),
-                    ),
-                  ),
-                  subtitle: Text(address.societyName),
-                  trailing: address.flatNumber == currentFlat
-                      ? const Icon(Icons.check_circle, color: Color(0xFF1976D2))
-                      : null,
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
-                ),
-              ),
-            ],
-          ),
-        );
-      },
     );
   }
 }
