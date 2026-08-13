@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/utils/responsive.dart';
 import '../../../notifications/widgets/visitor_notification_section.dart';
 import 'approval_queue/approval_queue_section.dart';
 import 'banner/banner_slider.dart';
@@ -23,55 +22,51 @@ class DashboardBody extends StatelessWidget {
       color: const Color(0xFFF7F8FC),
       child: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
-        padding: EdgeInsets.only(
-          left: Responsive.horizontalPadding(context).clamp(12.0, 14.0),
-          right: Responsive.horizontalPadding(context).clamp(12.0, 14.0),
-          bottom: 20,
-        ),
+        padding: const EdgeInsets.only(bottom: 24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // HEADER
-            const DashboardHeader(),
+          children: const [
+            // TOP HEADER
+            DashboardHeader(),
 
-            const VisitorNotificationSection(),
+            VisitorNotificationSection(),
 
-            const SizedBox(height: 8),
+            SizedBox(height: 12),
 
-            // ONLINE ADVERTISEMENT SLIDER
-            const BannerSlider(),
+            // ONLINE ADVERTISEMENT SLIDER BANNER
+            BannerSlider(),
 
-            const SizedBox(height: 9),
+            SizedBox(height: 14),
 
-            // QUICK ACTIONS
-            const QuickActionsGrid(),
+            // QUICK ACTIONS GRID
+            QuickActionsGrid(),
 
-            const SizedBox(height: 9),
+            SizedBox(height: 14),
 
-            // MAINTENANCE
-            const MaintenanceCard(),
+            // MAINTENANCE ALERT BANNER
+            MaintenanceCard(),
 
-            const SizedBox(height: 9),
+            SizedBox(height: 14),
 
-            // APPROVAL QUEUE
-            const ApprovalQueueSection(),
+            // APPROVAL QUEUE CAROUSEL
+            ApprovalQueueSection(),
 
-            const SizedBox(height: 9),
+            SizedBox(height: 14),
 
-            // PANIC / SOS
-            const PanicSosBanner(),
+            // PANIC / SOS SLIDER BANNER
+            PanicSosBanner(),
 
-            const SizedBox(height: 7),
+            SizedBox(height: 12),
 
-            // OTP / QR CODE GATE ENTRY
-            const GenerateOtpBanner(),
+            // OTP / QR CODE GATE ENTRY BANNER
+            GenerateOtpBanner(),
 
-            const SizedBox(height: 16),
+            SizedBox(height: 18),
 
-            // COMMUNITY POSTS & NOTICE BOARD SECTION (Matching Figma order 100%)
-            const CommunityPostsSection(),
+            // COMMUNITY POSTS & NOTICE BOARD SECTION (Aligned to main container bounds matching Image 2)
+            CommunityPostsSection(),
 
-            const SizedBox(height: 12),
+            SizedBox(height: 16),
           ],
         ),
       ),
