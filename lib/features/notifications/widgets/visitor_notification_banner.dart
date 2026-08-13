@@ -22,6 +22,7 @@ class VisitorNotificationBanner extends StatelessWidget {
     required this.notification,
     required this.isApproving,
     required this.isRejecting,
+    this.horizontalMargin = 0,
     required this.onApprove,
     required this.onReject,
     required this.onClose,
@@ -31,6 +32,15 @@ class VisitorNotificationBanner extends StatelessWidget {
   final VisitorNotificationModel notification;
   final bool isApproving;
   final bool isRejecting;
+
+  /// Left/right margin applied to this card, matching the horizontal
+  /// padding the rest of `DashboardBody`'s content uses. Applied here as
+  /// the card's own `Container.margin` — INSIDE `VisitorNotificationSection`'s
+  /// `Transform.translate` — rather than by an ancestor `Padding`, so it
+  /// doesn't interfere with that Transform's hit-testing. See
+  /// `VisitorNotificationSection`/`DashboardBody` for why.
+  final double horizontalMargin;
+
   final VoidCallback onApprove;
   final VoidCallback onReject;
   final VoidCallback onClose;
@@ -51,6 +61,7 @@ class VisitorNotificationBanner extends StatelessWidget {
     return Material(
       color: Colors.transparent,
       child: Container(
+        margin: EdgeInsets.symmetric(horizontal: horizontalMargin),
         decoration: BoxDecoration(
           color: surfaceColor,
           borderRadius: AppRadius.radiusLg,

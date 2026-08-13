@@ -25,7 +25,13 @@ import 'visitor_notification_banner.dart';
 /// now permanent page content rather than a transient overlay, so the
 /// previous 3s appear-delay and 10s auto-dismiss timer no longer apply.
 class VisitorNotificationSection extends StatefulWidget {
-  const VisitorNotificationSection({super.key});
+  const VisitorNotificationSection({super.key, this.horizontalPadding = 0});
+
+  /// Applied as the banner's own left/right margin (inside the
+  /// `Transform`, not via an ancestor `Padding`) so it lines up with the
+  /// rest of `DashboardBody`'s padded content — see `DashboardBody` for
+  /// why this can't just be wrapped in a `Padding` from outside.
+  final double horizontalPadding;
 
   @override
   State<VisitorNotificationSection> createState() => _VisitorNotificationSectionState();
@@ -138,6 +144,7 @@ class _VisitorNotificationSectionState extends State<VisitorNotificationSection>
               notification: notification,
               isApproving: provider.isApproving,
               isRejecting: provider.isRejecting,
+              horizontalMargin: widget.horizontalPadding,
               onApprove: _handleApprove,
               onReject: _handleReject,
               onClose: provider.dismiss,
