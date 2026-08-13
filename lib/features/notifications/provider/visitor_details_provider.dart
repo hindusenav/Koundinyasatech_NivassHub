@@ -5,10 +5,10 @@ import '../repository/visitor_details_repository.dart';
 
 enum VisitorDetailsState { initial, loading, success, error }
 
-/// Owns the "Delivery Details" bottom sheet's own fetch state. Scoped to
-/// the sheet's lifetime — created fresh in `DeliveryDetailsSheet.show` and
+/// Owns the "Delivery Details" screen's own fetch state. Scoped to the
+/// screen's lifetime — created fresh in `DeliveryDetailsScreen.build` and
 /// disposed automatically when its `ChangeNotifierProvider` is removed from
-/// the tree (i.e. when the sheet closes).
+/// the tree (i.e. when the screen is popped).
 class VisitorDetailsProvider extends ChangeNotifier {
   VisitorDetailsProvider(this._repository);
 

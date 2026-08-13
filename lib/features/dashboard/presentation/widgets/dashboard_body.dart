@@ -31,7 +31,14 @@ class DashboardBody extends StatelessWidget {
 
             VisitorNotificationSection(),
 
-            SizedBox(height: 12),
+            // 16 = the 12 this gap always reserved + the 4 that used to be
+            // a trailing SizedBox *inside* VisitorNotificationSection's own
+            // Column. That inner Column was removed so the notification
+            // card's Transform.translate is this Column's direct child
+            // (see VisitorNotificationSection for why — it's a hit-testing
+            // fix, not a style change), so its spacing moved out here to
+            // keep the total gap identical.
+            SizedBox(height: 16),
 
             // ONLINE ADVERTISEMENT SLIDER BANNER
             BannerSlider(),

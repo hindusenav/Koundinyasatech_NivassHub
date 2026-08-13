@@ -12,6 +12,7 @@ import '../../../core/theme/app_radius.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../../core/utils/extensions/context_extensions.dart';
+import '../../../shared/widgets/app_bar/custom_app_bar.dart';
 import '../../../shared/widgets/buttons/custom_button.dart';
 import '../../../shared/widgets/buttons/secondary_button.dart';
 import '../../../shared/widgets/common/custom_divider.dart';
@@ -28,56 +29,43 @@ import '../provider/visitor_notification_provider.dart';
 import '../repository/mock_visitor_details_service.dart';
 import '../repository/visitor_details_repository.dart';
 
-/// The "Delivery Details" bottom sheet opened by tapping the Home screen's
-/// gate-arrival notification card anywhere except its own Approve/Reject
-/// buttons — see `VisitorNotificationSection._handleTap`.
-///
-/// Reuses the SAME `VisitorNotificationProvider` instance the card itself
-/// owns (passed in to [show] as `notificationProvider`) so Approve/Reject
-/// tapped from here go through the exact existing `_respond()` flow — no
-/// duplicate provider/model/logic. A fresh `VisitorDetailsProvider` is
-/// created just for this sheet's own mock fetch and disposed automatically
-/// when the sheet closes.
-///
-/// Deliberately bypasses `CustomBottomSheet` (which pads every side,
-/// including the top) and calls `showModalBottomSheet` directly instead —
-/// same pattern `ActivityTypeFilterSheet` uses — so the advertisement
-/// banner can render full-bleed/flush at the very top, below the theme's
-/// auto-drawn drag handle (`bottomSheetTheme.showDragHandle`, see
-/// `app_theme.dart`).
-class DeliveryDetailsSheet extends StatelessWidget {
-  const DeliveryDetailsSheet({
-    super.key,
+/// Arguments for `AppRoutes.visitorDetail` — see `RouteGenerator`. Carries
+/// the SAME data `DeliveryDetailsSheet.show(...)` used to take: the visitor
+/// id to fetch, the Home screen's already-loaded `VisitorNotificationProvider`
+/// (reused, not recreated, so Approve/Reject here go through the exact same
+/// `_respond()` flow as the card's own buttons), and the Home screen's
+/// `_handleApprove`/`_handleReject` callbacks (which also sync the Approval
+/// Queue card and show the snackbar).
+class DeliveryDetailsScreenArgs {
+  const DeliveryDetailsScreenArgs({
+    required this.visitorId,
+    required this.notificationProvider,
     required this.onApprove,
     required this.onReject,
   });
 
+  final String visitorId;
+  final VisitorNotificationProvider notificationProvider;
   final Future<void> Function() onApprove;
   final Future<void> Function() onReject;
+}
 
-  static Future<void> show(
-    BuildContext context, {
-    required String visitorId,
-    required VisitorNotificationProvider notificationProvider,
-    required Future<void> Function() onApprove,
-    required Future<void> Function() onReject,
-  }) {
-    return showModalBottomSheet<void>(
-      context: context,
-      isScrollControlled: true,
-      builder: (_) => MultiProvider(
-        providers: [
-          ChangeNotifierProvider<VisitorNotificationProvider>.value(value: notificationProvider),
-          ChangeNotifierProvider<VisitorDetailsProvider>(
-            create: (_) => VisitorDetailsProvider(
-              VisitorDetailsRepository(MockVisitorDetailsService()),
-            )..loadDetails(visitorId),
-          ),
-        ],
-        child: DeliveryDetailsSheet(onApprove: onApprove, onReject: onReject),
-      ),
-    );
-  }
+/// The "Delivery Details" screen opened by tapping the Home screen's
+/// gate-arrival approval card anywhere except its own Approve/Reject/close
+/// controls — see `VisitorNotificationSection._handleTap`.
+class DeliveryDetailsScreen extends StatelessWidget {
+  const DeliveryDetailsScreen({
+    super.key,
+    required this.visitorId,
+    required this.notificationProvider,
+    required this.onApprove,
+    required this.onReject,
+  });
+
+  final String visitorId;
+  final VisitorNotificationProvider notificationProvider;
+  final Future<void> Function() onApprove;
+  final Future<void> Function() onReject;
 
   Future<void> _handleApprove(BuildContext context) async {
     await onApprove();
@@ -104,46 +92,61 @@ class DeliveryDetailsSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     final banner = context.watch<DashboardProvider>().advertisementBanners.firstOrNull;
 
-    return SafeArea(
-      top: false,
-      child: SingleChildScrollView(
-        padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (banner != null) _AdBanner(banner: banner),
-            Padding(
-              padding: AppSpacing.all(AppSpacing.md),
-              child: Consumer<VisitorDetailsProvider>(
-                builder: (context, detailsProvider, _) {
-                  if (detailsProvider.isLoading) {
-                    return const SizedBox(height: 240, child: Loader());
-                  }
-                  if (detailsProvider.hasError) {
-                    return SizedBox(
-                      height: 240,
-                      child: CustomErrorWidget(
-                        message: detailsProvider.errorMessage ?? 'Something went wrong. Please try again.',
-                        onRetry: detailsProvider.retry,
-                      ),
-                    );
-                  }
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider<VisitorNotificationProvider>.value(value: notificationProvider),
+        ChangeNotifierProvider<VisitorDetailsProvider>(
+          create: (_) => VisitorDetailsProvider(
+            VisitorDetailsRepository(MockVisitorDetailsService()),
+          )..loadDetails(visitorId),
+        ),
+      ],
+      child: Scaffold(
+        appBar: CustomAppBar(
+          title: 'Delivery Details',
+          // Visual-only for now — no menu wired up yet.
+          actions: [IconButton(icon: Icon(AppIcons.more), onPressed: () {})],
+        ),
+        body: SafeArea(
+          top: false,
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (banner != null) _AdBanner(banner: banner),
+                Padding(
+                  padding: AppSpacing.all(AppSpacing.md),
+                  child: Consumer<VisitorDetailsProvider>(
+                    builder: (context, detailsProvider, _) {
+                      if (detailsProvider.isLoading) {
+                        return const SizedBox(height: 240, child: Loader());
+                      }
+                      if (detailsProvider.hasError) {
+                        return SizedBox(
+                          height: 240,
+                          child: CustomErrorWidget(
+                            message: detailsProvider.errorMessage ?? 'Something went wrong. Please try again.',
+                            onRetry: detailsProvider.retry,
+                          ),
+                        );
+                      }
 
-                  final details = detailsProvider.details;
-                  if (details == null) return const SizedBox.shrink();
+                      final details = detailsProvider.details;
+                      if (details == null) return const SizedBox.shrink();
 
-                  return _DeliveryDetailsContent(
-                    details: details,
-                    onApprove: () => _handleApprove(context),
-                    onReject: () => _handleReject(context),
-                    onLeaveAtGate: () => _handleLeaveAtGate(context, detailsProvider),
-                    isLeavingAtGate: detailsProvider.isLeavingAtGate,
-                  );
-                },
-              ),
+                      return _DeliveryDetailsContent(
+                        details: details,
+                        onApprove: () => _handleApprove(context),
+                        onReject: () => _handleReject(context),
+                        onLeaveAtGate: () => _handleLeaveAtGate(context, detailsProvider),
+                        isLeavingAtGate: detailsProvider.isLeavingAtGate,
+                      );
+                    },
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
@@ -151,7 +154,7 @@ class DeliveryDetailsSheet extends StatelessWidget {
 }
 
 /// The advertisement banner, rendered edge-to-edge at the very top of the
-/// sheet (Figma requirement) — sourced from `DashboardProvider`'s existing
+/// screen (Figma requirement) — sourced from `DashboardProvider`'s existing
 /// `advertisementBanners`, not a new banner model. `BannerCard` (used
 /// elsewhere on the Home screen) is NOT reused here: it hardcodes side
 /// margins/decorative icons and never actually loads `banner.image`, which
@@ -165,20 +168,17 @@ class _AdBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: AppRadius.topLg,
-      child: CachedNetworkImage(
-        imageUrl: banner.image,
-        width: double.infinity,
+    return CachedNetworkImage(
+      imageUrl: banner.image,
+      width: double.infinity,
+      height: _height,
+      fit: BoxFit.cover,
+      placeholder: (context, url) => Container(height: _height, color: AppColors.grey100),
+      errorWidget: (context, url, error) => Container(
         height: _height,
-        fit: BoxFit.cover,
-        placeholder: (context, url) => Container(height: _height, color: AppColors.grey100),
-        errorWidget: (context, url, error) => Container(
-          height: _height,
-          color: AppColors.grey100,
-          alignment: Alignment.center,
-          child: Icon(AppIcons.empty, color: AppColors.grey400, size: AppDimensions.iconLg),
-        ),
+        color: AppColors.grey100,
+        alignment: Alignment.center,
+        child: Icon(AppIcons.empty, color: AppColors.grey400, size: AppDimensions.iconLg),
       ),
     );
   }
@@ -315,7 +315,7 @@ class _QuickActionButton extends StatelessWidget {
   }
 }
 
-/// The sheet's main content once `VisitorDetailsProvider` has data: photo +
+/// The screen's main content once `VisitorDetailsProvider` has data: photo +
 /// name + status; Company/Entry/Exit/Approved-by rows; Quick Actions; the
 /// Approve/Reject row; the Leave at Gate button.
 class _DeliveryDetailsContent extends StatelessWidget {

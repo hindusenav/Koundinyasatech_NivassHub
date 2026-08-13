@@ -1,19 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../app/app_routes.dart';
 import '../../../shared/widgets/feedback/custom_snackbar.dart';
 import '../../dashboard/presentation/provider/dashboard_provider.dart';
 import '../provider/visitor_notification_provider.dart';
 import '../repository/mock_visitor_notification_service.dart';
 import '../repository/visitor_notification_repository.dart';
-import 'delivery_details_sheet.dart';
+import '../screens/delivery_details_screen.dart';
 import 'visitor_notification_banner.dart';
 
 /// The Home screen's gate-arrival approval card — a normal, persistent
 /// section of the dashboard body placed immediately below the header (see
-/// `DashboardBody`), not a floating overlay. Renders nothing when there's
-/// no pending notification (no leftover empty space) or once it's been
-/// dismissed.
+/// `DashboardBody`), not a floating overlay. Pulled up by [_overlap] so it
+/// visually overlaps the header's rounded bottom edge and reads as part of
+/// the top section instead of separate content floating below it. Renders
+/// nothing when there's no pending notification (no leftover empty space,
+/// no dangling overlap) or once it's been dismissed.
 ///
 /// Owns its own `VisitorNotificationProvider` — same construction the old
 /// `VisitorNotificationOverlay` used — so the provider/repository/service/
@@ -29,6 +32,12 @@ class VisitorNotificationSection extends StatefulWidget {
 }
 
 class _VisitorNotificationSectionState extends State<VisitorNotificationSection> {
+  /// How far up the card is pulled so it visibly overlaps the header's
+  /// rounded bottom edge — the card's top portion sits on the header's
+  /// blue background before transitioning to the white page background,
+  /// rather than merely touching the header with no gap.
+  static const double _overlap = 80;
+
   late final VisitorNotificationProvider _provider;
 
   @override
@@ -80,21 +89,22 @@ class _VisitorNotificationSectionState extends State<VisitorNotificationSection>
     }
   }
 
-  /// Tapping the card body opens the "Delivery Details" bottom sheet.
-  /// Reuses this exact `_provider` instance and the `_handleApprove`/
-  /// `_handleReject` methods above — so Approve/Reject tapped from inside
-  /// the sheet go through the identical, already-working flow (API call →
-  /// dismiss → Approval Queue sync → snackbar), with no duplicate provider
-  /// or logic.
+  /// Tapping the card body opens the "Delivery Details" screen. Reuses this
+  /// exact `_provider` instance and the `_handleApprove`/`_handleReject`
+  /// methods above — so Approve/Reject tapped from that screen go through
+  /// the identical, already-working flow (API call → dismiss → Approval
+  /// Queue sync → snackbar), with no duplicate provider or logic.
   Future<void> _handleTap() async {
     final notification = _provider.notification;
     if (notification == null) return;
-    await DeliveryDetailsSheet.show(
-      context,
-      visitorId: notification.id,
-      notificationProvider: _provider,
-      onApprove: _handleApprove,
-      onReject: _handleReject,
+    await Navigator.of(context).pushNamed(
+      AppRoutes.visitorDetail,
+      arguments: DeliveryDetailsScreenArgs(
+        visitorId: notification.id,
+        notificationProvider: _provider,
+        onApprove: _handleApprove,
+        onReject: _handleReject,
+      ),
     );
   }
 
@@ -107,19 +117,32 @@ class _VisitorNotificationSectionState extends State<VisitorNotificationSection>
           final notification = provider.notification;
           if (!provider.isVisible || notification == null) return const SizedBox.shrink();
 
-          return Column(
-            children: [
-              VisitorNotificationBanner(
-                notification: notification,
-                isApproving: provider.isApproving,
-                isRejecting: provider.isRejecting,
-                onApprove: _handleApprove,
-                onReject: _handleReject,
-                onClose: provider.dismiss,
-                onTap: _handleTap,
-              ),
-              const SizedBox(height: 18),
-            ],
+          // Transform.translate is returned directly here — NOT wrapped in
+          // an extra Column/SizedBox — so it becomes DashboardBody's
+          // Column's direct child. That matters for hit-testing: Transform
+          // is paint-only (it shifts where the card *renders* without
+          // changing the layout box reserved for it, so the card visually
+          // overlaps the header above), and `RenderTransform.hitTest`
+          // deliberately skips bounds-checking itself against that
+          // untranslated box before delegating to its child. An extra
+          // wrapping Column here would reintroduce a bounds-checked
+          // RenderBox between DashboardBody's Column and this Transform,
+          // which silently swallows every tap that lands on the visually
+          // overlapping (translated) portion of the card — i.e. most of
+          // it — before it ever reaches the banner's Approve/Reject/Close/
+          // tap handlers. See `DashboardBody`'s trailing `SizedBox` for
+          // the spacing this card used to reserve for itself.
+          return Transform.translate(
+            offset: const Offset(0, -_overlap),
+            child: VisitorNotificationBanner(
+              notification: notification,
+              isApproving: provider.isApproving,
+              isRejecting: provider.isRejecting,
+              onApprove: _handleApprove,
+              onReject: _handleReject,
+              onClose: provider.dismiss,
+              onTap: _handleTap,
+            ),
           );
         },
       ),
