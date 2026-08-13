@@ -8,6 +8,7 @@ import '../features/auth/screens/otp_verification_success_screen.dart';
 import '../features/auth/screens/register_screen.dart';
 import '../features/dashboard/presentation/screens/home_dashboard_screen.dart';
 import '../features/notices/screens/notices_screen.dart';
+import '../features/notifications/screens/delivery_details_screen.dart';
 import '../features/onboarding/screens/onboarding_screen_two.dart';
 import '../features/profile/screens/profile_screen.dart';
 import '../features/quick_actions/screens/quick_actions_screen.dart';
@@ -115,6 +116,18 @@ class RouteGenerator {
         return MaterialPageRoute(
           settings: settings,
           builder: (_) => const ActivitiesScreen(),
+        );
+      case AppRoutes.visitorDetail:
+        final args = settings.arguments;
+        if (args is! DeliveryDetailsScreenArgs) return _unknownRoute(settings);
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => DeliveryDetailsScreen(
+            visitorId: args.visitorId,
+            notificationProvider: args.notificationProvider,
+            onApprove: args.onApprove,
+            onReject: args.onReject,
+          ),
         );
       case AppRoutes.noticeList:
         return MaterialPageRoute(
