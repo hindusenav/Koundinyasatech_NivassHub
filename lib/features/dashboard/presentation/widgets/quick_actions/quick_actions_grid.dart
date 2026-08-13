@@ -57,19 +57,15 @@ class QuickActionsGrid extends StatelessWidget {
 
         const SizedBox(height: 20),
 
-        /// 🔥 GRID (IMPROVED)
+        /// 🔥 GRID
         GridView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           itemCount: actions.length,
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 4,
-
-            /// 🔥 BETTER SPACING
             crossAxisSpacing: 18,
             mainAxisSpacing: 20,
-
-            /// 🔥 MORE HEIGHT FOR BIGGER CARDS
             mainAxisExtent: 110,
           ),
           itemBuilder: (context, index) {

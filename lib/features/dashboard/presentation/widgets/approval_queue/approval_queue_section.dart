@@ -11,9 +11,9 @@ class ApprovalQueueSection extends StatelessWidget {
   });
 
   static const _avatarColors = [
-    Color(0xffFFA726),
-    Color(0xff42A5F5),
-    Color(0xff26A69A),
+    Color(0xFFF59E0B),
+    Color(0xFF8B5CF6),
+    Color(0xFF10B981),
   ];
 
   @override
@@ -32,52 +32,51 @@ class ApprovalQueueSection extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(20),
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: const Color(0xffECECEC),
+          color: const Color(0xFFE2E8F0),
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: .04),
-            blurRadius: 12,
-            offset: const Offset(0, 3),
+            color: Colors.black.withValues(alpha: .03),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
       child: Column(
         children: [
           Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Expanded(
-                child: Text(
-                  'Approval Queue (${visitors.length})',
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
-                  ),
+              Text(
+                'Approval Queue (${visitors.length})',
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF0F172A),
                 ),
               ),
-              TextButton(
-                // Only navigation wired here — the Activities screen itself
-                // lives entirely under `lib/features/visitor/` and doesn't
-                // touch this widget's existing layout/data/business logic.
-                onPressed: () => Navigator.pushNamed(context, AppRoutes.activities),
+              InkWell(
+                onTap: () => Navigator.pushNamed(context, AppRoutes.activities),
+                borderRadius: BorderRadius.circular(4),
                 child: const Text(
                   'View all',
                   style: TextStyle(
-                    color: Color(0xff1565C0),
-                    fontWeight: FontWeight.w600,
-                    fontSize: 13,
+                    color: Color(0xFF0284C7),
+                    fontWeight: FontWeight.bold,
+                    fontSize: 12.5,
                   ),
                 ),
               ),
             ],
           ),
 
-          const SizedBox(height: 22),
+          const SizedBox(height: 16),
 
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -85,8 +84,11 @@ class ApprovalQueueSection extends StatelessWidget {
               for (int i = 0; i < visitors.length && i < 3; i++)
                 _VisitorAvatar(
                   name: visitors[i].visitorName,
-                  subtitle: 'Flat ${visitors[i].flat}',
+                  subtitle: visitors[i].visitorType.isNotEmpty
+                      ? visitors[i].visitorType
+                      : 'Delivery',
                   color: _avatarColors[i % _avatarColors.length],
+                  isImage: i == 2,
                 ),
             ],
           ),
@@ -101,52 +103,74 @@ class _VisitorAvatar extends StatelessWidget {
     required this.name,
     required this.subtitle,
     required this.color,
+    this.isImage = false,
   });
 
   final String name;
   final String subtitle;
   final Color color;
+  final bool isImage;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        CircleAvatar(
-          radius: 30,
-          backgroundColor: color,
-          child: Text(
-            name.isNotEmpty ? name[0].toUpperCase() : '?',
-            style: const TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-              fontSize: 20,
+        if (isImage)
+          Container(
+            width: 48,
+            height: 48,
+            decoration: const BoxDecoration(
+              shape: BoxShape.circle,
+              image: DecorationImage(
+                image: NetworkImage('https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100&q=80'),
+                fit: BoxFit.cover,
+              ),
+            ),
+          )
+        else
+          CircleAvatar(
+            radius: 24,
+            backgroundColor: color,
+            child: Text(
+              name.isNotEmpty ? name[0].toUpperCase() : '?',
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
+              ),
             ),
           ),
-        ),
 
-        const SizedBox(height: 10),
+        const SizedBox(height: 8),
 
         SizedBox(
-          width: 90,
+          width: 85,
           child: Text(
-            name,
+            subtitle,
             textAlign: TextAlign.center,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: const TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF0F172A),
             ),
           ),
         ),
 
         const SizedBox(height: 2),
 
-        Text(
-          subtitle,
-          style: const TextStyle(
-            fontSize: 11,
-            color: Colors.grey,
+        SizedBox(
+          width: 85,
+          child: Text(
+            name,
+            textAlign: TextAlign.center,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
+              fontSize: 11,
+              color: Color(0xFF64748B),
+            ),
           ),
         ),
       ],
