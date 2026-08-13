@@ -68,7 +68,7 @@ class DashboardBody extends StatelessWidget {
 
             const SizedBox(height: 16),
 
-            // COMMUNITY POSTS & NOTICE BOARD SECTION (Matching Figma order 100%)
+            // COMMUNITY POSTS & NOTICE BOARD SECTION
             const CommunityPostsSection(),
 
             const SizedBox(height: 12),
