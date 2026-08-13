@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../../core/theme/app_colors.dart';
 import '../../provider/dashboard_provider.dart';
 
 class MaintenanceCard extends StatelessWidget {
@@ -13,7 +12,8 @@ class MaintenanceCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final provider = context.watch<DashboardProvider>();
 
-    final message = provider.home?.data.maintenanceMessage ?? '';
+    final message = provider.home?.data.maintenanceMessage ??
+        'Visitor maintenance scheduled at 11 AM.';
 
     if (message.isEmpty) {
       return const SizedBox.shrink();
@@ -21,43 +21,35 @@ class MaintenanceCard extends StatelessWidget {
 
     return Container(
       width: double.infinity,
+      margin: const EdgeInsets.symmetric(horizontal: 16),
       padding: const EdgeInsets.symmetric(
-        horizontal: 18,
-        vertical: 16,
+        horizontal: 14,
+        vertical: 10,
       ),
       decoration: BoxDecoration(
-        color: const Color(0xFFEFF6FF),
-        borderRadius: BorderRadius.circular(18),
+        color: const Color(0xFFF0F9FF),
+        borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: const Color(0xFFD4E7FF),
+          color: const Color(0xFFBAE6FD),
         ),
       ),
       child: Row(
         children: [
-          Container(
-            width: 38,
-            height: 38,
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              shape: BoxShape.circle,
-            ),
-            child: const Icon(
-              Icons.info_outline,
-              color: AppColors.info,
-              size: 20,
-            ),
+          const Icon(
+            Icons.info_outline_rounded,
+            color: Color(0xFF0284C7),
+            size: 18,
           ),
 
-          const SizedBox(width: 14),
+          const SizedBox(width: 10),
 
           Expanded(
             child: Text(
               message,
               style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: Color(0xFF234A84),
-                height: 1.35,
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: Color(0xFF0284C7),
               ),
             ),
           ),

@@ -15,6 +15,7 @@ class OnlineAdvertisingBannerCard extends StatelessWidget {
     return Container(
       width: double.infinity,
       height: 135,
+      margin: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
         color: const Color(0xFFF9F9FB),
         borderRadius: BorderRadius.circular(16),

@@ -180,15 +180,15 @@ class _NoticeBoardViewState extends State<_NoticeBoardView> {
           child: Column(
             children: [
               // =====================================================
-              // APP BAR HEADER MATCHING FIGMA DESIGN
+              // APP BAR HEADER MATCHING FIGMA DESIGN (16px PADDING)
               // =====================================================
               Container(
                 width: double.infinity,
                 padding: EdgeInsets.only(
                   top: statusBarHeight > 0 ? statusBarHeight + 6 : 14,
-                  left: 6,
+                  left: 16,
                   right: 16,
-                  bottom: 12,
+                  bottom: 14,
                 ),
                 decoration: const BoxDecoration(
                   color: Color(0xFFC7E1F8),
@@ -207,19 +207,23 @@ class _NoticeBoardViewState extends State<_NoticeBoardView> {
                 ),
                 child: Row(
                   children: [
-                    IconButton(
-                      icon: const Icon(
-                        Icons.arrow_back,
-                        color: Color(0xFF0F172A),
-                        size: 22,
-                      ),
-                      onPressed: () {
+                    InkWell(
+                      onTap: () {
                         if (Navigator.of(context).canPop()) {
                           Navigator.of(context).pop();
                         }
                       },
+                      borderRadius: BorderRadius.circular(20),
+                      child: const Padding(
+                        padding: EdgeInsets.all(4),
+                        child: Icon(
+                          Icons.arrow_back,
+                          color: Color(0xFF0F172A),
+                          size: 22,
+                        ),
+                      ),
                     ),
-                    const SizedBox(width: 4),
+                    const SizedBox(width: 8),
                     const Text(
                       'Notice Board',
                       style: TextStyle(
@@ -233,7 +237,7 @@ class _NoticeBoardViewState extends State<_NoticeBoardView> {
               ),
 
               // =====================================================
-              // MAIN SCROLLABLE CONTENT BODY
+              // MAIN SCROLLABLE CONTENT BODY (16px UNIFIED PADDING)
               // =====================================================
               Expanded(
                 child: RefreshIndicator(
