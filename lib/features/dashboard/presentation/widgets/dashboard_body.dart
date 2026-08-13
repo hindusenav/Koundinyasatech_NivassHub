@@ -1,7 +1,9 @@
-import 'package:flutter/material.dart';
+import 
 
 import '../../../notifications/widgets/visitor_notification_section.dart';
+import '../provider/dashboard_provider.dart';
 import 'approval_queue/approval_queue_section.dart';
+import 'banner/banner_card.dart';
 import 'banner/banner_slider.dart';
 import 'community/community_posts_section.dart';
 import 'header/dashboard_header.dart';
@@ -15,67 +17,188 @@ class DashboardBody extends StatelessWidget {
     super.key,
   });
 
+  // ============================================================
+  // HEADER HEIGHT ESTIMATE
+  //
+  // DashboardHeader no longer has a fixed height (it sizes itself
+  // to its content — see DashboardHeader), so the popup below can't
+  // just anchor to a known constant. Layered via a CompositedTransform
+  // pair instead (see `_headerAnchor` below), which tracks the
+  // header's actual on-screen position/size regardless of how tall
+  // it renders — no hard-coded offset to keep in sync.
+  // ============================================================
+
+  static final LayerLink _headerAnchor = LayerLink();
+
   @override
   Widget build(BuildContext context) {
+    final provider = context.watch<DashboardProvider>();
+
+    final banners = provider.advertisementBanners;
+
+    // ============================================================
+    // RESPONSIVE CONTENT PADDING
+    // ============================================================
+
+    final horizontalPadding =
+        Responsive.horizontalPadding(context).clamp(12.0, 14.0);
+
     return Container(
       width: double.infinity,
       color: const Color(0xFFF7F8FC),
-      child: SingleChildScrollView(
-        physics: const BouncingScrollPhysics(),
-        padding: const EdgeInsets.only(bottom: 24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: const [
-            // TOP HEADER
-            DashboardHeader(),
 
-            VisitorNotificationSection(),
+      // ==========================================================
+      // POPUP LAYER
+      //
+      // The visitor-approval "toast" is stacked ON TOP of the
+      // scrolling dashboard content — a Stack sibling, not a Column
+      // child — so it floats over the page and never reserves or
+      // consumes the space between the header and the promo banner,
+      // whether it's showing or not. See `VisitorNotificationSection`.
+      // ==========================================================
 
-            // 16 = the 12 this gap always reserved + the 4 that used to be
-            // a trailing SizedBox *inside* VisitorNotificationSection's own
-            // Column. That inner Column was removed so the notification
-            // card's Transform.translate is this Column's direct child
-            // (see VisitorNotificationSection for why — it's a hit-testing
-            // fix, not a style change), so its spacing moved out here to
-            // keep the total gap identical.
-            SizedBox(height: 16),
+      child: Stack(
+        children: [
+          SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
 
-            // ONLINE ADVERTISEMENT SLIDER BANNER
-            BannerSlider(),
+            // ========================================================
+            // IMPORTANT:
+            // NO LEFT / RIGHT PADDING HERE
+            //
+            // This allows DashboardHeader to reach both screen edges.
+            // ========================================================
 
-            SizedBox(height: 14),
+            padding: const EdgeInsets.only(
+              bottom: 20,
+            ),
 
-            // QUICK ACTIONS GRID
-            QuickActionsGrid(),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // ==================================================
+                // HEADER
+                //
+                // FULL SCREEN WIDTH
+                // NO SIDE GAP
+                //
+                // Wrapped in a CompositedTransformTarget so the
+                // floating popup below can anchor to its bottom edge
+                // without needing to know its height up front.
+                // ==================================================
 
-            SizedBox(height: 14),
+                CompositedTransformTarget(
+                  link: _headerAnchor,
+                  child: const DashboardHeader(),
+                ),
 
-            // MAINTENANCE ALERT BANNER
-            MaintenanceCard(),
+                // ==================================================
+                // REST OF DASHBOARD
+                //
+                // SIDE PADDING STARTS FROM HERE
+                // ==================================================
 
-            SizedBox(height: 14),
+                Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: horizontalPadding,
+                  ),
 
-            // APPROVAL QUEUE CAROUSEL
-            ApprovalQueueSection(),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // ==============================================
+                      // ONLINE ADVERTISEMENT
+                      // ==============================================
 
-            SizedBox(height: 14),
+                      const BannerSlider(),
 
-            // PANIC / SOS SLIDER BANNER
-            PanicSosBanner(),
+                      const SizedBox(height: 9),
 
-            SizedBox(height: 12),
+                      // ==============================================
+                      // QUICK ACTIONS
+                      // ==============================================
 
-            // OTP / QR CODE GATE ENTRY BANNER
-            GenerateOtpBanner(),
+                      const QuickActionsGrid(),
 
-            SizedBox(height: 18),
+                      const SizedBox(height: 9),
 
-            // COMMUNITY POSTS & NOTICE BOARD SECTION (Aligned to main container bounds matching Image 2)
-            CommunityPostsSection(),
+                      // ==============================================
+                      // MAINTENANCE
+                      // ==============================================
 
-            SizedBox(height: 16),
-          ],
-        ),
+                      const MaintenanceCard(),
+
+                      const SizedBox(height: 9),
+
+                      // ==============================================
+                      // APPROVAL QUEUE
+                      // ==============================================
+
+                      const ApprovalQueueSection(),
+
+                      const SizedBox(height: 9),
+
+                      // ==============================================
+                      // PANIC
+                      // ==============================================
+
+                      const PanicSosBanner(),
+
+                      const SizedBox(height: 7),
+
+                      // ==============================================
+                      // OTP
+                      // ==============================================
+
+                      const GenerateOtpBanner(),
+
+                      // ==============================================
+                      // ADVERTISEMENT
+                      // ==============================================
+
+                      if (banners.isNotEmpty) ...[
+                        const SizedBox(height: 9),
+
+                        BannerCard(
+                          banner: banners.first,
+                        ),
+                      ],
+
+                      const SizedBox(height: 9),
+
+                      // ==============================================
+                      // COMMUNITY
+                      // ==============================================
+
+                      const CommunityPostsSection(),
+
+                      const SizedBox(height: 12),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // ========================================================
+          // VISITOR APPROVAL POPUP
+          //
+          // Floats over the scrollable content, anchored to the
+          // header's bottom-left corner via `_headerAnchor` — a
+          // genuine popup/toast: it does not push the promo banner
+          // down while visible, and leaves no gap behind once
+          // dismissed or when there's nothing pending. See
+          // `VisitorNotificationSection`.
+          // ========================================================
+
+          CompositedTransformFollower(
+            link: _headerAnchor,
+            showWhenUnlinked: false,
+            child: VisitorNotificationSection(
+              horizontalPadding: horizontalPadding,
+            ),
+          ),
+        ],
       ),
     );
   }
