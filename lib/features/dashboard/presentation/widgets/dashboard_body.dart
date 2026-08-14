@@ -1,5 +1,6 @@
-import 
-
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../../../core/utils/responsive.dart';
 import '../../../notifications/widgets/visitor_notification_section.dart';
 import '../provider/dashboard_provider.dart';
 import 'approval_queue/approval_queue_section.dart';
@@ -99,8 +100,11 @@ class DashboardBody extends StatelessWidget {
                 // ==================================================
 
                 Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: horizontalPadding,
+                  padding: EdgeInsets.fromLTRB(
+                    horizontalPadding,
+                    9,
+                    horizontalPadding,
+                    0,
                   ),
 
                   child: Column(
@@ -144,7 +148,7 @@ class DashboardBody extends StatelessWidget {
 
                       const PanicSosBanner(),
 
-                      const SizedBox(height: 7),
+                      const SizedBox(height: 9),
 
                       // ==============================================
                       // OTP
