@@ -11,18 +11,18 @@ import '../../../core/utils/extensions/context_extensions.dart';
 import '../../../shared/widgets/buttons/custom_button.dart';
 import '../models/visitor_notification_model.dart';
 
-/// The urgent, red-outlined gate-arrival card that slides down from the top
-/// of the Home screen. Purely presentational — no `Provider`/business logic
-/// here, only data + callbacks — so it can be previewed/tested in
-/// isolation and `VisitorNotificationSection` stays the single place that
-/// owns state.
+/// The compact gate-arrival approval card shown as a floating popup below
+/// the Home dashboard's header (see `DashboardBody`/`VisitorNotificationSection`
+/// for how it's anchored there). Purely presentational — no
+/// `Provider`/business logic here, only data + callbacks — so it can be
+/// previewed/tested in isolation and `VisitorNotificationSection` stays the
+/// single place that owns state.
 class VisitorNotificationBanner extends StatelessWidget {
   const VisitorNotificationBanner({
     super.key,
     required this.notification,
     required this.isApproving,
     required this.isRejecting,
-    this.horizontalMargin = 0,
     required this.onApprove,
     required this.onReject,
     required this.onClose,
@@ -32,14 +32,6 @@ class VisitorNotificationBanner extends StatelessWidget {
   final VisitorNotificationModel notification;
   final bool isApproving;
   final bool isRejecting;
-
-  /// Left/right margin applied to this card, matching the horizontal
-  /// padding the rest of `DashboardBody`'s content uses. Applied here as
-  /// the card's own `Container.margin` — INSIDE `VisitorNotificationSection`'s
-  /// `Transform.translate` — rather than by an ancestor `Padding`, so it
-  /// doesn't interfere with that Transform's hit-testing. See
-  /// `VisitorNotificationSection`/`DashboardBody` for why.
-  final double horizontalMargin;
 
   final VoidCallback onApprove;
   final VoidCallback onReject;
@@ -58,17 +50,17 @@ class VisitorNotificationBanner extends StatelessWidget {
     final isDark = context.theme.brightness == Brightness.dark;
     final surfaceColor = isDark ? AppColors.surfaceDark : AppColors.surfaceLight;
 
-    return Material(
-      color: Colors.transparent,
-      child: Container(
-        margin: EdgeInsets.symmetric(horizontal: horizontalMargin),
-        decoration: BoxDecoration(
-          color: surfaceColor,
-          borderRadius: AppRadius.radiusLg,
-          border: Border.all(color: AppColors.error, width: 1.5),
-          boxShadow: isDark ? AppShadows.darkMd : AppShadows.lg,
-        ),
-        clipBehavior: Clip.antiAlias,
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: surfaceColor,
+        borderRadius: AppRadius.radiusLg,
+        border: Border.all(color: AppColors.borderLight),
+        boxShadow: isDark ? AppShadows.darkSm : AppShadows.sm,
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: Material(
+        color: Colors.transparent,
         child: InkWell(
           onTap: onTap,
           borderRadius: AppRadius.radiusLg,

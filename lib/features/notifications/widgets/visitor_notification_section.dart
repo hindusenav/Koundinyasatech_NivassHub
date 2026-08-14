@@ -10,27 +10,28 @@ import '../repository/visitor_notification_repository.dart';
 import '../screens/delivery_details_screen.dart';
 import 'visitor_notification_banner.dart';
 
-/// The Home screen's gate-arrival approval card — a normal, persistent
-/// section of the dashboard body placed immediately below the header (see
-/// `DashboardBody`), not a floating overlay. Pulled up by [_overlap] so it
-/// visually overlaps the header's rounded bottom edge and reads as part of
-/// the top section instead of separate content floating below it. Renders
-/// nothing when there's no pending notification (no leftover empty space,
-/// no dangling overlap) or once it's been dismissed.
+/// The Home screen's gate-arrival "Approval Requests" popup — a floating
+/// toast anchored just below the header (see `DashboardBody`, which stacks
+/// this on top of the scrollable dashboard content via
+/// `CompositedTransformFollower`, not as a child of its content `Column`).
+/// Because it's a popup rather than in-flow content, it never reserves or
+/// pushes down the space between the header and the advertising/banner
+/// section — whether it's showing or not. Renders nothing when there's no
+/// pending notification, or once it's been dismissed.
 ///
 /// Owns its own `VisitorNotificationProvider` — same construction the old
 /// `VisitorNotificationOverlay` used — so the provider/repository/service/
 /// model are untouched; only *where* this card is mounted changed. Loads
 /// immediately (no delay) and stays until Approve/Reject/Close, since it's
-/// now permanent page content rather than a transient overlay, so the
-/// previous 3s appear-delay and 10s auto-dismiss timer no longer apply.
+/// permanent-until-dismissed popup content rather than a timed toast, so
+/// the previous 3s appear-delay and 10s auto-dismiss timer don't apply.
 class VisitorNotificationSection extends StatefulWidget {
   const VisitorNotificationSection({super.key, this.horizontalPadding = 0});
 
-  /// Applied as the banner's own left/right margin (inside the
-  /// `Transform`, not via an ancestor `Padding`) so it lines up with the
-  /// rest of `DashboardBody`'s padded content — see `DashboardBody` for
-  /// why this can't just be wrapped in a `Padding` from outside.
+  /// Left/right margin applied around the popup so it lines up with the
+  /// rest of `DashboardBody`'s padded content, even though this widget
+  /// itself now lives outside that padded `Column` (it's a `Stack`
+  /// sibling, floating above it — see `DashboardBody`).
   final double horizontalPadding;
 
   @override
@@ -38,11 +39,10 @@ class VisitorNotificationSection extends StatefulWidget {
 }
 
 class _VisitorNotificationSectionState extends State<VisitorNotificationSection> {
-  /// How far up the card is pulled so it visibly overlaps the header's
-  /// rounded bottom edge — the card's top portion sits on the header's
-  /// blue background before transitioning to the white page background,
-  /// rather than merely touching the header with no gap.
-  static const double _overlap = 80;
+  /// Small breathing gap below the header's bottom edge so the popup sits
+  /// just under it rather than touching it — it must NOT overlap the
+  /// header (unlike the old `Transform.translate(-80)` design).
+  static const double _topGap = 10;
 
   late final VisitorNotificationProvider _provider;
 
@@ -123,32 +123,31 @@ class _VisitorNotificationSectionState extends State<VisitorNotificationSection>
           final notification = provider.notification;
           if (!provider.isVisible || notification == null) return const SizedBox.shrink();
 
-          // Transform.translate is returned directly here — NOT wrapped in
-          // an extra Column/SizedBox — so it becomes DashboardBody's
-          // Column's direct child. That matters for hit-testing: Transform
-          // is paint-only (it shifts where the card *renders* without
-          // changing the layout box reserved for it, so the card visually
-          // overlaps the header above), and `RenderTransform.hitTest`
-          // deliberately skips bounds-checking itself against that
-          // untranslated box before delegating to its child. An extra
-          // wrapping Column here would reintroduce a bounds-checked
-          // RenderBox between DashboardBody's Column and this Transform,
-          // which silently swallows every tap that lands on the visually
-          // overlapping (translated) portion of the card — i.e. most of
-          // it — before it ever reaches the banner's Approve/Reject/Close/
-          // tap handlers. See `DashboardBody`'s trailing `SizedBox` for
-          // the spacing this card used to reserve for itself.
-          return Transform.translate(
-            offset: const Offset(0, -_overlap),
-            child: VisitorNotificationBanner(
-              notification: notification,
-              isApproving: provider.isApproving,
-              isRejecting: provider.isRejecting,
-              horizontalMargin: widget.horizontalPadding,
-              onApprove: _handleApprove,
-              onReject: _handleReject,
-              onClose: provider.dismiss,
-              onTap: _handleTap,
+          // A `CompositedTransformFollower` (see `DashboardBody`) gives its
+          // child unbounded width constraints, but `VisitorNotificationBanner`
+          // sizes itself with `width: double.infinity` — so this needs an
+          // explicit, bounded width of its own here, computed from the
+          // screen width minus the same horizontal padding the rest of the
+          // dashboard content uses, so the popup lines up with it visually.
+          final screenWidth = MediaQuery.of(context).size.width;
+          final cardWidth = screenWidth - (widget.horizontalPadding * 2);
+
+          return Padding(
+            padding: EdgeInsets.only(
+              top: _topGap,
+              left: widget.horizontalPadding,
+            ),
+            child: SizedBox(
+              width: cardWidth,
+              child: VisitorNotificationBanner(
+                notification: notification,
+                isApproving: provider.isApproving,
+                isRejecting: provider.isRejecting,
+                onApprove: _handleApprove,
+                onReject: _handleReject,
+                onClose: provider.dismiss,
+                onTap: _handleTap,
+              ),
             ),
           );
         },
