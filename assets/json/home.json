@@ -4,7 +4,7 @@
   "data": {
     "user": {
       "userId": "USR10001",
-      "name": "User Name",
+      "name": "Sireesha",
       "flatNumber": "B-402",
       "profileImage": ""
     },
@@ -14,46 +14,14 @@
       "image": "https://dummyimage.com/banner.png"
     },
     "quickActions": [
-      {
-        "id": 1,
-        "name": "Pre-Approve",
-        "icon": "preapprove"
-      },
-      {
-        "id": 2,
-        "name": "Payments",
-        "icon": "payments"
-      },
-      {
-        "id": 3,
-        "name": "Pass",
-        "icon": "pass"
-      },
-      {
-        "id": 4,
-        "name": "Security",
-        "icon": "security"
-      },
-      {
-        "id": 5,
-        "name": "Book Now",
-        "icon": "book"
-      },
-      {
-        "id": 6,
-        "name": "Buy/Sell",
-        "icon": "buysell"
-      },
-      {
-        "id": 7,
-        "name": "Free Trial",
-        "icon": "gift"
-      },
-      {
-        "id": 8,
-        "name": "View More",
-        "icon": "plus"
-      }
+      { "id": 1, "name": "Pre-Approve", "icon": "preapprove" },
+      { "id": 2, "name": "Payments", "icon": "payments" },
+      { "id": 3, "name": "Pass", "icon": "pass" },
+      { "id": 4, "name": "Security", "icon": "security" },
+      { "id": 5, "name": "Book Now", "icon": "book" },
+      { "id": 6, "name": "Buy/Sell", "icon": "buysell" },
+      { "id": 7, "name": "Free Trial", "icon": "gift" },
+      { "id": 8, "name": "View More", "icon": "plus" }
     ],
     "maintenanceMessage": "Visitor maintenance scheduled at 11 AM.",
     "approvalQueueCount": 3,
