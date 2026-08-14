@@ -13,14 +13,18 @@ class CommunityMeetingCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16),
       width: double.infinity,
-      padding: const EdgeInsets.all(14),
+      margin: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.symmetric(
+        horizontal: 16,
+        vertical: 12,
+      ),
       decoration: BoxDecoration(
         color: const Color(0xFFEFF6FF),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: const Color(0xFFBAE6FD),
+          width: 0.5,
         ),
         boxShadow: [
           BoxShadow(
@@ -31,40 +35,59 @@ class CommunityMeetingCard extends StatelessWidget {
         ],
       ),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              const Icon(
-                Icons.campaign_outlined,
-                color: Color(0xFF0284C7),
-                size: 20,
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  meeting.title,
-                  style: const TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF0F172A),
+          /// COMMUNITY MEETING CONTAINER (Header Row, Height: 24px, Gap: 10px)
+          SizedBox(
+            height: 24,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const Icon(
+                  Icons.campaign_outlined,
+                  color: Color(0xFF0284C7),
+                  size: 20,
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    meeting.title,
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF0F172A),
+                    ),
                   ),
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Text(
-            meeting.message,
-            style: const TextStyle(
-              fontSize: 12.5,
-              height: 1.4,
-              color: Color(0xFF334155),
+              ],
             ),
           ),
-          const SizedBox(height: 12),
+
+          const SizedBox(height: 8),
+
+          /// COMMUNITY MEETING DESCRIPTION (Text, Height: 18px, Size: 14px, Weight: 400 Regular, Line height: 100%)
           SizedBox(
-            height: 32,
+            height: 18,
+            child: Text(
+              meeting.message,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w400,
+                color: Color(0xFF334155),
+                height: 1.0,
+                letterSpacing: 0,
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 8),
+
+          /// BUTTON (RSVP NOW Button, Height: 24px, Radius: 8px, Padding: 4px top/bottom, 16px left/right)
+          SizedBox(
+            height: 24,
             child: ElevatedButton(
               onPressed: () {
                 ScaffoldMessenger.of(context).showSnackBar(
@@ -78,17 +101,20 @@ class CommunityMeetingCard extends StatelessWidget {
                 elevation: 0,
                 backgroundColor: const Color(0xFFE57C00),
                 foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                minimumSize: Size.zero,
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(8),
                 ),
               ),
               child: Text(
-                meeting.ctaLabel.toUpperCase(),
+                meeting.ctaLabel.isNotEmpty ? meeting.ctaLabel.toUpperCase() : 'RSVP NOW',
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 11,
                   letterSpacing: 0.5,
+                  color: Colors.white,
                 ),
               ),
             ),

@@ -40,7 +40,7 @@ class _BannerSliderState extends State<BannerSlider> {
             );
           },
           options: CarouselOptions(
-            height: 135,
+            height: 191,
             viewportFraction: 1.0,
             enlargeCenterPage: false,
             enableInfiniteScroll: bannerTitles.length > 1,

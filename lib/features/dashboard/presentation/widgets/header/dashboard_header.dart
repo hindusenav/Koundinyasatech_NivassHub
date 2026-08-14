@@ -55,42 +55,49 @@ class DashboardHeader extends StatelessWidget {
         ),
         child: Padding(
           padding: EdgeInsets.only(
-            top: statusBarHeight > 0 ? statusBarHeight + 8 : 14,
-            left: 16,
-            right: 16,
-            bottom: 14,
+            top: statusBarHeight > 0 ? statusBarHeight + 12 : 12,
+            left: 20,
+            right: 20,
+            bottom: 16,
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // =====================================================
-              // ROW 1: GREETING (Hello! User name 👋)
+              // ROW 1: Hello! User name 👋
               // =====================================================
-              Text(
-                'Hello! ${user?.name ?? 'User name'} 👋',
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                  fontSize: 14.5,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF0F172A),
-                  height: 1.2,
-                ),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    'Hello! ${user?.name ?? 'User name'}',
+                    style: const TextStyle(
+                      fontSize: 14.5,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF0F172A),
+                      height: 1.2,
+                    ),
+                  ),
+                  const SizedBox(width: 6),
+                  const Text(
+                    '👋',
+                    style: TextStyle(fontSize: 14),
+                  ),
+                ],
               ),
 
               const SizedBox(height: 8),
 
               // =====================================================
-              // ROW 2: USER PROFILE & FLAT (LEFT) | ACTIONS (RIGHT)
+              // ROW 2: FLAT SELECTOR (LEFT) | ACTIONS (RIGHT)
               // =====================================================
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  // -------------------------------------------------
-                  // LEFT: Profile Avatar + Flat Number + Dropdown Arrow
-                  // -------------------------------------------------
+                  // Left: Avatar + Flat Number + Arrow
                   GestureDetector(
                     behavior: HitTestBehavior.opaque,
                     onTap: () => _showAddressBottomSheet(context, addresses, flatLabel),
@@ -98,34 +105,29 @@ class DashboardHeader extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        // User Circular Profile Avatar
                         Container(
-                          width: 28,
-                          height: 28,
+                          width: 26,
+                          height: 26,
                           decoration: const BoxDecoration(
                             shape: BoxShape.circle,
                             image: DecorationImage(
-                              image: NetworkImage('https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&q=80'),
+                              image: NetworkImage(
+                                'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&q=80',
+                              ),
                               fit: BoxFit.cover,
                             ),
                           ),
                         ),
-
                         const SizedBox(width: 8),
-
-                        // Flat Number Text (e.g. B - 402)
                         Text(
                           flatLabel.isNotEmpty ? flatLabel : 'B - 402',
                           style: const TextStyle(
-                            fontSize: 13.5,
+                            fontSize: 14,
                             fontWeight: FontWeight.bold,
                             color: Color(0xFF0F172A),
                           ),
                         ),
-
-                        const SizedBox(width: 3),
-
-                        // Dropdown Down Arrow
+                        const SizedBox(width: 4),
                         const Icon(
                           Icons.keyboard_arrow_down_rounded,
                           size: 18,
@@ -135,14 +137,11 @@ class DashboardHeader extends StatelessWidget {
                     ),
                   ),
 
-                  // -------------------------------------------------
-                  // RIGHT: Action Icons (Search, Chat, Orange 'A' Badge)
-                  // -------------------------------------------------
+                  // Right: Search, Chat, Orange Profile Badge A
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      // 1. Search Icon
                       GestureDetector(
                         behavior: HitTestBehavior.opaque,
                         onTap: () => Navigator.pushNamed(context, AppRoutes.search),
@@ -155,10 +154,7 @@ class DashboardHeader extends StatelessWidget {
                           ),
                         ),
                       ),
-
-                      const SizedBox(width: 10),
-
-                      // 2. Chat / Messages Icon
+                      const SizedBox(width: 14),
                       GestureDetector(
                         behavior: HitTestBehavior.opaque,
                         onTap: () => CustomSnackbar.info(context, 'Messages coming soon.'),
@@ -171,10 +167,7 @@ class DashboardHeader extends StatelessWidget {
                           ),
                         ),
                       ),
-
-                      const SizedBox(width: 10),
-
-                      // 3. Orange Initial Badge ("A") / Profile Link
+                      const SizedBox(width: 14),
                       GestureDetector(
                         behavior: HitTestBehavior.opaque,
                         onTap: () => Navigator.pushNamed(context, AppRoutes.profile),

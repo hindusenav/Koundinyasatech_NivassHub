@@ -27,13 +27,13 @@ class BannerCard extends StatelessWidget {
         : 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=600&q=80';
 
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16),
+      margin: const EdgeInsets.symmetric(horizontal: 20),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: const Color(0xFF2DD4BF).withValues(alpha: .5),
-          width: 1,
+          width: 0.5,
         ),
         boxShadow: [
           BoxShadow(
@@ -45,9 +45,9 @@ class BannerCard extends StatelessWidget {
       ),
       child: Material(
         color: Colors.transparent,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(12),
         child: InkWell(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(12),
           onTap: () {
             Navigator.of(context).push(
               MaterialPageRoute(
@@ -57,12 +57,13 @@ class BannerCard extends StatelessWidget {
           },
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
             children: [
-              // Top Cover Image with rounded top corners
+              /// CARD IMAGE (402px x 180px, Radius: 12px Top)
               ClipRRect(
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
                 child: SizedBox(
-                  height: 165,
+                  height: 180,
                   width: double.infinity,
                   child: CachedNetworkImage(
                     imageUrl: imageUrl,
@@ -84,142 +85,190 @@ class BannerCard extends StatelessWidget {
                   ),
                 ),
               ),
+
+              /// CARD CONTENT
               Padding(
-                padding: const EdgeInsets.fromLTRB(16, 12, 16, 14),
+                padding: const EdgeInsets.all(16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    // Date & Bookmark Row
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          children: [
-                            const Icon(
-                              Icons.calendar_today_outlined,
-                              size: 14,
-                              color: Color(0xFF64748B),
-                            ),
-                            const SizedBox(width: 6),
-                            Text(
-                              dateStr,
-                              style: const TextStyle(
-                                fontSize: 11.5,
+                    /// META ROW (Height: 18px, Justify: space-between)
+                    SizedBox(
+                      height: 18,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          /// DATE GROUP
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              const Icon(
+                                Icons.calendar_today_outlined,
+                                size: 14,
                                 color: Color(0xFF64748B),
-                                fontWeight: FontWeight.w500,
                               ),
-                            ),
-                          ],
-                        ),
-                        const Icon(
-                          Icons.bookmark_border_outlined,
-                          size: 18,
-                          color: Color(0xFF64748B),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-
-                    // AD Tag Badge
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 6,
-                        vertical: 2,
-                      ),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFF1F5F9),
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: const Text(
-                        'AD',
-                        style: TextStyle(
-                          color: Color(0xFF475569),
-                          fontSize: 9.5,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-
-                    // Ad Title
-                    Text(
-                      title,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 15.5,
-                        color: Color(0xFF0F172A),
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-
-                    // Description text with red Read More link
-                    RichText(
-                      text: TextSpan(
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: Color(0xFF475569),
-                          height: 1.4,
-                        ),
-                        children: const [
-                          TextSpan(
-                            text:
-                                'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. ',
+                              const SizedBox(width: 6),
+                              Text(
+                                dateStr,
+                                style: const TextStyle(
+                                  fontSize: 11.5,
+                                  color: Color(0xFF64748B),
+                                  fontWeight: FontWeight.w500,
+                                  height: 1.0,
+                                ),
+                              ),
+                            ],
                           ),
-                          TextSpan(
-                            text: 'Read More',
-                            style: TextStyle(
-                              color: Color(0xFFEF4444),
-                              fontWeight: FontWeight.bold,
-                            ),
+                          /// ICON BOOKMARK
+                          const Icon(
+                            Icons.bookmark_border_outlined,
+                            size: 18,
+                            color: Color(0xFF64748B),
                           ),
                         ],
                       ),
                     ),
-                    const SizedBox(height: 12),
 
-                    // Thin Horizontal Divider
-                    const Divider(height: 1, color: Color(0xFFF1F5F9)),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 8),
 
-                    // Social Action Toolbar: Likes, Comments & Share
-                    Row(
+                    /// TITLE GROUP (Column, Height: 47px hug, Gap: 8px)
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Icon(
-                          Icons.favorite_border_outlined,
-                          size: 16,
-                          color: Color(0xFF64748B),
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          '$likesCount',
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: Color(0xFF64748B),
-                            fontWeight: FontWeight.w500,
+                        /// BADGE ROW / AD BADGE
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFF1F5F9),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: const Text(
+                            'AD',
+                            style: TextStyle(
+                              color: Color(0xFF475569),
+                              fontSize: 9.5,
+                              fontWeight: FontWeight.bold,
+                              height: 1.0,
+                            ),
                           ),
                         ),
-                        const SizedBox(width: 16),
-                        const Icon(
-                          Icons.chat_bubble_outline_rounded,
-                          size: 15,
-                          color: Color(0xFF64748B),
-                        ),
-                        const SizedBox(width: 4),
+
+                        const SizedBox(height: 8), // 8px Gap
+
+                        /// POST TITLE 2
                         Text(
-                          '$commentsCount',
+                          title,
                           style: const TextStyle(
-                            fontSize: 12,
-                            color: Color(0xFF64748B),
-                            fontWeight: FontWeight.w500,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15.5,
+                            color: Color(0xFF0F172A),
+                            height: 1.1,
                           ),
-                        ),
-                        const Spacer(),
-                        const Icon(
-                          Icons.share_outlined,
-                          size: 16,
-                          color: Color(0xFF64748B),
                         ),
                       ],
+                    ),
+
+                    const SizedBox(height: 8),
+
+                    /// DESCRIPTION TEXT (Height: 60px, DM Sans 14px, 140% line height)
+                    SizedBox(
+                      height: 60,
+                      child: RichText(
+                        text: const TextSpan(
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400,
+                            color: Color(0xFF475569),
+                            height: 1.4,
+                            letterSpacing: 0,
+                          ),
+                          children: [
+                            TextSpan(
+                              text:
+                                  'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. ',
+                            ),
+                            TextSpan(
+                              text: 'Read More',
+                              style: TextStyle(
+                                color: Color(0xFFEF4444),
+                                fontWeight: FontWeight.w600,
+                                height: 1.4,
+                                letterSpacing: 0,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 12),
+
+                    /// LINE (Divider: 1px border, Color #E2E8F0)
+                    const Divider(height: 1, thickness: 1, color: Color(0xFFE2E8F0)),
+
+                    const SizedBox(height: 10),
+
+                    /// ENGAGEMENT ROW (Height: 16px, Justify: space-between)
+                    SizedBox(
+                      height: 16,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          /// ENGAGEMENT LEFT
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              /// ENGAGE HEART
+                              const Icon(
+                                Icons.favorite_border_outlined,
+                                size: 16,
+                                color: Color(0xFF64748B),
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                '$likesCount',
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  color: Color(0xFF64748B),
+                                  fontWeight: FontWeight.w500,
+                                  height: 1.0,
+                                ),
+                              ),
+                              const SizedBox(width: 16),
+                              /// ENGAGE MESSAGE SQUARE
+                              const Icon(
+                                Icons.chat_bubble_outline_rounded,
+                                size: 15,
+                                color: Color(0xFF64748B),
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                '$commentsCount',
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  color: Color(0xFF64748B),
+                                  fontWeight: FontWeight.w500,
+                                  height: 1.0,
+                                ),
+                              ),
+                            ],
+                          ),
+
+                          /// ICON SHARE 2
+                          const Icon(
+                            Icons.share_outlined,
+                            size: 16,
+                            color: Color(0xFF64748B),
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),

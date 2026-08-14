@@ -22,16 +22,22 @@ class QuickActionsGrid extends StatelessWidget {
       );
     }
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          /// HEADER
-          Row(
-            children: const [
-              Expanded(
-                child: Text(
+          /// HEADER (Height: 24px, Padding: Left 10px, Right 10px, Justify: space-between)
+          Container(
+            height: 24,
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const Text(
                   "Quick Actions",
                   style: TextStyle(
                     fontSize: 16,
@@ -39,48 +45,60 @@ class QuickActionsGrid extends StatelessWidget {
                     color: Color(0xFF0F172A),
                   ),
                 ),
-              ),
-              Icon(
-                Icons.settings_outlined,
-                size: 14,
-                color: Color(0xFF0284C7),
-              ),
-              SizedBox(width: 4),
-              Text(
-                "Customize",
-                style: TextStyle(
-                  fontSize: 11.5,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF0284C7),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: const [
+                    Icon(
+                      Icons.settings_outlined,
+                      size: 16,
+                      color: Color(0xFF0284C7),
+                    ),
+                    SizedBox(width: 4),
+                    Text(
+                      "Customize",
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF0284C7),
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
 
-          const SizedBox(height: 14),
+          const SizedBox(height: 16),
 
-          /// GRID
-          GridView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: actions.length,
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 4,
-              crossAxisSpacing: 12,
-              mainAxisSpacing: 14,
-              mainAxisExtent: 96,
-            ),
-            itemBuilder: (context, index) {
-              return QuickActionCard(
-                action: actions[index],
-                onTap: () {
-                  _handleAction(
-                    context,
-                    actions[index].name,
+          /// ACTIONS GRID CONTAINER (Width: 352px, Height: 208px)
+          Center(
+            child: SizedBox(
+              width: 352,
+              height: 208,
+              child: GridView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                padding: EdgeInsets.zero,
+                itemCount: actions.length,
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 4,
+                  crossAxisSpacing: 12,
+                  mainAxisSpacing: 16,
+                  mainAxisExtent: 96,
+                ),
+                itemBuilder: (context, index) {
+                  return QuickActionCard(
+                    action: actions[index],
+                    onTap: () {
+                      _handleAction(
+                        context,
+                        actions[index].name,
+                      );
+                    },
                   );
                 },
-              );
-            },
+              ),
+            ),
           ),
         ],
       ),

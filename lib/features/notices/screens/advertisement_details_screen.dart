@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import '../../../core/network/api_client.dart';
@@ -46,6 +47,8 @@ class AdvertisementDetailsScreen extends StatelessWidget {
         : 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=600&q=80';
     final priceLabel = _isNikoo ? '₹93L Onwards' : '₹92.5 L*';
 
+    final statusBarHeight = MediaQuery.of(context).padding.top;
+
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) {
@@ -55,28 +58,116 @@ class AdvertisementDetailsScreen extends StatelessWidget {
       },
       child: Scaffold(
         backgroundColor: const Color(0xFFF8FAFC),
-        appBar: AppBar(
-          backgroundColor: const Color(0xFFE0F2FE),
-          elevation: 0,
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back, color: Color(0xFF0F172A)),
-            onPressed: () => _handleBackPress(context),
-          ),
-          title: const Text(
-            'Advertisement Details',
-            style: TextStyle(
-              color: Color(0xFF0F172A),
-              fontWeight: FontWeight.bold,
-              fontSize: 18,
-            ),
-          ),
-        ),
         bottomNavigationBar: const DashboardBottomNavigation(),
-        body: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+        body: AnnotatedRegion<SystemUiOverlayStyle>(
+          value: const SystemUiOverlayStyle(
+            statusBarColor: Colors.transparent,
+            statusBarIconBrightness: Brightness.dark,
+            statusBarBrightness: Brightness.light,
+          ),
+          child: SafeArea(
+            top: false,
+            child: Column(
+              children: [
+                // =====================================================
+                // HEADER CONTAINER (Height: 66px Hug, Color: #C7E3FF, Padding: Top 12px, Right 20px, Bottom 16px, Left 20px)
+                // =====================================================
+                Container(
+                  width: double.infinity,
+                  padding: EdgeInsets.only(
+                    top: statusBarHeight > 0 ? statusBarHeight + 12 : 12,
+                    left: 20,
+                    right: 20,
+                    bottom: 16,
+                  ),
+                  decoration: const BoxDecoration(
+                    color: Color(0xFFC7E3FF),
+                    borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(20),
+                      bottomRight: Radius.circular(20),
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Color(0x10000000),
+                        blurRadius: 6,
+                        spreadRadius: 0,
+                        offset: Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: SizedBox(
+                    height: 38,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        /// NAVIGATION & GREETING CONTAINER (352px x 38px, Radius: 40px, Border: 1px #CCDFF2, Padding: Left 16px, Right 12px, Gap: 10px)
+                        Expanded(
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              InkWell(
+                                onTap: () => _handleBackPress(context),
+                                borderRadius: BorderRadius.circular(20),
+                                child: const Padding(
+                                  padding: EdgeInsets.all(4),
+                                  child: Icon(
+                                    Icons.arrow_back,
+                                    color: Color(0xFF0F172A),
+                                    size: 22,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Container(
+                                  height: 38,
+                                  padding: const EdgeInsets.only(left: 16, right: 12),
+                                  decoration: BoxDecoration(
+                                    color: Colors.transparent,
+                                    borderRadius: BorderRadius.circular(40),
+                                    border: Border.all(
+                                      color: const Color(0xFFCCDFF2),
+                                      width: 1.0,
+                                    ),
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: const [
+                                      /// GREETING TEXT ("Advertisement Details", DM Sans 600 SemiBold, 18px, Line height: 100%)
+                                      SizedBox(
+                                        height: 23,
+                                        child: Text(
+                                          'Advertisement Details',
+                                          textAlign: TextAlign.left,
+                                          style: TextStyle(
+                                            color: Color(0xFF0F172A),
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 18,
+                                            height: 1.0,
+                                            letterSpacing: 0,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
               // Top Cover Hero Image with Overlay Badge
               Stack(
                 children: [
@@ -323,7 +414,12 @@ class AdvertisementDetailsScreen extends StatelessWidget {
           ),
         ),
       ),
-    );
+    ],
+  ),
+),
+),
+),
+);
   }
 
   Widget _buildCenturyContent() {

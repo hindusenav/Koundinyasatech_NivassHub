@@ -22,7 +22,7 @@ class DashboardBody extends StatelessWidget {
       color: const Color(0xFFF7F8FC),
       child: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
-        padding: const EdgeInsets.only(bottom: 24),
+        padding: const EdgeInsets.only(bottom: 20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: const [
@@ -31,49 +31,42 @@ class DashboardBody extends StatelessWidget {
 
             VisitorNotificationSection(),
 
-            // 16 = the 12 this gap always reserved + the 4 that used to be
-            // a trailing SizedBox *inside* VisitorNotificationSection's own
-            // Column. That inner Column was removed so the notification
-            // card's Transform.translate is this Column's direct child
-            // (see VisitorNotificationSection for why — it's a hit-testing
-            // fix, not a style change), so its spacing moved out here to
-            // keep the total gap identical.
-            SizedBox(height: 16),
+            SizedBox(height: 20),
 
             // ONLINE ADVERTISEMENT SLIDER BANNER
             BannerSlider(),
 
-            SizedBox(height: 14),
+            SizedBox(height: 20),
 
             // QUICK ACTIONS GRID
             QuickActionsGrid(),
 
-            SizedBox(height: 14),
+            SizedBox(height: 20),
 
             // MAINTENANCE ALERT BANNER
             MaintenanceCard(),
 
-            SizedBox(height: 14),
+            SizedBox(height: 20),
 
             // APPROVAL QUEUE CAROUSEL
             ApprovalQueueSection(),
 
-            SizedBox(height: 14),
+            SizedBox(height: 20),
 
             // PANIC / SOS SLIDER BANNER
             PanicSosBanner(),
 
-            SizedBox(height: 12),
+            SizedBox(height: 16),
 
             // OTP / QR CODE GATE ENTRY BANNER
             GenerateOtpBanner(),
 
-            SizedBox(height: 18),
+            SizedBox(height: 20),
 
-            // COMMUNITY POSTS & NOTICE BOARD SECTION (Aligned to main container bounds matching Image 2)
+            // COMMUNITY POSTS & NOTICE BOARD SECTION
             CommunityPostsSection(),
 
-            SizedBox(height: 16),
+            SizedBox(height: 20),
           ],
         ),
       ),
