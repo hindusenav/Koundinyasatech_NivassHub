@@ -21,35 +21,42 @@ class MaintenanceCard extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      margin: const EdgeInsets.symmetric(horizontal: 16),
+      height: 52,
+      margin: const EdgeInsets.symmetric(horizontal: 20),
       padding: const EdgeInsets.symmetric(
-        horizontal: 14,
-        vertical: 10,
+        horizontal: 16,
+        vertical: 8,
       ),
       decoration: BoxDecoration(
-        color: const Color(0xFFF0F9FF),
+        color: const Color(0xFFE8F4FF),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: const Color(0xFFBAE6FD),
+          color: const Color(0xFF0060BD),
+          width: 1,
         ),
       ),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           const Icon(
             Icons.info_outline_rounded,
-            color: Color(0xFF0284C7),
-            size: 18,
+            color: Color(0xFF0060BD),
+            size: 20,
           ),
 
-          const SizedBox(width: 10),
+          const SizedBox(width: 12),
 
           Expanded(
             child: Text(
               message,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
               style: const TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-                color: Color(0xFF0284C7),
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+                color: Color(0xFF0060BD),
+                height: 1.0,
+                letterSpacing: 0,
               ),
             ),
           ),

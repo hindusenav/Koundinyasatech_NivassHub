@@ -35,53 +35,67 @@ class CommunityPostsSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // =====================================================
-        // 1. COMMUNITY POSTS HEADER ROW
+        // 1. COMMUNITY POSTS HEADER ROW (Height: 24px, Justify: space-between)
         // =====================================================
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text(
-                'Community Posts',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF0F172A),
-                ),
-              ),
-              InkWell(
-                onTap: () => _navigateToNewPostsSelection(context),
-                borderRadius: BorderRadius.circular(20),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFECFDF5),
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: const Color(0xFF6EE7B7)),
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: SizedBox(
+            height: 24,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const Text(
+                  'Community Posts',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFF0F172A),
+                    height: 1.0,
+                    letterSpacing: 0,
                   ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: const [
-                      Icon(
-                        Icons.edit_note,
-                        size: 16,
-                        color: Color(0xFF059669),
+                ),
+                InkWell(
+                  onTap: () => _navigateToNewPostsSelection(context),
+                  borderRadius: BorderRadius.circular(4),
+                  child: Container(
+                    height: 24,
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFECFDF5),
+                      borderRadius: BorderRadius.circular(4),
+                      border: Border.all(
+                        color: const Color(0xFF6EE7B7),
+                        width: 0.5,
                       ),
-                      SizedBox(width: 4),
-                      Text(
-                        'New Posts',
-                        style: TextStyle(
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: const [
+                        Icon(
+                          Icons.edit_note,
+                          size: 16,
                           color: Color(0xFF059669),
-                          fontWeight: FontWeight.bold,
-                          fontSize: 12,
                         ),
-                      ),
-                    ],
+                        SizedBox(width: 4),
+                        Text(
+                          'New Posts',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: Color(0xFF059669),
+                            fontWeight: FontWeight.w400,
+                            fontSize: 12,
+                            height: 1.0,
+                            letterSpacing: 0,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
 
@@ -96,52 +110,63 @@ class CommunityPostsSection extends StatelessWidget {
         ],
 
         // =====================================================
-        // 3. NOTICE BOARD HEADER ROW
+        // 3. NOTICE BOARD HEADER ROW (Height: 23px, Justify: space-between)
         // =====================================================
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: InkWell(
-            onTap: () {
-              ApiClient? apiClient;
-              try {
-                apiClient = context.read<ApiClient>();
-              } catch (_) {}
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (_) => NoticesScreen(apiClient: apiClient ?? ApiClient()),
-                ),
-              );
-            },
-            borderRadius: BorderRadius.circular(8),
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: SizedBox(
+            height: 23,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 const Text(
                   'Notice Board',
                   style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
                     color: Color(0xFF0F172A),
+                    height: 1.0,
+                    letterSpacing: 0,
                   ),
                 ),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: const [
-                    Text(
-                      'View All',
-                      style: TextStyle(
-                        color: Color(0xFF0284C7),
-                        fontWeight: FontWeight.bold,
-                        fontSize: 12.5,
+                InkWell(
+                  onTap: () {
+                    ApiClient? apiClient;
+                    try {
+                      apiClient = context.read<ApiClient>();
+                    } catch (_) {}
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => NoticesScreen(apiClient: apiClient ?? ApiClient()),
                       ),
+                    );
+                  },
+                  borderRadius: BorderRadius.circular(4),
+                  child: SizedBox(
+                    height: 21,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: const [
+                        Text(
+                          'View All',
+                          style: TextStyle(
+                            color: Color(0xFF0284C7),
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12.5,
+                            height: 1.0,
+                          ),
+                        ),
+                        SizedBox(width: 4),
+                        Icon(
+                          Icons.chevron_right,
+                          size: 16,
+                          color: Color(0xFF0284C7),
+                        ),
+                      ],
                     ),
-                    SizedBox(width: 2),
-                    Icon(
-                      Icons.chevron_right,
-                      size: 16,
-                      color: Color(0xFF0284C7),
-                    ),
-                  ],
+                  ),
                 ),
               ],
             ),
@@ -164,7 +189,7 @@ class CommunityPostsSection extends StatelessWidget {
               );
             },
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: 16),
         ],
 
         // =====================================================
@@ -181,7 +206,7 @@ class CommunityPostsSection extends StatelessWidget {
               );
             },
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: 16),
         ],
 
         // =====================================================
@@ -189,7 +214,7 @@ class CommunityPostsSection extends StatelessWidget {
         // =====================================================
         if (banners.isNotEmpty) ...[
           BannerCard(banner: banners[0]),
-          const SizedBox(height: 14),
+          const SizedBox(height: 16),
         ],
 
         // =====================================================
@@ -197,7 +222,7 @@ class CommunityPostsSection extends StatelessWidget {
         // =====================================================
         if (banners.length > 1) ...[
           BannerCard(banner: banners[1]),
-          const SizedBox(height: 14),
+          const SizedBox(height: 16),
         ],
 
         // =====================================================
@@ -214,7 +239,7 @@ class CommunityPostsSection extends StatelessWidget {
               );
             },
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: 16),
         ],
 
         // Any additional notices if present
@@ -229,7 +254,7 @@ class CommunityPostsSection extends StatelessWidget {
               );
             },
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: 16),
         ],
       ],
     );
