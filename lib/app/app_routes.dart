@@ -89,6 +89,7 @@ class AppRoutes {
   // ---------------------------------------------------------------------
   static const String profile = '/profile';
   static const String editProfile = '/profile/edit';
+  static const String addAddressDetails = '/profile/add-address-details';
   static const String settings = '/settings';
   static const String helpSupport = '/settings/help-support';
 
