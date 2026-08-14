@@ -32,13 +32,16 @@ class ApprovalQueueSection extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      margin: const EdgeInsets.symmetric(horizontal: 16),
-      padding: const EdgeInsets.all(16),
+      margin: const EdgeInsets.symmetric(horizontal: 20),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: const Color(0xFFE2E8F0),
+        borderRadius: BorderRadius.circular(12),
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Color(0xFF05234D),
+            Color(0xFF13A391),
+          ],
         ),
         boxShadow: [
           BoxShadow(
@@ -48,51 +51,76 @@ class ApprovalQueueSection extends StatelessWidget {
           ),
         ],
       ),
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: Padding(
+        padding: const EdgeInsets.all(0.5), // 0.5px gradient border
+        child: Container(
+          padding: const EdgeInsets.all(16), // 16px padding
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(11.5),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Approval Queue (${visitors.length})',
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF0F172A),
+              /// HEADER FRAME (Height: 23px, Justify: space-between)
+              SizedBox(
+                height: 23,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Approval Queue (${visitors.length})',
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF0F172A),
+                        height: 1.1,
+                      ),
+                    ),
+                    InkWell(
+                      onTap: () => Navigator.pushNamed(context, AppRoutes.activities),
+                      borderRadius: BorderRadius.circular(4),
+                      child: const Text(
+                        'View all',
+                        style: TextStyle(
+                          color: Color(0xFF0284C7),
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12.5,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              InkWell(
-                onTap: () => Navigator.pushNamed(context, AppRoutes.activities),
-                borderRadius: BorderRadius.circular(4),
-                child: const Text(
-                  'View all',
-                  style: TextStyle(
-                    color: Color(0xFF0284C7),
-                    fontWeight: FontWeight.bold,
-                    fontSize: 12.5,
-                  ),
+
+              const SizedBox(height: 8), // 8px gap
+
+              /// APPROVAL QUEUE LIST (Height: 118px, Vertical Padding: 8px, Item Gap: 16px)
+              Container(
+                height: 118,
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    for (int i = 0; i < visitors.length && i < 3; i++) ...[
+                      if (i > 0) const SizedBox(width: 16),
+                      _VisitorAvatar(
+                        name: visitors[i].visitorName,
+                        subtitle: visitors[i].visitorType.isNotEmpty
+                            ? visitors[i].visitorType
+                            : 'Delivery',
+                        color: _avatarColors[i % _avatarColors.length],
+                        isImage: i == 2,
+                      ),
+                    ],
+                  ],
                 ),
               ),
             ],
           ),
-
-          const SizedBox(height: 16),
-
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              for (int i = 0; i < visitors.length && i < 3; i++)
-                _VisitorAvatar(
-                  name: visitors[i].visitorName,
-                  subtitle: visitors[i].visitorType.isNotEmpty
-                      ? visitors[i].visitorType
-                      : 'Delivery',
-                  color: _avatarColors[i % _avatarColors.length],
-                  isImage: i == 2,
-                ),
-            ],
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -114,6 +142,7 @@ class _VisitorAvatar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         if (isImage)
           Container(

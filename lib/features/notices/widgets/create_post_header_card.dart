@@ -12,21 +12,54 @@ class CreateCommunityPostHeaderCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
       children: [
-        const Text(
-          'Create a community post',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: Color(0xFF0F172A),
+        /// SHEET-HEADER (Fill 400px, Hug 44px, Gap: 4px)
+        SizedBox(
+          height: 44,
+          width: double.infinity,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: const [
+              /// SECTION TITLE (DM Sans 700 Bold, 18px, Height: 23px, Line height: 100%)
+              SizedBox(
+                height: 23,
+                child: Text(
+                  'Create a community post',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF0F172A),
+                    height: 1.0,
+                    letterSpacing: 0,
+                  ),
+                ),
+              ),
+
+              SizedBox(height: 4), // 4px Gap
+
+              /// SECTION SUBTITLE (DM Sans 400 Regular, 13px, Height: 17px, Line height: 100%)
+              SizedBox(
+                height: 17,
+                child: Text(
+                  'Choose a post format to engage with your neighbors',
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w400,
+                    color: Color(0xFF64748B),
+                    height: 1.0,
+                    letterSpacing: 0,
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
-        const SizedBox(height: 4),
-        const Text(
-          'Choose a post format to engage with your neighbors',
-          style: TextStyle(fontSize: 13, color: Color(0xFF64748B)),
-        ),
-        const SizedBox(height: 16),
+
+        const SizedBox(height: 16), // 16px Gap to actions-list
+
+        /// ACTIONS-LIST
         _OptionCard(
           icon: Icons.edit_outlined,
           title: 'Create Post',

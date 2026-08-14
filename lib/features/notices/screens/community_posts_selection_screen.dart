@@ -29,28 +29,64 @@ class _CommunityPostsSelectionView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
-      appBar: AppBar(
-        backgroundColor: const Color(0xFFE0F2FE),
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Color(0xFF0F172A)),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-        title: const Text(
-          'Community Posts',
-          style: TextStyle(
-            color: Color(0xFF0F172A),
-            fontWeight: FontWeight.bold,
-            fontSize: 18,
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(66),
+        child: Container(
+          color: const Color(0xFFE0F2FE),
+          child: SafeArea(
+            bottom: false,
+            child: Padding(
+              padding: const EdgeInsets.only(
+                top: 12,
+                right: 20,
+                bottom: 16,
+                left: 20,
+              ),
+              child: SizedBox(
+                height: 38,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    /// NAVIGATION / GREETING CONTAINER
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        IconButton(
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(),
+                          icon: const Icon(Icons.arrow_back, color: Color(0xFF0F172A), size: 22),
+                          onPressed: () => Navigator.of(context).pop(),
+                        ),
+                        const SizedBox(width: 12),
+                        const Text(
+                          'Community Posts',
+                          style: TextStyle(
+                            color: Color(0xFF0F172A),
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    /// BELL (24px x 24px)
+                    const SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: Icon(
+                        Icons.notifications_none_outlined,
+                        color: Color(0xFF0F172A),
+                        size: 24,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ),
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.notifications_none_outlined, color: Color(0xFF0F172A), size: 22),
-            onPressed: () {},
-          ),
-          const SizedBox(width: 4),
-        ],
       ),
       bottomNavigationBar: const DashboardBottomNavigation(),
       body: SingleChildScrollView(

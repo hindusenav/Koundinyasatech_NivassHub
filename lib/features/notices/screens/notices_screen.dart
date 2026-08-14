@@ -180,18 +180,18 @@ class _NoticeBoardViewState extends State<_NoticeBoardView> {
           child: Column(
             children: [
               // =====================================================
-              // APP BAR HEADER MATCHING FIGMA DESIGN (16px PADDING)
+              // HEADER CONTAINER (Height: 66px Hug, Color: #C7E3FF, Padding: Top 12px, Right 20px, Bottom 16px, Left 20px)
               // =====================================================
               Container(
                 width: double.infinity,
                 padding: EdgeInsets.only(
-                  top: statusBarHeight > 0 ? statusBarHeight + 6 : 14,
-                  left: 16,
-                  right: 16,
-                  bottom: 14,
+                  top: statusBarHeight > 0 ? statusBarHeight + 12 : 12,
+                  left: 20,
+                  right: 20,
+                  bottom: 16,
                 ),
                 decoration: const BoxDecoration(
-                  color: Color(0xFFC7E1F8),
+                  color: Color(0xFFC7E3FF),
                   borderRadius: BorderRadius.only(
                     bottomLeft: Radius.circular(20),
                     bottomRight: Radius.circular(20),
@@ -205,34 +205,74 @@ class _NoticeBoardViewState extends State<_NoticeBoardView> {
                     ),
                   ],
                 ),
-                child: Row(
-                  children: [
-                    InkWell(
-                      onTap: () {
-                        if (Navigator.of(context).canPop()) {
-                          Navigator.of(context).pop();
-                        }
-                      },
-                      borderRadius: BorderRadius.circular(20),
-                      child: const Padding(
-                        padding: EdgeInsets.all(4),
-                        child: Icon(
-                          Icons.arrow_back,
-                          color: Color(0xFF0F172A),
-                          size: 22,
+                child: SizedBox(
+                  height: 38,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      /// NAVIGATION & GREETING CONTAINER (352px x 38px, Radius: 40px, Border: 1px #CCDFF2, Padding: Left 16px, Right 12px, Gap: 10px)
+                      Expanded(
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            InkWell(
+                              onTap: () {
+                                if (Navigator.of(context).canPop()) {
+                                  Navigator.of(context).pop();
+                                }
+                              },
+                              borderRadius: BorderRadius.circular(20),
+                              child: const Padding(
+                                padding: EdgeInsets.all(4),
+                                child: Icon(
+                                  Icons.arrow_back,
+                                  color: Color(0xFF0F172A),
+                                  size: 22,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Container(
+                                height: 38,
+                                padding: const EdgeInsets.only(left: 16, right: 12),
+                                decoration: BoxDecoration(
+                                  color: Colors.transparent,
+                                  borderRadius: BorderRadius.circular(40),
+                                  border: Border.all(
+                                    color: const Color(0xFFCCDFF2),
+                                    width: 1.0,
+                                  ),
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: const [
+                                    /// GREETING TEXT ("Notice Board", DM Sans 600 SemiBold, 18px, Line height: 100%)
+                                    SizedBox(
+                                      height: 23,
+                                      child: Text(
+                                        'Notice Board',
+                                        textAlign: TextAlign.left,
+                                        style: TextStyle(
+                                          color: Color(0xFF0F172A),
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: 18,
+                                          height: 1.0,
+                                          letterSpacing: 0,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 8),
-                    const Text(
-                      'Notice Board',
-                      style: TextStyle(
-                        color: Color(0xFF0F172A),
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
 
@@ -249,31 +289,32 @@ class _NoticeBoardViewState extends State<_NoticeBoardView> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Filter Chips Bar matching Figma ['All', 'Unread', 'Promotions', 'Community']
+                        // Filter Chips Bar matching Figma Tabs Container (Height: 33px, Gap: 28px)
                         SingleChildScrollView(
                           scrollDirection: Axis.horizontal,
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
                           child: Row(
                             children: _filters.map((filter) {
                               final isSelected = _selectedFilter == filter;
                               return Padding(
-                                padding: const EdgeInsets.only(right: 8),
+                                padding: const EdgeInsets.only(right: 28),
                                 child: InkWell(
                                   onTap: () => setState(() => _selectedFilter = filter),
-                                  borderRadius: BorderRadius.circular(20),
+                                  borderRadius: BorderRadius.circular(8),
                                   child: Container(
+                                    height: 33,
                                     padding: const EdgeInsets.symmetric(
-                                      horizontal: 16,
+                                      horizontal: 12,
                                       vertical: 8,
                                     ),
                                     decoration: BoxDecoration(
                                       color: isSelected
-                                          ? const Color(0xFFE57C00)
-                                          : Colors.white,
-                                      borderRadius: BorderRadius.circular(20),
+                                          ? const Color(0xFFEC9211)
+                                          : const Color(0xFFF1F5F9),
+                                      borderRadius: BorderRadius.circular(8),
                                       border: Border.all(
                                         color: isSelected
-                                            ? const Color(0xFFE57C00)
+                                            ? const Color(0xFFEC9211)
                                             : const Color(0xFFCBD5E1),
                                       ),
                                     ),
@@ -283,10 +324,10 @@ class _NoticeBoardViewState extends State<_NoticeBoardView> {
                                         color: isSelected
                                             ? Colors.white
                                             : const Color(0xFF0F172A),
-                                        fontWeight: isSelected
-                                            ? FontWeight.bold
-                                            : FontWeight.w500,
-                                        fontSize: 12,
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 13,
+                                        height: 1.0,
+                                        letterSpacing: 0,
                                       ),
                                     ),
                                   ),
@@ -308,34 +349,42 @@ class _NoticeBoardViewState extends State<_NoticeBoardView> {
                             onRetry: provider.retry,
                           ),
                         ] else ...[
-                          // Unread Notice Alert Banner matching Figma
+                          /// UNREAD-BANNER (Height: 50px Hug, Radius: 12px, Border: 1px #EE3B30, Padding: 16px, BG: #FFF1ED)
                           Container(
-                            margin: const EdgeInsets.symmetric(horizontal: 16),
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 14,
-                              vertical: 10,
-                            ),
+                            margin: const EdgeInsets.symmetric(horizontal: 20),
+                            padding: const EdgeInsets.all(16),
                             decoration: BoxDecoration(
-                              color: const Color(0xFFFEF2F2),
-                              borderRadius: BorderRadius.circular(8),
-                              border:
-                                  Border.all(color: const Color(0xFFFECACA)),
+                              color: const Color(0xFFFFF1ED),
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: const Color(0xFFEE3B30),
+                                width: 1.0,
+                              ),
                             ),
                             child: Row(
-                              children: const [
-                                Icon(
-                                  Icons.circle,
-                                  color: Color(0xFFEF4444),
-                                  size: 8,
-                                ),
-                                SizedBox(width: 8),
-                                Text(
-                                  '1 Unread Notice',
-                                  style: TextStyle(
-                                    color: Color(0xFFDC2626),
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 12,
-                                  ),
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                /// BANNER-LEFT (Height: 18px, Gap: 8px)
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: const [
+                                    Icon(
+                                      Icons.circle,
+                                      color: Color(0xFFEE3B30),
+                                      size: 8,
+                                    ),
+                                    SizedBox(width: 8),
+                                    Text(
+                                      '1 Unread Notice',
+                                      style: TextStyle(
+                                        color: Color(0xFFEE3B30),
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 12,
+                                        height: 1.0,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),

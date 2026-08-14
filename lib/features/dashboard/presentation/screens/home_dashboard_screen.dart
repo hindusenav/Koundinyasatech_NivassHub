@@ -27,6 +27,7 @@ class HomeDashboardScreen extends StatelessWidget {
           // DASHBOARD BODY
           // ------------------------------------------------------------
           body: SafeArea(
+            top: false,
             bottom: false,
             child: RefreshIndicator(
               color: const Color(0xFF1976D2),

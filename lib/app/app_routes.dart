@@ -93,8 +93,9 @@ class AppRoutes {
   static const String helpSupport = '/settings/help-support';
 
   // ---------------------------------------------------------------------
-  // Search / Quick Actions
+  // Search / Quick Actions / Notifications
   // ---------------------------------------------------------------------
   static const String search = '/search';
   static const String quickActions = '/quick-actions';
+  static const String notifications = '/notifications';
 }

@@ -6,7 +6,7 @@ class GenerateOtpBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16),
+      margin: const EdgeInsets.symmetric(horizontal: 20),
       child: Material(
         color: Colors.transparent,
         borderRadius: BorderRadius.circular(12),
@@ -20,11 +20,11 @@ class GenerateOtpBanner extends StatelessWidget {
             );
           },
           child: Container(
-            height: 78,
+            height: 76,
             width: double.infinity,
             padding: const EdgeInsets.symmetric(
-              horizontal: 16,
-              vertical: 12,
+              horizontal: 20,
+              vertical: 8,
             ),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(12),
@@ -45,57 +45,59 @@ class GenerateOtpBanner extends StatelessWidget {
               ],
             ),
             child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                /// TEXT
+                /// TEXT COLUMN FRAME
                 const Expanded(
-                  child: Padding(
-                    padding: EdgeInsets.only(left: 2),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Generate OTP / QR Code',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w700,
-                            letterSpacing: 0.2,
-                          ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Generate OTP / QR Code',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                          height: 1.0,
+                          letterSpacing: 0,
                         ),
-                        SizedBox(height: 4),
-                        Text(
-                          'Invite guests for smooth gate entry',
-                          style: TextStyle(
-                            color: Colors.white70,
-                            fontSize: 11,
-                            fontWeight: FontWeight.w500,
-                            height: 1.2,
-                          ),
+                      ),
+                      SizedBox(height: 4),
+                      Text(
+                        'Invite guests for smooth gate entry',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          height: 1.0,
+                          letterSpacing: 0,
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
 
                 const SizedBox(width: 12),
 
-                /// QR BOX
+                /// QR FRAME (60px x 60px, Radius: 8px)
                 Container(
-                  width: 50,
+                  width: 60,
                   height: 60,
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(8),
                   ),
                   alignment: Alignment.center,
-                  child: Padding(
-                    padding: const EdgeInsets.all(3),
-                    child: Image.asset(
-                      'assets/icons/qr_icon.png',
-                      width: 50,
-                      height: 60,
-                      fit: BoxFit.contain,
+                  child: Image.asset(
+                    'assets/icons/qr_icon.png',
+                    width: 32,
+                    height: 32,
+                    fit: BoxFit.contain,
+                    errorBuilder: (_, __, ___) => const Icon(
+                      Icons.qr_code_2_rounded,
+                      color: Color(0xFF0F9D8A),
+                      size: 32,
                     ),
                   ),
                 ),
