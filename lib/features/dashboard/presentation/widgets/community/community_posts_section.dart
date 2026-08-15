@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../../app/app_routes.dart';
 import '../../../../../core/network/api_client.dart';
 import '../../../../notices/screens/community_posts_selection_screen.dart';
 import '../../../../notices/screens/notice_details_screen.dart';
