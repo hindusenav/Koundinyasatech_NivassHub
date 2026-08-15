@@ -1,40 +1,43 @@
 import '../../../core/storage/local_storage_service.dart';
-import '../../../core/storage/storage_keys.dart';
+import '../models/settings_model.dart';
 
-/// Wraps `LocalStorageService` for Settings' on-device preferences. No
-/// mock/real split here — there's no server concept for a device-local
-/// toggle; `LocalStorageService` already *is* the one real implementation.
 class SettingsRepository {
-  SettingsRepository(this._storage);
+  final LocalStorageService localStorageService;
 
-  final LocalStorageService _storage;
+  SettingsRepository(this.localStorageService);
 
-  bool getNotificationsEnabled() =>
-      _storage.getBool(StorageKeys.notificationsEnabled) ?? true;
+  Future<SettingsModel> fetchUserSettings() async {
+    try {
+      final savedNotifs = localStorageService.getBool('settings_notifs') ?? true;
+      final savedSecurity = localStorageService.getBool('settings_security') ?? true;
+      final savedFeed = localStorageService.getBool('settings_feed') ?? true;
+      final savedPlan = localStorageService.getString('settings_plan') ?? 'Ad-Supported';
 
-  Future<void> setNotificationsEnabled(bool value) =>
-      _storage.setBool(StorageKeys.notificationsEnabled, value);
+      return SettingsModel(
+        notificationPreferences: savedNotifs,
+        securityAlerts: savedSecurity,
+        feedSettings: savedFeed,
+        activePlan: savedPlan,
+      );
+    } catch (e) {
+      return SettingsModel(
+        notificationPreferences: true,
+        securityAlerts: true,
+        feedSettings: true,
+        activePlan: 'Ad-Supported',
+      );
+    }
+  }
 
-  // ---------------------------------------------------------------------
-  // Household — device-local counters (no backend concept for these yet).
-  // ---------------------------------------------------------------------
-  int getFamilyCount() => _storage.getInt(StorageKeys.familyCount) ?? 0;
-
-  Future<void> setFamilyCount(int value) =>
-      _storage.setInt(StorageKeys.familyCount, value);
-
-  int getDailyHelpCount() => _storage.getInt(StorageKeys.dailyHelpCount) ?? 0;
-
-  Future<void> setDailyHelpCount(int value) =>
-      _storage.setInt(StorageKeys.dailyHelpCount, value);
-
-  int getVehicleCount() => _storage.getInt(StorageKeys.vehicleCount) ?? 0;
-
-  Future<void> setVehicleCount(int value) =>
-      _storage.setInt(StorageKeys.vehicleCount, value);
-
-  int getPetCount() => _storage.getInt(StorageKeys.petCount) ?? 0;
-
-  Future<void> setPetCount(int value) =>
-      _storage.setInt(StorageKeys.petCount, value);
+  Future<bool> saveUserSettings(SettingsModel settings) async {
+    try {
+      await localStorageService.setBool('settings_notifs', settings.notificationPreferences);
+      await localStorageService.setBool('settings_security', settings.securityAlerts);
+      await localStorageService.setBool('settings_feed', settings.feedSettings);
+      await localStorageService.setString('settings_plan', settings.activePlan);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
 }
