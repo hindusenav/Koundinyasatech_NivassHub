@@ -1,51 +1,48 @@
 class AddressModel {
   final String flatNo;
-  final String society;
+  final String societyName;
   final String wing;
   final String street;
   final String area;
   final String landmark;
   final String city;
   final String state;
-  final String pincode;
+  final String pinCode;
 
-  AddressModel({
-    required this.flatNo,
-    required this.society,
-    required this.wing,
-    required this.street,
-    required this.area,
-    required this.landmark,
-    required this.city,
-    required this.state,
-    required this.pincode,
+  // ✅ Add const here
+  const AddressModel({
+    this.flatNo = '',
+    this.societyName = '',
+    this.wing = '',
+    this.street = '',
+    this.area = '',
+    this.landmark = '',
+    this.city = '',
+    this.state = '',
+    this.pinCode = '',
   });
 
-  factory AddressModel.fromJson(Map<String, dynamic> json) {
+  AddressModel copyWith({
+    String? flatNo,
+    String? societyName,
+    String? wing,
+    String? street,
+    String? area,
+    String? landmark,
+    String? city,
+    String? state,
+    String? pinCode,
+  }) {
     return AddressModel(
-      flatNo: json['flat_no'] ?? json['flatNo'] ?? '',
-      society: json['society'] ?? '',
-      wing: json['wing'] ?? '',
-      street: json['street'] ?? '',
-      area: json['area'] ?? '',
-      landmark: json['landmark'] ?? '',
-      city: json['city'] ?? '',
-      state: json['state'] ?? '',
-      pincode: json['pincode'] ?? json['pin_code'] ?? '',
+      flatNo: flatNo ?? this.flatNo,
+      societyName: societyName ?? this.societyName,
+      wing: wing ?? this.wing,
+      street: street ?? this.street,
+      area: area ?? this.area,
+      landmark: landmark ?? this.landmark,
+      city: city ?? this.city,
+      state: state ?? this.state,
+      pinCode: pinCode ?? this.pinCode,
     );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'flat_no': flatNo,
-      'society': society,
-      'wing': wing,
-      'street': street,
-      'area': area,
-      'landmark': landmark,
-      'city': city,
-      'state': state,
-      'pin_code': pincode,
-    };
   }
 }

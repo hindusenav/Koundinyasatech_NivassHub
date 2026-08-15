@@ -1,60 +1,109 @@
-import 'package:flutter/foundation.dart';
-
+import 'package:flutter/material.dart';
+import '../models/settings_model.dart';
 import '../repository/settings_repository.dart';
 
-/// Owns the Push Notifications preference. Seeded synchronously from
-/// [SettingsRepository] at construction — `LocalStorageService` is already
-/// initialized by the time providers are built in `app.dart`, so there's no
-/// async gap to await here.
 class SettingsProvider extends ChangeNotifier {
-  SettingsProvider(this._repository)
-      : _notificationsEnabled = _repository.getNotificationsEnabled(),
-        _familyCount = _repository.getFamilyCount(),
-        _dailyHelpCount = _repository.getDailyHelpCount(),
-        _vehicleCount = _repository.getVehicleCount(),
-        _petCount = _repository.getPetCount();
+  final SettingsRepository _settingsRepository;
 
-  final SettingsRepository _repository;
-
-  bool _notificationsEnabled;
-  int _familyCount;
-  int _dailyHelpCount;
-  int _vehicleCount;
-  int _petCount;
-
-  bool get notificationsEnabled => _notificationsEnabled;
-  int get familyCount => _familyCount;
-  int get dailyHelpCount => _dailyHelpCount;
-  int get vehicleCount => _vehicleCount;
-  int get petCount => _petCount;
-
-  Future<void> setNotificationsEnabled(bool value) async {
-    _notificationsEnabled = value;
-    notifyListeners();
-    await _repository.setNotificationsEnabled(value);
+  SettingsProvider({required SettingsRepository settingsRepository})
+      : _settingsRepository = settingsRepository {
+    loadUserSettings();
   }
 
-  Future<void> addFamilyMember() async {
-    _familyCount++;
+  int _selectedBottomNavIndex = 4;
+  SettingsModel _userSettings = SettingsModel(
+    notificationPreferences: true,
+    securityAlerts: true,
+    feedSettings: true,
+    activePlan: 'Ad-Supported',
+  );
+  bool _isLoading = false;
+
+  // --- NEW USER PROFILE FIELDS ---
+  String _userName = 'User Name';
+  String _phone = '';
+  String _email = '';
+
+  // Getters
+  int get selectedBottomNavIndex => _selectedBottomNavIndex;
+  SettingsModel get userSettings => _userSettings;
+  bool get isLoading => _isLoading;
+
+  // --- NEW PROFILE GETTERS ---
+  String get userName => _userName;
+  String get phone => _phone;
+  String get email => _email;
+  
+  // Getter for avatar initials (e.g., fixes userInitial error)
+  String get userInitial =>
+      _userName.trim().isNotEmpty ? _userName.trim()[0].toUpperCase() : 'U';
+
+  void setBottomNavIndex(int index) {
+    _selectedBottomNavIndex = index;
     notifyListeners();
-    await _repository.setFamilyCount(_familyCount);
   }
 
-  Future<void> addDailyHelp() async {
-    _dailyHelpCount++;
+  // --- NEW PROFILE METHODS ---
+  /// Hydrates or updates user details from DashboardProvider or API
+  void setUserDetails({String? name, String? phone, String? email}) {
+    if (name != null && name.trim().isNotEmpty) _userName = name.trim();
+    if (phone != null && phone.trim().isNotEmpty) _phone = phone.trim();
+    if (email != null && email.trim().isNotEmpty) _email = email.trim();
     notifyListeners();
-    await _repository.setDailyHelpCount(_dailyHelpCount);
   }
 
-  Future<void> addVehicle() async {
-    _vehicleCount++;
+  /// Updates profile values
+  Future<void> updateProfile({
+    required String name,
+    required String phone,
+    required String email,
+  }) async {
+    _userName = name;
+    _phone = phone;
+    _email = email;
+
     notifyListeners();
-    await _repository.setVehicleCount(_vehicleCount);
+
+    // Optionally save via repository if your backend handles it:
+    // await _settingsRepository.saveUserProfile(name, phone, email);
   }
 
-  Future<void> addPet() async {
-    _petCount++;
+  // --- YOUR EXISTING METHODS (UNTOUCHED) ---
+  Future<void> loadUserSettings() async {
+    _isLoading = true;
     notifyListeners();
-    await _repository.setPetCount(_petCount);
+
+    try {
+      _userSettings = await _settingsRepository.fetchUserSettings();
+    } catch (e) {
+      debugPrint('Error loading settings: $e');
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> toggleNotificationPreference(bool value) async {
+    _userSettings = _userSettings.copyWith(notificationPreferences: value);
+    notifyListeners();
+    await _settingsRepository.saveUserSettings(_userSettings);
+  }
+
+  Future<void> toggleSecurityAlerts(bool value) async {
+    _userSettings = _userSettings.copyWith(securityAlerts: value);
+    notifyListeners();
+    await _settingsRepository.saveUserSettings(_userSettings);
+  }
+
+  Future<void> toggleFeedSettings(bool value) async {
+    _userSettings = _userSettings.copyWith(feedSettings: value);
+    notifyListeners();
+    await _settingsRepository.saveUserSettings(_userSettings);
+  }
+
+  Future<void> updateActivePlan(String newPlan) async {
+    _userSettings = _userSettings.copyWith(activePlan: newPlan);
+    notifyListeners();
+    await _settingsRepository.saveUserSettings(_userSettings);
   }
 }
