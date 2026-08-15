@@ -359,9 +359,14 @@ class _DeliveryDetailsContent extends StatelessWidget {
   }
 
   Future<void> _share() async {
-    await SharePlus.instance.share(
-      ShareParams(text: '${details.name} from ${details.company} — entry ${details.entryTime}.'),
-    );
+    // Basic text share
+await Share.share('Check out these delivery details!');
+
+// Or if you are sharing with a subject line:
+await Share.share(
+  'Here are the delivery details...',
+  subject: 'Delivery Info',
+);
   }
 
   @override

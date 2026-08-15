@@ -1,51 +1,45 @@
 class SettingsModel {
-  final String userName;
-  final String hubId;
-  final int familyCount;
-  final int dailyHelpCount;
-  final int vehicleCount;
-  final int petCount;
-  final String currentFlat;
+  final bool notificationPreferences;
+  final bool securityAlerts;
+  final bool feedSettings;
+  final String activePlan;
 
   SettingsModel({
-    required this.userName,
-    required this.hubId,
-    required this.familyCount,
-    required this.dailyHelpCount,
-    required this.vehicleCount,
-    required this.petCount,
-    required this.currentFlat,
+    required this.notificationPreferences,
+    required this.securityAlerts,
+    required this.feedSettings,
+    required this.activePlan,
   });
 
-  SettingsModel copyWith({
-    String? userName,
-    String? hubId,
-    int? familyCount,
-    int? dailyHelpCount,
-    int? vehicleCount,
-    int? petCount,
-    String? currentFlat,
-  }) {
+  factory SettingsModel.fromJson(Map<String, dynamic> json) {
     return SettingsModel(
-      userName: userName ?? this.userName,
-      hubId: hubId ?? this.hubId,
-      familyCount: familyCount ?? this.familyCount,
-      dailyHelpCount: dailyHelpCount ?? this.dailyHelpCount,
-      vehicleCount: vehicleCount ?? this.vehicleCount,
-      petCount: petCount ?? this.petCount,
-      currentFlat: currentFlat ?? this.currentFlat,
+      notificationPreferences: json['notificationPreferences'] ?? true,
+      securityAlerts: json['securityAlerts'] ?? true,
+      feedSettings: json['feedSettings'] ?? true,
+      activePlan: json['activePlan'] ?? 'Ad-Supported',
     );
   }
 
-  factory SettingsModel.initial() {
+  Map<String, dynamic> toJson() {
+    return {
+      'notificationPreferences': notificationPreferences,
+      'securityAlerts': securityAlerts,
+      'feedSettings': feedSettings,
+      'activePlan': activePlan,
+    };
+  }
+
+  SettingsModel copyWith({
+    bool? notificationPreferences,
+    bool? securityAlerts,
+    bool? feedSettings,
+    String? activePlan,
+  }) {
     return SettingsModel(
-      userName: 'User Name',
-      hubId: '000000',
-      familyCount: 1,
-      dailyHelpCount: 0,
-      vehicleCount: 0,
-      petCount: 0,
-      currentFlat: 'B-402, Golden Residency',
+      notificationPreferences: notificationPreferences ?? this.notificationPreferences,
+      securityAlerts: securityAlerts ?? this.securityAlerts,
+      feedSettings: feedSettings ?? this.feedSettings,
+      activePlan: activePlan ?? this.activePlan,
     );
   }
 }

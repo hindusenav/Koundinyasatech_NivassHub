@@ -1,31 +1,30 @@
 class UserModel {
-  final String userId;
-  final String name;
-  final String flatNumber;
-  final String profileImage;
+  final String? name;
+  final String? flatNumber;
 
   const UserModel({
-    required this.userId,
-    required this.name,
-    required this.flatNumber,
-    required this.profileImage,
+    this.name,
+    this.flatNumber,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
-      userId: json['userId'] as String? ?? '',
-      name: json['name'] as String? ?? json['fullName'] as String? ?? '',
-      flatNumber: json['flatNumber'] as String? ?? json['flatAddress'] as String? ?? '',
-      profileImage: json['profileImage'] as String? ?? '',
+      // Handles 'name', 'full_name', or 'userName' keys from JSON
+      name: json['name'] as String? ??
+          json['full_name'] as String? ??
+          json['userName'] as String?,
+      
+      // Handles 'flatNumber', 'flat_number', or 'unitNumber' keys from JSON
+      flatNumber: json['flatNumber'] as String? ??
+          json['flat_number'] as String? ??
+          json['unitNumber'] as String?,
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'userId': userId,
       'name': name,
       'flatNumber': flatNumber,
-      'profileImage': profileImage,
     };
   }
 }

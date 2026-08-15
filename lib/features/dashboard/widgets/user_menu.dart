@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../profile/screens/profile_screen.dart';
+import '../../../app/app_routes.dart';
 
 class UserMenu extends StatelessWidget {
   const UserMenu({
@@ -11,11 +11,9 @@ class UserMenu extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.push(
+        Navigator.pushNamed(
           context,
-          MaterialPageRoute(
-            builder: (context) => const ProfileScreen(),
-          ),
+          AppRoutes.profile,
         );
       },
       child: Container(
