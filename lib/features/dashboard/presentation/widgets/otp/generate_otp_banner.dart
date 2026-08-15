@@ -94,7 +94,7 @@ class GenerateOtpBanner extends StatelessWidget {
                     width: 32,
                     height: 32,
                     fit: BoxFit.contain,
-                    errorBuilder: (_, __, ___) => const Icon(
+                    errorBuilder: (_, _, _) => const Icon(
                       Icons.qr_code_2_rounded,
                       color: Color(0xFF0F9D8A),
                       size: 32,
