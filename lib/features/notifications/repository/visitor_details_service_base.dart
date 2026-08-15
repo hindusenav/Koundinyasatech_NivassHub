@@ -1,11 +1,11 @@
 import '../../../core/network/api_response.dart';
 import '../models/visitor_details_model.dart';
 
-/// The swappable data-source seam for the "Delivery Details" bottom sheet.
+/// The swappable data-source seam for the "Delivery Details" screen.
 /// Implemented by [MockVisitorDetailsService] today, following the exact
 /// same mock-first convention as `VisitorNotificationServiceBase` — a real
 /// implementation is dropped in later wherever `MockVisitorDetailsService`
-/// is constructed today (`DeliveryDetailsSheet.show`); nothing above this
+/// is constructed today (`DeliveryDetailsScreen.build`); nothing above this
 /// interface (repository/provider/UI) changes.
 abstract class VisitorDetailsServiceBase {
   /// Full details for one visitor/delivery, keyed by the same `id` the

@@ -1,6 +1,6 @@
-/// The data shown in the "Delivery Details" bottom sheet opened by tapping
+/// The data shown on the "Delivery Details" screen opened by tapping
 /// the Home screen's gate-arrival notification card (see
-/// `VisitorNotificationSection._handleTap` / `DeliveryDetailsSheet`).
+/// `VisitorNotificationSection._handleTap` / `DeliveryDetailsScreen`).
 ///
 /// There is no published "GET visitor details" endpoint yet — fetching this
 /// is mock-only today (see `MockVisitorDetailsService`). A real
