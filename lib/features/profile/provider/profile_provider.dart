@@ -1,60 +1,61 @@
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import '../models/address_model.dart';
+import '../models/profile_model.dart';
+import '../repository/profile_repository.dart';
 
-import '../models/active_society_model.dart';
-import '../models/user_profile_model.dart';
-import '../repository/profile_service_base.dart';
-
-/// Owns the Profile screen's data — loads the profile and active-society
-/// calls concurrently and only surfaces a blocking error if **both** fail;
-/// a partial success still renders whatever loaded (mirrors
-/// `NoticesProvider._fetchFeed`'s "allFailed" pattern).
 class ProfileProvider extends ChangeNotifier {
-  ProfileProvider(this._service);
+  final ProfileRepository repository;
 
-  final ProfileServiceBase _service;
+  ProfileProvider({ProfileRepository? repository})
+      : repository = repository ?? ProfileRepository();
 
+  ProfileModel _profile = const ProfileModel();
   bool _isLoading = false;
-  String? _errorMessage;
-  UserProfileModel? _profile;
-  ActiveSocietyModel? _activeSociety;
-  bool _profileFailed = false;
-  bool _activeSocietyFailed = false;
 
+  ProfileModel get profile => _profile;
   bool get isLoading => _isLoading;
-  bool get hasError => _errorMessage != null;
-  String? get errorMessage => _errorMessage;
-  UserProfileModel? get profile => _profile;
-  ActiveSocietyModel? get activeSociety => _activeSociety;
-  bool get profileFailed => _profileFailed;
-  bool get activeSocietyFailed => _activeSocietyFailed;
 
-  Future<void> loadProfile() async {
+  // Add this method to fix the 'updateUserName' error
+  void updateUserName(String name) {
+    _profile = _profile.copyWith(userName: name);
+    notifyListeners();
+  }
+
+  void toggleEnableCalls(bool value) {
+    _profile = _profile.copyWith(enableCalls: value);
+    notifyListeners();
+  }
+
+  void updateBio(String bio) {
+    _profile = _profile.copyWith(bio: bio);
+    notifyListeners();
+  }
+
+  void updateWork(String work) {
+    _profile = _profile.copyWith(work: work);
+    notifyListeners();
+  }
+
+  void addInterest(String interest) {
+    if (interest.isNotEmpty && !_profile.interests.contains(interest)) {
+      final updatedInterests = List<String>.from(_profile.interests)..add(interest);
+      _profile = _profile.copyWith(interests: updatedInterests);
+      notifyListeners();
+    }
+  }
+
+  void updateAddress(AddressModel newAddress) {
+    _profile = _profile.copyWith(address: newAddress);
+    notifyListeners();
+  }
+
+  Future<void> saveProfileData() async {
     _isLoading = true;
-    _errorMessage = null;
     notifyListeners();
 
-    final profileFuture = _service.getProfile();
-    final societyFuture = _service.getActiveSociety();
-
-    final profileResponse = await profileFuture;
-    final societyResponse = await societyFuture;
-
-    final allFailed = profileResponse.isFailure && societyResponse.isFailure;
-    if (allFailed) {
-      _errorMessage = profileResponse.message ??
-          societyResponse.message ??
-          'Something went wrong. Please try again.';
-    } else {
-      _errorMessage = null;
-      if (profileResponse.isSuccess) _profile = profileResponse.data;
-      if (societyResponse.isSuccess) _activeSociety = societyResponse.data;
-    }
-    _profileFailed = profileResponse.isFailure;
-    _activeSocietyFailed = societyResponse.isFailure;
+    await repository.saveProfile(_profile);
 
     _isLoading = false;
     notifyListeners();
   }
-
-  Future<void> retry() => loadProfile();
 }
