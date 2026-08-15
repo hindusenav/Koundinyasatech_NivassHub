@@ -1,58 +1,41 @@
-class ProfileModel {
-  final int id;
-  final String name;
-  final String mobile;
-  final String email;
-  final String profileImage;
-  final String username;
+import 'address_model.dart';
 
-  ProfileModel({
-    required this.id,
-    required this.name,
-    required this.mobile,
-    required this.email,
-    required this.profileImage,
-    required this.username,
+class ProfileModel {
+  final String userName;
+  final String bio;
+  final String work;
+  final bool enableCalls;
+  final List<String> tags;
+  final List<String> interests;
+  final AddressModel address;
+
+  const ProfileModel({
+    this.userName = 'User Name',
+    this.bio = '',
+    this.work = '',
+    this.enableCalls = true,
+    this.tags = const ['B-402', 'Tenant'],
+    this.interests = const [],
+    this.address = const AddressModel(),
   });
 
-  // ✅ ADD THIS METHOD
   ProfileModel copyWith({
-    int? id,
-    String? name,
-    String? mobile,
-    String? email,
-    String? profileImage,
-    String? username,
+    String? userName,
+    String? bio,
+    String? work,
+    bool? enableCalls,
+    List<String>? tags,
+    List<String>? interests,
+    AddressModel? address,
   }) {
     return ProfileModel(
-      id: id ?? this.id,
-      name: name ?? this.name,
-      mobile: mobile ?? this.mobile,
-      email: email ?? this.email,
-      profileImage: profileImage ?? this.profileImage,
-      username: username ?? this.username,
+      userName: userName ?? this.userName,
+      bio: bio ?? this.bio,
+      work: work ?? this.work,
+      enableCalls: enableCalls ?? this.enableCalls,
+      tags: tags ?? this.tags,
+      interests: interests ?? this.interests,
+      address: address ?? this.address,
     );
-  }
-
-  factory ProfileModel.fromJson(Map<String, dynamic> json) {
-    return ProfileModel(
-      id: json['id'] is int ? json['id'] : int.tryParse(json['id']?.toString() ?? '0') ?? 0,
-      name: json['name'] ?? '',
-      mobile: json['mobile'] ?? '',
-      email: json['email'] ?? '',
-      profileImage: json['profile_image'] ?? json['profileImage'] ?? '',
-      username: json['username'] ?? '',
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-      'mobile': mobile,
-      'email': email,
-      'profile_image': profileImage,
-      'username': username,
-    };
   }
 }
