@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
 import '../../../../core/utils/responsive.dart';
 import '../../../notifications/widgets/visitor_notification_section.dart';
 import '../provider/dashboard_provider.dart';
@@ -19,6 +18,19 @@ class DashboardBody extends StatelessWidget {
     super.key,
   });
 
+  // ============================================================
+  // HEADER HEIGHT ESTIMATE
+  //
+  // DashboardHeader no longer has a fixed height (it sizes itself
+  // to its content — see DashboardHeader), so the popup below can't
+  // just anchor to a known constant. Layered via a CompositedTransform
+  // pair instead (see `_headerAnchor` below), which tracks the
+  // header's actual on-screen position/size regardless of how tall
+  // it renders — no hard-coded offset to keep in sync.
+  // ============================================================
+
+  static final LayerLink _headerAnchor = LayerLink();
+
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<DashboardProvider>();
@@ -36,126 +48,161 @@ class DashboardBody extends StatelessWidget {
       width: double.infinity,
       color: const Color(0xFFF7F8FC),
 
-      child: SingleChildScrollView(
-        physics: const BouncingScrollPhysics(),
+      // ==========================================================
+      // POPUP LAYER
+      //
+      // The visitor-approval "toast" is stacked ON TOP of the
+      // scrolling dashboard content — a Stack sibling, not a Column
+      // child — so it floats over the page and never reserves or
+      // consumes the space between the header and the promo banner,
+      // whether it's showing or not. See `VisitorNotificationSection`.
+      // ==========================================================
 
-        // ========================================================
-        // IMPORTANT:
-        // NO LEFT / RIGHT PADDING HERE
-        //
-        // This allows DashboardHeader to reach both screen edges.
-        // ========================================================
+      child: Stack(
+        children: [
+          SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
 
-        padding: const EdgeInsets.only(
-          bottom: 20,
-        ),
-
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // ======================================================
-            // HEADER
+            // ========================================================
+            // IMPORTANT:
+            // NO LEFT / RIGHT PADDING HERE
             //
-            // FULL SCREEN WIDTH
-            // NO SIDE GAP
-            // ======================================================
+            // This allows DashboardHeader to reach both screen edges.
+            // ========================================================
 
-            const DashboardHeader(),
-
-            // ======================================================
-            // REST OF DASHBOARD
-            //
-            // SIDE PADDING STARTS FROM HERE
-            // ======================================================
-
-            Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: horizontalPadding,
-              ),
-
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // ==================================================
-                  // VISITOR NOTIFICATION
-                  // ==================================================
-
-                  const VisitorNotificationSection(),
-
-                  const SizedBox(height: 8),
-
-                  // ==================================================
-                  // ONLINE ADVERTISEMENT
-                  // ==================================================
-
-                  const BannerSlider(),
-
-                  const SizedBox(height: 9),
-
-                  // ==================================================
-                  // QUICK ACTIONS
-                  // ==================================================
-
-                  const QuickActionsGrid(),
-
-                  const SizedBox(height: 9),
-
-                  // ==================================================
-                  // MAINTENANCE
-                  // ==================================================
-
-                  const MaintenanceCard(),
-
-                  const SizedBox(height: 9),
-
-                  // ==================================================
-                  // APPROVAL QUEUE
-                  // ==================================================
-
-                  const ApprovalQueueSection(),
-
-                  const SizedBox(height: 9),
-
-                  // ==================================================
-                  // PANIC
-                  // ==================================================
-
-                  const PanicSosBanner(),
-
-                  const SizedBox(height: 7),
-
-                  // ==================================================
-                  // OTP
-                  // ==================================================
-
-                  const GenerateOtpBanner(),
-
-                  // ==================================================
-                  // ADVERTISEMENT
-                  // ==================================================
-
-                  if (banners.isNotEmpty) ...[
-                    const SizedBox(height: 9),
-
-                    BannerCard(
-                      banner: banners.first,
-                    ),
-                  ],
-
-                  const SizedBox(height: 9),
-
-                  // ==================================================
-                  // COMMUNITY
-                  // ==================================================
-
-                  const CommunityPostsSection(),
-
-                  const SizedBox(height: 12),
-                ],
-              ),
+            padding: const EdgeInsets.only(
+              bottom: 20,
             ),
-          ],
-        ),
+
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // ==================================================
+                // HEADER
+                //
+                // FULL SCREEN WIDTH
+                // NO SIDE GAP
+                //
+                // Wrapped in a CompositedTransformTarget so the
+                // floating popup below can anchor to its bottom edge
+                // without needing to know its height up front.
+                // ==================================================
+
+                CompositedTransformTarget(
+                  link: _headerAnchor,
+                  child: const DashboardHeader(),
+                ),
+
+                // ==================================================
+                // REST OF DASHBOARD
+                //
+                // SIDE PADDING STARTS FROM HERE
+                // ==================================================
+
+                Padding(
+                  padding: EdgeInsets.fromLTRB(
+                    horizontalPadding,
+                    9,
+                    horizontalPadding,
+                    0,
+                  ),
+
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // ==============================================
+                      // ONLINE ADVERTISEMENT
+                      // ==============================================
+
+                      const BannerSlider(),
+
+                      const SizedBox(height: 9),
+
+                      // ==============================================
+                      // QUICK ACTIONS
+                      // ==============================================
+
+                      const QuickActionsGrid(),
+
+                      const SizedBox(height: 9),
+
+                      // ==============================================
+                      // MAINTENANCE
+                      // ==============================================
+
+                      const MaintenanceCard(),
+
+                      const SizedBox(height: 9),
+
+                      // ==============================================
+                      // APPROVAL QUEUE
+                      // ==============================================
+
+                      const ApprovalQueueSection(),
+
+                      const SizedBox(height: 9),
+
+                      // ==============================================
+                      // PANIC
+                      // ==============================================
+
+                      const PanicSosBanner(),
+
+                      const SizedBox(height: 9),
+
+                      // ==============================================
+                      // OTP
+                      // ==============================================
+
+                      const GenerateOtpBanner(),
+
+                      // ==============================================
+                      // ADVERTISEMENT
+                      // ==============================================
+
+                      if (banners.isNotEmpty) ...[
+                        const SizedBox(height: 9),
+
+                        BannerCard(
+                          banner: banners.first,
+                        ),
+                      ],
+
+                      const SizedBox(height: 9),
+
+                      // ==============================================
+                      // COMMUNITY
+                      // ==============================================
+
+                      const CommunityPostsSection(),
+
+                      const SizedBox(height: 12),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // ========================================================
+          // VISITOR APPROVAL POPUP
+          //
+          // Floats over the scrollable content, anchored to the
+          // header's bottom-left corner via `_headerAnchor` — a
+          // genuine popup/toast: it does not push the promo banner
+          // down while visible, and leaves no gap behind once
+          // dismissed or when there's nothing pending. See
+          // `VisitorNotificationSection`.
+          // ========================================================
+
+          CompositedTransformFollower(
+            link: _headerAnchor,
+            showWhenUnlinked: false,
+            child: VisitorNotificationSection(
+              horizontalPadding: horizontalPadding,
+            ),
+          ),
+        ],
       ),
     );
   }

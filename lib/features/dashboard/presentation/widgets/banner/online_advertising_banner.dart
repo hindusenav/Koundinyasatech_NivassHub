@@ -14,7 +14,7 @@ class OnlineAdvertisingBannerCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      height: 135,
+      height: 100,
       margin: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
         color: const Color(0xFFF9F9FB),
@@ -48,11 +48,11 @@ class OnlineAdvertisingBannerCard extends StatelessWidget {
               children: [
                 // Yellow sun background circle at bottom left
                 Positioned(
-                  left: -15,
-                  bottom: -25,
+                  left: -11,
+                  bottom: -19,
                   child: Container(
-                    width: 120,
-                    height: 120,
+                    width: 90,
+                    height: 90,
                     decoration: const BoxDecoration(
                       color: Color(0xFFFFCC00),
                       shape: BoxShape.circle,
@@ -62,41 +62,41 @@ class OnlineAdvertisingBannerCard extends StatelessWidget {
 
                 // Top Yellow Lightning Bolt
                 const Positioned(
-                  left: 70,
-                  top: 15,
+                  left: 52,
+                  top: 11,
                   child: Icon(
                     Icons.bolt,
-                    size: 40,
+                    size: 30,
                     color: Color(0xFFFFCC00),
                   ),
                 ),
 
                 // Bottom Yellow Lightning Bolt
                 const Positioned(
-                  left: 110,
-                  bottom: 25,
+                  left: 82,
+                  bottom: 18,
                   child: Icon(
                     Icons.bolt,
-                    size: 32,
+                    size: 24,
                     color: Color(0xFFFFCC00),
                   ),
                 ),
 
                 // Red Mail Envelope
                 Positioned(
-                  left: 105,
-                  top: 25,
+                  left: 78,
+                  top: 18,
                   child: Transform.rotate(
                     angle: 0.15,
                     child: Container(
-                      padding: const EdgeInsets.all(4),
+                      padding: const EdgeInsets.all(3),
                       decoration: BoxDecoration(
                         color: const Color(0xFFDC2626),
-                        borderRadius: BorderRadius.circular(6),
+                        borderRadius: BorderRadius.circular(5),
                       ),
                       child: const Icon(
                         Icons.email,
-                        size: 20,
+                        size: 15,
                         color: Colors.white,
                       ),
                     ),
@@ -105,17 +105,17 @@ class OnlineAdvertisingBannerCard extends StatelessWidget {
 
                 // Yellow Shopping Cart
                 Positioned(
-                  left: 100,
-                  top: 60,
+                  left: 74,
+                  top: 44,
                   child: Container(
-                    padding: const EdgeInsets.all(4),
+                    padding: const EdgeInsets.all(3),
                     decoration: BoxDecoration(
                       color: const Color(0xFFFFCC00),
-                      borderRadius: BorderRadius.circular(6),
+                      borderRadius: BorderRadius.circular(5),
                     ),
                     child: const Icon(
                       Icons.shopping_cart,
-                      size: 16,
+                      size: 12,
                       color: Color(0xFF0F172A),
                     ),
                   ),
@@ -123,19 +123,19 @@ class OnlineAdvertisingBannerCard extends StatelessWidget {
 
                 // Blue Thumbs Up Badge
                 Positioned(
-                  left: 125,
-                  top: 72,
+                  left: 93,
+                  top: 53,
                   child: Transform.rotate(
                     angle: -0.1,
                     child: Container(
-                      padding: const EdgeInsets.all(6),
+                      padding: const EdgeInsets.all(4),
                       decoration: BoxDecoration(
                         color: const Color(0xFF1D4ED8),
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(6),
                       ),
                       child: const Icon(
                         Icons.thumb_up,
-                        size: 20,
+                        size: 15,
                         color: Colors.white,
                       ),
                     ),
@@ -144,17 +144,17 @@ class OnlineAdvertisingBannerCard extends StatelessWidget {
 
                 // Small Heart Badge
                 Positioned(
-                  left: 105,
-                  bottom: 35,
+                  left: 78,
+                  bottom: 26,
                   child: Container(
-                    padding: const EdgeInsets.all(3),
+                    padding: const EdgeInsets.all(2),
                     decoration: const BoxDecoration(
                       color: Color(0xFFEF4444),
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(
                       Icons.favorite,
-                      size: 12,
+                      size: 9,
                       color: Colors.white,
                     ),
                   ),
@@ -162,26 +162,26 @@ class OnlineAdvertisingBannerCard extends StatelessWidget {
 
                 // Large Red & Blue Megaphone
                 Positioned(
-                  left: 20,
-                  bottom: 12,
+                  left: 15,
+                  bottom: 9,
                   child: Transform.rotate(
                     angle: 0.2,
                     child: Container(
-                      padding: const EdgeInsets.all(10),
+                      padding: const EdgeInsets.all(7),
                       decoration: BoxDecoration(
                         color: const Color(0xFFDC2626),
                         shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
                             color: Colors.black.withValues(alpha: .15),
-                            blurRadius: 8,
-                            offset: const Offset(0, 4),
+                            blurRadius: 6,
+                            offset: const Offset(0, 3),
                           ),
                         ],
                       ),
                       child: const Icon(
                         Icons.campaign,
-                        size: 52,
+                        size: 38,
                         color: Colors.white,
                       ),
                     ),
@@ -198,7 +198,7 @@ class OnlineAdvertisingBannerCard extends StatelessWidget {
                       title,
                       textAlign: TextAlign.right,
                       style: const TextStyle(
-                        fontSize: 22,
+                        fontSize: 18,
                         fontWeight: FontWeight.w900,
                         color: Color(0xFF163E75),
                         height: 1.1,

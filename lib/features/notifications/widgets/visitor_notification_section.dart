@@ -1,34 +1,49 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../../app/app_routes.dart';
 import '../../../shared/widgets/feedback/custom_snackbar.dart';
 import '../../dashboard/presentation/provider/dashboard_provider.dart';
 import '../provider/visitor_notification_provider.dart';
 import '../repository/mock_visitor_notification_service.dart';
 import '../repository/visitor_notification_repository.dart';
-import 'delivery_details_sheet.dart';
+import '../screens/delivery_details_screen.dart';
 import 'visitor_notification_banner.dart';
 
-/// The Home screen's gate-arrival approval card — a normal, persistent
-/// section of the dashboard body placed immediately below the header (see
-/// `DashboardBody`), not a floating overlay. Renders nothing when there's
-/// no pending notification (no leftover empty space) or once it's been
-/// dismissed.
+/// The Home screen's gate-arrival "Approval Requests" popup — a floating
+/// toast anchored just below the header (see `DashboardBody`, which stacks
+/// this on top of the scrollable dashboard content via
+/// `CompositedTransformFollower`, not as a child of its content `Column`).
+/// Because it's a popup rather than in-flow content, it never reserves or
+/// pushes down the space between the header and the advertising/banner
+/// section — whether it's showing or not. Renders nothing when there's no
+/// pending notification, or once it's been dismissed.
 ///
 /// Owns its own `VisitorNotificationProvider` — same construction the old
 /// `VisitorNotificationOverlay` used — so the provider/repository/service/
 /// model are untouched; only *where* this card is mounted changed. Loads
 /// immediately (no delay) and stays until Approve/Reject/Close, since it's
-/// now permanent page content rather than a transient overlay, so the
-/// previous 3s appear-delay and 10s auto-dismiss timer no longer apply.
+/// permanent-until-dismissed popup content rather than a timed toast, so
+/// the previous 3s appear-delay and 10s auto-dismiss timer don't apply.
 class VisitorNotificationSection extends StatefulWidget {
-  const VisitorNotificationSection({super.key});
+  const VisitorNotificationSection({super.key, this.horizontalPadding = 0});
+
+  /// Left/right margin applied around the popup so it lines up with the
+  /// rest of `DashboardBody`'s padded content, even though this widget
+  /// itself now lives outside that padded `Column` (it's a `Stack`
+  /// sibling, floating above it — see `DashboardBody`).
+  final double horizontalPadding;
 
   @override
   State<VisitorNotificationSection> createState() => _VisitorNotificationSectionState();
 }
 
 class _VisitorNotificationSectionState extends State<VisitorNotificationSection> {
+  /// Small breathing gap below the header's bottom edge so the popup sits
+  /// just under it rather than touching it — it must NOT overlap the
+  /// header (unlike the old `Transform.translate(-80)` design).
+  static const double _topGap = 10;
+
   late final VisitorNotificationProvider _provider;
 
   @override
@@ -80,21 +95,22 @@ class _VisitorNotificationSectionState extends State<VisitorNotificationSection>
     }
   }
 
-  /// Tapping the card body opens the "Delivery Details" bottom sheet.
-  /// Reuses this exact `_provider` instance and the `_handleApprove`/
-  /// `_handleReject` methods above — so Approve/Reject tapped from inside
-  /// the sheet go through the identical, already-working flow (API call →
-  /// dismiss → Approval Queue sync → snackbar), with no duplicate provider
-  /// or logic.
+  /// Tapping the card body opens the "Delivery Details" screen. Reuses this
+  /// exact `_provider` instance and the `_handleApprove`/`_handleReject`
+  /// methods above — so Approve/Reject tapped from that screen go through
+  /// the identical, already-working flow (API call → dismiss → Approval
+  /// Queue sync → snackbar), with no duplicate provider or logic.
   Future<void> _handleTap() async {
     final notification = _provider.notification;
     if (notification == null) return;
-    await DeliveryDetailsSheet.show(
-      context,
-      visitorId: notification.id,
-      notificationProvider: _provider,
-      onApprove: _handleApprove,
-      onReject: _handleReject,
+    await Navigator.of(context).pushNamed(
+      AppRoutes.visitorDetail,
+      arguments: DeliveryDetailsScreenArgs(
+        visitorId: notification.id,
+        notificationProvider: _provider,
+        onApprove: _handleApprove,
+        onReject: _handleReject,
+      ),
     );
   }
 
@@ -107,9 +123,23 @@ class _VisitorNotificationSectionState extends State<VisitorNotificationSection>
           final notification = provider.notification;
           if (!provider.isVisible || notification == null) return const SizedBox.shrink();
 
-          return Column(
-            children: [
-              VisitorNotificationBanner(
+          // A `CompositedTransformFollower` (see `DashboardBody`) gives its
+          // child unbounded width constraints, but `VisitorNotificationBanner`
+          // sizes itself with `width: double.infinity` — so this needs an
+          // explicit, bounded width of its own here, computed from the
+          // screen width minus the same horizontal padding the rest of the
+          // dashboard content uses, so the popup lines up with it visually.
+          final screenWidth = MediaQuery.of(context).size.width;
+          final cardWidth = screenWidth - (widget.horizontalPadding * 2);
+
+          return Padding(
+            padding: EdgeInsets.only(
+              top: _topGap,
+              left: widget.horizontalPadding,
+            ),
+            child: SizedBox(
+              width: cardWidth,
+              child: VisitorNotificationBanner(
                 notification: notification,
                 isApproving: provider.isApproving,
                 isRejecting: provider.isRejecting,
@@ -118,8 +148,7 @@ class _VisitorNotificationSectionState extends State<VisitorNotificationSection>
                 onClose: provider.dismiss,
                 onTap: _handleTap,
               ),
-              const SizedBox(height: 18),
-            ],
+            ),
           );
         },
       ),

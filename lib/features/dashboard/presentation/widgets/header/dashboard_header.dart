@@ -55,9 +55,17 @@ class DashboardHeader extends StatelessWidget {
 
         // ========================================================
         // HEADER HEIGHT
+        //
+        // No fixed height here — the header sizes itself from its
+        // content (SafeArea inset + padding + the two-line greeting
+        // block). A hard-coded height risked the content overflowing
+        // past this box on devices with a taller status bar, and
+        // since Container defaults to Clip.none, that overflow would
+        // paint straight through into the section below instead of
+        // being cropped.
         // ========================================================
 
-        height: 70,
+        clipBehavior: Clip.antiAlias,
 
         decoration: BoxDecoration(
           color: _headerBlue,
@@ -77,7 +85,7 @@ class DashboardHeader extends StatelessWidget {
 
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.12),
+              color: Colors.black.withValues(alpha: 0.12),
               blurRadius: 8,
               spreadRadius: 0,
               offset: const Offset(0, 3),
@@ -99,6 +107,7 @@ class DashboardHeader extends StatelessWidget {
             padding: const EdgeInsets.only(
               left: 18,
               right: 14,
+              top: 12,
               bottom: 11,
             ),
 
