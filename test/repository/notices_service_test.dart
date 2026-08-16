@@ -1,14 +1,14 @@
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:flutter_nivasshub/core/network/api_client.dart';
-import 'package:flutter_nivasshub/core/network/api_response.dart';
+import 'package:flutter_nivasshub/services/core/api_client.dart';
+import 'package:flutter_nivasshub/services/core/api_response.dart';
 
-import 'package:flutter_nivasshub/features/notices/models/advertisement_model.dart';
-import 'package:flutter_nivasshub/features/notices/models/community_post_model.dart';
-import 'package:flutter_nivasshub/features/notices/models/feed_notice_model.dart';
+import 'package:flutter_nivasshub/models/notices/advertisement_model.dart';
+import 'package:flutter_nivasshub/models/notices/community_post_model.dart';
+import 'package:flutter_nivasshub/models/notices/feed_notice_model.dart';
 
-import 'package:flutter_nivasshub/features/notices/repository/notices_api_service.dart';
-import 'package:flutter_nivasshub/features/notices/repository/notices_service.dart';
+import 'package:flutter_nivasshub/services/notices/notices_api_service.dart';
+import 'package:flutter_nivasshub/services/notices/notices_service.dart';
 
 void main() {
   late ApiClient apiClient;

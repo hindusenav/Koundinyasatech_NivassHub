@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 
-import 'package:flutter_nivasshub/core/network/api_client.dart';
+import 'package:flutter_nivasshub/services/core/api_client.dart';
 
-import 'package:flutter_nivasshub/features/dashboard/presentation/provider/dashboard_navigation_provider.dart';
-import 'package:flutter_nivasshub/features/notices/provider/notices_provider.dart';
-import 'package:flutter_nivasshub/features/notices/screens/notices_screen.dart';
+import 'package:flutter_nivasshub/providers/dashboard/dashboard_navigation_provider.dart';
+import 'package:flutter_nivasshub/providers/notices/notices_provider.dart';
+import 'package:flutter_nivasshub/screens/notices/notices_screen.dart';
 
 void main() {
   late ApiClient apiClient;

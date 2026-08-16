@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:flutter_nivasshub/features/notices/models/community_post_model.dart';
-import 'package:flutter_nivasshub/features/notices/widgets/community_post_card.dart';
+import 'package:flutter_nivasshub/models/notices/community_post_model.dart';
+import 'package:flutter_nivasshub/widgets/notices/community_post_card.dart';
 
 void main() {
   group('CommunityPostCard Widget Test', () {
