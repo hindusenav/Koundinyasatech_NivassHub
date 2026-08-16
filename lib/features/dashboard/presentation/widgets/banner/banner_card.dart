@@ -27,7 +27,6 @@ class BannerCard extends StatelessWidget {
         : 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=600&q=80';
 
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),

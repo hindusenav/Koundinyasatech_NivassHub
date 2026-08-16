@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../../core/utils/responsive.dart';
 import '../../../notifications/widgets/visitor_notification_section.dart';
 import '../provider/dashboard_provider.dart';
 import 'approval_queue/approval_queue_section.dart';
@@ -41,8 +40,7 @@ class DashboardBody extends StatelessWidget {
     // RESPONSIVE CONTENT PADDING
     // ============================================================
 
-    final horizontalPadding =
-        Responsive.horizontalPadding(context).clamp(12.0, 14.0);
+    final horizontalPadding = 16.0;
 
     return Container(
       width: double.infinity,
@@ -102,7 +100,7 @@ class DashboardBody extends StatelessWidget {
                 Padding(
                   padding: EdgeInsets.fromLTRB(
                     horizontalPadding,
-                    9,
+                    16,
                     horizontalPadding,
                     0,
                   ),
@@ -116,7 +114,7 @@ class DashboardBody extends StatelessWidget {
 
                       const BannerSlider(),
 
-                      const SizedBox(height: 9),
+                      const SizedBox(height: 16),
 
                       // ==============================================
                       // QUICK ACTIONS
@@ -124,7 +122,7 @@ class DashboardBody extends StatelessWidget {
 
                       const QuickActionsGrid(),
 
-                      const SizedBox(height: 9),
+                      const SizedBox(height: 16),
 
                       // ==============================================
                       // MAINTENANCE
@@ -132,7 +130,7 @@ class DashboardBody extends StatelessWidget {
 
                       const MaintenanceCard(),
 
-                      const SizedBox(height: 9),
+                      const SizedBox(height: 16),
 
                       // ==============================================
                       // APPROVAL QUEUE
@@ -140,7 +138,7 @@ class DashboardBody extends StatelessWidget {
 
                       const ApprovalQueueSection(),
 
-                      const SizedBox(height: 9),
+                      const SizedBox(height: 16),
 
                       // ==============================================
                       // PANIC
@@ -148,7 +146,7 @@ class DashboardBody extends StatelessWidget {
 
                       const PanicSosBanner(),
 
-                      const SizedBox(height: 9),
+                      const SizedBox(height: 16),
 
                       // ==============================================
                       // OTP
@@ -161,14 +159,14 @@ class DashboardBody extends StatelessWidget {
                       // ==============================================
 
                       if (banners.isNotEmpty) ...[
-                        const SizedBox(height: 9),
+                        const SizedBox(height: 16),
 
                         BannerCard(
                           banner: banners.first,
                         ),
                       ],
 
-                      const SizedBox(height: 9),
+                      const SizedBox(height: 16),
 
                       // ==============================================
                       // COMMUNITY
@@ -176,7 +174,7 @@ class DashboardBody extends StatelessWidget {
 
                       const CommunityPostsSection(),
 
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 16),
                     ],
                   ),
                 ),

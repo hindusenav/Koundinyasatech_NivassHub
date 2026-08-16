@@ -37,52 +37,49 @@ class CommunityPostsSection extends StatelessWidget {
         // =====================================================
         // 1. COMMUNITY POSTS HEADER ROW
         // =====================================================
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text(
-                'Community Posts',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF0F172A),
-                ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text(
+              'Community Posts',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF0F172A),
               ),
-              InkWell(
-                onTap: () => _navigateToNewPostsSelection(context),
-                borderRadius: BorderRadius.circular(20),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFECFDF5),
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: const Color(0xFF6EE7B7)),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: const [
-                      Icon(
-                        Icons.edit_note,
-                        size: 16,
+            ),
+            InkWell(
+              onTap: () => _navigateToNewPostsSelection(context),
+              borderRadius: BorderRadius.circular(20),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFECFDF5),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: const Color(0xFF6EE7B7)),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: const [
+                    Icon(
+                      Icons.edit_note,
+                      size: 16,
+                      color: Color(0xFF059669),
+                    ),
+                    SizedBox(width: 4),
+                    Text(
+                      'New Posts',
+                      style: TextStyle(
                         color: Color(0xFF059669),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12,
                       ),
-                      SizedBox(width: 4),
-                      Text(
-                        'New Posts',
-                        style: TextStyle(
-                          color: Color(0xFF059669),
-                          fontWeight: FontWeight.bold,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
 
         const SizedBox(height: 12),
@@ -98,53 +95,50 @@ class CommunityPostsSection extends StatelessWidget {
         // =====================================================
         // 3. NOTICE BOARD HEADER ROW
         // =====================================================
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: InkWell(
-            onTap: () {
-              ApiClient? apiClient;
-              try {
-                apiClient = context.read<ApiClient>();
-              } catch (_) {}
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (_) => NoticesScreen(apiClient: apiClient ?? ApiClient()),
+        InkWell(
+          onTap: () {
+            ApiClient? apiClient;
+            try {
+              apiClient = context.read<ApiClient>();
+            } catch (_) {}
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => NoticesScreen(apiClient: apiClient ?? ApiClient()),
+              ),
+            );
+          },
+          borderRadius: BorderRadius.circular(8),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                'Notice Board',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF0F172A),
                 ),
-              );
-            },
-            borderRadius: BorderRadius.circular(8),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  'Notice Board',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF0F172A),
-                  ),
-                ),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: const [
-                    Text(
-                      'View All',
-                      style: TextStyle(
-                        color: Color(0xFF0284C7),
-                        fontWeight: FontWeight.bold,
-                        fontSize: 12.5,
-                      ),
-                    ),
-                    SizedBox(width: 2),
-                    Icon(
-                      Icons.chevron_right,
-                      size: 16,
+              ),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: const [
+                  Text(
+                    'View All',
+                    style: TextStyle(
                       color: Color(0xFF0284C7),
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12.5,
                     ),
-                  ],
-                ),
-              ],
-            ),
+                  ),
+                  SizedBox(width: 2),
+                  Icon(
+                    Icons.chevron_right,
+                    size: 16,
+                    color: Color(0xFF0284C7),
+                  ),
+                ],
+              ),
+            ],
           ),
         ),
 
