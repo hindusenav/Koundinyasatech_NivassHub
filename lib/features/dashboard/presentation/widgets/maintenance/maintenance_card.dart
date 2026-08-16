@@ -21,7 +21,6 @@ class MaintenanceCard extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      margin: const EdgeInsets.symmetric(horizontal: 16),
       padding: const EdgeInsets.symmetric(
         horizontal: 14,
         vertical: 10,

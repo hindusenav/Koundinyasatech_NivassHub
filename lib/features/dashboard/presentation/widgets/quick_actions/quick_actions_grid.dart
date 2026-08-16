@@ -22,68 +22,65 @@ class QuickActionsGrid extends StatelessWidget {
       );
     }
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          /// HEADER
-          Row(
-            children: const [
-              Expanded(
-                child: Text(
-                  "Quick Actions",
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF0F172A),
-                  ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        /// HEADER
+        Row(
+          children: const [
+            Expanded(
+              child: Text(
+                "Quick Actions",
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF0F172A),
                 ),
               ),
-              Icon(
-                Icons.settings_outlined,
-                size: 14,
+            ),
+            Icon(
+              Icons.settings_outlined,
+              size: 14,
+              color: Color(0xFF0284C7),
+            ),
+            SizedBox(width: 4),
+            Text(
+              "Customize",
+              style: TextStyle(
+                fontSize: 11.5,
+                fontWeight: FontWeight.bold,
                 color: Color(0xFF0284C7),
               ),
-              SizedBox(width: 4),
-              Text(
-                "Customize",
-                style: TextStyle(
-                  fontSize: 11.5,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF0284C7),
-                ),
-              ),
-            ],
-          ),
-
-          const SizedBox(height: 14),
-
-          /// GRID
-          GridView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: actions.length,
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 4,
-              crossAxisSpacing: 12,
-              mainAxisSpacing: 14,
-              mainAxisExtent: 96,
             ),
-            itemBuilder: (context, index) {
-              return QuickActionCard(
-                action: actions[index],
-                onTap: () {
-                  _handleAction(
-                    context,
-                    actions[index].name,
-                  );
-                },
-              );
-            },
+          ],
+        ),
+
+        const SizedBox(height: 14),
+
+        /// GRID
+        GridView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: actions.length,
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 4,
+            crossAxisSpacing: 12,
+            mainAxisSpacing: 14,
+            mainAxisExtent: 96,
           ),
-        ],
-      ),
+          itemBuilder: (context, index) {
+            return QuickActionCard(
+              action: actions[index],
+              onTap: () {
+                _handleAction(
+                  context,
+                  actions[index].name,
+                );
+              },
+            );
+          },
+        ),
+      ],
     );
   }
 
