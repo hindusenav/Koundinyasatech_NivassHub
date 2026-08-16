@@ -13,7 +13,6 @@ class CommunityMeetingCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16),
       width: double.infinity,
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
