@@ -1,0 +1,44 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_nivasshub/constants/asset_constants.dart';
+import 'package:flutter_nivasshub/constants/app_colors.dart';
+
+/// The NIVASS brand mark: a house with three people inside a white circle,
+/// symbolizing residents coming together to build a home and community.
+/// Purely presentational — used both as the splash's centerpiece (wrapped in
+/// animation/Hero there) and as the small static header mark on screens
+/// like [LoginScreen].
+class NivassLogoMark extends StatelessWidget {
+  const NivassLogoMark({super.key, this.size = 134, this.elevated = true});
+
+  final double size;
+  final bool elevated;
+
+  /// Shared [Hero] tag — apply to whichever wrapper transitions this mark
+  /// between screens (e.g. splash's centerpiece and a screen header).
+  static const heroTag = 'nivass-logo';
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: AppColors.white,
+        boxShadow: elevated
+            ? [
+                BoxShadow(
+                  color: AppColors.black.withValues(alpha: 0.18),
+                  blurRadius: 24,
+                  offset: const Offset(0, 8),
+                ),
+              ]
+            : null,
+      ),
+      child: Padding(
+        padding: EdgeInsets.all(size * 0.18),
+        child: Image.asset(AppAssets.logoMark, fit: BoxFit.contain),
+      ),
+    );
+  }
+}

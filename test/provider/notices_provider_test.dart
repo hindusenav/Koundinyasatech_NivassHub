@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter_nivasshub/core/network/api_client.dart';
-import 'package:flutter_nivasshub/features/notices/provider/notices_provider.dart';
+import 'package:flutter_nivasshub/services/core/api_client.dart';
+import 'package:flutter_nivasshub/providers/notices/notices_provider.dart';
 
 void main() {
   late ApiClient apiClient;
