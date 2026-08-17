@@ -8,6 +8,7 @@ class FormValidators {
       RegExp(r'^[\w\.\-]+@([\w\-]+\.)+[\w\-]{2,4}$');
   static final RegExp _phoneRegex = RegExp(r'^\+?[0-9]{10,15}$');
   static final RegExp _mobileNumberRegex = RegExp(r'^[6-9]\d{9}$');
+  static final RegExp _fullNameRegex = RegExp(r'^[A-Za-z]+(?: [A-Za-z]+)*$');
 
   static String? required(String? value, {String message = 'This field is required'}) {
     if (value == null || value.trim().isEmpty) return message;
@@ -45,6 +46,14 @@ class FormValidators {
     }
     if (!_mobileNumberRegex.hasMatch(value.trim())) {
       return 'Please enter a valid mobile number';
+    }
+    return null;
+  }
+
+  static String? fullName(String? value) {
+    if (value == null || value.trim().isEmpty) return 'Full name is required';
+    if (!_fullNameRegex.hasMatch(value.trim())) {
+      return 'Full name can only contain letters and spaces';
     }
     return null;
   }

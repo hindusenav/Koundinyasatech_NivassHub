@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:flutter_nivasshub/routes/app_routes.dart';
 import 'package:flutter_nivasshub/routes/navigation_service.dart';
+import 'package:flutter_nivasshub/services/core/secure_storage_service.dart';
 import 'package:flutter_nivasshub/constants/asset_constants.dart';
 import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter_nivasshub/constants/app_dimensions.dart';
@@ -17,12 +19,21 @@ import 'package:flutter_nivasshub/screens/auth/create_profile_screen.dart';
 /// Typed arguments for [AppRoutes.otpVerificationSuccess], unpacked in
 /// `route_generator.dart`.
 class OtpVerificationSuccessScreenArgs {
-  const OtpVerificationSuccessScreenArgs({required this.userExists, this.registrationToken});
+  const OtpVerificationSuccessScreenArgs({
+    required this.userExists,
+    this.registrationToken,
+    required this.isRegistrationFlow,
+  });
 
   final bool userExists;
 
   /// Present only when [userExists] is `false`.
   final String? registrationToken;
+
+  /// Whether OTP verification was reached via the Create-Account flow
+  /// rather than Login — used to send Back to the correct originating
+  /// screen.
+  final bool isRegistrationFlow;
 }
 
 /// Celebration screen shown immediately after a successful OTP verification.
@@ -34,10 +45,12 @@ class OtpVerificationSuccessScreen extends StatefulWidget {
     super.key,
     required this.userExists,
     this.registrationToken,
+    required this.isRegistrationFlow,
   });
 
   final bool userExists;
   final String? registrationToken;
+  final bool isRegistrationFlow;
 
   @override
   State<OtpVerificationSuccessScreen> createState() => _OtpVerificationSuccessScreenState();
@@ -62,8 +75,13 @@ class _OtpVerificationSuccessScreenState extends State<OtpVerificationSuccessScr
     super.dispose();
   }
 
-  void _handleContinue() {
+  Future<void> _handleContinue() async {
     if (widget.userExists) {
+      // Existing-user login: the OTP-verify response carries no access
+      // token (only registration does), so a locally-set session flag is
+      // what lets Splash auto-navigate straight to Dashboard on relaunch.
+      await context.read<SecureStorageService>().saveSession();
+      if (!mounted) return;
       NavigationService.pushNamedAndRemoveUntil(AppRoutes.dashboard);
     } else {
       Navigator.pushReplacementNamed(
@@ -74,11 +92,25 @@ class _OtpVerificationSuccessScreenState extends State<OtpVerificationSuccessScr
     }
   }
 
+  /// Sends Back to the screen this OTP verification was started from —
+  /// Login or Create Account — clearing the stack so no leftover
+  /// OTP/mobile-entry screens remain reachable via further Back presses.
+  void _handleBackPress() {
+    NavigationService.pushNamedAndRemoveUntil(
+      widget.isRegistrationFlow ? AppRoutes.register : AppRoutes.login,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenHeight = context.screenHeight;
 
-    return Scaffold(
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop) _handleBackPress();
+      },
+      child: Scaffold(
       backgroundColor: AuthColors.background,
       body: Stack(
         children: [
@@ -235,6 +267,7 @@ class _OtpVerificationSuccessScreenState extends State<OtpVerificationSuccessScr
           ),
         ],
       ),
+    ),
     );
   }
 }

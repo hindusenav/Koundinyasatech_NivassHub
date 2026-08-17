@@ -172,6 +172,7 @@ class RouteGenerator {
           builder: (_) => OtpVerificationSuccessScreen(
             userExists: args.userExists,
             registrationToken: args.registrationToken,
+            isRegistrationFlow: args.isRegistrationFlow,
           ),
         );
 
