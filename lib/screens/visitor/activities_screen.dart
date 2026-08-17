@@ -19,7 +19,6 @@ import 'package:flutter_nivasshub/widgets/visitor/activity_card.dart';
 import 'package:flutter_nivasshub/widgets/visitor/activity_filter_chip.dart';
 import 'package:flutter_nivasshub/widgets/visitor/activity_type_filter_sheet.dart';
 import 'package:flutter_nivasshub/widgets/visitor/date_header.dart';
-
 /// Pushed from the Home screen's Approval Queue "View all" link — a full
 /// gate/delivery activity log with filter chips, date-grouped cards, and an
 /// "Add Visitor" FAB. Screen-scoped `ChangeNotifierProvider` (like

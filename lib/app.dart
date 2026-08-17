@@ -61,7 +61,7 @@ import 'package:flutter_nivasshub/routes/app_routes.dart';
 import 'package:flutter_nivasshub/constants/app_theme.dart';
 import 'package:flutter_nivasshub/routes/navigation_service.dart';
 import 'package:flutter_nivasshub/routes/route_generator.dart';
-import 'package:flutter_nivasshub/providers/theme_mode_provider.dart';
+import 'package:flutter_nivasshub/providers/theme/theme_mode_provider.dart';
 
 class NivasHubApp extends StatelessWidget {
   const NivasHubApp({
