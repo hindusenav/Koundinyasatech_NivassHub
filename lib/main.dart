@@ -67,9 +67,12 @@ Future<void> main() async {
   final apiClient = ApiClient(
     getAccessToken:
         secureStorageService.getAccessToken,
-    onUnauthorized:
-        NavigationService
-            .logoutAndRedirectToLogin,
+    onUnauthorized: () async {
+      // A 401 means the persisted session is no longer valid — clear it so
+      // a relaunch doesn't incorrectly auto-navigate to the Dashboard.
+      await secureStorageService.clearSession();
+      await NavigationService.logoutAndRedirectToLogin();
+    },
   );
 
   // ============================================================
