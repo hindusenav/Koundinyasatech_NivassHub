@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:flutter_nivasshub/routes/app_routes.dart';
+import 'package:flutter_nivasshub/routes/navigation_service.dart';
+import 'package:flutter_nivasshub/services/core/secure_storage_service.dart';
 import 'package:flutter_nivasshub/constants/app_colors.dart';
+import 'package:flutter_nivasshub/constants/asset_constants.dart';
 import 'package:flutter_nivasshub/utils/extensions/context_extensions.dart';
 import 'package:flutter_nivasshub/widgets/shared/brand/nivass_logo_mark.dart';
 import 'package:flutter_nivasshub/screens/welcome/welcome_screen.dart';
@@ -22,6 +26,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
 
   late final AnimationController _controller;
   late final AnimationController _exitController;
+  bool _backgroundPrecached = false;
 
   @override
   void initState() {
@@ -41,8 +46,32 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
       if (!mounted) return;
       await _exitController.forward();
       if (!mounted) return;
-      _goToWelcome();
+
+      // Auto-login: a persisted session means the user already
+      // authenticated in a previous app run, so skip Welcome/Login
+      // entirely and land straight on the Dashboard.
+      final hasSession =
+          await context.read<SecureStorageService>().hasValidSession();
+      if (!mounted) return;
+      if (hasSession) {
+        NavigationService.pushNamedAndRemoveUntil(AppRoutes.dashboard);
+      } else {
+        _goToWelcome();
+      }
     });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    // Warm the image cache for the Welcome screen's background during the
+    // splash animation so it's already decoded by the time we navigate
+    // there, avoiding a visible blank/pop-in background on first paint.
+    if (!_backgroundPrecached) {
+      _backgroundPrecached = true;
+      precacheImage(const AssetImage(AppAssets.welcomeBackground), context);
+    }
   }
 
   @override
