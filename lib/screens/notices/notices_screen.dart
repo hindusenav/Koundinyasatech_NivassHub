@@ -207,23 +207,9 @@ class _NoticeBoardViewState extends State<_NoticeBoardView> {
                 ),
                 child: Row(
                   children: [
-                    InkWell(
-                      onTap: () {
-                        if (Navigator.of(context).canPop()) {
-                          Navigator.of(context).pop();
-                        }
-                      },
-                      borderRadius: BorderRadius.circular(20),
-                      child: const Padding(
-                        padding: EdgeInsets.all(4),
-                        child: Icon(
-                          Icons.arrow_back,
-                          color: Color(0xFF0F172A),
-                          size: 22,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 8),
+                    // Notice Board is the parent/root screen of this flow,
+                    // so it intentionally has no back arrow (see sub-category
+                    // and detail screens for the back navigation entry point).
                     const Text(
                       'Notice Board',
                       style: TextStyle(

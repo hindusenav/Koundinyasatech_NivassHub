@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_nivasshub/routes/app_routes.dart';
 import 'package:flutter_nivasshub/routes/navigation_service.dart';
@@ -98,6 +99,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen>
       final storage = context.read<SecureStorageService>();
       await storage.saveAccessToken(auth.accessToken!);
       await storage.saveRefreshToken(auth.refreshToken!);
+      await storage.saveSession();
       if (!mounted) return;
       NavigationService.pushNamedAndRemoveUntil(AppRoutes.dashboard);
     } else {
@@ -255,11 +257,12 @@ class _CreateProfileScreenState extends State<CreateProfileScreen>
                                         hint: 'Enter your full name',
                                         prefixIcon: AppIcons.profile,
                                         textInputAction: TextInputAction.next,
-                                        validator: (v) =>
-                                            FormValidators.required(
-                                              v,
-                                              message: 'Full name is required',
-                                            ),
+                                        inputFormatters: [
+                                          FilteringTextInputFormatter.allow(
+                                            RegExp(r'[A-Za-z ]'),
+                                          ),
+                                        ],
+                                        validator: FormValidators.fullName,
                                       ),
                                       SizedBox(height: AppSpacing.md),
                                       CustomTextField(

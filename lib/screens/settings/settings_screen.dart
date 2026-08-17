@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import 'package:flutter_nivasshub/providers/settings/settings_provider.dart';
 import 'package:flutter_nivasshub/routes/app_routes.dart';
+import 'package:flutter_nivasshub/services/core/secure_storage_service.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -454,9 +455,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
           TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            onPressed: () {
+            onPressed: () async {
+              final storage = context.read<SecureStorageService>();
+              final navigator = Navigator.of(context);
               Navigator.pop(context);
-              Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
+              // Clear the persisted session so a relaunch doesn't
+              // auto-navigate back into the Dashboard.
+              await storage.clearSession();
+              navigator.pushNamedAndRemoveUntil('/', (route) => false);
             },
             child: const Text('Logout', style: TextStyle(color: Colors.white)),
           ),
