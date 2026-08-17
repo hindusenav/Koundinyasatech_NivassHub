@@ -36,4 +36,21 @@ class SecureStorageService {
     await delete(StorageKeys.accessToken);
     await delete(StorageKeys.refreshToken);
   }
+
+  // ---------------------------------------------------------------------
+  // Login session flag — set once at login/registration success, checked
+  // once at splash startup to decide Dashboard vs. Login. Distinct from the
+  // tokens above because the existing-user OTP-login flow doesn't currently
+  // receive an access token from the backend, so this flag (rather than
+  // token presence) is the single source of truth for "is logged in".
+  // ---------------------------------------------------------------------
+  Future<void> saveSession() => write(StorageKeys.isLoggedIn, 'true');
+
+  Future<bool> hasValidSession() async =>
+      (await read(StorageKeys.isLoggedIn)) == 'true';
+
+  Future<void> clearSession() async {
+    await clearTokens();
+    await delete(StorageKeys.isLoggedIn);
+  }
 }

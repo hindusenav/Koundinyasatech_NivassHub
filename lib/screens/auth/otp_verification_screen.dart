@@ -120,6 +120,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen>
         arguments: OtpVerificationSuccessScreenArgs(
           userExists: auth.userExists,
           registrationToken: auth.registrationToken,
+          isRegistrationFlow: widget.isRegistrationFlow,
         ),
       );
     } else {
