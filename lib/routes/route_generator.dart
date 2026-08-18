@@ -36,7 +36,6 @@ import 'package:flutter_nivasshub/screens/onboarding/onboarding_screen_two.dart'
 // PROFILE - ✅ Make sure these are here
 // ============================================================
 
-import 'package:flutter_nivasshub/models/profile/address_model.dart';
 import 'package:flutter_nivasshub/screens/profile/add_address_details_screen.dart';  // ✅ THIS IMPORT
 import 'package:flutter_nivasshub/screens/profile/profile_screen.dart';
 
@@ -218,20 +217,13 @@ class RouteGenerator {
       // ADD ADDRESS DETAILS - ✅ FIXED
       // ========================================================
 
-     case AppRoutes.addAddressDetails:
-  final args = settings.arguments;
-  
-  // ✅ Simple and clean approach
-  final address = args is AddressModel 
-      ? args 
-      : const AddressModel();
-
-  return MaterialPageRoute(
-    settings: settings,
-    builder: (_) => const AddAddressDetailsScreen(
-      address: null,  // Pass null, handle in screen
-    ),
-  );
+      case AppRoutes.addAddressDetails:
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => const AddAddressDetailsScreen(
+            address: null, // Pass null, handle in screen
+          ),
+        );
       // ========================================================
       // SETTINGS
       // ========================================================
