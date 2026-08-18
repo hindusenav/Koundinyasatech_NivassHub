@@ -81,7 +81,7 @@ class SettingItemTile extends StatelessWidget {
         trailing: isSwitch
             ? Switch.adaptive(
                 value: switchValue,
-                activeColor: const Color(0xFF1976D2),
+                activeThumbColor: const Color(0xFF1976D2),
                 onChanged: onSwitchChanged,
               )
             : Row(
