@@ -116,14 +116,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           email: emailController.text,
                         );
 
-                    if (mounted) {
-                      Navigator.pop(modalContext);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Profile updated successfully!'),
-                        ),
-                      );
-                    }
+                    if (!modalContext.mounted) return;
+                    Navigator.pop(modalContext);
+
+                    if (!mounted) return;
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Profile updated successfully!'),
+                      ),
+                    );
                   },
                   child: const Text(
                     'Save Changes',
@@ -374,29 +375,30 @@ class _SettingsScreenState extends State<SettingsScreen> {
             children: [
               const Text("Subscription Plans", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
               const SizedBox(height: 12),
-              RadioListTile<String>(
-                title: const Text("Ad-Supported (Free)"),
-                subtitle: const Text("Basic gate access & community updates"),
-                value: "Ad-Supported",
+              RadioGroup<String>(
                 groupValue: _activePlan,
-                activeColor: primaryBlue,
                 onChanged: (val) {
                   setSheetState(() => _activePlan = val!);
                   setState(() => _activePlan = val!);
                   context.read<SettingsProvider>().updateActivePlan(val!);
                 },
-              ),
-              RadioListTile<String>(
-                title: const Text("Nivaas Premium (₹99/mo)"),
-                subtitle: const Text("Ad-free experience, unlimited guest passes & priority support"),
-                value: "Premium",
-                groupValue: _activePlan,
-                activeColor: primaryBlue,
-                onChanged: (val) {
-                  setSheetState(() => _activePlan = val!);
-                  setState(() => _activePlan = val!);
-                  context.read<SettingsProvider>().updateActivePlan(val!);
-                },
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    RadioListTile<String>(
+                      title: const Text("Ad-Supported (Free)"),
+                      subtitle: const Text("Basic gate access & community updates"),
+                      value: "Ad-Supported",
+                      activeColor: primaryBlue,
+                    ),
+                    RadioListTile<String>(
+                      title: const Text("Nivaas Premium (₹99/mo)"),
+                      subtitle: const Text("Ad-free experience, unlimited guest passes & priority support"),
+                      value: "Premium",
+                      activeColor: primaryBlue,
+                    ),
+                  ],
+                ),
               ),
             ],
           ),

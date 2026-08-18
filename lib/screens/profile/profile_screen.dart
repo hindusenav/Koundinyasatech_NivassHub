@@ -442,7 +442,7 @@ class ProfileScreen extends StatelessWidget {
           Switch(
             value: profile.enableCalls,
             onChanged: (val) => provider.toggleEnableCalls(val),
-            activeColor: Colors.green,
+            activeThumbColor: Colors.green,
             activeTrackColor: Colors.green.shade100,
           ),
         ],
