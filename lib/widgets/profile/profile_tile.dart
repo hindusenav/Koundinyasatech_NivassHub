@@ -116,7 +116,7 @@ class ProfileTile extends StatelessWidget {
             if (isSwitch)
               Switch.adaptive(
                 value: switchValue,
-                activeColor: primaryBlue,
+                activeThumbColor: primaryBlue,
                 onChanged: onSwitchChanged,
               )
             else
