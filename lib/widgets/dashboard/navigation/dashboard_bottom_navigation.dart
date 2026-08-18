@@ -58,9 +58,22 @@ class DashboardBottomNavigation extends StatelessWidget {
         onTap: () {
           provider.changeIndex(index);
 
-          if (index == 2) {
+          if (index == 0) {
+            // Home — return to the existing Dashboard already in the
+            // stack instead of pushing a duplicate instance.
+            if (ModalRoute.of(context)?.settings.name != AppRoutes.dashboard) {
+              Navigator.popUntil(context, ModalRoute.withName(AppRoutes.dashboard));
+            }
+          } else if (index == 2) {
             // Community — opens the full Community Feed / Notice Board.
-            Navigator.pushNamed(context, AppRoutes.noticeList);
+            // Guard against pushing a duplicate instance when the user
+            // re-taps "Community" while already viewing it (this bottom
+            // nav is also rendered on NoticesScreen itself) — without
+            // this, Back had to pop through multiple stacked copies of
+            // the same screen before it reached the real previous screen.
+            if (ModalRoute.of(context)?.settings.name != AppRoutes.noticeList) {
+              Navigator.pushNamed(context, AppRoutes.noticeList);
+            }
           } else if (index == 4) {
             // More — opens the full Quick Actions catalog directly.
             Navigator.pushNamed(context, AppRoutes.quickActions);

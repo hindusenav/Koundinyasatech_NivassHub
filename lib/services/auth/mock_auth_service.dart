@@ -41,6 +41,12 @@ class MockAuthService implements AuthServiceBase {
         );
       case '1111':
         return ApiResponse.success(const VerifyOtpResponseData(userExists: true));
+      case '0000':
+        // Test hook only: deliberately reproduces the userExists == false +
+        // missing registrationToken contract violation, so the defensive
+        // branch in OtpVerificationSuccessScreen._handleContinue() is
+        // manually testable without needing a misbehaving real backend.
+        return ApiResponse.success(const VerifyOtpResponseData(userExists: false));
       default:
         return ApiResponse.failure(
           const ApiException(message: 'Invalid OTP', type: ApiExceptionType.badRequest),
