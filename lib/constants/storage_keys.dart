@@ -10,6 +10,7 @@ class StorageKeys {
   static const String accessToken = 'access_token';
   static const String refreshToken = 'refresh_token';
   static const String isLoggedIn = 'is_logged_in';
+  static const String hasLoggedOut = 'has_logged_out';
 
   // ---------------------------------------------------------------------
   // Local storage (preferences, flags, cached JSON)

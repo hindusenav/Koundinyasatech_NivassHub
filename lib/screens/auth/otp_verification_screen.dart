@@ -121,6 +121,8 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen>
           userExists: auth.userExists,
           registrationToken: auth.registrationToken,
           isRegistrationFlow: widget.isRegistrationFlow,
+          mobileNumber: widget.mobileNumber,
+          otpExpirySeconds: widget.otpExpirySeconds,
         ),
       );
     } else {
