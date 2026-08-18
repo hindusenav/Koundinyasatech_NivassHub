@@ -56,9 +56,22 @@ class AuthProvider extends ChangeNotifier {
   String? get accessToken => _accessToken;
   String? get refreshToken => _refreshToken;
 
-  Future<bool> sendOtp(String mobileNumber) async {
-    _status = AuthOtpStatus.sendingOtp;
+  /// Clears state scoped to a single OTP verification attempt — called at
+  /// the start of [sendOtp] so a stale `userExists`/`registrationToken`
+  /// from a previous, abandoned flow (e.g. user backed out and re-entered
+  /// Login) can never leak into a new verification. Deliberately does not
+  /// touch `_accessToken`/`_refreshToken`/`_userId` (set by
+  /// `completeRegistration`, meaningful only after a flow completes) or
+  /// `_otpExpirySeconds` (reused by `resendOtp`).
+  void _resetOtpFlowState() {
+    _userExists = false;
+    _registrationToken = null;
     _errorMessage = null;
+  }
+
+  Future<bool> sendOtp(String mobileNumber) async {
+    _resetOtpFlowState();
+    _status = AuthOtpStatus.sendingOtp;
     notifyListeners();
 
     final response = await _authService.sendOtp(SendOtpRequest(mobileNumber: mobileNumber));
