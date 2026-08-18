@@ -52,5 +52,12 @@ class SecureStorageService {
   Future<void> clearSession() async {
     await clearTokens();
     await delete(StorageKeys.isLoggedIn);
+    // Marks this device as having logged out at least once, so Splash
+    // skips the first-run Welcome screen and goes straight to Onboarding
+    // Step Two (Create Account / Login) on every future launch.
+    await write(StorageKeys.hasLoggedOut, 'true');
   }
+
+  Future<bool> hasLoggedOutBefore() async =>
+      (await read(StorageKeys.hasLoggedOut)) == 'true';
 }
