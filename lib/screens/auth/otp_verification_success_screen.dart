@@ -19,7 +19,6 @@ import 'package:flutter_nivasshub/widgets/auth/success_check_icon.dart';
 import 'package:flutter_nivasshub/widgets/shared/dialogs/confirmation_dialog.dart';
 import 'package:flutter_nivasshub/widgets/shared/feedback/custom_snackbar.dart';
 import 'package:flutter_nivasshub/screens/auth/create_profile_screen.dart';
-import 'package:flutter_nivasshub/screens/auth/otp_verification_screen.dart';
 
 /// Typed arguments for [AppRoutes.otpVerificationSuccess], unpacked in
 /// `route_generator.dart`.
@@ -42,9 +41,8 @@ class OtpVerificationSuccessScreenArgs {
   /// screen.
   final bool isRegistrationFlow;
 
-  /// Carried through from [OtpVerificationScreenArgs] so a fresh
-  /// [OtpVerificationScreen] can be reconstructed if the user cancels out
-  /// of the exit-confirmation dialog on Back press.
+  /// Carried through from the OTP Verification screen's route arguments so
+  /// route arguments stay complete if this flow needs them again upstream.
   final String mobileNumber;
   final int otpExpirySeconds;
 }
@@ -124,9 +122,9 @@ class _OtpVerificationSuccessScreenState extends State<OtpVerificationSuccessScr
     }
   }
 
-  /// Confirms intent before leaving this screen via Back: Cancel returns
-  /// the user to a fresh OTP Verification screen (never Login/Register/
-  /// Dashboard), Exit closes the app outright.
+  /// Confirms intent before leaving this screen via Back: Cancel dismisses
+  /// the dialog and keeps the user on this screen (never Login/Register/
+  /// Onboarding/Dashboard), Exit closes the app outright.
   Future<void> _handleBackPress() async {
     final shouldExit = await ConfirmationDialog.show(
       context,
@@ -138,17 +136,9 @@ class _OtpVerificationSuccessScreenState extends State<OtpVerificationSuccessScr
     if (!mounted) return;
     if (shouldExit) {
       SystemNavigator.pop();
-    } else {
-      Navigator.pushReplacementNamed(
-        context,
-        AppRoutes.otpVerification,
-        arguments: OtpVerificationScreenArgs(
-          mobileNumber: widget.mobileNumber,
-          otpExpirySeconds: widget.otpExpirySeconds,
-          isRegistrationFlow: widget.isRegistrationFlow,
-        ),
-      );
     }
+    // Cancel (or dialog dismissed): do nothing — PopScope already blocked
+    // the pop, so the user simply remains on this screen.
   }
 
   @override
