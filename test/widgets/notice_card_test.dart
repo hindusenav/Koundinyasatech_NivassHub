@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:flutter_nivasshub/features/notices/models/feed_notice_model.dart';
-import 'package:flutter_nivasshub/features/notices/widgets/notice_card.dart';
+import 'package:flutter_nivasshub/models/notices/feed_notice_model.dart';
+import 'package:flutter_nivasshub/widgets/notices/notice_card.dart';
 
 void main() {
   group('NoticeCard Widget Test', () {
