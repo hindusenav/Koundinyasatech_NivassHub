@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:flutter_nivasshub/services/core/api_client.dart';
 import 'package:flutter_nivasshub/widgets/dashboard/navigation/dashboard_bottom_navigation.dart';
 import 'package:flutter_nivasshub/providers/notices/notices_provider.dart';
+import 'package:flutter_nivasshub/widgets/notices/community_header_container.dart';
 import 'package:flutter_nivasshub/widgets/notices/create_post_header_card.dart';
 
 class CommunityPostsSelectionScreen extends StatelessWidget {
@@ -29,28 +30,8 @@ class _CommunityPostsSelectionView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
-      appBar: AppBar(
-        backgroundColor: const Color(0xFFE0F2FE),
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Color(0xFF0F172A)),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-        title: const Text(
-          'Community Posts',
-          style: TextStyle(
-            color: Color(0xFF0F172A),
-            fontWeight: FontWeight.bold,
-            fontSize: 18,
-          ),
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.notifications_none_outlined, color: Color(0xFF0F172A), size: 22),
-            onPressed: () {},
-          ),
-          const SizedBox(width: 4),
-        ],
+      appBar: const CommunityHeaderContainer(
+        title: 'Community Posts',
       ),
       bottomNavigationBar: const DashboardBottomNavigation(),
       body: SingleChildScrollView(
@@ -61,27 +42,27 @@ class _CommunityPostsSelectionView extends StatelessWidget {
             const CreateCommunityPostHeaderCard(),
             const SizedBox(height: 24),
 
-            // Hero Ad Banner Card (ALTURA)
+            // luxury-banner-card (Height: 303px, Radius: 12px, Padding: 16px, Drop Shadow: Offset(0, 2), Blur: 12, Color: #000000 3.92%)
             Container(
+              height: 303,
+              width: double.infinity,
               decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: const Color(0xFFE2E8F0)),
-                boxShadow: [
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: const [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: .04),
-                    blurRadius: 8,
-                    offset: const Offset(0, 3),
+                    color: Color(0x0A000000), // Drop shadow: #000000 3.92%
+                    offset: Offset(0, 2),
+                    blurRadius: 12,
+                    spreadRadius: 0,
                   ),
                 ],
               ),
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(12),
                 child: Stack(
                   children: [
-                    SizedBox(
-                      height: 220,
-                      width: double.infinity,
+                    // Banner Image
+                    Positioned.fill(
                       child: CachedNetworkImage(
                         imageUrl:
                             'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=600&q=80',
@@ -95,13 +76,15 @@ class _CommunityPostsSelectionView extends StatelessWidget {
                         ),
                       ),
                     ),
+
+                    // Colors Overlay (#000000 55%)
                     Positioned.fill(
                       child: Container(
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
                             colors: [
-                              Colors.transparent,
-                              Colors.black.withValues(alpha: .7),
+                              Colors.black.withValues(alpha: .2),
+                              Colors.black.withValues(alpha: .55),
                             ],
                             begin: Alignment.topCenter,
                             end: Alignment.bottomCenter,
@@ -109,61 +92,90 @@ class _CommunityPostsSelectionView extends StatelessWidget {
                         ),
                       ),
                     ),
-                    Positioned(
-                      top: 12,
-                      right: 12,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 3),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFF1F5F9).withValues(alpha: .9),
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        child: const Text(
-                          'Ad',
-                          style: TextStyle(
-                              color: Color(0xFF334155),
-                              fontSize: 10,
-                              fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                    ),
-                    const Positioned(
-                      left: 16,
-                      bottom: 16,
-                      right: 16,
-                      child: Row(
+
+                    // Layout: Vertical, Justify space-between, Padding: 16px
+                    Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.end,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                          // banner-top (Flow: Horizontal, Width Fill 364px, Height Hug 16px)
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
                             children: [
-                              Text(
-                                'ALTURA',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
+                              // ad-badge (Radius: 4px, Padding: Top/Bottom 2px, Left/Right 6px, Color: #FFFFFF 20%)
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 6, vertical: 2),
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withValues(alpha: .20),
+                                  borderRadius: BorderRadius.circular(4),
                                 ),
-                              ),
-                              SizedBox(height: 2),
-                              Text(
-                                '2 & 3 BHK Homes',
-                                style: TextStyle(
-                                  color: Colors.white70,
-                                  fontSize: 12,
+                                child: const Text(
+                                  'Ad',
+                                  style: TextStyle(
+                                    fontFamily: 'Inter',
+                                    color: Colors.white,
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                               ),
                             ],
                           ),
-                          Text(
-                            '₹1.30 Crore Onwards',
-                            style: TextStyle(
-                              color: Color(0xFFFDE68A),
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                            ),
+
+                          // banner-details (Gap: 4px)
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // brand (Inter 800 ExtraBold, 18px, Line height 100%, Letter spacing 1px, Color: #FFFFFF)
+                              const Text(
+                                'ALTURA',
+                                style: TextStyle(
+                                  fontFamily: 'Inter',
+                                  color: Colors.white,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w800,
+                                  height: 1.0,
+                                  letterSpacing: 1.0,
+                                ),
+                              ),
+                              const SizedBox(height: 4), // Gap: 4px
+
+                              // sub-info-row (Flow: Horizontal, Width Fill 364px, Height Hug 16px, Justify: space-between)
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: const [
+                                  // sub (Inter 500 Medium, 12px, Line height 100%, Color: #E5E7EB)
+                                  Text(
+                                    '2 & 3 BHK Homes',
+                                    style: TextStyle(
+                                      fontFamily: 'Inter',
+                                      color: Color(0xFFE5E7EB),
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w500,
+                                      height: 1.0,
+                                      letterSpacing: 0,
+                                    ),
+                                  ),
+
+                                  // price (Inter 700 Bold, 13px, Line height 100%, Color: #FBBF24)
+                                  Text(
+                                    '₹1.30 Crore Onwards',
+                                    style: TextStyle(
+                                      fontFamily: 'Inter',
+                                      color: Color(0xFFFBBF24),
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.bold,
+                                      height: 1.0,
+                                      letterSpacing: 0,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
                           ),
                         ],
                       ),

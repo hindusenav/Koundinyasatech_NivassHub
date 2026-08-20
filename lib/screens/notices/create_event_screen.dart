@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'package:flutter_nivasshub/providers/notices/notices_provider.dart';
+import 'package:flutter_nivasshub/widgets/notices/user_bar.dart';
 
 /// Screen matching Figma "Community - New Event"
 class CreateEventScreen extends StatefulWidget {
@@ -97,7 +98,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: const Color(0xFFE0F2FE),
+        backgroundColor: const Color(0xFFC7E3FF),
         elevation: 0,
         automaticallyImplyLeading: false,
         titleSpacing: 0,
@@ -119,35 +120,40 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
         ),
         centerTitle: false,
         actions: [
+          // right-action (Flow: Horizontal, Width Hug 100px, Height Hug 28px, Radius 100px, Padding 10px/6px, Gap 4px, Color #E8F4FF 68%)
           Container(
-            margin: const EdgeInsets.only(right: 12),
+            margin: const EdgeInsets.only(right: 16),
             decoration: BoxDecoration(
-              color: const Color(0xFFEFF6FF),
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: const Color(0xFFBFDBFE)),
+              color: const Color(0xFFE8F4FF).withValues(alpha: 0.68),
+              borderRadius: BorderRadius.circular(100),
             ),
             child: Material(
               color: Colors.transparent,
               child: InkWell(
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(100),
                 onTap: () {},
                 child: const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
+                      // info icon (14px x 14px, Color #0060BD)
                       Icon(
                         Icons.info_outline,
                         size: 14,
-                        color: Color(0xFF0284C7),
+                        color: Color(0xFF0060BD),
                       ),
-                      SizedBox(width: 4),
+                      SizedBox(width: 4), // Gap: 4px
+                      // Text Guidelines Button (DM Sans 12px SemiBold 600, Color #0060BD)
                       Text(
                         'Guidelines',
                         style: TextStyle(
-                          color: Color(0xFF0284C7),
+                          fontFamily: 'DM Sans',
+                          color: Color(0xFF0060BD),
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
+                          height: 1.0,
+                          letterSpacing: 0,
                         ),
                       ),
                     ],
@@ -159,142 +165,106 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
         ],
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              children: [
-                const CircleAvatar(
-                  radius: 20,
-                  backgroundColor: Color(0xFFD97706),
-                  child: Text(
-                    'A',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
+            UserBar(selectedVisibility: _selectedVisibility),
+            // scheduler-form (Padding: Horizontal 20px, Gap: 20px)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Text Event details (DM Sans 14px Regular 400, Height 100%, Color #3E3E3E)
+                  TextField(
+                    controller: _detailsController,
+                    style: const TextStyle(
+                      fontFamily: 'DM Sans',
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                      color: Color(0xFF3E3E3E),
+                    ),
+                    decoration: const InputDecoration(
+                      hintText: 'Add details about your event...',
+                      hintStyle: TextStyle(
+                        fontFamily: 'DM Sans',
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
+                        color: Color(0xFF3E3E3E),
+                        height: 1.0,
+                        letterSpacing: 0,
+                      ),
+                      border: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      enabledBorder: InputBorder.none,
                     ),
                   ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'User Name',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
-                          color: Color(0xFF0F172A),
-                        ),
-                      ),
-                      Text(
-                        'Apartment B 402',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey.shade600,
-                        ),
-                      ),
-                    ],
+                  const SizedBox(height: 20), // scheduler-form Gap: 20px
+
+                  // date-venue-cards (Gap: 12px)
+                  _EventConfigTile(
+                    icon: Icons.calendar_today_outlined,
+                    title: 'Add Date & Time',
+                    subtitle: _selectedDateTime,
+                    onTap: () async {
+                      final date = await showDatePicker(
+                        context: context,
+                        initialDate: DateTime.now(),
+                        firstDate: DateTime.now(),
+                        lastDate: DateTime.now().add(const Duration(days: 365)),
+                      );
+                      if (date != null) {
+                        setState(() {
+                          _selectedDateTime =
+                              '${date.day}/${date.month}/${date.year} at 7:00 PM';
+                        });
+                      }
+                    },
                   ),
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 4,
+                  const SizedBox(height: 12), // date-venue-cards Gap: 12px
+                  _EventConfigTile(
+                    icon: Icons.location_on_outlined,
+                    title: 'Add Location',
+                    subtitle: _selectedVenue,
+                    onTap: () {
+                      setState(() {
+                        _selectedVenue = 'Central Clubhouse & Lawn';
+                      });
+                    },
                   ),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: const Color(0xFFCBD5E1)),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        _selectedVisibility,
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: Color(0xFF0F172A),
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      const SizedBox(width: 4),
-                      const Icon(
-                        Icons.keyboard_arrow_down,
-                        size: 16,
-                        color: Color(0xFF0F172A),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: _detailsController,
-              decoration: const InputDecoration(
-                hintText: 'Add details about your event...',
-                hintStyle: TextStyle(color: Color(0xFF94A3B8), fontSize: 14),
-                border: InputBorder.none,
-                focusedBorder: InputBorder.none,
-                enabledBorder: InputBorder.none,
+                ],
               ),
-            ),
-            const SizedBox(height: 16),
-            _EventConfigTile(
-              icon: Icons.calendar_today_outlined,
-              title: 'Add Date & Time',
-              subtitle: _selectedDateTime,
-              onTap: () async {
-                final date = await showDatePicker(
-                  context: context,
-                  initialDate: DateTime.now(),
-                  firstDate: DateTime.now(),
-                  lastDate: DateTime.now().add(const Duration(days: 365)),
-                );
-                if (date != null) {
-                  setState(() {
-                    _selectedDateTime =
-                        '${date.day}/${date.month}/${date.year} at 7:00 PM';
-                  });
-                }
-              },
-            ),
-            const SizedBox(height: 12),
-            _EventConfigTile(
-              icon: Icons.location_on_outlined,
-              title: 'Add Venue',
-              subtitle: _selectedVenue,
-              onTap: () {
-                setState(() {
-                  _selectedVenue = 'Central Clubhouse & Lawn';
-                });
-              },
             ),
           ],
         ),
       ),
       bottomNavigationBar: SafeArea(
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          // toolbar (Flow: Horizontal, Width Fixed 440px, Height Hug 61px, Border Top 1px #E2E8F0, Padding 20px/12px)
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
           decoration: const BoxDecoration(
             color: Colors.white,
             border: Border(top: BorderSide(color: Color(0xFFE2E8F0))),
           ),
           child: Row(
             children: [
-              _MediaIconButton(icon: Icons.image_outlined, onTap: () {}),
-              const SizedBox(width: 8),
-              _MediaIconButton(icon: Icons.camera_alt_outlined, onTap: () {}),
-              const SizedBox(width: 8),
-              _MediaIconButton(icon: Icons.videocam_outlined, onTap: () {}),
-              const SizedBox(width: 8),
-              _MediaIconButton(icon: Icons.mic_none_outlined, onTap: () {}),
+              // attachments (Gap: 16px)
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _MediaIconButton(icon: Icons.image_outlined, onTap: () {}),
+                  const SizedBox(width: 16),
+                  _MediaIconButton(icon: Icons.camera_alt_outlined, onTap: () {}),
+                  const SizedBox(width: 16),
+                  _MediaIconButton(icon: Icons.videocam_outlined, onTap: () {}),
+                  const SizedBox(width: 16),
+                  _MediaIconButton(icon: Icons.mic_none_outlined, onTap: () {}),
+                ],
+              ),
               const Spacer(),
+              // post-btn (Flow: Horizontal, Width Hug 132px, Height Hug 37px, Radius 8px, Padding 20px/10px, Color #0060BD)
               Material(
-                color: const Color(0xFF0284C7),
+                color: const Color(0xFF0060BD), // Blue 1 #0060BD
                 borderRadius: BorderRadius.circular(8),
                 child: InkWell(
                   onTap: _isSubmitting ? null : _submitEvent,
@@ -316,9 +286,12 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                         : const Text(
                             'Publish Event',
                             style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
+                              fontFamily: 'Inter',
                               fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                              height: 1.0,
+                              letterSpacing: 0,
                             ),
                           ),
                   ),
@@ -332,6 +305,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
   }
 }
 
+// tool-icon (Flow: Horizontal, Width Hug 36px, Height Hug 36px, Radius 8px, Padding 8px, Color #E8F4FF, Shadow 4px 4px 4px #000000 15%)
 class _MediaIconButton extends StatelessWidget {
   const _MediaIconButton({required this.icon, required this.onTap});
 
@@ -340,24 +314,24 @@ class _MediaIconButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: const Color(0xFFE2E8F0)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: .03),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: IconButton(
-        icon: Icon(icon, color: const Color(0xFF334155), size: 18),
-        onPressed: onTap,
-        constraints: const BoxConstraints(),
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 36,
+        height: 36,
         padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: const Color(0xFFE8F4FF), // Blue 4 #E8F4FF
+          borderRadius: BorderRadius.circular(8),
+          boxShadow: const [
+            BoxShadow(
+              color: Color(0x26000000), // #000000 15%
+              blurRadius: 4,
+              offset: Offset(4, 4),
+            ),
+          ],
+        ),
+        child: Icon(icon, color: const Color(0xFF0284C7), size: 20), // 20px x 20px
       ),
     );
   }
@@ -382,52 +356,67 @@ class _EventConfigTile extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(12),
       child: Container(
-        padding: const EdgeInsets.all(14),
+        padding: const EdgeInsets.all(16), // scheduler-card Padding: 16px
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: const Color(0xFFE2E8F0)),
+          color: const Color(0xFFF8FAFC), // scheduler-card Color: #F8FAFC
+          borderRadius: BorderRadius.circular(12), // Radius: 12px
+          border: Border.all(color: const Color(0xFFE2E8F0), width: 1), // Border: 1px #E2E8F0
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: .02),
-              blurRadius: 6,
+              color: Colors.black.withValues(alpha: .0314), // Drop shadow 3.14%
+              blurRadius: 4,
               offset: const Offset(0, 2),
             ),
           ],
         ),
         child: Row(
           children: [
+            // icon-container (38px x 38px, Radius 10px, Padding 10px, Color #F0FDFA)
             Container(
+              width: 38,
+              height: 38,
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: const Color(0xFFEFF6FF),
+                color: const Color(0xFFF0FDFA),
                 borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: const Color(0xFFDBEAFE)),
               ),
-              child: Icon(icon, color: const Color(0xFF0284C7), size: 20),
+              child: Icon(icon, color: const Color(0xFF0284C7), size: 18), // calendar size: 18px
             ),
-            const SizedBox(width: 14),
+            const SizedBox(width: 14), // Gap: 14px
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Text Date & Time (DM Sans 14px SemiBold 600, Color #05234D)
                   Text(
                     title,
                     style: const TextStyle(
-                      fontWeight: FontWeight.bold,
+                      fontFamily: 'DM Sans',
+                      fontWeight: FontWeight.w600,
                       fontSize: 14,
-                      color: Color(0xFF0F172A),
+                      color: Color(0xFF05234D),
+                      height: 1.0,
+                      letterSpacing: 0,
                     ),
                   ),
-                  const SizedBox(height: 2),
+                  const SizedBox(height: 2), // card-text Gap: 2px
+                  // Text Date & Time description (DM Sans 12px Regular 400, Color #3E3E3E)
                   Text(
                     subtitle,
-                    style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                    style: const TextStyle(
+                      fontFamily: 'DM Sans',
+                      fontWeight: FontWeight.w400,
+                      fontSize: 12,
+                      color: Color(0xFF3E3E3E),
+                      height: 1.0,
+                      letterSpacing: 0,
+                    ),
                   ),
                 ],
               ),
             ),
-            const Icon(Icons.chevron_right, color: Color(0xFF64748B), size: 20),
+            // chevron-right (16px x 16px)
+            const Icon(Icons.chevron_right, color: Color(0xFF64748B), size: 16),
           ],
         ),
       ),
