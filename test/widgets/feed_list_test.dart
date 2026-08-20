@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:flutter_nivasshub/features/notices/models/advertisement_model.dart';
-import 'package:flutter_nivasshub/features/notices/models/community_post_model.dart';
-import 'package:flutter_nivasshub/features/notices/models/feed_item_model.dart';
-import 'package:flutter_nivasshub/features/notices/models/feed_notice_model.dart';
+import 'package:flutter_nivasshub/models/notices/advertisement_model.dart';
+import 'package:flutter_nivasshub/models/notices/community_post_model.dart';
+import 'package:flutter_nivasshub/models/notices/feed_item_model.dart';
+import 'package:flutter_nivasshub/models/notices/feed_notice_model.dart';
 
-import 'package:flutter_nivasshub/features/notices/widgets/feed_list.dart';
+import 'package:flutter_nivasshub/widgets/notices/feed_list.dart';
 
 void main() {
   final List<FeedItemModel> feedItems = [

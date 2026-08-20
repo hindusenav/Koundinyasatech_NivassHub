@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:flutter_nivasshub/features/notices/models/advertisement_model.dart';
-import 'package:flutter_nivasshub/features/notices/widgets/advertisement_banner.dart';
+import 'package:flutter_nivasshub/models/notices/advertisement_model.dart';
+import 'package:flutter_nivasshub/widgets/notices/advertisement_banner.dart';
 
 void main() {
   group('AdvertisementBanner Widget Test', () {
