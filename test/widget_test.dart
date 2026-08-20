@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:flutter_nivasshub/shared/widgets/buttons/primary_button.dart';
+import 'package:flutter_nivasshub/widgets/shared/buttons/primary_button.dart';
 
 void main() {
   testWidgets('PrimaryButton renders its label and responds to taps', (WidgetTester tester) async {
