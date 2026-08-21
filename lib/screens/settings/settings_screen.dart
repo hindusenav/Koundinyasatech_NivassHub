@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
-import 'package:flutter_nivasshub/providers/settings/settings_provider.dart';
 import 'package:flutter_nivasshub/routes/app_routes.dart';
-import 'package:flutter_nivasshub/services/core/secure_storage_service.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -13,863 +10,1707 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  // Theme Colors
-  static const Color primaryBlue = Color(0xFF1976D2);
-  static const Color bgLightBlue = Color(0xFFF4F7FC);
+  // ============================================================
+  // COLORS
+  // ============================================================
 
-  // Local State Variables
-  final String _hubId = "NH-88492";
-  int _selectedNavIndex = 4;
+  static const Color backgroundColor = Color(0xFFF3F7FD);
+  static const Color headerColor = Color(0xFFC8E3FC);
+  static const Color primaryBlue = Color(0xFF0878D1);
+  static const Color lightBlue = Color(0xFFEAF4FF);
+  static const Color darkText = Color(0xFF202124);
+  static const Color greyText = Color(0xFF858585);
+  static const Color borderColor = Color(0xFFE2E6EA);
 
-  int _familyCount = 3;
-  int _dailyHelpCount = 1;
-  int _vehicleCount = 2;
-  int _petCount = 0;
+  // ============================================================
+  // LOCAL VALUES
+  // ============================================================
 
-  bool _gateAlerts = true;
-  bool _deliveryAlerts = true;
-  bool _communityPosts = false;
+  int familyCount = 1;
+  int dailyHelpCount = 0;
+  int vehicleCount = 0;
+  int petCount = 0;
 
-  String _activePlan = "Ad-Supported";
+  String selectedPlan = 'Ad-Supported';
 
-  final List<Map<String, dynamic>> _flats = [
-    {'name': 'Flat 402, Block A', 'isActive': true},
-    {'name': 'Flat 101, Block B', 'isActive': false},
+  bool notificationEnabled = true;
+  bool securityEnabled = true;
+  bool feedEnabled = false;
+
+  final List<Map<String, dynamic>> properties = [
+    {
+      'name': 'B-402, Golden Residency',
+      'active': true,
+    },
   ];
 
-  // --- MODALS & DIALOGS ---
+  // ============================================================
+  // MESSAGE
+  // ============================================================
 
-  void _openProfileScreen() {
-    final settingsProvider = context.read<SettingsProvider>();
+  void _message(String text) {
+    if (!mounted) return;
 
-    final String currentName = settingsProvider.userName;
-    final String currentPhone = settingsProvider.phone;
-    final String currentEmail = settingsProvider.email;
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
 
-    final nameController = TextEditingController(text: currentName);
-    final phoneController = TextEditingController(text: currentPhone);
-    final emailController = TextEditingController(text: currentEmail);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(text),
+        behavior: SnackBarBehavior.floating,
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
 
+  // ============================================================
+  // PROFILE
+  // ============================================================
+
+  void _openProfile() {
+    Navigator.pushNamed(
+      context,
+      AppRoutes.profile,
+    );
+  }
+
+  // ============================================================
+  // HELP & SUPPORT
+  // ============================================================
+
+  void _openHelpSupport() {
+    Navigator.pushNamed(
+      context,
+      AppRoutes.helpSupport,
+    );
+  }
+
+  // ============================================================
+  // NOTIFICATION PREFERENCES
+  // ============================================================
+
+  void _notificationPreferences() {
     showModalBottomSheet(
       context: context,
+      backgroundColor: Colors.white,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(20),
+        ),
       ),
-      builder: (modalContext) {
-        return Padding(
-          padding: EdgeInsets.only(
-            left: 20,
-            right: 20,
-            top: 20,
-            bottom: MediaQuery.of(modalContext).viewInsets.bottom + 20,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Edit Profile',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            return Padding(
+              padding: const EdgeInsets.fromLTRB(
+                18,
+                12,
+                18,
+                25,
               ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: nameController,
-                decoration: const InputDecoration(
-                  labelText: 'Full Name',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: phoneController,
-                keyboardType: TextInputType.phone,
-                decoration: const InputDecoration(
-                  labelText: 'Phone Number',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: emailController,
-                keyboardType: TextInputType.emailAddress,
-                decoration: const InputDecoration(
-                  labelText: 'Email Address',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              const SizedBox(height: 20),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: primaryBlue,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                  onPressed: () async {
-                    await context.read<SettingsProvider>().updateProfile(
-                          name: nameController.text,
-                          phone: phoneController.text,
-                          email: emailController.text,
-                        );
-
-                    if (!modalContext.mounted) return;
-                    Navigator.pop(modalContext);
-
-                    if (!mounted) return;
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Profile updated successfully!'),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _sheetHandle(),
+                  const SizedBox(height: 18),
+                  const Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'Notification Preferences',
+                      style: TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w700,
                       ),
-                    );
-                  },
-                  child: const Text(
-                    'Save Changes',
-                    style: TextStyle(fontSize: 16, color: Colors.white),
+                    ),
                   ),
+                  const SizedBox(height: 10),
+                  SwitchListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: const Text(
+                      'Notification Alerts',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    subtitle: const Text(
+                      'Manage what alerts you receive',
+                      style: TextStyle(
+                        fontSize: 11,
+                      ),
+                    ),
+                    value: notificationEnabled,
+                    activeColor: primaryBlue,
+                    onChanged: (value) {
+                      setModalState(() {
+                        notificationEnabled = value;
+                      });
+
+                      setState(() {
+                        notificationEnabled = value;
+                      });
+                    },
+                  ),
+                  SwitchListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: const Text(
+                      'Security Alerts',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    subtitle: const Text(
+                      'Receive security notifications',
+                      style: TextStyle(
+                        fontSize: 11,
+                      ),
+                    ),
+                    value: securityEnabled,
+                    activeColor: primaryBlue,
+                    onChanged: (value) {
+                      setModalState(() {
+                        securityEnabled = value;
+                      });
+
+                      setState(() {
+                        securityEnabled = value;
+                      });
+                    },
+                  ),
+                  SwitchListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: const Text(
+                      'Community Feed',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    subtitle: const Text(
+                      'Customize your community feed',
+                      style: TextStyle(
+                        fontSize: 11,
+                      ),
+                    ),
+                    value: feedEnabled,
+                    activeColor: primaryBlue,
+                    onChanged: (value) {
+                      setModalState(() {
+                        feedEnabled = value;
+                      });
+
+                      setState(() {
+                        feedEnabled = value;
+                      });
+                    },
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  // ============================================================
+  // SECURITY ALERTS
+  // ============================================================
+
+  void _securityAlerts() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(20),
+        ),
+      ),
+      builder: (context) {
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(
+            18,
+            12,
+            18,
+            25,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _sheetHandle(),
+              const SizedBox(height: 18),
+              const Text(
+                'Security Alert List',
+                style: TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.w700,
                 ),
               ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  void _openHouseholdViewAll() {
-    showModalBottomSheet(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) => Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              "Household Summary",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 12),
-            ListTile(
-              leading: const Icon(Icons.person, color: primaryBlue),
-              title: const Text("Family Members"),
-              trailing: Text("$_familyCount", style: const TextStyle(fontWeight: FontWeight.bold)),
-            ),
-            ListTile(
-              leading: const Icon(Icons.badge, color: primaryBlue),
-              title: const Text("Daily Helpers"),
-              trailing: Text("$_dailyHelpCount", style: const TextStyle(fontWeight: FontWeight.bold)),
-            ),
-            ListTile(
-              leading: const Icon(Icons.directions_car, color: primaryBlue),
-              title: const Text("Vehicles Registered"),
-              trailing: Text("$_vehicleCount", style: const TextStyle(fontWeight: FontWeight.bold)),
-            ),
-            ListTile(
-              leading: const Icon(Icons.pets, color: primaryBlue),
-              title: const Text("Pets Registered"),
-              trailing: Text("$_petCount", style: const TextStyle(fontWeight: FontWeight.bold)),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _shareAddress() {
-    final activeFlat = _flats.firstWhere((f) => f['isActive'] == true, orElse: () => _flats.first);
-    final userName = context.read<SettingsProvider>().userName;
-    final addressText = "My Address: ${activeFlat['name']}, Nivaas Hub Society. Contact: $userName";
-
-    showModalBottomSheet(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) => Container(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text("Share Address via", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                _buildShareOption(Icons.message, "WhatsApp", Colors.green, addressText),
-                _buildShareOption(Icons.sms, "Messages", Colors.blue, addressText),
-                _buildShareOption(Icons.copy, "Copy Link", Colors.grey, addressText),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildShareOption(IconData icon, String label, Color color, String shareContent) {
-    return InkWell(
-      onTap: () {
-        Navigator.pop(context);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Shared via $label: "$shareContent"')),
-        );
-      },
-      child: Column(
-        children: [
-          CircleAvatar(
-            radius: 24,
-            backgroundColor: color.withValues(alpha: 0.15),
-            child: Icon(icon, color: color),
-          ),
-          const SizedBox(height: 6),
-          Text(label, style: const TextStyle(fontSize: 12)),
-        ],
-      ),
-    );
-  }
-
-  void _openNotificationPreferences() {
-    showModalBottomSheet(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) => StatefulBuilder(
-        builder: (context, setSheetState) => Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text("Notification Preferences", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 10),
-              SwitchListTile(
-                title: const Text("Gate Security Alerts"),
-                subtitle: const Text("Visitor approvals, cab arrivals"),
-                value: _gateAlerts,
-                activeThumbColor: primaryBlue,
-                onChanged: (val) {
-                  setSheetState(() => _gateAlerts = val);
-                  setState(() => _gateAlerts = val);
-                },
-              ),
-              SwitchListTile(
-                title: const Text("Delivery Notifications"),
-                subtitle: const Text("Parcels at gate, OTPs"),
-                value: _deliveryAlerts,
-                activeThumbColor: primaryBlue,
-                onChanged: (val) {
-                  setSheetState(() => _deliveryAlerts = val);
-                  setState(() => _deliveryAlerts = val);
-                },
-              ),
-              SwitchListTile(
-                title: const Text("Community Feed Updates"),
-                subtitle: const Text("Announcements and notices"),
-                value: _communityPosts,
-                activeThumbColor: primaryBlue,
-                onChanged: (val) {
-                  setSheetState(() => _communityPosts = val);
-                  setState(() => _communityPosts = val);
-                },
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  void _openSecurityAlerts() {
-    showModalBottomSheet(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) => Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: const [
-            Text("Recent Security Alerts", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            SizedBox(height: 12),
-            ListTile(
-              leading: Icon(Icons.verified, color: Colors.green),
-              title: Text("Visitor Entry Approved"),
-              subtitle: Text("Guest Entry - 2:15 PM"),
-            ),
-            ListTile(
-              leading: Icon(Icons.local_shipping, color: Colors.orange),
-              title: Text("Parcel Delivered at Gate"),
-              subtitle: Text("Amazon Package - 11:30 AM"),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _openMyOrders() {
-    showModalBottomSheet(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) => Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text("My Orders", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 16),
-            Card(
-              elevation: 0,
-              color: Colors.grey.shade100,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              child: const ListTile(
-                leading: Icon(Icons.receipt_long, color: primaryBlue),
-                title: Text("Maintenance Fee Payment", style: TextStyle(fontWeight: FontWeight.bold)),
-                subtitle: Text("Paid ₹2,500 • Aug 01, 2026"),
-                trailing: Text("Completed", style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold, fontSize: 12)),
-              ),
-            ),
-            const SizedBox(height: 8),
-            Card(
-              elevation: 0,
-              color: Colors.grey.shade100,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              child: const ListTile(
-                leading: Icon(Icons.confirmation_number, color: primaryBlue),
-                title: Text("Clubhouse Pass", style: TextStyle(fontWeight: FontWeight.bold)),
-                subtitle: Text("Paid ₹150 • Jul 28, 2026"),
-                trailing: Text("Completed", style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold, fontSize: 12)),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _openMyPlans() {
-    showModalBottomSheet(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) => StatefulBuilder(
-        builder: (context, setSheetState) => Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text("Subscription Plans", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
               const SizedBox(height: 12),
-              RadioGroup<String>(
-                groupValue: _activePlan,
-                onChanged: (val) {
-                  setSheetState(() => _activePlan = val!);
-                  setState(() => _activePlan = val!);
-                  context.read<SettingsProvider>().updateActivePlan(val!);
-                },
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    RadioListTile<String>(
-                      title: const Text("Ad-Supported (Free)"),
-                      subtitle: const Text("Basic gate access & community updates"),
-                      value: "Ad-Supported",
-                      activeColor: primaryBlue,
-                    ),
-                    RadioListTile<String>(
-                      title: const Text("Nivaas Premium (₹99/mo)"),
-                      subtitle: const Text("Ad-free experience, unlimited guest passes & priority support"),
-                      value: "Premium",
-                      activeColor: primaryBlue,
-                    ),
-                  ],
-                ),
+              _sheetItem(
+                Icons.shield_outlined,
+                'Visitor entry approved',
+                'Today, 11:30 AM',
+              ),
+              _sheetItem(
+                Icons.local_shipping_outlined,
+                'Delivery received',
+                'Today, 10:15 AM',
               ),
             ],
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 
-  void _toggleFlatStatus(int index) {
+  // ============================================================
+  // FEED SETTINGS
+  // ============================================================
+
+  void _feedSettings() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(20),
+        ),
+      ),
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            return Padding(
+              padding: const EdgeInsets.fromLTRB(
+                18,
+                12,
+                18,
+                25,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _sheetHandle(),
+                  const SizedBox(height: 18),
+                  const Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'Feed Settings',
+                      style: TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  SwitchListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: const Text(
+                      'Community Feed',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    subtitle: const Text(
+                      'Customize your community feed',
+                      style: TextStyle(
+                        fontSize: 11,
+                      ),
+                    ),
+                    value: feedEnabled,
+                    activeColor: primaryBlue,
+                    onChanged: (value) {
+                      setModalState(() {
+                        feedEnabled = value;
+                      });
+
+                      setState(() {
+                        feedEnabled = value;
+                      });
+                    },
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  // ============================================================
+  // ORDERS
+  // ============================================================
+
+  void _myOrders() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(20),
+        ),
+      ),
+      builder: (context) {
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(
+            18,
+            12,
+            18,
+            25,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _sheetHandle(),
+              const SizedBox(height: 18),
+              const Text(
+                'My Orders',
+                style: TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const SizedBox(height: 12),
+              _sheetItem(
+                Icons.shopping_bag_outlined,
+                'Community Store',
+                'Completed',
+              ),
+              _sheetItem(
+                Icons.receipt_long_outlined,
+                'Maintenance Payment',
+                'Completed',
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  // ============================================================
+  // PLANS
+  // ============================================================
+
+  void _myPlans() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(20),
+        ),
+      ),
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            return Padding(
+              padding: const EdgeInsets.fromLTRB(
+                18,
+                12,
+                18,
+                25,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _sheetHandle(),
+                  const SizedBox(height: 18),
+                  const Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'My Plans',
+                      style: TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  RadioListTile<String>(
+                    contentPadding: EdgeInsets.zero,
+                    value: 'Ad-Supported',
+                    groupValue: selectedPlan,
+                    activeColor: primaryBlue,
+                    title: const Text(
+                      'Ad-Supported',
+                    ),
+                    subtitle: const Text(
+                      'Free plan',
+                    ),
+                    onChanged: (value) {
+                      if (value == null) return;
+
+                      setModalState(() {
+                        selectedPlan = value;
+                      });
+
+                      setState(() {
+                        selectedPlan = value;
+                      });
+                    },
+                  ),
+                  RadioListTile<String>(
+                    contentPadding: EdgeInsets.zero,
+                    value: 'Premium',
+                    groupValue: selectedPlan,
+                    activeColor: primaryBlue,
+                    title: const Text(
+                      'Nivaas Premium (₹99/mo)',
+                    ),
+                    subtitle: const Text(
+                      'Premium',
+                    ),
+                    onChanged: (value) {
+                      if (value == null) return;
+
+                      setModalState(() {
+                        selectedPlan = value;
+                      });
+
+                      setState(() {
+                        selectedPlan = value;
+                      });
+                    },
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  // ============================================================
+  // ADD PROPERTY
+  // ============================================================
+
+  void _addProperty() {
+    final controller = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: const Text(
+            'Add Flat/Villa/Office',
+          ),
+          content: TextField(
+            controller: controller,
+            decoration: const InputDecoration(
+              hintText: 'Enter property name',
+              border: OutlineInputBorder(),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(dialogContext);
+              },
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: primaryBlue,
+                foregroundColor: Colors.white,
+              ),
+              onPressed: () {
+                final value =
+                    controller.text.trim();
+
+                if (value.isNotEmpty) {
+                  setState(() {
+                    properties.add({
+                      'name': value,
+                      'active': false,
+                    });
+                  });
+                }
+
+                Navigator.pop(dialogContext);
+              },
+              child: const Text('Add'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // ============================================================
+  // LOGOUT
+  // ============================================================
+
+  void _logout() {
+    showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: const Text(
+            'Logout',
+          ),
+          content: const Text(
+            'Are you sure you want to logout?',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(dialogContext);
+              },
+              child: const Text(
+                'Cancel',
+              ),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+                foregroundColor: Colors.white,
+              ),
+              onPressed: () {
+                Navigator.pop(dialogContext);
+
+                if (!mounted) return;
+
+                Navigator.pushNamedAndRemoveUntil(
+                  context,
+                  AppRoutes.login,
+                  (route) => false,
+                );
+              },
+              child: const Text(
+                'Logout',
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // ============================================================
+  // ADD HOUSEHOLD
+  // ============================================================
+
+  void _addHousehold(String type) {
     setState(() {
-      for (int i = 0; i < _flats.length; i++) {
-        _flats[i]['isActive'] = (i == index);
+      switch (type) {
+        case 'Family':
+          familyCount++;
+          break;
+
+        case 'Daily Help':
+          dailyHelpCount++;
+          break;
+
+        case 'Vehicles':
+          vehicleCount++;
+          break;
+
+        case 'Pets':
+          petCount++;
+          break;
       }
     });
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('${_flats[index]['name']} is now Active')),
+
+    _message(
+      '$type added successfully',
     );
   }
 
-  void _showAddFlatDialog() {
-    final controller = TextEditingController();
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text("Add Property / Flat"),
-        content: TextField(
-          controller: controller,
-          decoration: const InputDecoration(hintText: "e.g., Flat B-202, Sunshine Apts"),
-        ),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text("Cancel")),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: primaryBlue),
-            onPressed: () {
-              if (controller.text.trim().isNotEmpty) {
-                setState(() {
-                  _flats.add({'name': controller.text.trim(), 'isActive': false});
-                });
-              }
-              Navigator.pop(context);
-            },
-            child: const Text("Add", style: TextStyle(color: Colors.white)),
-          ),
-        ],
-      ),
+  // ============================================================
+  // TEST NOTIFICATION
+  // ============================================================
+
+  void _testNotification() {
+    _message(
+      'Test notification sent successfully',
     );
   }
 
-  void _showLogoutDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Logout'),
-        content: const Text('Are you sure you want to log out?'),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            onPressed: () async {
-              final storage = context.read<SecureStorageService>();
-              final navigator = Navigator.of(context);
-              Navigator.pop(context);
-              // Clear the persisted session so a relaunch doesn't
-              // auto-navigate back into the Dashboard.
-              await storage.clearSession();
-              navigator.pushNamedAndRemoveUntil('/', (route) => false);
-            },
-            child: const Text('Logout', style: TextStyle(color: Colors.white)),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showHouseholdCounterDialog(String title, Function() onIncrement) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text("Add $title"),
-        content: Text("Do you want to add a new $title to your household record?"),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text("Cancel")),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: primaryBlue),
-            onPressed: () {
-              onIncrement();
-              Navigator.pop(context);
-            },
-            child: const Text("Confirm", style: TextStyle(color: Colors.white)),
-          ),
-        ],
-      ),
-    );
-  }
+  // ============================================================
+  // BUILD
+  // ============================================================
 
   @override
   Widget build(BuildContext context) {
-    final settingsProvider = context.watch<SettingsProvider>();
-    final userName = settingsProvider.userName;
-    final userInitial = settingsProvider.userInitial;
-    final activeFlatObj = _flats.firstWhere((f) => f['isActive'] == true, orElse: () => _flats.first);
-
     return Scaffold(
-      backgroundColor: bgLightBlue,
-      appBar: AppBar(
-        backgroundColor: bgLightBlue,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Navigator.maybePop(context),
-        ),
-        title: const Text(
-          'Settings',
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 18),
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.help_outline, color: Colors.black),
+      backgroundColor: backgroundColor,
+
+      // ========================================================
+      // APP BAR
+      // ========================================================
+
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(58),
+        child: AppBar(
+          backgroundColor: headerColor,
+          elevation: 0,
+          scrolledUnderElevation: 0,
+          centerTitle: true,
+          leadingWidth: 40,
+
+          leading: IconButton(
+            padding: EdgeInsets.zero,
+            icon: const Icon(
+              Icons.arrow_back,
+              color: Colors.black,
+              size: 18,
+            ),
             onPressed: () {
-              Navigator.pushNamed(context, AppRoutes.helpSupport);
+              Navigator.maybePop(context);
             },
           ),
-        ],
-      ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Profile Card
-              _buildCardContainer(
-                padding: const EdgeInsets.all(16),
-                child: Row(
-                  children: [
-                    CircleAvatar(
-                      radius: 28,
-                      backgroundColor: Colors.amber.shade700,
-                      child: Text(
-                        userInitial,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 14),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            userName,
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            'Nivaas Hub ID : $_hubId',
-                            style: const TextStyle(
-                              color: Colors.grey,
-                              fontSize: 12,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.qr_code_scanner, color: primaryBlue),
-                      onPressed: () {},
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 12),
 
-              // Profile Completion Card
-              _buildCardContainer(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                child: Row(
-                  children: [
-                    CircleAvatar(
-                      radius: 14,
-                      backgroundColor: Colors.red.shade50,
-                      child: const Text('0%', style: TextStyle(color: Colors.red, fontSize: 10, fontWeight: FontWeight.bold)),
-                    ),
-                    const SizedBox(width: 12),
-                    const Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('Complete your profile', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
-                          Text('Let neighbours discover you!', style: TextStyle(color: Colors.grey, fontSize: 11)),
-                        ],
-                      ),
-                    ),
-                    TextButton(
-                      onPressed: _openProfileScreen,
-                      style: TextButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                      ),
-                      child: const Text('View Profile', style: TextStyle(color: primaryBlue, fontWeight: FontWeight.bold, fontSize: 12)),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 18),
-
-              // Household Section
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  _buildSectionHeader('Household'),
-                  GestureDetector(
-                    onTap: _openHouseholdViewAll,
-                    child: const Text('View all >', style: TextStyle(color: primaryBlue, fontSize: 12, fontWeight: FontWeight.w600)),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 10),
-
-              // Household Grid
-              GridView.count(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                crossAxisCount: 2,
-                childAspectRatio: 2.2,
-                crossAxisSpacing: 10,
-                mainAxisSpacing: 10,
-                children: [
-                  _buildHouseholdCard(
-                    title: 'InstaHelp',
-                    subtitle: '190+ houses',
-                    icon: Icons.face_outlined,
-                    rating: '4.8',
-                  ),
-                  _buildHouseholdCard(
-                    title: 'Family',
-                    subtitle: '$_familyCount member${_familyCount == 1 ? '' : 's'}',
-                    icon: Icons.person_outline,
-                    showAddButton: true,
-                    onAddTap: () => _showHouseholdCounterDialog('Family Member', () => setState(() => _familyCount++)),
-                  ),
-                  _buildHouseholdCard(
-                    title: 'Daily Help',
-                    subtitle: _dailyHelpCount == 0 ? 'Add helper' : '$_dailyHelpCount added',
-                    icon: Icons.badge_outlined,
-                    showAddButton: true,
-                    onAddTap: () => _showHouseholdCounterDialog('Daily Helper', () => setState(() => _dailyHelpCount++)),
-                  ),
-                  _buildHouseholdCard(
-                    title: 'Vehicles',
-                    subtitle: _vehicleCount == 0 ? 'Add vehicle' : '$_vehicleCount added',
-                    icon: Icons.directions_car_outlined,
-                    showAddButton: true,
-                    onAddTap: () => _showHouseholdCounterDialog('Vehicle', () => setState(() => _vehicleCount++)),
-                  ),
-                  _buildHouseholdCard(
-                    title: 'Pets',
-                    subtitle: _petCount == 0 ? 'Add pet' : '$_petCount added',
-                    icon: Icons.pets_outlined,
-                    showAddButton: true,
-                    onAddTap: () => _showHouseholdCounterDialog('Pet', () => setState(() => _petCount++)),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-
-              // Address Card
-              _buildCardContainer(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text('My Address', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-                        const SizedBox(height: 4),
-                        Text(activeFlatObj['name'], style: const TextStyle(color: Colors.grey, fontSize: 12)),
-                      ],
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.share_outlined, color: primaryBlue, size: 20),
-                      onPressed: _shareAddress,
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 12),
-
-              // Notification Banner
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFFFF8E7),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.amber.shade200),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text('Not Getting Notifications?', style: TextStyle(color: Colors.orange, fontSize: 12, fontWeight: FontWeight.w600)),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.orange.shade700,
-                        foregroundColor: Colors.white,
-                        elevation: 0,
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                        minimumSize: Size.zero,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                      ),
-                      onPressed: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('🔔 Test push notification sent!'), backgroundColor: Colors.green),
-                        );
-                      },
-                      child: const Text('Test Now', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 20),
-
-              // Security & Notifications
-              _buildSectionHeader('Security & Notifications'),
-              const SizedBox(height: 10),
-              _buildSingleSettingTile(
-                icon: Icons.notifications_none_outlined,
-                title: 'Notification Preferences',
-                subtitle: 'Manage what alerts you receive',
-                onTap: _openNotificationPreferences,
-              ),
-              _buildSingleSettingTile(
-                icon: Icons.shield_outlined,
-                title: 'Security Alert List',
-                subtitle: 'View and manage security alerts',
-                onTap: _openSecurityAlerts,
-              ),
-              _buildSingleSettingTile(
-                icon: Icons.article_outlined,
-                title: 'Feed Settings',
-                subtitle: 'Customize your community feed',
-                onTap: _openNotificationPreferences,
-              ),
-              const SizedBox(height: 18),
-
-              // Purchases
-              _buildSectionHeader('Purchases'),
-              const SizedBox(height: 10),
-              _buildSingleSettingTile(
-                icon: Icons.shopping_bag_outlined,
-                title: 'My Orders',
-                subtitle: 'Track your purchases',
-                onTap: _openMyOrders,
-              ),
-              _buildSingleSettingTile(
-                icon: Icons.credit_card_outlined,
-                title: 'My Plans',
-                subtitle: '$_activePlan Active',
-                badgeText: _activePlan,
-                badgeColor: primaryBlue,
-                onTap: _openMyPlans,
-              ),
-              const SizedBox(height: 18),
-
-              // Manage Flats
-              _buildSectionHeader('Manage Flats'),
-              const SizedBox(height: 10),
-              ...List.generate(_flats.length, (index) {
-                final flat = _flats[index];
-                return _buildSingleSettingTile(
-                  icon: Icons.home_outlined,
-                  title: flat['name'],
-                  badgeText: flat['isActive'] ? 'Active' : 'Deactive',
-                  badgeColor: flat['isActive'] ? Colors.green : Colors.grey,
-                  onTap: () => _toggleFlatStatus(index),
-                );
-              }),
-              _buildSingleSettingTile(
-                icon: Icons.add_business_outlined,
-                title: 'Add Flat/Villa/Office',
-                subtitle: 'Link another property',
-                onTap: _showAddFlatDialog,
-              ),
-              const SizedBox(height: 18),
-
-              // General Settings
-              _buildSectionHeader('GENERAL SETTINGS'),
-              const SizedBox(height: 10),
-              _buildSingleSettingTile(
-                icon: Icons.headset_mic_outlined,
-                title: 'Support & Feedback',
-                subtitle: 'Get help or share your thoughts',
-                onTap: () {
-                  Navigator.pushNamed(context, AppRoutes.helpSupport);
-                },
-              ),
-              _buildSingleSettingTile(
-                icon: Icons.send_outlined,
-                title: 'Tell a friend about nivaashub',
-                subtitle: 'Invite your neighbours',
-                onTap: _shareAddress,
-              ),
-              _buildSingleSettingTile(
-                icon: Icons.person_outline,
-                title: 'Account Information',
-                subtitle: 'Manage your personal details',
-                onTap: _openProfileScreen,
-              ),
-              _buildSingleSettingTile(
-                icon: Icons.logout,
-                iconColor: Colors.red,
-                title: 'Logout',
-                subtitle: 'Sign-out of your account',
-                textColor: Colors.red,
-                onTap: _showLogoutDialog,
-              ),
-              const SizedBox(height: 32),
-            ],
+          title: const Text(
+            'Settings',
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 12,
+              fontWeight: FontWeight.w700,
+            ),
           ),
+
+          actions: [
+            IconButton(
+              padding: const EdgeInsets.only(
+                right: 10,
+              ),
+              icon: const Icon(
+                Icons.help_outline,
+                color: Colors.black,
+                size: 18,
+              ),
+              onPressed: _openHelpSupport,
+            ),
+          ],
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedNavIndex,
-        onTap: (index) {
-          setState(() => _selectedNavIndex = index);
-          settingsProvider.setBottomNavIndex(index);
-        },
-        type: BottomNavigationBarType.fixed,
-        selectedItemColor: primaryBlue,
-        unselectedItemColor: Colors.grey,
-        selectedFontSize: 10,
-        unselectedFontSize: 10,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home_filled), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.person_outline), label: 'Visitors'),
-          BottomNavigationBarItem(icon: Icon(Icons.location_city_outlined), label: 'Community'),
-          BottomNavigationBarItem(icon: Icon(Icons.account_balance_wallet_outlined), label: 'Payments'),
-          BottomNavigationBarItem(icon: Icon(Icons.menu), label: 'More'),
-        ],
+
+      // ========================================================
+      // BODY
+      // ========================================================
+
+      body: SafeArea(
+        child: LayoutBuilder(
+          builder: (
+            context,
+            constraints,
+          ) {
+            final width =
+                constraints.maxWidth;
+
+            final scale =
+                (width / 313)
+                    .clamp(0.95, 1.12);
+
+            return ListView(
+              physics:
+                  const BouncingScrollPhysics(),
+
+              padding: EdgeInsets.fromLTRB(
+                12 * scale,
+                10 * scale,
+                12 * scale,
+                15 * scale,
+              ),
+
+              children: [
+                // ==================================================
+                // PROFILE
+                // ==================================================
+
+                _profileCard(scale),
+
+                SizedBox(
+                  height: 8 * scale,
+                ),
+
+                // ==================================================
+                // COMPLETE PROFILE
+                // ==================================================
+
+                _completeProfileCard(scale),
+
+                SizedBox(
+                  height: 10 * scale,
+                ),
+
+                // ==================================================
+                // HOUSEHOLD
+                // ==================================================
+
+                _sectionHeader(
+                  'Household',
+                  scale,
+                  trailing: GestureDetector(
+                    onTap: () {
+                      _message(
+                        'Household details',
+                      );
+                    },
+                    child: Text(
+                      'View all  ›',
+                      style: TextStyle(
+                        color: primaryBlue,
+                        fontSize: 8 * scale,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
+
+                SizedBox(
+                  height: 6 * scale,
+                ),
+
+                Row(
+                  children: [
+                    Expanded(
+                      child: _householdCard(
+                        icon:
+                            Icons.face_outlined,
+                        title:
+                            'InstaHelp',
+                        subtitle:
+                            '1 Mn+ houses',
+                        rating:
+                            '4.8',
+                        showRating:
+                            true,
+                        scale:
+                            scale,
+                      ),
+                    ),
+                    SizedBox(
+                      width: 6 * scale,
+                    ),
+                    Expanded(
+                      child: _householdCard(
+                        icon:
+                            Icons.person_outline,
+                        title:
+                            'Family',
+                        subtitle:
+                            '$familyCount member',
+                        showAdd:
+                            true,
+                        scale:
+                            scale,
+                        onAdd: () {
+                          _addHousehold(
+                            'Family',
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+
+                SizedBox(
+                  height: 6 * scale,
+                ),
+
+                Row(
+                  children: [
+                    Expanded(
+                      child: _householdCard(
+                        icon:
+                            Icons.person_add_alt_1_outlined,
+                        title:
+                            'Daily Help',
+                        subtitle:
+                            dailyHelpCount == 0
+                                ? 'Add helper'
+                                : '$dailyHelpCount added',
+                        showAdd:
+                            true,
+                        scale:
+                            scale,
+                        onAdd: () {
+                          _addHousehold(
+                            'Daily Help',
+                          );
+                        },
+                      ),
+                    ),
+                    SizedBox(
+                      width: 6 * scale,
+                    ),
+                    Expanded(
+                      child: _householdCard(
+                        icon:
+                            Icons.directions_car_outlined,
+                        title:
+                            'Vehicles',
+                        subtitle:
+                            vehicleCount == 0
+                                ? 'Add vehicle'
+                                : '$vehicleCount added',
+                        showAdd:
+                            true,
+                        scale:
+                            scale,
+                        onAdd: () {
+                          _addHousehold(
+                            'Vehicles',
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+
+                SizedBox(
+                  height: 6 * scale,
+                ),
+
+                Row(
+                  children: [
+                    Expanded(
+                      child: _householdCard(
+                        icon:
+                            Icons.pets_outlined,
+                        title:
+                            'Pets',
+                        subtitle:
+                            petCount == 0
+                                ? 'Add pet'
+                                : '$petCount added',
+                        showAdd:
+                            true,
+                        scale:
+                            scale,
+                        onAdd: () {
+                          _addHousehold(
+                            'Pets',
+                          );
+                        },
+                      ),
+                    ),
+                    const Expanded(
+                      child:
+                          SizedBox(),
+                    ),
+                  ],
+                ),
+
+                SizedBox(
+                  height: 10 * scale,
+                ),
+
+                // ==================================================
+                // ADDRESS
+                // ==================================================
+
+                _addressCard(scale),
+
+                SizedBox(
+                  height: 9 * scale,
+                ),
+
+                // ==================================================
+                // NOTIFICATION
+                // ==================================================
+
+                _notificationBanner(scale),
+
+                SizedBox(
+                  height: 10 * scale,
+                ),
+
+                // ==================================================
+                // SECURITY & NOTIFICATIONS
+                // ==================================================
+
+                _sectionHeader(
+                  'Security & Notifications',
+                  scale,
+                ),
+
+                SizedBox(
+                  height: 5 * scale,
+                ),
+
+                _settingCard(
+                  icon:
+                      Icons.notifications_none,
+                  title:
+                      'Notification Preferences',
+                  subtitle:
+                      'Manage what alerts you receive',
+                  scale:
+                      scale,
+                  onTap:
+                      _notificationPreferences,
+                ),
+
+                _settingCard(
+                  icon:
+                      Icons.shield_outlined,
+                  title:
+                      'Security Alert List',
+                  subtitle:
+                      'View and manage security alerts',
+                  scale:
+                      scale,
+                  onTap:
+                      _securityAlerts,
+                ),
+
+                _settingCard(
+                  icon:
+                      Icons.article_outlined,
+                  title:
+                      'Feed Settings',
+                  subtitle:
+                      'Customize your community feed',
+                  scale:
+                      scale,
+                  onTap:
+                      _feedSettings,
+                ),
+
+                SizedBox(
+                  height: 7 * scale,
+                ),
+
+                // ==================================================
+                // PURCHASES
+                // ==================================================
+
+                _sectionHeader(
+                  'Purchases',
+                  scale,
+                ),
+
+                SizedBox(
+                  height: 5 * scale,
+                ),
+
+                _settingCard(
+                  icon:
+                      Icons.shopping_bag_outlined,
+                  title:
+                      'My Orders',
+                  subtitle:
+                      'Track your purchases',
+                  scale:
+                      scale,
+                  onTap:
+                      _myOrders,
+                ),
+
+                _settingCard(
+                  icon:
+                      Icons.credit_card_outlined,
+                  title:
+                      'My Plans',
+                  subtitle:
+                      'Ad-Supported Active',
+                  badge:
+                      selectedPlan,
+                  scale:
+                      scale,
+                  onTap:
+                      _myPlans,
+                ),
+
+                SizedBox(
+                  height: 7 * scale,
+                ),
+
+                // ==================================================
+                // MANAGE FLATS
+                // ==================================================
+
+                _sectionHeader(
+                  'Manage Flats',
+                  scale,
+                ),
+
+                SizedBox(
+                  height: 5 * scale,
+                ),
+
+                ...properties.map(
+                  (property) {
+                    return _settingCard(
+                      icon:
+                          Icons.home_outlined,
+                      title:
+                          property['name']
+                              as String,
+                      badge:
+                          property['active'] == true
+                              ? 'Active'
+                              : null,
+                      badgeColor:
+                          Colors.green,
+                      scale:
+                          scale,
+                      onTap: () {
+                        setState(() {
+                          for (final item
+                              in properties) {
+                            item['active'] =
+                                false;
+                          }
+
+                          property['active'] =
+                              true;
+                        });
+
+                        _message(
+                          '${property['name']} selected',
+                        );
+                      },
+                    );
+                  },
+                ),
+
+                _settingCard(
+                  icon:
+                      Icons.add_business_outlined,
+                  title:
+                      'Add Flat/Villa/Office',
+                  subtitle:
+                      'Link another property',
+                  scale:
+                      scale,
+                  onTap:
+                      _addProperty,
+                ),
+
+                SizedBox(
+                  height: 7 * scale,
+                ),
+
+                // ==================================================
+                // GENERAL SETTINGS
+                // ==================================================
+
+                _sectionHeader(
+                  'GENERAL SETTINGS',
+                  scale,
+                ),
+
+                SizedBox(
+                  height: 5 * scale,
+                ),
+
+                _settingCard(
+                  icon:
+                      Icons.help_outline,
+                  title:
+                      'Support & Feedback',
+                  subtitle:
+                      'Get help or share your thoughts',
+                  scale:
+                      scale,
+                  onTap:
+                      _openHelpSupport,
+                ),
+
+                _settingCard(
+                  icon:
+                      Icons.send_outlined,
+                  title:
+                      'Tell a friend about mygate',
+                  subtitle:
+                      'Invite your neighbours',
+                  scale:
+                      scale,
+                  onTap: () {
+                    _message(
+                      'Share option opened',
+                    );
+                  },
+                ),
+
+                _settingCard(
+                  icon:
+                      Icons.person_outline,
+                  title:
+                      'Account Information',
+                  subtitle:
+                      'Manage your personal details',
+                  scale:
+                      scale,
+                  onTap:
+                      _openProfile,
+                ),
+
+                _settingCard(
+                  icon:
+                      Icons.logout,
+                  title:
+                      'Logout',
+                  subtitle:
+                      'Sign-out of your account',
+                  iconColor:
+                      Colors.red,
+                  titleColor:
+                      Colors.red,
+                  scale:
+                      scale,
+                  onTap:
+                      _logout,
+                ),
+
+                SizedBox(
+                  height: 10 * scale,
+                ),
+              ],
+            );
+          },
+        ),
+      ),
+
+      // ========================================================
+      // BOTTOM NAVIGATION
+      // ========================================================
+
+      bottomNavigationBar:
+          _bottomNavigationBar(),
+    );
+  }
+
+  // ============================================================
+  // PROFILE CARD
+  // ============================================================
+
+  Widget _profileCard(
+    double scale,
+  ) {
+    return _card(
+      height: 59 * scale,
+      radius: 10 * scale,
+      child: Padding(
+        padding: EdgeInsets.symmetric(
+          horizontal: 8 * scale,
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 42 * scale,
+              height: 42 * scale,
+              decoration:
+                  const BoxDecoration(
+                color:
+                    Color(0xFFFFA000),
+                shape:
+                    BoxShape.circle,
+              ),
+              alignment:
+                  Alignment.center,
+              child: Text(
+                'U',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 16 * scale,
+                  fontWeight:
+                      FontWeight.w500,
+                ),
+              ),
+            ),
+
+            SizedBox(
+              width: 9 * scale,
+            ),
+
+            Expanded(
+              child: Column(
+                mainAxisAlignment:
+                    MainAxisAlignment.center,
+                crossAxisAlignment:
+                    CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'User Name',
+                    style: TextStyle(
+                      color: darkText,
+                      fontSize:
+                          12 * scale,
+                      fontWeight:
+                          FontWeight.w700,
+                    ),
+                  ),
+                  SizedBox(
+                    height: 2 * scale,
+                  ),
+                  Text(
+                    'Nivaas Hub ID : 00000',
+                    style: TextStyle(
+                      color: greyText,
+                      fontSize:
+                          7.5 * scale,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            Container(
+              width: 31 * scale,
+              height: 31 * scale,
+              decoration:
+                  BoxDecoration(
+                color: lightBlue,
+                borderRadius:
+                    BorderRadius.circular(
+                  8 * scale,
+                ),
+              ),
+              child: Icon(
+                Icons.qr_code_2,
+                color: primaryBlue,
+                size: 18 * scale,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  // --- HELPER METHODS ---
+  // ============================================================
+  // COMPLETE PROFILE
+  // ============================================================
 
-  Widget _buildSectionHeader(String title) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 2),
+  Widget _completeProfileCard(
+    double scale,
+  ) {
+    return _card(
+      height: 44 * scale,
+      radius: 10 * scale,
+      child: Padding(
+        padding: EdgeInsets.symmetric(
+          horizontal: 8 * scale,
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 27 * scale,
+              height: 27 * scale,
+              decoration:
+                  const BoxDecoration(
+                color:
+                    Color(0xFFFFEEF0),
+                shape:
+                    BoxShape.circle,
+              ),
+              alignment:
+                  Alignment.center,
+              child: Text(
+                '0%',
+                style: TextStyle(
+                  color: Colors.red,
+                  fontSize: 7 * scale,
+                  fontWeight:
+                      FontWeight.w700,
+                ),
+              ),
+            ),
+
+            SizedBox(
+              width: 8 * scale,
+            ),
+
+            Expanded(
+              child: Column(
+                mainAxisAlignment:
+                    MainAxisAlignment.center,
+                crossAxisAlignment:
+                    CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Complete your profile',
+                    style: TextStyle(
+                      fontSize:
+                          9 * scale,
+                      fontWeight:
+                          FontWeight.w700,
+                    ),
+                  ),
+                  Text(
+                    'Let neighbours discover you!',
+                    style: TextStyle(
+                      fontSize:
+                          7 * scale,
+                      color: greyText,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            GestureDetector(
+              onTap: _openProfile,
+              child: Text(
+                'View Profile',
+                style: TextStyle(
+                  color: primaryBlue,
+                  fontSize:
+                      8 * scale,
+                  fontWeight:
+                      FontWeight.w700,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ============================================================
+  // SECTION HEADER
+  // ============================================================
+
+  Widget _sectionHeader(
+    String title,
+    double scale, {
+    Widget? trailing,
+  }) {
+    return SizedBox(
+      height: 17 * scale,
       child: Row(
         children: [
           Container(
-            width: 3,
-            height: 16,
-            decoration: BoxDecoration(
+            width: 3 * scale,
+            height: 13 * scale,
+            decoration:
+                BoxDecoration(
               color: primaryBlue,
-              borderRadius: BorderRadius.circular(2),
+              borderRadius:
+                  BorderRadius.circular(2),
             ),
           ),
-          const SizedBox(width: 8),
-          Text(
-            title,
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 14,
-              color: Colors.black87,
-              letterSpacing: 0.3,
+
+          SizedBox(
+            width: 5 * scale,
+          ),
+
+          Expanded(
+            child: Text(
+              title,
+              style: TextStyle(
+                color: darkText,
+                fontSize:
+                    10 * scale,
+                fontWeight:
+                    FontWeight.w700,
+              ),
+            ),
+          ),
+
+          if (trailing != null)
+            trailing,
+        ],
+      ),
+    );
+  }
+
+  // ============================================================
+  // HOUSEHOLD CARD
+  // ============================================================
+
+  Widget _householdCard({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required double scale,
+    String? rating,
+    bool showRating = false,
+    bool showAdd = false,
+    VoidCallback? onAdd,
+  }) {
+    return _card(
+      height: 64 * scale,
+      radius: 9 * scale,
+      child: Padding(
+        padding: EdgeInsets.fromLTRB(
+          7 * scale,
+          6 * scale,
+          6 * scale,
+          6 * scale,
+        ),
+        child: Column(
+          crossAxisAlignment:
+              CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  width: 26 * scale,
+                  height: 26 * scale,
+                  decoration:
+                      BoxDecoration(
+                    color: lightBlue,
+                    borderRadius:
+                        BorderRadius.circular(
+                      7 * scale,
+                    ),
+                  ),
+                  child: Icon(
+                    icon,
+                    color: primaryBlue,
+                    size: 14 * scale,
+                  ),
+                ),
+
+                const Spacer(),
+
+                if (showRating)
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.star,
+                        color:
+                            const Color(
+                          0xFFFF9800,
+                        ),
+                        size: 9 * scale,
+                      ),
+                      SizedBox(
+                        width: 1 * scale,
+                      ),
+                      Text(
+                        rating ?? '',
+                        style: TextStyle(
+                          fontSize:
+                              7 * scale,
+                          fontWeight:
+                              FontWeight.w700,
+                        ),
+                      ),
+                    ],
+                  ),
+
+                if (showAdd)
+                  GestureDetector(
+                    onTap: onAdd,
+                    child: Container(
+                      padding:
+                          EdgeInsets.symmetric(
+                        horizontal:
+                            5 * scale,
+                        vertical:
+                            2 * scale,
+                      ),
+                      decoration:
+                          BoxDecoration(
+                        color: Colors.white,
+                        borderRadius:
+                            BorderRadius.circular(
+                          5 * scale,
+                        ),
+                        border:
+                            Border.all(
+                          color:
+                              const Color(
+                            0xFFD6DCE2,
+                          ),
+                        ),
+                      ),
+                      child: Text(
+                        '+ Add',
+                        style: TextStyle(
+                          color: primaryBlue,
+                          fontSize:
+                              6.5 * scale,
+                          fontWeight:
+                              FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+
+            const Spacer(),
+
+            Text(
+              title,
+              maxLines: 1,
+              overflow:
+                  TextOverflow.ellipsis,
+              style: TextStyle(
+                color: darkText,
+                fontSize:
+                    9 * scale,
+                fontWeight:
+                    FontWeight.w700,
+              ),
+            ),
+
+            SizedBox(
+              height: 1 * scale,
+            ),
+
+            Text(
+              subtitle,
+              maxLines: 1,
+              overflow:
+                  TextOverflow.ellipsis,
+              style: TextStyle(
+                color: greyText,
+                fontSize:
+                    7 * scale,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ============================================================
+  // ADDRESS CARD
+  // ============================================================
+
+  Widget _addressCard(
+    double scale,
+  ) {
+    return _card(
+      height: 54 * scale,
+      radius: 10 * scale,
+      child: Padding(
+        padding: EdgeInsets.symmetric(
+          horizontal: 9 * scale,
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                mainAxisAlignment:
+                    MainAxisAlignment.center,
+                crossAxisAlignment:
+                    CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'My Address',
+                    style: TextStyle(
+                      color: darkText,
+                      fontSize:
+                          9 * scale,
+                      fontWeight:
+                          FontWeight.w700,
+                    ),
+                  ),
+                  SizedBox(
+                    height: 2 * scale,
+                  ),
+                  Text(
+                    'Address Details',
+                    style: TextStyle(
+                      color: greyText,
+                      fontSize:
+                          7 * scale,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Icon(
+              Icons.share_outlined,
+              color: primaryBlue,
+              size: 15 * scale,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ============================================================
+  // NOTIFICATION BANNER
+  // ============================================================
+
+  Widget _notificationBanner(
+    double scale,
+  ) {
+    return Container(
+      height: 48 * scale,
+      padding: EdgeInsets.symmetric(
+        horizontal: 8 * scale,
+      ),
+      decoration:
+          BoxDecoration(
+        color:
+            const Color(0xFFFFFAEE),
+        borderRadius:
+            BorderRadius.circular(
+          9 * scale,
+        ),
+        border:
+            Border.all(
+          color:
+              const Color(0xFFFFD477),
+          width: 0.8,
+        ),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              'Not Getting Notifications?',
+              style: TextStyle(
+                color:
+                    const Color(
+                  0xFFFF8A00,
+                ),
+                fontSize:
+                    7 * scale,
+                fontWeight:
+                    FontWeight.w500,
+              ),
+            ),
+          ),
+          SizedBox(
+            height: 26 * scale,
+            child: ElevatedButton(
+              onPressed:
+                  _testNotification,
+              style:
+                  ElevatedButton.styleFrom(
+                backgroundColor:
+                    const Color(
+                  0xFFFF8A00,
+                ),
+                foregroundColor:
+                    Colors.white,
+                elevation: 0,
+                padding:
+                    EdgeInsets.symmetric(
+                  horizontal:
+                      10 * scale,
+                ),
+                minimumSize:
+                    Size.zero,
+                shape:
+                    RoundedRectangleBorder(
+                  borderRadius:
+                      BorderRadius.circular(
+                    6 * scale,
+                  ),
+                ),
+              ),
+              child: Text(
+                'Test Now',
+                style: TextStyle(
+                  fontSize:
+                      7 * scale,
+                  fontWeight:
+                      FontWeight.w700,
+                ),
+              ),
             ),
           ),
         ],
@@ -877,18 +1718,244 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  Widget _buildCardContainer({required Widget child, EdgeInsetsGeometry? padding}) {
+  // ============================================================
+  // SETTINGS CARD
+  // ============================================================
+
+  Widget _settingCard({
+    required IconData icon,
+    required String title,
+    String? subtitle,
+    String? badge,
+    Color? badgeColor,
+    Color? iconColor,
+    Color? titleColor,
+    required double scale,
+    required VoidCallback onTap,
+  }) {
+    final bool hasSubtitle =
+        subtitle != null &&
+            subtitle.isNotEmpty;
+
     return Container(
-      width: double.infinity,
-      padding: padding ?? const EdgeInsets.all(16),
-      decoration: BoxDecoration(
+      height:
+          (hasSubtitle ? 52 : 48) *
+              scale,
+      margin:
+          EdgeInsets.only(
+        bottom: 6 * scale,
+      ),
+      decoration:
+          BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius:
+            BorderRadius.circular(
+          9 * scale,
+        ),
+        border:
+            Border.all(
+          color: borderColor,
+          width: 0.5,
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
+            color:
+                Colors.black.withValues(
+              alpha: 0.08,
+            ),
+            blurRadius: 3,
+            offset:
+                const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius:
+              BorderRadius.circular(
+            9 * scale,
+          ),
+          child: Padding(
+            padding:
+                EdgeInsets.symmetric(
+              horizontal:
+                  7 * scale,
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 29 * scale,
+                  height: 29 * scale,
+                  decoration:
+                      BoxDecoration(
+                    color:
+                        iconColor ==
+                                Colors.red
+                            ? const Color(
+                                0xFFFFF0F0,
+                              )
+                            : lightBlue,
+                    borderRadius:
+                        BorderRadius.circular(
+                      7 * scale,
+                    ),
+                  ),
+                  child: Icon(
+                    icon,
+                    color:
+                        iconColor ??
+                            primaryBlue,
+                    size:
+                        15 * scale,
+                  ),
+                ),
+
+                SizedBox(
+                  width: 8 * scale,
+                ),
+
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment:
+                        MainAxisAlignment
+                            .center,
+                    crossAxisAlignment:
+                        CrossAxisAlignment
+                            .start,
+                    children: [
+                      Text(
+                        title,
+                        maxLines: 1,
+                        overflow:
+                            TextOverflow
+                                .ellipsis,
+                        style: TextStyle(
+                          color:
+                              titleColor ??
+                                  darkText,
+                          fontSize:
+                              9.5 * scale,
+                          fontWeight:
+                              FontWeight.w600,
+                        ),
+                      ),
+
+                      if (hasSubtitle) ...[
+                        SizedBox(
+                          height:
+                              2 * scale,
+                        ),
+                        Text(
+                          subtitle!,
+                          maxLines: 1,
+                          overflow:
+                              TextOverflow
+                                  .ellipsis,
+                          style: TextStyle(
+                            color:
+                                greyText,
+                            fontSize:
+                                7 * scale,
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+
+                if (badge != null)
+                  Container(
+                    margin:
+                        EdgeInsets.only(
+                      right:
+                          5 * scale,
+                    ),
+                    padding:
+                        EdgeInsets.symmetric(
+                      horizontal:
+                          5 * scale,
+                      vertical:
+                          2 * scale,
+                    ),
+                    decoration:
+                        BoxDecoration(
+                      color:
+                          (badgeColor ??
+                                  primaryBlue)
+                              .withValues(
+                        alpha:
+                            0.10,
+                      ),
+                      borderRadius:
+                          BorderRadius.circular(
+                        5 * scale,
+                      ),
+                    ),
+                    child: Text(
+                      badge,
+                      style: TextStyle(
+                        color:
+                            badgeColor ??
+                                primaryBlue,
+                        fontSize:
+                            6 * scale,
+                        fontWeight:
+                            FontWeight.w700,
+                      ),
+                    ),
+                  ),
+
+                Icon(
+                  Icons.chevron_right,
+                  color:
+                      const Color(
+                    0xFF5E6165,
+                  ),
+                  size:
+                      17 * scale,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // ============================================================
+  // GENERIC CARD
+  // ============================================================
+
+  Widget _card({
+    required double height,
+    required double radius,
+    required Widget child,
+  }) {
+    return Container(
+      height: height,
+      decoration:
+          BoxDecoration(
+        color: Colors.white,
+        borderRadius:
+            BorderRadius.circular(
+          radius,
+        ),
+        border:
+            Border.all(
+          color: borderColor,
+          width: 0.5,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color:
+                Colors.black.withValues(
+              alpha: 0.08,
+            ),
+            blurRadius: 3,
+            offset:
+                const Offset(0, 2),
           ),
         ],
       ),
@@ -896,146 +1963,152 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  Widget _buildHouseholdCard({
-    required String title,
-    required String subtitle,
-    required IconData icon,
-    String? rating,
-    bool showAddButton = false,
-    VoidCallback? onAddTap,
-  }) {
+  // ============================================================
+  // SHEET HANDLE
+  // ============================================================
+
+  Widget _sheetHandle() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.02),
-            blurRadius: 4,
-            offset: const Offset(0, 1),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Icon(icon, color: primaryBlue, size: 22),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
-                    if (rating != null) ...[
-                      const SizedBox(width: 4),
-                      const Icon(Icons.star, color: Colors.amber, size: 12),
-                      Text(rating, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
-                    ],
-                  ],
-                ),
-                const SizedBox(height: 2),
-                Text(subtitle, style: const TextStyle(color: Colors.grey, fontSize: 11)),
-              ],
-            ),
-          ),
-          if (showAddButton)
-            GestureDetector(
-              onTap: onAddTap,
-              child: Container(
-                padding: const EdgeInsets.all(4),
-                decoration: BoxDecoration(
-                  color: bgLightBlue,
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(Icons.add, color: primaryBlue, size: 16),
-              ),
-            ),
-        ],
+      width: 38,
+      height: 4,
+      decoration:
+          BoxDecoration(
+        color:
+            Colors.grey.shade300,
+        borderRadius:
+            BorderRadius.circular(10),
       ),
     );
   }
 
-  Widget _buildSingleSettingTile({
-    required IconData icon,
-    required String title,
-    String? subtitle,
-    String? badgeText,
-    Color? badgeColor,
-    Color? iconColor,
-    Color? textColor,
-    required VoidCallback onTap,
-  }) {
+  // ============================================================
+  // SHEET ITEM
+  // ============================================================
+
+  Widget _sheetItem(
+    IconData icon,
+    String title,
+    String subtitle,
+  ) {
+    return ListTile(
+      contentPadding:
+          EdgeInsets.zero,
+      leading: Container(
+        width: 40,
+        height: 40,
+        decoration:
+            BoxDecoration(
+          color: lightBlue,
+          borderRadius:
+              BorderRadius.circular(9),
+        ),
+        child: Icon(
+          icon,
+          color: primaryBlue,
+          size: 20,
+        ),
+      ),
+      title: Text(
+        title,
+        style: const TextStyle(
+          fontSize: 13,
+          fontWeight:
+              FontWeight.w600,
+        ),
+      ),
+      subtitle: Text(
+        subtitle,
+        style: const TextStyle(
+          fontSize: 11,
+          color: greyText,
+        ),
+      ),
+    );
+  }
+
+  // ============================================================
+  // BOTTOM NAVIGATION
+  // ============================================================
+
+  Widget _bottomNavigationBar() {
     return Container(
-      margin: const EdgeInsets.only(bottom: 6),
-      decoration: BoxDecoration(
+      decoration:
+          const BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.02),
-            blurRadius: 4,
-            offset: const Offset(0, 1),
+        border: Border(
+          top: BorderSide(
+            color:
+                Color(0xFFE5E8EC),
+            width: 0.6,
+          ),
+        ),
+      ),
+      child:
+          BottomNavigationBar(
+        type:
+            BottomNavigationBarType.fixed,
+        currentIndex: 4,
+        backgroundColor:
+            Colors.white,
+        elevation: 0,
+
+        selectedItemColor:
+            primaryBlue,
+        unselectedItemColor:
+            const Color(
+          0xFF9A9A9A,
+        ),
+
+        selectedFontSize: 7,
+        unselectedFontSize: 7,
+
+        iconSize: 16,
+
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(
+              Icons.home_outlined,
+            ),
+            activeIcon: Icon(
+              Icons.home,
+            ),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(
+              Icons.person_outline,
+            ),
+            label: 'Visitors',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(
+              Icons.location_city_outlined,
+            ),
+            label: 'Community',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(
+              Icons.account_balance_wallet_outlined,
+            ),
+            label: 'Payments',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(
+              Icons.menu,
+            ),
+            label: 'More',
           ),
         ],
-      ),
-      child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
-        leading: Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: const Color(0xFFF0F7FF),
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Icon(
-            icon,
-            color: iconColor ?? primaryBlue,
-            size: 20,
-          ),
-        ),
-        title: Text(
-          title,
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
-            fontSize: 13,
-            color: textColor ?? Colors.black87,
-          ),
-        ),
-        subtitle: subtitle != null
-            ? Text(
-                subtitle,
-                style: const TextStyle(
-                  color: Colors.grey,
-                  fontSize: 11,
-                ),
-              )
-            : null,
-        trailing: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (badgeText != null)
-              Container(
-                margin: const EdgeInsets.only(right: 6),
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                decoration: BoxDecoration(
-                  color: (badgeColor ?? primaryBlue).withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(6),
-                ),
-                child: Text(
-                  badgeText,
-                  style: TextStyle(
-                    color: badgeColor ?? primaryBlue,
-                    fontSize: 10,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            const Icon(Icons.chevron_right, color: Colors.grey, size: 20),
-          ],
-        ),
-        onTap: onTap,
+
+        onTap: (index) {
+          if (index == 4) {
+            return;
+          }
+
+          _message(
+            'Navigation selected',
+          );
+        },
       ),
     );
   }
