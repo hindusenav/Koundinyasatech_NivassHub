@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:flutter_nivasshub/widgets/notifications/visitor_notification_section.dart';
-import 'package:flutter_nivasshub/providers/dashboard/dashboard_provider.dart';
 import 'package:flutter_nivasshub/widgets/dashboard/approval_queue/approval_queue_section.dart';
-import 'package:flutter_nivasshub/widgets/dashboard/banner/banner_card.dart';
 import 'package:flutter_nivasshub/widgets/dashboard/banner/banner_slider.dart';
 import 'package:flutter_nivasshub/widgets/dashboard/community/community_posts_section.dart';
 import 'package:flutter_nivasshub/widgets/dashboard/header/dashboard_header.dart';
@@ -32,10 +29,6 @@ class DashboardBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final provider = context.watch<DashboardProvider>();
-
-    final banners = provider.advertisementBanners;
-
     // ============================================================
     // RESPONSIVE CONTENT PADDING
     // ============================================================
@@ -153,18 +146,6 @@ class DashboardBody extends StatelessWidget {
                       // ==============================================
 
                       const GenerateOtpBanner(),
-
-                      // ==============================================
-                      // ADVERTISEMENT
-                      // ==============================================
-
-                      if (banners.isNotEmpty) ...[
-                        const SizedBox(height: 16),
-
-                        BannerCard(
-                          banner: banners.first,
-                        ),
-                      ],
 
                       const SizedBox(height: 16),
 
