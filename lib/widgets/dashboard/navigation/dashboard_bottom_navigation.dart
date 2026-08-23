@@ -56,9 +56,21 @@ class DashboardBottomNavigation extends StatelessWidget {
         splashColor: Colors.transparent,
         highlightColor: Colors.transparent,
         onTap: () {
+          if (index == 1 || index == 3) {
+            // Visitors / Payments — not built yet, no screen to navigate to.
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Coming Soon')),
+            );
+            return;
+          }
+
           provider.changeIndex(index);
 
-          if (index == 2) {
+          if (index == 0) {
+            // Home — return to the Home Dashboard, which is always the
+            // first route in the stack (pushed via pushNamedAndRemoveUntil).
+            Navigator.popUntil(context, (route) => route.isFirst);
+          } else if (index == 2) {
             // Community — opens the full Community Feed / Notice Board.
             Navigator.pushNamed(context, AppRoutes.noticeList);
           } else if (index == 4) {
