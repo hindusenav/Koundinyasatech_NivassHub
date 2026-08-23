@@ -179,14 +179,6 @@ class CommunityPostsSection extends StatelessWidget {
         ],
 
         // =====================================================
-        // 6. AD CARD 1 (Century Bliss)
-        // =====================================================
-        if (banners.isNotEmpty) ...[
-          BannerCard(banner: banners[0]),
-          const SizedBox(height: 14),
-        ],
-
-        // =====================================================
         // 7. AD CARD 2 (Nikoo Homes)
         // =====================================================
         if (banners.length > 1) ...[
