@@ -176,13 +176,21 @@ class ProfileScreen extends StatelessWidget {
       body: SafeArea(
         bottom: false,
         child: SingleChildScrollView(
+<<<<<<< HEAD
           physics: const ClampingScrollPhysics(),
+=======
+          physics: const BouncingScrollPhysics(),
+>>>>>>> f48df002e16cc94f3c12ba1e2f58d88dad4cc4bf
 
           padding: const EdgeInsets.fromLTRB(
             12,
             12,
             12,
+<<<<<<< HEAD
             5,
+=======
+            100,
+>>>>>>> f48df002e16cc94f3c12ba1e2f58d88dad4cc4bf
           ),
 
           child: Column(
