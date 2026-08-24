@@ -398,13 +398,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
                   const SizedBox(height: 10),
 
-                  RadioListTile<String>(
-                    contentPadding: EdgeInsets.zero,
-                    value: 'Ad-Supported',
+                  RadioGroup<String>(
                     groupValue: selectedPlan,
-                    activeColor: primaryBlue,
-                    title: const Text('Ad-Supported'),
-                    subtitle: const Text('Free plan'),
                     onChanged: (value) {
                       if (value == null) return;
 
@@ -416,26 +411,25 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         selectedPlan = value;
                       });
                     },
-                  ),
+                    child: Column(
+                      children: [
+                        RadioListTile<String>(
+                          contentPadding: EdgeInsets.zero,
+                          value: 'Ad-Supported',
+                          activeColor: primaryBlue,
+                          title: const Text('Ad-Supported'),
+                          subtitle: const Text('Free plan'),
+                        ),
 
-                  RadioListTile<String>(
-                    contentPadding: EdgeInsets.zero,
-                    value: 'Premium',
-                    groupValue: selectedPlan,
-                    activeColor: primaryBlue,
-                    title: const Text('Nivaas Premium (₹99/mo)'),
-                    subtitle: const Text('Premium'),
-                    onChanged: (value) {
-                      if (value == null) return;
-
-                      setModalState(() {
-                        selectedPlan = value;
-                      });
-
-                      setState(() {
-                        selectedPlan = value;
-                      });
-                    },
+                        RadioListTile<String>(
+                          contentPadding: EdgeInsets.zero,
+                          value: 'Premium',
+                          activeColor: primaryBlue,
+                          title: const Text('Nivaas Premium (₹99/mo)'),
+                          subtitle: const Text('Premium'),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
@@ -1116,7 +1110,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
           ),
 
-          if (trailing != null) trailing,
+          ?trailing,
         ],
       ),
     );
