@@ -7,18 +7,14 @@ import 'package:flutter_nivasshub/providers/profile/profile_provider.dart';
 class AddAddressDetailsScreen extends StatefulWidget {
   final AddressModel? address;
 
-  const AddAddressDetailsScreen({
-    super.key,
-    this.address,
-  });
+  const AddAddressDetailsScreen({super.key, this.address});
 
   @override
   State<AddAddressDetailsScreen> createState() =>
       _AddAddressDetailsScreenState();
 }
 
-class _AddAddressDetailsScreenState
-    extends State<AddAddressDetailsScreen> {
+class _AddAddressDetailsScreenState extends State<AddAddressDetailsScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   // ============================================================
@@ -58,41 +54,25 @@ class _AddAddressDetailsScreenState
 
     final address = widget.address;
 
-    _flatController = TextEditingController(
-      text: address?.flatNo ?? '',
-    );
+    _flatController = TextEditingController(text: address?.flatNo ?? '');
 
     _societyController = TextEditingController(
       text: address?.societyName ?? '',
     );
 
-    _wingController = TextEditingController(
-      text: address?.wing ?? '',
-    );
+    _wingController = TextEditingController(text: address?.wing ?? '');
 
-    _streetController = TextEditingController(
-      text: address?.street ?? '',
-    );
+    _streetController = TextEditingController(text: address?.street ?? '');
 
-    _areaController = TextEditingController(
-      text: address?.area ?? '',
-    );
+    _areaController = TextEditingController(text: address?.area ?? '');
 
-    _landmarkController = TextEditingController(
-      text: address?.landmark ?? '',
-    );
+    _landmarkController = TextEditingController(text: address?.landmark ?? '');
 
-    _cityController = TextEditingController(
-      text: address?.city ?? '',
-    );
+    _cityController = TextEditingController(text: address?.city ?? '');
 
-    _stateController = TextEditingController(
-      text: address?.state ?? '',
-    );
+    _stateController = TextEditingController(text: address?.state ?? '');
 
-    _pinController = TextEditingController(
-      text: address?.pinCode ?? '',
-    );
+    _pinController = TextEditingController(text: address?.pinCode ?? '');
   }
 
   // ============================================================
@@ -135,9 +115,7 @@ class _AddAddressDetailsScreenState
       pinCode: _pinController.text.trim(),
     );
 
-    context
-        .read<ProfileProvider>()
-        .updateAddress(updatedAddress);
+    context.read<ProfileProvider>().updateAddress(updatedAddress);
 
     Navigator.pop(context);
   }
@@ -156,8 +134,7 @@ class _AddAddressDetailsScreenState
       This keeps the UI compact on mobile while allowing
       reasonable scaling on larger devices.
     */
-    final double scale =
-        (screenWidth / 320).clamp(0.95, 1.08);
+    final double scale = (screenWidth / 320).clamp(0.95, 1.08);
 
     return Scaffold(
       backgroundColor: backgroundBlue,
@@ -165,7 +142,6 @@ class _AddAddressDetailsScreenState
       // ========================================================
       // HEADER
       // ========================================================
-
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(56),
         child: AppBar(
@@ -175,11 +151,7 @@ class _AddAddressDetailsScreenState
 
           leading: IconButton(
             padding: EdgeInsets.zero,
-            icon: const Icon(
-              Icons.arrow_back,
-              color: Colors.black,
-              size: 20,
-            ),
+            icon: const Icon(Icons.arrow_back, color: Colors.black, size: 20),
             onPressed: () {
               Navigator.pop(context);
             },
@@ -201,28 +173,18 @@ class _AddAddressDetailsScreenState
       // ========================================================
       // BODY
       // ========================================================
-
       body: SafeArea(
         child: Form(
           key: _formKey,
 
           child: SingleChildScrollView(
-            physics:
-<<<<<<< HEAD
-                const ClampingScrollPhysics(),
-=======
-                const BouncingScrollPhysics(),
->>>>>>> f48df002e16cc94f3c12ba1e2f58d88dad4cc4bf
+            physics: const ClampingScrollPhysics(),
 
             padding: EdgeInsets.fromLTRB(
               13 * scale,
               10 * scale,
               13 * scale,
-<<<<<<< HEAD
               5 * scale,
-=======
-              90 * scale,
->>>>>>> f48df002e16cc94f3c12ba1e2f58d88dad4cc4bf
             ),
 
             child: Container(
@@ -238,32 +200,24 @@ class _AddAddressDetailsScreenState
               decoration: BoxDecoration(
                 color: Colors.white,
 
-                borderRadius:
-                    BorderRadius.circular(
-                  13 * scale,
-                ),
+                borderRadius: BorderRadius.circular(13 * scale),
 
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(
-                      alpha: 0.08,
-                    ),
+                    color: Colors.black.withValues(alpha: 0.08),
                     blurRadius: 5,
-                    offset:
-                        const Offset(0, 2),
+                    offset: const Offset(0, 2),
                   ),
                 ],
               ),
 
               child: Column(
-                crossAxisAlignment:
-                    CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
 
                 children: [
                   // ==================================================
                   // 1. FLAT / HOUSE
                   // ==================================================
-
                   _addressField(
                     scale: scale,
                     icon: Icons.home_outlined,
@@ -271,8 +225,7 @@ class _AddAddressDetailsScreenState
                     hint: 'B-402',
                     controller: _flatController,
                     validator: (value) {
-                      if (value == null ||
-                          value.trim().isEmpty) {
+                      if (value == null || value.trim().isEmpty) {
                         return 'Please enter Flat/House No.';
                       }
 
@@ -283,20 +236,15 @@ class _AddAddressDetailsScreenState
                   // ==================================================
                   // 2. SOCIETY
                   // ==================================================
-
                   _addressField(
                     scale: scale,
                     icon: Icons.business_outlined,
-                    label:
-                        'Society/Building Name',
+                    label: 'Society/Building Name',
                     hint: 'Golden Residence',
-                    controller:
-                        _societyController,
+                    controller: _societyController,
                     validator: (value) {
-                      if (value == null ||
-                          value.trim().isEmpty) {
-                        return
-                            'Please enter Society/Building Name';
+                      if (value == null || value.trim().isEmpty) {
+                        return 'Please enter Society/Building Name';
                       }
 
                       return null;
@@ -306,11 +254,9 @@ class _AddAddressDetailsScreenState
                   // ==================================================
                   // 3. WING
                   // ==================================================
-
                   _addressField(
                     scale: scale,
-                    icon:
-                        Icons.location_city_outlined,
+                    icon: Icons.location_city_outlined,
                     label: 'Wing/Tower',
                     hint: 'Tower B',
                     controller: _wingController,
@@ -319,57 +265,47 @@ class _AddAddressDetailsScreenState
                   // ==================================================
                   // 4. STREET
                   // ==================================================
-
                   _addressField(
                     scale: scale,
                     icon: Icons.map_outlined,
                     label: 'Street/Lane',
                     hint: 'MG Road',
-                    controller:
-                        _streetController,
+                    controller: _streetController,
                   ),
 
                   // ==================================================
                   // 5. AREA
                   // ==================================================
-
                   _addressField(
                     scale: scale,
                     icon: Icons.mail_outline,
                     label: 'Area/Locality',
                     hint: 'Andheri West',
-                    controller:
-                        _areaController,
+                    controller: _areaController,
                   ),
 
                   // ==================================================
                   // 6. LANDMARK
                   // ==================================================
-
                   _addressField(
                     scale: scale,
-                    icon:
-                        Icons.language_outlined,
+                    icon: Icons.language_outlined,
                     label: 'Landmark',
                     hint: 'Near City Mall',
-                    controller:
-                        _landmarkController,
+                    controller: _landmarkController,
                   ),
 
                   // ==================================================
                   // 7. CITY
                   // ==================================================
-
                   _addressField(
                     scale: scale,
-                    icon:
-                        Icons.location_city_outlined,
+                    icon: Icons.location_city_outlined,
                     label: 'City',
                     hint: 'Mumbai',
                     controller: _cityController,
                     validator: (value) {
-                      if (value == null ||
-                          value.trim().isEmpty) {
+                      if (value == null || value.trim().isEmpty) {
                         return 'Please enter City';
                       }
 
@@ -380,17 +316,14 @@ class _AddAddressDetailsScreenState
                   // ==================================================
                   // 8. STATE
                   // ==================================================
-
                   _addressField(
                     scale: scale,
                     icon: Icons.map_outlined,
                     label: 'State',
                     hint: 'Maharashtra',
-                    controller:
-                        _stateController,
+                    controller: _stateController,
                     validator: (value) {
-                      if (value == null ||
-                          value.trim().isEmpty) {
+                      if (value == null || value.trim().isEmpty) {
                         return 'Please enter State';
                       }
 
@@ -401,25 +334,21 @@ class _AddAddressDetailsScreenState
                   // ==================================================
                   // 9. PIN
                   // ==================================================
-
                   _addressField(
                     scale: scale,
                     icon: Icons.mail_outline,
                     label: 'PIN Code',
                     hint: '400053',
                     controller: _pinController,
-                    keyboardType:
-                        TextInputType.number,
+                    keyboardType: TextInputType.number,
                     isLast: true,
                     validator: (value) {
-                      if (value == null ||
-                          value.trim().isEmpty) {
+                      if (value == null || value.trim().isEmpty) {
                         return 'Please enter PIN Code';
                       }
 
                       if (value.trim().length != 6) {
-                        return
-                            'PIN Code must be 6 digits';
+                        return 'PIN Code must be 6 digits';
                       }
 
                       return null;
@@ -435,7 +364,6 @@ class _AddAddressDetailsScreenState
       // ========================================================
       // BOTTOM BUTTONS
       // ========================================================
-
       bottomNavigationBar: SafeArea(
         top: false,
 
@@ -454,7 +382,6 @@ class _AddAddressDetailsScreenState
               // ==================================================
               // SAVE
               // ==================================================
-
               Expanded(
                 child: SizedBox(
                   height: 43 * scale,
@@ -462,47 +389,31 @@ class _AddAddressDetailsScreenState
                   child: ElevatedButton(
                     onPressed: _saveAddress,
 
-                    style:
-                        ElevatedButton.styleFrom(
-                      backgroundColor:
-                          primaryBlue,
-                      foregroundColor:
-                          Colors.white,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: primaryBlue,
+                      foregroundColor: Colors.white,
                       elevation: 0,
 
-                      shape:
-                          RoundedRectangleBorder(
-                        borderRadius:
-                            BorderRadius.circular(
-                          8 * scale,
-                        ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8 * scale),
                       ),
 
                       padding: EdgeInsets.zero,
                     ),
 
                     child: Row(
-                      mainAxisAlignment:
-                          MainAxisAlignment
-                              .center,
+                      mainAxisAlignment: MainAxisAlignment.center,
 
                       children: [
-                        Icon(
-                          Icons.save_outlined,
-                          size: 15 * scale,
-                        ),
+                        Icon(Icons.save_outlined, size: 15 * scale),
 
-                        SizedBox(
-                          width: 5 * scale,
-                        ),
+                        SizedBox(width: 5 * scale),
 
                         Text(
                           'Save',
                           style: TextStyle(
-                            fontSize:
-                                13 * scale,
-                            fontWeight:
-                                FontWeight.w700,
+                            fontSize: 13 * scale,
+                            fontWeight: FontWeight.w700,
                           ),
                         ),
                       ],
@@ -511,14 +422,11 @@ class _AddAddressDetailsScreenState
                 ),
               ),
 
-              SizedBox(
-                width: 7 * scale,
-              ),
+              SizedBox(width: 7 * scale),
 
               // ==================================================
               // CANCEL
               // ==================================================
-
               Expanded(
                 child: SizedBox(
                   height: 43 * scale,
@@ -528,53 +436,33 @@ class _AddAddressDetailsScreenState
                       Navigator.pop(context);
                     },
 
-                    style:
-                        OutlinedButton.styleFrom(
-                      backgroundColor:
-                          Colors.white,
+                    style: OutlinedButton.styleFrom(
+                      backgroundColor: Colors.white,
 
-                      foregroundColor:
-                          primaryBlue,
+                      foregroundColor: primaryBlue,
 
-                      side:
-                          const BorderSide(
-                        color: primaryBlue,
-                        width: 1,
-                      ),
+                      side: const BorderSide(color: primaryBlue, width: 1),
 
-                      shape:
-                          RoundedRectangleBorder(
-                        borderRadius:
-                            BorderRadius.circular(
-                          8 * scale,
-                        ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8 * scale),
                       ),
 
                       padding: EdgeInsets.zero,
                     ),
 
                     child: Row(
-                      mainAxisAlignment:
-                          MainAxisAlignment
-                              .center,
+                      mainAxisAlignment: MainAxisAlignment.center,
 
                       children: [
-                        Icon(
-                          Icons.close,
-                          size: 15 * scale,
-                        ),
+                        Icon(Icons.close, size: 15 * scale),
 
-                        SizedBox(
-                          width: 5 * scale,
-                        ),
+                        SizedBox(width: 5 * scale),
 
                         Text(
                           'Cancel',
                           style: TextStyle(
-                            fontSize:
-                                13 * scale,
-                            fontWeight:
-                                FontWeight.w700,
+                            fontSize: 13 * scale,
+                            fontWeight: FontWeight.w700,
                           ),
                         ),
                       ],
@@ -604,182 +492,107 @@ class _AddAddressDetailsScreenState
     bool isLast = false,
   }) {
     return Padding(
-      padding: EdgeInsets.only(
-        bottom:
-            isLast ? 0 : 10 * scale,
-      ),
+      padding: EdgeInsets.only(bottom: isLast ? 0 : 10 * scale),
 
       child: Column(
-        crossAxisAlignment:
-            CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
 
         children: [
           // ======================================================
           // LABEL
           // ======================================================
-
           Row(
-            crossAxisAlignment:
-                CrossAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
 
             children: [
-              Icon(
-                icon,
-                color: primaryBlue,
-                size: 16 * scale,
-              ),
+              Icon(icon, color: primaryBlue, size: 16 * scale),
 
-              SizedBox(
-                width: 7 * scale,
-              ),
+              SizedBox(width: 7 * scale),
 
               Expanded(
                 child: Text(
                   label,
                   style: TextStyle(
                     color: labelColor,
-                    fontSize:
-                        13 * scale,
-                    fontWeight:
-                        FontWeight.w500,
+                    fontSize: 13 * scale,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
               ),
             ],
           ),
 
-          SizedBox(
-            height: 5 * scale,
-          ),
+          SizedBox(height: 5 * scale),
 
           // ======================================================
           // TEXT FIELD
           // ======================================================
-
           SizedBox(
             height: 38 * scale,
 
             child: TextFormField(
               controller: controller,
 
-              keyboardType:
-                  keyboardType,
+              keyboardType: keyboardType,
 
               validator: validator,
 
-              textAlignVertical:
-                  TextAlignVertical.center,
+              textAlignVertical: TextAlignVertical.center,
 
               style: TextStyle(
                 color: valueColor,
-                fontSize:
-                    12 * scale,
-                fontWeight:
-                    FontWeight.w400,
+                fontSize: 12 * scale,
+                fontWeight: FontWeight.w400,
               ),
 
-              cursorColor:
-                  primaryBlue,
+              cursorColor: primaryBlue,
 
-              decoration:
-                  InputDecoration(
+              decoration: InputDecoration(
                 hintText: hint,
 
-                hintStyle:
-                    TextStyle(
-                  color:
-                      const Color(
-                    0xFFB5B9BE,
-                  ),
-                  fontSize:
-                      12 * scale,
-                  fontWeight:
-                      FontWeight.w400,
+                hintStyle: TextStyle(
+                  color: const Color(0xFFB5B9BE),
+                  fontSize: 12 * scale,
+                  fontWeight: FontWeight.w400,
                 ),
 
                 filled: true,
 
-                fillColor:
-                    Colors.white,
+                fillColor: Colors.white,
 
-                contentPadding:
-                    EdgeInsets.symmetric(
-                  horizontal:
-                      11 * scale,
+                contentPadding: EdgeInsets.symmetric(
+                  horizontal: 11 * scale,
                   vertical: 0,
                 ),
 
-                border:
-                    OutlineInputBorder(
-                  borderRadius:
-                      BorderRadius.circular(
-                    7 * scale,
-                  ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(7 * scale),
 
-                  borderSide:
-                      const BorderSide(
-                    color:
-                        borderColor,
-                    width: 0.8,
-                  ),
+                  borderSide: const BorderSide(color: borderColor, width: 0.8),
                 ),
 
-                enabledBorder:
-                    OutlineInputBorder(
-                  borderRadius:
-                      BorderRadius.circular(
-                    7 * scale,
-                  ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(7 * scale),
 
-                  borderSide:
-                      const BorderSide(
-                    color:
-                        borderColor,
-                    width: 0.8,
-                  ),
+                  borderSide: const BorderSide(color: borderColor, width: 0.8),
                 ),
 
-                focusedBorder:
-                    OutlineInputBorder(
-                  borderRadius:
-                      BorderRadius.circular(
-                    7 * scale,
-                  ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(7 * scale),
 
-                  borderSide:
-                      const BorderSide(
-                    color:
-                        primaryBlue,
-                    width: 1.2,
-                  ),
+                  borderSide: const BorderSide(color: primaryBlue, width: 1.2),
                 ),
 
-                errorBorder:
-                    OutlineInputBorder(
-                  borderRadius:
-                      BorderRadius.circular(
-                    7 * scale,
-                  ),
+                errorBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(7 * scale),
 
-                  borderSide:
-                      const BorderSide(
-                    color: Colors.red,
-                    width: 0.8,
-                  ),
+                  borderSide: const BorderSide(color: Colors.red, width: 0.8),
                 ),
 
-                focusedErrorBorder:
-                    OutlineInputBorder(
-                  borderRadius:
-                      BorderRadius.circular(
-                    7 * scale,
-                  ),
+                focusedErrorBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(7 * scale),
 
-                  borderSide:
-                      const BorderSide(
-                    color: Colors.red,
-                    width: 1.2,
-                  ),
+                  borderSide: const BorderSide(color: Colors.red, width: 1.2),
                 ),
               ),
             ),

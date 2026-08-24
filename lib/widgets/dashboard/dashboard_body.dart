@@ -1,14 +1,6 @@
 import 'package:flutter/material.dart';
-<<<<<<< HEAD
-import 'package:provider/provider.dart';
-import 'package:flutter_nivasshub/widgets/notifications/visitor_notification_section.dart';
-import 'package:flutter_nivasshub/providers/dashboard/dashboard_provider.dart';
-import 'package:flutter_nivasshub/widgets/dashboard/approval_queue/approval_queue_section.dart';
-import 'package:flutter_nivasshub/widgets/dashboard/banner/banner_card.dart';
-=======
 import 'package:flutter_nivasshub/widgets/notifications/visitor_notification_section.dart';
 import 'package:flutter_nivasshub/widgets/dashboard/approval_queue/approval_queue_section.dart';
->>>>>>> f48df002e16cc94f3c12ba1e2f58d88dad4cc4bf
 import 'package:flutter_nivasshub/widgets/dashboard/banner/banner_slider.dart';
 import 'package:flutter_nivasshub/widgets/dashboard/community/community_posts_section.dart';
 import 'package:flutter_nivasshub/widgets/dashboard/header/dashboard_header.dart';
@@ -18,9 +10,7 @@ import 'package:flutter_nivasshub/widgets/dashboard/panic/panic_sos_banner.dart'
 import 'package:flutter_nivasshub/widgets/dashboard/quick_actions/quick_actions_grid.dart';
 
 class DashboardBody extends StatelessWidget {
-  const DashboardBody({
-    super.key,
-  });
+  const DashboardBody({super.key});
 
   // ============================================================
   // HEADER HEIGHT ESTIMATE
@@ -37,13 +27,6 @@ class DashboardBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-<<<<<<< HEAD
-    final provider = context.watch<DashboardProvider>();
-
-    final banners = provider.advertisementBanners;
-
-=======
->>>>>>> f48df002e16cc94f3c12ba1e2f58d88dad4cc4bf
     // ============================================================
     // RESPONSIVE CONTENT PADDING
     // ============================================================
@@ -63,7 +46,6 @@ class DashboardBody extends StatelessWidget {
       // consumes the space between the header and the promo banner,
       // whether it's showing or not. See `VisitorNotificationSection`.
       // ==========================================================
-
       child: Stack(
         children: [
           SingleChildScrollView(
@@ -75,10 +57,7 @@ class DashboardBody extends StatelessWidget {
             //
             // This allows DashboardHeader to reach both screen edges.
             // ========================================================
-
-            padding: const EdgeInsets.only(
-              bottom: 20,
-            ),
+            padding: const EdgeInsets.only(bottom: 20),
 
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -93,7 +72,6 @@ class DashboardBody extends StatelessWidget {
                 // floating popup below can anchor to its bottom edge
                 // without needing to know its height up front.
                 // ==================================================
-
                 CompositedTransformTarget(
                   link: _headerAnchor,
                   child: const DashboardHeader(),
@@ -104,7 +82,6 @@ class DashboardBody extends StatelessWidget {
                 //
                 // SIDE PADDING STARTS FROM HERE
                 // ==================================================
-
                 Padding(
                   padding: EdgeInsets.fromLTRB(
                     horizontalPadding,
@@ -119,7 +96,6 @@ class DashboardBody extends StatelessWidget {
                       // ==============================================
                       // ONLINE ADVERTISEMENT
                       // ==============================================
-
                       const BannerSlider(),
 
                       const SizedBox(height: 16),
@@ -127,7 +103,6 @@ class DashboardBody extends StatelessWidget {
                       // ==============================================
                       // QUICK ACTIONS
                       // ==============================================
-
                       const QuickActionsGrid(),
 
                       const SizedBox(height: 16),
@@ -135,7 +110,6 @@ class DashboardBody extends StatelessWidget {
                       // ==============================================
                       // MAINTENANCE
                       // ==============================================
-
                       const MaintenanceCard(),
 
                       const SizedBox(height: 16),
@@ -143,7 +117,6 @@ class DashboardBody extends StatelessWidget {
                       // ==============================================
                       // APPROVAL QUEUE
                       // ==============================================
-
                       const ApprovalQueueSection(),
 
                       const SizedBox(height: 16),
@@ -151,7 +124,6 @@ class DashboardBody extends StatelessWidget {
                       // ==============================================
                       // PANIC
                       // ==============================================
-
                       const PanicSosBanner(),
 
                       const SizedBox(height: 16),
@@ -159,30 +131,13 @@ class DashboardBody extends StatelessWidget {
                       // ==============================================
                       // OTP
                       // ==============================================
-
                       const GenerateOtpBanner(),
 
-<<<<<<< HEAD
-                      // ==============================================
-                      // ADVERTISEMENT
-                      // ==============================================
-
-                      if (banners.isNotEmpty) ...[
-                        const SizedBox(height: 16),
-
-                        BannerCard(
-                          banner: banners.first,
-                        ),
-                      ],
-
-=======
->>>>>>> f48df002e16cc94f3c12ba1e2f58d88dad4cc4bf
                       const SizedBox(height: 16),
 
                       // ==============================================
                       // COMMUNITY
                       // ==============================================
-
                       const CommunityPostsSection(),
 
                       const SizedBox(height: 16),
@@ -203,7 +158,6 @@ class DashboardBody extends StatelessWidget {
           // dismissed or when there's nothing pending. See
           // `VisitorNotificationSection`.
           // ========================================================
-
           CompositedTransformFollower(
             link: _headerAnchor,
             showWhenUnlinked: false,
