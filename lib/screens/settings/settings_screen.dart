@@ -112,9 +112,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   _sheetHandle(),
+<<<<<<< HEAD
 
                   const SizedBox(height: 18),
 
+=======
+                  const SizedBox(height: 18),
+>>>>>>> f48df002e16cc94f3c12ba1e2f58d88dad4cc4bf
                   const Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
@@ -125,9 +129,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                     ),
                   ),
+<<<<<<< HEAD
 
                   const SizedBox(height: 10),
 
+=======
+                  const SizedBox(height: 10),
+>>>>>>> f48df002e16cc94f3c12ba1e2f58d88dad4cc4bf
                   SwitchListTile(
                     contentPadding: EdgeInsets.zero,
                     title: const Text(
@@ -144,7 +152,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                     ),
                     value: notificationEnabled,
+<<<<<<< HEAD
                     activeThumbColor: primaryBlue,
+=======
+                    activeColor: primaryBlue,
+>>>>>>> f48df002e16cc94f3c12ba1e2f58d88dad4cc4bf
                     onChanged: (value) {
                       setModalState(() {
                         notificationEnabled = value;
@@ -155,7 +167,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       });
                     },
                   ),
+<<<<<<< HEAD
 
+=======
+>>>>>>> f48df002e16cc94f3c12ba1e2f58d88dad4cc4bf
                   SwitchListTile(
                     contentPadding: EdgeInsets.zero,
                     title: const Text(
@@ -172,7 +187,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                     ),
                     value: securityEnabled,
+<<<<<<< HEAD
                     activeThumbColor: primaryBlue,
+=======
+                    activeColor: primaryBlue,
+>>>>>>> f48df002e16cc94f3c12ba1e2f58d88dad4cc4bf
                     onChanged: (value) {
                       setModalState(() {
                         securityEnabled = value;
@@ -183,7 +202,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       });
                     },
                   ),
+<<<<<<< HEAD
 
+=======
+>>>>>>> f48df002e16cc94f3c12ba1e2f58d88dad4cc4bf
                   SwitchListTile(
                     contentPadding: EdgeInsets.zero,
                     title: const Text(
@@ -200,7 +222,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                     ),
                     value: feedEnabled,
+<<<<<<< HEAD
                     activeThumbColor: primaryBlue,
+=======
+                    activeColor: primaryBlue,
+>>>>>>> f48df002e16cc94f3c12ba1e2f58d88dad4cc4bf
                     onChanged: (value) {
                       setModalState(() {
                         feedEnabled = value;
@@ -246,9 +272,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _sheetHandle(),
+<<<<<<< HEAD
 
               const SizedBox(height: 18),
 
+=======
+              const SizedBox(height: 18),
+>>>>>>> f48df002e16cc94f3c12ba1e2f58d88dad4cc4bf
               const Text(
                 'Security Alert List',
                 style: TextStyle(
@@ -256,15 +286,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   fontWeight: FontWeight.w700,
                 ),
               ),
+<<<<<<< HEAD
 
               const SizedBox(height: 12),
 
+=======
+              const SizedBox(height: 12),
+>>>>>>> f48df002e16cc94f3c12ba1e2f58d88dad4cc4bf
               _sheetItem(
                 Icons.shield_outlined,
                 'Visitor entry approved',
                 'Today, 11:30 AM',
               ),
+<<<<<<< HEAD
 
+=======
+>>>>>>> f48df002e16cc94f3c12ba1e2f58d88dad4cc4bf
               _sheetItem(
                 Icons.local_shipping_outlined,
                 'Delivery received',
@@ -304,9 +341,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   _sheetHandle(),
+<<<<<<< HEAD
 
                   const SizedBox(height: 18),
 
+=======
+                  const SizedBox(height: 18),
+>>>>>>> f48df002e16cc94f3c12ba1e2f58d88dad4cc4bf
                   const Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
@@ -317,9 +358,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                     ),
                   ),
+<<<<<<< HEAD
 
                   const SizedBox(height: 10),
 
+=======
+                  const SizedBox(height: 10),
+>>>>>>> f48df002e16cc94f3c12ba1e2f58d88dad4cc4bf
                   SwitchListTile(
                     contentPadding: EdgeInsets.zero,
                     title: const Text(
@@ -336,7 +381,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                     ),
                     value: feedEnabled,
+<<<<<<< HEAD
                     activeThumbColor: primaryBlue,
+=======
+                    activeColor: primaryBlue,
+>>>>>>> f48df002e16cc94f3c12ba1e2f58d88dad4cc4bf
                     onChanged: (value) {
                       setModalState(() {
                         feedEnabled = value;
@@ -382,9 +431,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _sheetHandle(),
+<<<<<<< HEAD
 
               const SizedBox(height: 18),
 
+=======
+              const SizedBox(height: 18),
+>>>>>>> f48df002e16cc94f3c12ba1e2f58d88dad4cc4bf
               const Text(
                 'My Orders',
                 style: TextStyle(
@@ -392,15 +445,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   fontWeight: FontWeight.w700,
                 ),
               ),
+<<<<<<< HEAD
 
               const SizedBox(height: 12),
 
+=======
+              const SizedBox(height: 12),
+>>>>>>> f48df002e16cc94f3c12ba1e2f58d88dad4cc4bf
               _sheetItem(
                 Icons.shopping_bag_outlined,
                 'Community Store',
                 'Completed',
               ),
+<<<<<<< HEAD
 
+=======
+>>>>>>> f48df002e16cc94f3c12ba1e2f58d88dad4cc4bf
               _sheetItem(
                 Icons.receipt_long_outlined,
                 'Maintenance Payment',
@@ -440,9 +500,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   _sheetHandle(),
+<<<<<<< HEAD
 
                   const SizedBox(height: 18),
 
+=======
+                  const SizedBox(height: 18),
+>>>>>>> f48df002e16cc94f3c12ba1e2f58d88dad4cc4bf
                   const Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
@@ -453,9 +517,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                     ),
                   ),
+<<<<<<< HEAD
 
                   const SizedBox(height: 10),
 
+=======
+                  const SizedBox(height: 10),
+>>>>>>> f48df002e16cc94f3c12ba1e2f58d88dad4cc4bf
                   RadioListTile<String>(
                     contentPadding: EdgeInsets.zero,
                     value: 'Ad-Supported',
@@ -479,7 +547,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       });
                     },
                   ),
+<<<<<<< HEAD
 
+=======
+>>>>>>> f48df002e16cc94f3c12ba1e2f58d88dad4cc4bf
                   RadioListTile<String>(
                     contentPadding: EdgeInsets.zero,
                     value: 'Premium',
@@ -538,11 +609,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
               onPressed: () {
                 Navigator.pop(dialogContext);
               },
+<<<<<<< HEAD
               child: const Text(
                 'Cancel',
               ),
             ),
 
+=======
+              child: const Text('Cancel'),
+            ),
+>>>>>>> f48df002e16cc94f3c12ba1e2f58d88dad4cc4bf
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: primaryBlue,
@@ -563,9 +639,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
                 Navigator.pop(dialogContext);
               },
+<<<<<<< HEAD
               child: const Text(
                 'Add',
               ),
+=======
+              child: const Text('Add'),
+>>>>>>> f48df002e16cc94f3c12ba1e2f58d88dad4cc4bf
             ),
           ],
         );
@@ -597,7 +677,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 'Cancel',
               ),
             ),
+<<<<<<< HEAD
 
+=======
+>>>>>>> f48df002e16cc94f3c12ba1e2f58d88dad4cc4bf
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red,
@@ -737,6 +820,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 constraints.maxWidth;
 
             final scale =
+<<<<<<< HEAD
                 (width / 313).clamp(
               0.95,
               1.12,
@@ -745,12 +829,24 @@ class _SettingsScreenState extends State<SettingsScreen> {
             return ListView(
               physics:
                   const ClampingScrollPhysics(),
+=======
+                (width / 313)
+                    .clamp(0.95, 1.12);
+
+            return ListView(
+              physics:
+                  const BouncingScrollPhysics(),
+>>>>>>> f48df002e16cc94f3c12ba1e2f58d88dad4cc4bf
 
               padding: EdgeInsets.fromLTRB(
                 12 * scale,
                 10 * scale,
                 12 * scale,
+<<<<<<< HEAD
                 5 * scale,
+=======
+                15 * scale,
+>>>>>>> f48df002e16cc94f3c12ba1e2f58d88dad4cc4bf
               ),
 
               children: [
@@ -771,7 +867,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 _completeProfileCard(scale),
 
                 SizedBox(
+<<<<<<< HEAD
                   height: 3 * scale,
+=======
+                  height: 10 * scale,
+>>>>>>> f48df002e16cc94f3c12ba1e2f58d88dad4cc4bf
                 ),
 
                 // ==================================================
@@ -781,8 +881,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 _sectionHeader(
                   'Household',
                   scale,
+<<<<<<< HEAD
                   trailing:
                       GestureDetector(
+=======
+                  trailing: GestureDetector(
+>>>>>>> f48df002e16cc94f3c12ba1e2f58d88dad4cc4bf
                     onTap: () {
                       _message(
                         'Household details',
@@ -792,10 +896,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       'View all  ›',
                       style: TextStyle(
                         color: primaryBlue,
+<<<<<<< HEAD
                         fontSize:
                             8 * scale,
                         fontWeight:
                             FontWeight.w600,
+=======
+                        fontSize: 8 * scale,
+                        fontWeight: FontWeight.w600,
+>>>>>>> f48df002e16cc94f3c12ba1e2f58d88dad4cc4bf
                       ),
                     ),
                   ),
@@ -808,8 +917,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 Row(
                   children: [
                     Expanded(
+<<<<<<< HEAD
                       child:
                           _householdCard(
+=======
+                      child: _householdCard(
+>>>>>>> f48df002e16cc94f3c12ba1e2f58d88dad4cc4bf
                         icon:
                             Icons.face_outlined,
                         title:
@@ -824,6 +937,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             scale,
                       ),
                     ),
+<<<<<<< HEAD
 
                     SizedBox(
                       width: 6 * scale,
@@ -832,6 +946,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     Expanded(
                       child:
                           _householdCard(
+=======
+                    SizedBox(
+                      width: 6 * scale,
+                    ),
+                    Expanded(
+                      child: _householdCard(
+>>>>>>> f48df002e16cc94f3c12ba1e2f58d88dad4cc4bf
                         icon:
                             Icons.person_outline,
                         title:
@@ -853,16 +974,26 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
 
                 SizedBox(
+<<<<<<< HEAD
                   height:  3 * scale,
+=======
+                  height: 6 * scale,
+>>>>>>> f48df002e16cc94f3c12ba1e2f58d88dad4cc4bf
                 ),
 
                 Row(
                   children: [
                     Expanded(
+<<<<<<< HEAD
                       child:
                           _householdCard(
                         icon: Icons
                             .person_add_alt_1_outlined,
+=======
+                      child: _householdCard(
+                        icon:
+                            Icons.person_add_alt_1_outlined,
+>>>>>>> f48df002e16cc94f3c12ba1e2f58d88dad4cc4bf
                         title:
                             'Daily Help',
                         subtitle:
@@ -880,6 +1011,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         },
                       ),
                     ),
+<<<<<<< HEAD
 
                     SizedBox(
                       width: 6 * scale,
@@ -890,6 +1022,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           _householdCard(
                         icon: Icons
                             .directions_car_outlined,
+=======
+                    SizedBox(
+                      width: 6 * scale,
+                    ),
+                    Expanded(
+                      child: _householdCard(
+                        icon:
+                            Icons.directions_car_outlined,
+>>>>>>> f48df002e16cc94f3c12ba1e2f58d88dad4cc4bf
                         title:
                             'Vehicles',
                         subtitle:
@@ -911,14 +1052,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
 
                 SizedBox(
+<<<<<<< HEAD
                   height:  3 * scale,
+=======
+                  height: 6 * scale,
+>>>>>>> f48df002e16cc94f3c12ba1e2f58d88dad4cc4bf
                 ),
 
                 Row(
                   children: [
                     Expanded(
+<<<<<<< HEAD
                       child:
                           _householdCard(
+=======
+                      child: _householdCard(
+>>>>>>> f48df002e16cc94f3c12ba1e2f58d88dad4cc4bf
                         icon:
                             Icons.pets_outlined,
                         title:
@@ -938,9 +1087,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         },
                       ),
                     ),
+<<<<<<< HEAD
 
                     const Expanded(
                       child: SizedBox(),
+=======
+                    const Expanded(
+                      child:
+                          SizedBox(),
+>>>>>>> f48df002e16cc94f3c12ba1e2f58d88dad4cc4bf
                     ),
                   ],
                 ),
@@ -1092,8 +1247,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           property['name']
                               as String,
                       badge:
+<<<<<<< HEAD
                           property['active'] ==
                                   true
+=======
+                          property['active'] == true
+>>>>>>> f48df002e16cc94f3c12ba1e2f58d88dad4cc4bf
                               ? 'Active'
                               : null,
                       badgeColor:
@@ -1217,6 +1376,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
           },
         ),
       ),
+<<<<<<< HEAD
+=======
+
+      // ========================================================
+      // BOTTOM NAVIGATION
+      // ========================================================
+
+      bottomNavigationBar:
+          _bottomNavigationBar(),
+>>>>>>> f48df002e16cc94f3c12ba1e2f58d88dad4cc4bf
     );
   }
 
@@ -1280,11 +1449,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           FontWeight.w700,
                     ),
                   ),
+<<<<<<< HEAD
 
                   SizedBox(
                     height: 2 * scale,
                   ),
 
+=======
+                  SizedBox(
+                    height: 2 * scale,
+                  ),
+>>>>>>> f48df002e16cc94f3c12ba1e2f58d88dad4cc4bf
                   Text(
                     'Nivaas Hub ID : 00000',
                     style: TextStyle(
@@ -1379,7 +1554,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           FontWeight.w700,
                     ),
                   ),
+<<<<<<< HEAD
 
+=======
+>>>>>>> f48df002e16cc94f3c12ba1e2f58d88dad4cc4bf
                   Text(
                     'Let neighbours discover you!',
                     style: TextStyle(
@@ -1520,11 +1698,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         ),
                         size: 9 * scale,
                       ),
+<<<<<<< HEAD
 
                       SizedBox(
                         width: 1 * scale,
                       ),
 
+=======
+                      SizedBox(
+                        width: 1 * scale,
+                      ),
+>>>>>>> f48df002e16cc94f3c12ba1e2f58d88dad4cc4bf
                       Text(
                         rating ?? '',
                         style: TextStyle(
@@ -1550,8 +1734,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                       decoration:
                           BoxDecoration(
+<<<<<<< HEAD
                         color:
                             Colors.white,
+=======
+                        color: Colors.white,
+>>>>>>> f48df002e16cc94f3c12ba1e2f58d88dad4cc4bf
                         borderRadius:
                             BorderRadius.circular(
                           5 * scale,
@@ -1567,8 +1755,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       child: Text(
                         '+ Add',
                         style: TextStyle(
+<<<<<<< HEAD
                           color:
                               primaryBlue,
+=======
+                          color: primaryBlue,
+>>>>>>> f48df002e16cc94f3c12ba1e2f58d88dad4cc4bf
                           fontSize:
                               6.5 * scale,
                           fontWeight:
@@ -1650,11 +1842,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           FontWeight.w700,
                     ),
                   ),
+<<<<<<< HEAD
 
                   SizedBox(
                     height: 2 * scale,
                   ),
 
+=======
+                  SizedBox(
+                    height: 2 * scale,
+                  ),
+>>>>>>> f48df002e16cc94f3c12ba1e2f58d88dad4cc4bf
                   Text(
                     'Address Details',
                     style: TextStyle(
@@ -1666,7 +1864,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ],
               ),
             ),
+<<<<<<< HEAD
 
+=======
+>>>>>>> f48df002e16cc94f3c12ba1e2f58d88dad4cc4bf
             Icon(
               Icons.share_outlined,
               color: primaryBlue,
@@ -1722,7 +1923,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
             ),
           ),
+<<<<<<< HEAD
 
+=======
+>>>>>>> f48df002e16cc94f3c12ba1e2f58d88dad4cc4bf
           SizedBox(
             height: 26 * scale,
             child: ElevatedButton(
@@ -1898,7 +2102,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               2 * scale,
                         ),
                         Text(
+<<<<<<< HEAD
                           subtitle,
+=======
+                          subtitle!,
+>>>>>>> f48df002e16cc94f3c12ba1e2f58d88dad4cc4bf
                           maxLines: 1,
                           overflow:
                               TextOverflow
@@ -2075,4 +2283,94 @@ class _SettingsScreenState extends State<SettingsScreen> {
       ),
     );
   }
+<<<<<<< HEAD
+=======
+
+  // ============================================================
+  // BOTTOM NAVIGATION
+  // ============================================================
+
+  Widget _bottomNavigationBar() {
+    return Container(
+      decoration:
+          const BoxDecoration(
+        color: Colors.white,
+        border: Border(
+          top: BorderSide(
+            color:
+                Color(0xFFE5E8EC),
+            width: 0.6,
+          ),
+        ),
+      ),
+      child:
+          BottomNavigationBar(
+        type:
+            BottomNavigationBarType.fixed,
+        currentIndex: 4,
+        backgroundColor:
+            Colors.white,
+        elevation: 0,
+
+        selectedItemColor:
+            primaryBlue,
+        unselectedItemColor:
+            const Color(
+          0xFF9A9A9A,
+        ),
+
+        selectedFontSize: 7,
+        unselectedFontSize: 7,
+
+        iconSize: 16,
+
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(
+              Icons.home_outlined,
+            ),
+            activeIcon: Icon(
+              Icons.home,
+            ),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(
+              Icons.person_outline,
+            ),
+            label: 'Visitors',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(
+              Icons.location_city_outlined,
+            ),
+            label: 'Community',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(
+              Icons.account_balance_wallet_outlined,
+            ),
+            label: 'Payments',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(
+              Icons.menu,
+            ),
+            label: 'More',
+          ),
+        ],
+
+        onTap: (index) {
+          if (index == 4) {
+            return;
+          }
+
+          _message(
+            'Navigation selected',
+          );
+        },
+      ),
+    );
+  }
+>>>>>>> f48df002e16cc94f3c12ba1e2f58d88dad4cc4bf
 }

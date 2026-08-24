@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
+<<<<<<< HEAD
 import 'package:provider/provider.dart';
 import 'package:flutter_nivasshub/widgets/notifications/visitor_notification_section.dart';
 import 'package:flutter_nivasshub/providers/dashboard/dashboard_provider.dart';
 import 'package:flutter_nivasshub/widgets/dashboard/approval_queue/approval_queue_section.dart';
 import 'package:flutter_nivasshub/widgets/dashboard/banner/banner_card.dart';
+=======
+import 'package:flutter_nivasshub/widgets/notifications/visitor_notification_section.dart';
+import 'package:flutter_nivasshub/widgets/dashboard/approval_queue/approval_queue_section.dart';
+>>>>>>> f48df002e16cc94f3c12ba1e2f58d88dad4cc4bf
 import 'package:flutter_nivasshub/widgets/dashboard/banner/banner_slider.dart';
 import 'package:flutter_nivasshub/widgets/dashboard/community/community_posts_section.dart';
 import 'package:flutter_nivasshub/widgets/dashboard/header/dashboard_header.dart';
@@ -32,10 +37,13 @@ class DashboardBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+<<<<<<< HEAD
     final provider = context.watch<DashboardProvider>();
 
     final banners = provider.advertisementBanners;
 
+=======
+>>>>>>> f48df002e16cc94f3c12ba1e2f58d88dad4cc4bf
     // ============================================================
     // RESPONSIVE CONTENT PADDING
     // ============================================================
@@ -154,6 +162,7 @@ class DashboardBody extends StatelessWidget {
 
                       const GenerateOtpBanner(),
 
+<<<<<<< HEAD
                       // ==============================================
                       // ADVERTISEMENT
                       // ==============================================
@@ -166,6 +175,8 @@ class DashboardBody extends StatelessWidget {
                         ),
                       ],
 
+=======
+>>>>>>> f48df002e16cc94f3c12ba1e2f58d88dad4cc4bf
                       const SizedBox(height: 16),
 
                       // ==============================================

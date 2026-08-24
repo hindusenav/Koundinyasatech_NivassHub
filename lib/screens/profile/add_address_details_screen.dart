@@ -208,13 +208,21 @@ class _AddAddressDetailsScreenState
 
           child: SingleChildScrollView(
             physics:
+<<<<<<< HEAD
                 const ClampingScrollPhysics(),
+=======
+                const BouncingScrollPhysics(),
+>>>>>>> f48df002e16cc94f3c12ba1e2f58d88dad4cc4bf
 
             padding: EdgeInsets.fromLTRB(
               13 * scale,
               10 * scale,
               13 * scale,
+<<<<<<< HEAD
               5 * scale,
+=======
+              90 * scale,
+>>>>>>> f48df002e16cc94f3c12ba1e2f58d88dad4cc4bf
             ),
 
             child: Container(
