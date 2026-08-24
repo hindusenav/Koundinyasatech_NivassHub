@@ -112,7 +112,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   _sheetHandle(),
+
                   const SizedBox(height: 18),
+
                   const Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
@@ -123,7 +125,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                     ),
                   ),
+
                   const SizedBox(height: 10),
+
                   SwitchListTile(
                     contentPadding: EdgeInsets.zero,
                     title: const Text(
@@ -140,7 +144,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                     ),
                     value: notificationEnabled,
-                    activeColor: primaryBlue,
+                    activeThumbColor: primaryBlue,
                     onChanged: (value) {
                       setModalState(() {
                         notificationEnabled = value;
@@ -151,6 +155,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       });
                     },
                   ),
+
                   SwitchListTile(
                     contentPadding: EdgeInsets.zero,
                     title: const Text(
@@ -167,7 +172,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                     ),
                     value: securityEnabled,
-                    activeColor: primaryBlue,
+                    activeThumbColor: primaryBlue,
                     onChanged: (value) {
                       setModalState(() {
                         securityEnabled = value;
@@ -178,6 +183,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       });
                     },
                   ),
+
                   SwitchListTile(
                     contentPadding: EdgeInsets.zero,
                     title: const Text(
@@ -194,7 +200,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                     ),
                     value: feedEnabled,
-                    activeColor: primaryBlue,
+                    activeThumbColor: primaryBlue,
                     onChanged: (value) {
                       setModalState(() {
                         feedEnabled = value;
@@ -240,7 +246,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _sheetHandle(),
+
               const SizedBox(height: 18),
+
               const Text(
                 'Security Alert List',
                 style: TextStyle(
@@ -248,12 +256,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   fontWeight: FontWeight.w700,
                 ),
               ),
+
               const SizedBox(height: 12),
+
               _sheetItem(
                 Icons.shield_outlined,
                 'Visitor entry approved',
                 'Today, 11:30 AM',
               ),
+
               _sheetItem(
                 Icons.local_shipping_outlined,
                 'Delivery received',
@@ -293,7 +304,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   _sheetHandle(),
+
                   const SizedBox(height: 18),
+
                   const Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
@@ -304,7 +317,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                     ),
                   ),
+
                   const SizedBox(height: 10),
+
                   SwitchListTile(
                     contentPadding: EdgeInsets.zero,
                     title: const Text(
@@ -321,7 +336,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                     ),
                     value: feedEnabled,
-                    activeColor: primaryBlue,
+                    activeThumbColor: primaryBlue,
                     onChanged: (value) {
                       setModalState(() {
                         feedEnabled = value;
@@ -367,7 +382,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _sheetHandle(),
+
               const SizedBox(height: 18),
+
               const Text(
                 'My Orders',
                 style: TextStyle(
@@ -375,12 +392,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   fontWeight: FontWeight.w700,
                 ),
               ),
+
               const SizedBox(height: 12),
+
               _sheetItem(
                 Icons.shopping_bag_outlined,
                 'Community Store',
                 'Completed',
               ),
+
               _sheetItem(
                 Icons.receipt_long_outlined,
                 'Maintenance Payment',
@@ -420,7 +440,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   _sheetHandle(),
+
                   const SizedBox(height: 18),
+
                   const Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
@@ -431,7 +453,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                     ),
                   ),
+
                   const SizedBox(height: 10),
+
                   RadioListTile<String>(
                     contentPadding: EdgeInsets.zero,
                     value: 'Ad-Supported',
@@ -455,6 +479,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       });
                     },
                   ),
+
                   RadioListTile<String>(
                     contentPadding: EdgeInsets.zero,
                     value: 'Premium',
@@ -513,8 +538,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
               onPressed: () {
                 Navigator.pop(dialogContext);
               },
-              child: const Text('Cancel'),
+              child: const Text(
+                'Cancel',
+              ),
             ),
+
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: primaryBlue,
@@ -535,7 +563,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
                 Navigator.pop(dialogContext);
               },
-              child: const Text('Add'),
+              child: const Text(
+                'Add',
+              ),
             ),
           ],
         );
@@ -567,6 +597,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 'Cancel',
               ),
             ),
+
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red,
@@ -706,18 +737,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 constraints.maxWidth;
 
             final scale =
-                (width / 313)
-                    .clamp(0.95, 1.12);
+                (width / 313).clamp(
+              0.95,
+              1.12,
+            );
 
             return ListView(
               physics:
-                  const BouncingScrollPhysics(),
+                  const ClampingScrollPhysics(),
 
               padding: EdgeInsets.fromLTRB(
                 12 * scale,
                 10 * scale,
                 12 * scale,
-                15 * scale,
+                5 * scale,
               ),
 
               children: [
@@ -738,7 +771,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 _completeProfileCard(scale),
 
                 SizedBox(
-                  height: 10 * scale,
+                  height: 3 * scale,
                 ),
 
                 // ==================================================
@@ -748,7 +781,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 _sectionHeader(
                   'Household',
                   scale,
-                  trailing: GestureDetector(
+                  trailing:
+                      GestureDetector(
                     onTap: () {
                       _message(
                         'Household details',
@@ -758,8 +792,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       'View all  ›',
                       style: TextStyle(
                         color: primaryBlue,
-                        fontSize: 8 * scale,
-                        fontWeight: FontWeight.w600,
+                        fontSize:
+                            8 * scale,
+                        fontWeight:
+                            FontWeight.w600,
                       ),
                     ),
                   ),
@@ -772,7 +808,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 Row(
                   children: [
                     Expanded(
-                      child: _householdCard(
+                      child:
+                          _householdCard(
                         icon:
                             Icons.face_outlined,
                         title:
@@ -787,11 +824,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             scale,
                       ),
                     ),
+
                     SizedBox(
                       width: 6 * scale,
                     ),
+
                     Expanded(
-                      child: _householdCard(
+                      child:
+                          _householdCard(
                         icon:
                             Icons.person_outline,
                         title:
@@ -813,15 +853,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
 
                 SizedBox(
-                  height: 6 * scale,
+                  height:  3 * scale,
                 ),
 
                 Row(
                   children: [
                     Expanded(
-                      child: _householdCard(
-                        icon:
-                            Icons.person_add_alt_1_outlined,
+                      child:
+                          _householdCard(
+                        icon: Icons
+                            .person_add_alt_1_outlined,
                         title:
                             'Daily Help',
                         subtitle:
@@ -839,13 +880,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         },
                       ),
                     ),
+
                     SizedBox(
                       width: 6 * scale,
                     ),
+
                     Expanded(
-                      child: _householdCard(
-                        icon:
-                            Icons.directions_car_outlined,
+                      child:
+                          _householdCard(
+                        icon: Icons
+                            .directions_car_outlined,
                         title:
                             'Vehicles',
                         subtitle:
@@ -867,13 +911,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
 
                 SizedBox(
-                  height: 6 * scale,
+                  height:  3 * scale,
                 ),
 
                 Row(
                   children: [
                     Expanded(
-                      child: _householdCard(
+                      child:
+                          _householdCard(
                         icon:
                             Icons.pets_outlined,
                         title:
@@ -893,9 +938,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         },
                       ),
                     ),
+
                     const Expanded(
-                      child:
-                          SizedBox(),
+                      child: SizedBox(),
                     ),
                   ],
                 ),
@@ -1047,7 +1092,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           property['name']
                               as String,
                       badge:
-                          property['active'] == true
+                          property['active'] ==
+                                  true
                               ? 'Active'
                               : null,
                       badgeColor:
@@ -1171,13 +1217,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
           },
         ),
       ),
-
-      // ========================================================
-      // BOTTOM NAVIGATION
-      // ========================================================
-
-      bottomNavigationBar:
-          _bottomNavigationBar(),
     );
   }
 
@@ -1241,9 +1280,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           FontWeight.w700,
                     ),
                   ),
+
                   SizedBox(
                     height: 2 * scale,
                   ),
+
                   Text(
                     'Nivaas Hub ID : 00000',
                     style: TextStyle(
@@ -1338,6 +1379,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           FontWeight.w700,
                     ),
                   ),
+
                   Text(
                     'Let neighbours discover you!',
                     style: TextStyle(
@@ -1478,9 +1520,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         ),
                         size: 9 * scale,
                       ),
+
                       SizedBox(
                         width: 1 * scale,
                       ),
+
                       Text(
                         rating ?? '',
                         style: TextStyle(
@@ -1506,7 +1550,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                       decoration:
                           BoxDecoration(
-                        color: Colors.white,
+                        color:
+                            Colors.white,
                         borderRadius:
                             BorderRadius.circular(
                           5 * scale,
@@ -1522,7 +1567,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       child: Text(
                         '+ Add',
                         style: TextStyle(
-                          color: primaryBlue,
+                          color:
+                              primaryBlue,
                           fontSize:
                               6.5 * scale,
                           fontWeight:
@@ -1604,9 +1650,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           FontWeight.w700,
                     ),
                   ),
+
                   SizedBox(
                     height: 2 * scale,
                   ),
+
                   Text(
                     'Address Details',
                     style: TextStyle(
@@ -1618,6 +1666,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ],
               ),
             ),
+
             Icon(
               Icons.share_outlined,
               color: primaryBlue,
@@ -1673,6 +1722,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
             ),
           ),
+
           SizedBox(
             height: 26 * scale,
             child: ElevatedButton(
@@ -1848,7 +1898,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               2 * scale,
                         ),
                         Text(
-                          subtitle!,
+                          subtitle,
                           maxLines: 1,
                           overflow:
                               TextOverflow
@@ -2022,93 +2072,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
           fontSize: 11,
           color: greyText,
         ),
-      ),
-    );
-  }
-
-  // ============================================================
-  // BOTTOM NAVIGATION
-  // ============================================================
-
-  Widget _bottomNavigationBar() {
-    return Container(
-      decoration:
-          const BoxDecoration(
-        color: Colors.white,
-        border: Border(
-          top: BorderSide(
-            color:
-                Color(0xFFE5E8EC),
-            width: 0.6,
-          ),
-        ),
-      ),
-      child:
-          BottomNavigationBar(
-        type:
-            BottomNavigationBarType.fixed,
-        currentIndex: 4,
-        backgroundColor:
-            Colors.white,
-        elevation: 0,
-
-        selectedItemColor:
-            primaryBlue,
-        unselectedItemColor:
-            const Color(
-          0xFF9A9A9A,
-        ),
-
-        selectedFontSize: 7,
-        unselectedFontSize: 7,
-
-        iconSize: 16,
-
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.home_outlined,
-            ),
-            activeIcon: Icon(
-              Icons.home,
-            ),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.person_outline,
-            ),
-            label: 'Visitors',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.location_city_outlined,
-            ),
-            label: 'Community',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.account_balance_wallet_outlined,
-            ),
-            label: 'Payments',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.menu,
-            ),
-            label: 'More',
-          ),
-        ],
-
-        onTap: (index) {
-          if (index == 4) {
-            return;
-          }
-
-          _message(
-            'Navigation selected',
-          );
-        },
       ),
     );
   }
