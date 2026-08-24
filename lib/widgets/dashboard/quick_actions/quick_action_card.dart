@@ -23,17 +23,12 @@ class QuickActionCard extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(18),
-
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Stack(
             clipBehavior: Clip.none,
             children: [
-              // ===========================================================
-              // EXISTING BOX — NO CHANGES
-              // ===========================================================
-
               Container(
                 width: 70,
                 height: 70,
@@ -41,15 +36,13 @@ class QuickActionCard extends StatelessWidget {
                   color: _isViewMore
                       ? const Color(0xFFFF8A00)
                       : Colors.white,
-
                   borderRadius: BorderRadius.circular(18),
-
                   border: Border.all(
                     color: _isViewMore
                         ? Colors.transparent
                         : const Color(0xffECECEC),
+                    width: 1.5, // Thicker border for better quality
                   ),
-
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black.withValues(alpha: .06),
@@ -58,63 +51,40 @@ class QuickActionCard extends StatelessWidget {
                     ),
                   ],
                 ),
-
-                // =========================================================
-                // IMAGE — ONLY BOOK NOW SIZE CHANGED
-                // =========================================================
-
                 child: Center(
                   child: Image.asset(
                     action.assetPath,
-
-                    // View More remains 26.
-                    // Other icons remain 30.
-                    // Book Now is increased to 42.
                     width: _isViewMore
                         ? 26
                         : _isBookNow
                             ? 42
                             : 30,
-
                     height: _isViewMore
                         ? 26
                         : _isBookNow
                             ? 42
                             : 30,
-
                     fit: BoxFit.contain,
-
                     color: _isViewMore
                         ? Colors.white
                         : null,
-
+                    // Better image quality
+                    filterQuality: FilterQuality.high,
+                    isAntiAlias: true,
                     errorBuilder: (_, _, _) {
-                      return const Icon(
+                      return Icon(
                         Icons.image_not_supported_outlined,
                         size: 28,
-                        color: Colors.grey,
+                        color: Colors.grey.shade600,
+                        weight: 600, // Thicker fallback icon
                       );
                     },
                   ),
                 ),
               ),
-
-              // ===========================================================
-              // AD BADGE REMOVED
-              // ===========================================================
             ],
           ),
-
-          // =============================================================
-          // EXISTING GAP — NO CHANGE
-          // =============================================================
-
           const SizedBox(height: 8),
-
-          // =============================================================
-          // EXISTING TEXT — NO CHANGE
-          // =============================================================
-
           SizedBox(
             width: 74,
             child: Text(
@@ -125,8 +95,9 @@ class QuickActionCard extends StatelessWidget {
               style: const TextStyle(
                 fontSize: 11,
                 height: 1.25,
-                fontWeight: FontWeight.w500,
-                color: Color(0xff303030),
+                fontWeight: FontWeight.w600, // Thicker text
+                color: Color(0xff1A1A1A), // Darker black
+                letterSpacing: 0.2, // Better readability
               ),
             ),
           ),
