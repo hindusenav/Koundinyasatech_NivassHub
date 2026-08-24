@@ -14,7 +14,7 @@ class DashboardBottomNavigation extends StatelessWidget {
     return SafeArea(
       top: false,
       child: Container(
-        height: 90, // increased height for bigger icons
+        height: 90,
         decoration: const BoxDecoration(
           color: Color(0xffD9ECFF),
           borderRadius: BorderRadius.only(
@@ -75,14 +75,13 @@ class DashboardBottomNavigation extends StatelessWidget {
               Navigator.pushNamed(context, AppRoutes.noticeList);
             }
           } else if (index == 4) {
-            // More — opens the full Quick Actions catalog directly.
             Navigator.pushNamed(context, AppRoutes.quickActions);
           }
         },
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            /// 🔵 ICON BACKGROUND (bigger like Figma)
+            /// ICON BACKGROUND
             AnimatedContainer(
               duration: const Duration(milliseconds: 200),
               height: 46,
@@ -96,30 +95,39 @@ class DashboardBottomNavigation extends StatelessWidget {
               child: Center(
                 child: Image.asset(
                   image,
-                  width: 26, // 🔥 bigger icon
+                  width: 26,
                   height: 26,
                   fit: BoxFit.contain,
                   color: selected
                       ? Colors.white
-                      : const Color(0xff4B5563), // darker = thicker feel
+                      : const Color(0xff1A1A1A), // Darker black for thicker feel
+                  // Better image quality
+                  filterQuality: FilterQuality.high,
+                  isAntiAlias: true,
+                  errorBuilder: (_, _, _) {
+                    return Icon(
+                      Icons.image_not_supported_outlined,
+                      size: 26,
+                      color: selected
+                          ? Colors.white
+                          : const Color(0xff1A1A1A),
+                      weight: 600, // Thicker fallback icon
+                    );
+                  },
                 ),
               ),
             ),
-
             const SizedBox(height: 6),
-
-            /// 📝 LABEL
             Text(
               title,
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 11.5,
-                fontWeight:
-                    selected ? FontWeight.w700 : FontWeight.w600,
+                fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
                 color: selected
                     ? const Color(0xff1565C0)
-                    : const Color(0xff374151), // slightly darker
-                letterSpacing: 0.2,
+                    : const Color(0xff1A1A1A), // Darker black
+                letterSpacing: 0.3,
                 height: 1.2,
               ),
             ),
