@@ -34,7 +34,6 @@ class DashboardBottomNavigation extends StatelessWidget {
               _item(context, provider, 1, "assets/icons/visitors.svg.png", "Visitors"),
               _item(context, provider, 2, "assets/icons/community.svg.png", "Community"),
               _item(context, provider, 3, "assets/icons/payments.svg.png", "Payments"),
-              _item(context, provider, 4, "assets/icons/more.svg.png", "More"),
             ],
           ),
         ),
@@ -73,9 +72,6 @@ class DashboardBottomNavigation extends StatelessWidget {
           } else if (index == 2) {
             // Community — opens the full Community Feed / Notice Board.
             Navigator.pushNamed(context, AppRoutes.noticeList);
-          } else if (index == 4) {
-            // More — opens the full Quick Actions catalog directly.
-            Navigator.pushNamed(context, AppRoutes.quickActions);
           }
         },
         child: Column(
