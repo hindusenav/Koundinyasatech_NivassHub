@@ -18,10 +18,10 @@ class GenerateOtpBanner extends StatelessWidget {
           );
         },
         child: Container(
-          height: 78,
+          height: 72,
           width: double.infinity,
           padding: const EdgeInsets.symmetric(
-            horizontal: 16,
+            horizontal: 14,
             vertical: 12,
           ),
           decoration: BoxDecoration(
@@ -91,8 +91,8 @@ class GenerateOtpBanner extends StatelessWidget {
                   padding: const EdgeInsets.all(3),
                   child: Image.asset(
                     'assets/icons/qr_icon.png',
-                    width: 50,
-                    height: 60,
+                    width: 35,
+                    height: 30,
                     fit: BoxFit.contain,
                   ),
                 ),
