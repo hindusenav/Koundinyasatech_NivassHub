@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:flutter_nivasshub/routes/app_routes.dart';
 import 'package:flutter_nivasshub/constants/app_dimensions.dart';
 import 'package:flutter_nivasshub/constants/app_icons.dart';
+import 'package:flutter_nivasshub/constants/app_radius.dart';
 import 'package:flutter_nivasshub/constants/app_spacing.dart';
 import 'package:flutter_nivasshub/constants/app_text_styles.dart';
 import 'package:flutter_nivasshub/utils/extensions/context_extensions.dart';
@@ -250,23 +251,53 @@ class _LoginScreenState extends State<LoginScreen>
                                         const CountryCodeBadge(),
                                         AppSpacing.gapWSm,
                                         Expanded(
-                                          child: CustomTextField(
-                                            controller: _mobileController,
-                                            hint: 'Enter mobile number',
-                                            keyboardType: TextInputType.phone,
-                                            textInputAction:
-                                                TextInputAction.done,
-                                            inputFormatters: [
-                                              FilteringTextInputFormatter
-                                                  .digitsOnly,
-                                              LengthLimitingTextInputFormatter(
-                                                10,
+                                          child: Theme(
+                                            data: Theme.of(context).copyWith(
+                                              inputDecorationTheme: Theme.of(
+                                                context,
+                                              ).inputDecorationTheme.copyWith(
+                                                fillColor: Colors.white,
+                                                enabledBorder: OutlineInputBorder(
+                                                  borderRadius:
+                                                      AppRadius.radiusSm,
+                                                  borderSide: const BorderSide(
+                                                    color: AuthColors.border,
+                                                  ),
+                                                ),
+                                                border: OutlineInputBorder(
+                                                  borderRadius:
+                                                      AppRadius.radiusSm,
+                                                  borderSide: const BorderSide(
+                                                    color: AuthColors.border,
+                                                  ),
+                                                ),
+                                                hintStyle: AppTextStyles
+                                                    .bodyMedium
+                                                    .copyWith(
+                                                      color:
+                                                          AuthColors.bodyText,
+                                                    ),
                                               ),
-                                            ],
-                                            validator:
-                                                FormValidators.mobileNumber,
-                                            onFieldSubmitted: (_) =>
-                                                _handleLogin(),
+                                            ),
+                                            child: CustomTextField(
+                                              controller: _mobileController,
+                                              hint: 'Enter mobile number',
+                                              keyboardType:
+                                                  TextInputType.phone,
+                                              textInputAction:
+                                                  TextInputAction.done,
+                                              inputFormatters: [
+                                                FilteringTextInputFormatter
+                                                    .digitsOnly,
+                                                LengthLimitingTextInputFormatter(
+                                                  10,
+                                                ),
+                                              ],
+                                              validator:
+                                                  FormValidators.mobileNumber,
+                                              onFieldSubmitted: (_) =>
+                                                  _handleLogin(),
+                                            ),
                                           ),
                                         ),
                                       ],
