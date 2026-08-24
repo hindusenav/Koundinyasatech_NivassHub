@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import 'package:flutter_nivasshub/routes/app_routes.dart';
 import 'package:flutter_nivasshub/providers/dashboard/dashboard_navigation_provider.dart';
+import 'package:flutter_nivasshub/widgets/shared/feedback/custom_snackbar.dart';
 
 class DashboardBottomNavigation extends StatelessWidget {
   const DashboardBottomNavigation({super.key});
@@ -34,7 +35,6 @@ class DashboardBottomNavigation extends StatelessWidget {
               _item(context, provider, 1, "assets/icons/visitors.svg.png", "Visitors"),
               _item(context, provider, 2, "assets/icons/community.svg.png", "Community"),
               _item(context, provider, 3, "assets/icons/payments.svg.png", "Payments"),
-              _item(context, provider, 4, "assets/icons/more.svg.png", "More"),
             ],
           ),
         ),
@@ -56,11 +56,17 @@ class DashboardBottomNavigation extends StatelessWidget {
         splashColor: Colors.transparent,
         highlightColor: Colors.transparent,
         onTap: () {
-          provider.changeIndex(index);
+          if (index == 1 || index == 3) {
+            // Visitors / Payments — screens don't exist yet.
+            CustomSnackbar.info(context, '$title coming soon.');
+            return;
+          }
 
           if (index == 0) {
             // Home — return to the existing Dashboard already in the
             // stack instead of pushing a duplicate instance.
+            // DashboardNavObserver updates the highlight once this pop
+            // actually lands on the Dashboard route.
             if (ModalRoute.of(context)?.settings.name != AppRoutes.dashboard) {
               Navigator.popUntil(context, ModalRoute.withName(AppRoutes.dashboard));
             }
@@ -71,12 +77,11 @@ class DashboardBottomNavigation extends StatelessWidget {
             // nav is also rendered on NoticesScreen itself) — without
             // this, Back had to pop through multiple stacked copies of
             // the same screen before it reached the real previous screen.
+            // DashboardNavObserver updates the highlight once this push
+            // actually lands on the Community route.
             if (ModalRoute.of(context)?.settings.name != AppRoutes.noticeList) {
               Navigator.pushNamed(context, AppRoutes.noticeList);
             }
-          } else if (index == 4) {
-            // More — opens the full Quick Actions catalog directly.
-            Navigator.pushNamed(context, AppRoutes.quickActions);
           }
         },
         child: Column(

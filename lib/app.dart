@@ -211,6 +211,12 @@ ChangeNotifierProvider<ProfileProvider>(
 
           navigatorKey: NavigationService.navigatorKey,
 
+          navigatorObservers: [
+            DashboardNavObserver(
+              context.read<DashboardNavigationProvider>(),
+            ),
+          ],
+
           theme: AppTheme.light,
 
           darkTheme: AppTheme.dark,
