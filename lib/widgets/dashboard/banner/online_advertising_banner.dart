@@ -50,7 +50,7 @@ class OnlineAdvertisingBannerCard extends StatelessWidget {
               height: 200,
               fit: BoxFit.cover,
               errorBuilder: (context, error, stackTrace) {
-                print('Error loading image: $error');
+                debugPrint('Error loading image: $error');
                 // Show gradient background with text
                 return Container(
                   decoration: BoxDecoration(
