@@ -94,10 +94,7 @@ class _OtpInputBoxesState extends State<OtpInputBoxes> {
                         ),
                         child: Text(
                           char,
-                          style: const TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
-                          ).copyWith(color: AuthColors.heading),
+                          style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                         ),
                       ),
                     );
