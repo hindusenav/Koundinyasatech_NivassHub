@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter_nivasshub/routes/app_routes.dart';
 import 'package:flutter_nivasshub/providers/dashboard/dashboard_provider.dart';
 import 'package:flutter_nivasshub/widgets/dashboard/empty/section_empty.dart';
@@ -11,6 +12,7 @@ class QuickActionsGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final provider = context.watch<DashboardProvider>();
     final actions = provider.home?.data.quickActions ?? [];
 
@@ -27,29 +29,29 @@ class QuickActionsGrid extends StatelessWidget {
       children: [
         /// HEADER
         Row(
-          children: const [
+          children: [
             Expanded(
               child: Text(
                 "Quick Actions",
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF0F172A),
+                  color: isDark ? AppColors.textPrimaryDark : const Color(0xFF0F172A),
                 ),
               ),
             ),
             Icon(
               Icons.settings_outlined,
               size: 14,
-              color: Color(0xFF0284C7),
+              color: isDark ? AppColors.info : const Color(0xFF0284C7),
             ),
-            SizedBox(width: 4),
+            const SizedBox(width: 4),
             Text(
               "Customize",
               style: TextStyle(
                 fontSize: 11.5,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF0284C7),
+                color: isDark ? AppColors.info : const Color(0xFF0284C7),
               ),
             ),
           ],

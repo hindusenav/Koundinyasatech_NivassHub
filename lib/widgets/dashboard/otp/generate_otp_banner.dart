@@ -5,6 +5,7 @@ class GenerateOtpBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Material(
       color: Colors.transparent,
       borderRadius: BorderRadius.circular(12),
@@ -26,6 +27,9 @@ class GenerateOtpBanner extends StatelessWidget {
           ),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
+            // Fixed teal brand gradient — white text/icons on top already
+            // work in both themes, so it's kept as-is (like a colored
+            // button surface).
             gradient: const LinearGradient(
               begin: Alignment.centerLeft,
               end: Alignment.centerRight,
@@ -36,7 +40,7 @@ class GenerateOtpBanner extends StatelessWidget {
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: .12),
+                color: Colors.black.withValues(alpha: isDark ? .3 : .12),
                 blurRadius: 10,
                 offset: const Offset(0, 4),
               ),

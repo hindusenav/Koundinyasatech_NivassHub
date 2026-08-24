@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
+import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter_nivasshub/screens/notices/advertisement_details_screen.dart';
 import 'package:flutter_nivasshub/models/dashboard/banner_model.dart';
 
@@ -14,6 +15,7 @@ class BannerCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final title = banner.title.isNotEmpty ? banner.title : 'Century Bliss';
     final isNikoo = title.toLowerCase().contains('nikoo') ||
         title.toLowerCase().contains('nikaa') ||
@@ -28,15 +30,17 @@ class BannerCard extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? AppColors.surfaceDark : Colors.white,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
+          // Teal accent border reads clearly against both a light and a
+          // dark card surface, so it's kept as-is in both themes.
           color: const Color(0xFF2DD4BF).withValues(alpha: .5),
           width: 1,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: .03),
+            color: Colors.black.withValues(alpha: isDark ? .3 : .03),
             blurRadius: 6,
             offset: const Offset(0, 2),
           ),
@@ -67,7 +71,7 @@ class BannerCard extends StatelessWidget {
                     imageUrl: imageUrl,
                     fit: BoxFit.cover,
                     placeholder: (context, url) => Container(
-                      color: const Color(0xFFF1F5F9),
+                      color: isDark ? AppColors.grey800 : const Color(0xFFF1F5F9),
                       child: const Center(
                         child: CircularProgressIndicator(strokeWidth: 2),
                       ),
@@ -94,26 +98,26 @@ class BannerCard extends StatelessWidget {
                       children: [
                         Row(
                           children: [
-                            const Icon(
+                            Icon(
                               Icons.calendar_today_outlined,
                               size: 14,
-                              color: Color(0xFF64748B),
+                              color: isDark ? AppColors.textSecondaryDark : const Color(0xFF64748B),
                             ),
                             const SizedBox(width: 6),
                             Text(
                               dateStr,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 11.5,
-                                color: Color(0xFF64748B),
+                                color: isDark ? AppColors.textSecondaryDark : const Color(0xFF64748B),
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
                           ],
                         ),
-                        const Icon(
+                        Icon(
                           Icons.bookmark_border_outlined,
                           size: 18,
-                          color: Color(0xFF64748B),
+                          color: isDark ? AppColors.textSecondaryDark : const Color(0xFF64748B),
                         ),
                       ],
                     ),
@@ -126,13 +130,13 @@ class BannerCard extends StatelessWidget {
                         vertical: 2,
                       ),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFF1F5F9),
+                        color: isDark ? AppColors.grey800 : const Color(0xFFF1F5F9),
                         borderRadius: BorderRadius.circular(4),
                       ),
-                      child: const Text(
+                      child: Text(
                         'AD',
                         style: TextStyle(
-                          color: Color(0xFF475569),
+                          color: isDark ? AppColors.textSecondaryDark : const Color(0xFF475569),
                           fontSize: 9.5,
                           fontWeight: FontWeight.bold,
                         ),
@@ -143,10 +147,10 @@ class BannerCard extends StatelessWidget {
                     // Ad Title
                     Text(
                       title,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 15.5,
-                        color: Color(0xFF0F172A),
+                        color: isDark ? AppColors.textPrimaryDark : const Color(0xFF0F172A),
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -154,9 +158,9 @@ class BannerCard extends StatelessWidget {
                     // Description text with red Read More link
                     RichText(
                       text: TextSpan(
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 12,
-                          color: Color(0xFF475569),
+                          color: isDark ? AppColors.textSecondaryDark : const Color(0xFF475569),
                           height: 1.4,
                         ),
                         children: const [
@@ -177,46 +181,49 @@ class BannerCard extends StatelessWidget {
                     const SizedBox(height: 12),
 
                     // Thin Horizontal Divider
-                    const Divider(height: 1, color: Color(0xFFF1F5F9)),
+                    Divider(
+                      height: 1,
+                      color: isDark ? AppColors.grey800 : const Color(0xFFF1F5F9),
+                    ),
                     const SizedBox(height: 10),
 
                     // Social Action Toolbar: Likes, Comments & Share
                     Row(
                       children: [
-                        const Icon(
+                        Icon(
                           Icons.favorite_border_outlined,
                           size: 16,
-                          color: Color(0xFF64748B),
+                          color: isDark ? AppColors.textSecondaryDark : const Color(0xFF64748B),
                         ),
                         const SizedBox(width: 4),
                         Text(
                           '$likesCount',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 12,
-                            color: Color(0xFF64748B),
+                            color: isDark ? AppColors.textSecondaryDark : const Color(0xFF64748B),
                             fontWeight: FontWeight.w500,
                           ),
                         ),
                         const SizedBox(width: 16),
-                        const Icon(
+                        Icon(
                           Icons.chat_bubble_outline_rounded,
                           size: 15,
-                          color: Color(0xFF64748B),
+                          color: isDark ? AppColors.textSecondaryDark : const Color(0xFF64748B),
                         ),
                         const SizedBox(width: 4),
                         Text(
                           '$commentsCount',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 12,
-                            color: Color(0xFF64748B),
+                            color: isDark ? AppColors.textSecondaryDark : const Color(0xFF64748B),
                             fontWeight: FontWeight.w500,
                           ),
                         ),
                         const Spacer(),
-                        const Icon(
+                        Icon(
                           Icons.share_outlined,
                           size: 16,
-                          color: Color(0xFF64748B),
+                          color: isDark ? AppColors.textSecondaryDark : const Color(0xFF64748B),
                         ),
                       ],
                     ),

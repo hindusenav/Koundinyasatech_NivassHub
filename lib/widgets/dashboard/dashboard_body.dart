@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter_nivasshub/widgets/notifications/visitor_notification_section.dart';
 import 'package:flutter_nivasshub/widgets/dashboard/approval_queue/approval_queue_section.dart';
 import 'package:flutter_nivasshub/widgets/dashboard/banner/banner_slider.dart';
@@ -27,6 +28,8 @@ class DashboardBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     // ============================================================
     // RESPONSIVE CONTENT PADDING
     // ============================================================
@@ -35,7 +38,7 @@ class DashboardBody extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      color: const Color(0xFFF7F8FC),
+      color: isDark ? AppColors.backgroundDark : const Color(0xFFF7F8FC),
 
       // ==========================================================
       // POPUP LAYER

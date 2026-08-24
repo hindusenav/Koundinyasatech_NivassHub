@@ -84,6 +84,7 @@ class _DemoNotificationBannerContentState
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Positioned(
       top: 0,
       left: 0,
@@ -100,9 +101,9 @@ class _DemoNotificationBannerContentState
                 child: Container(
                   padding: AppSpacing.all(AppSpacing.md),
                   decoration: BoxDecoration(
-                    color: AppColors.surfaceLight,
+                    color: isDark ? AppColors.surfaceDark : AppColors.surfaceLight,
                     borderRadius: AppRadius.radiusMd,
-                    boxShadow: AppShadows.lg,
+                    boxShadow: isDark ? AppShadows.darkMd : AppShadows.lg,
                   ),
                   child: Row(
                     children: [
@@ -132,7 +133,7 @@ class _DemoNotificationBannerContentState
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                               style: AppTextStyles.bodySmall.copyWith(
-                                color: AppColors.grey600,
+                                color: isDark ? AppColors.grey300 : AppColors.grey600,
                               ),
                             ),
                           ],

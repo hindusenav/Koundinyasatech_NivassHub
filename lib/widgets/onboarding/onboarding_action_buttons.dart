@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter_nivasshub/constants/app_dimensions.dart';
 import 'package:flutter_nivasshub/constants/onboarding/onboarding_colors.dart';
 
@@ -89,12 +90,18 @@ class OnboardingLoginButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return OutlinedButton(
       onPressed: onPressed,
       style: OutlinedButton.styleFrom(
-        backgroundColor: Colors.white,
-        foregroundColor: OnboardingColors.primaryBlue,
-        side: const BorderSide(color: Color(0xFFD7E3F5), width: 2),
+        backgroundColor: isDark ? AppColors.surfaceDark : Colors.white,
+        foregroundColor: isDark
+            ? OnboardingColors.primaryBlueDarkMode
+            : OnboardingColors.primaryBlue,
+        side: BorderSide(
+          color: isDark ? AppColors.borderDark : const Color(0xFFD7E3F5),
+          width: 2,
+        ),
         minimumSize: const Size(double.infinity, AppDimensions.buttonHeightLg),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
       ),

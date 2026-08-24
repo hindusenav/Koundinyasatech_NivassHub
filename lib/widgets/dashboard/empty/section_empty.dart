@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:flutter_nivasshub/constants/app_colors.dart';
+
 class SectionEmpty extends StatelessWidget {
   const SectionEmpty({
     super.key,
@@ -14,15 +16,16 @@ class SectionEmpty extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       width: double.infinity,
       margin: const EdgeInsets.symmetric(vertical: 8),
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? AppColors.surfaceDark : Colors.white,
         borderRadius: BorderRadius.circular(18),
         border: Border.all(
-          color: Colors.grey.shade200,
+          color: isDark ? AppColors.borderDark : Colors.grey.shade200,
         ),
       ),
       child: Column(
@@ -30,11 +33,13 @@ class SectionEmpty extends StatelessWidget {
           Icon(
             icon,
             size: 48,
-            color: Colors.grey,
+            color: isDark ? AppColors.textSecondaryDark : Colors.grey,
           ),
           const SizedBox(height: 16),
           Text(
             title,
+            // No explicit color here — it inherits from the ambient
+            // Theme's text style, which is already brightness-aware.
             style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w700,
@@ -44,8 +49,8 @@ class SectionEmpty extends StatelessWidget {
           Text(
             message,
             textAlign: TextAlign.center,
-            style: const TextStyle(
-              color: Colors.grey,
+            style: TextStyle(
+              color: isDark ? AppColors.textSecondaryDark : Colors.grey,
               height: 1.5,
             ),
           ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter_nivasshub/models/dashboard/notice_model.dart';
 import 'package:flutter_nivasshub/widgets/dashboard/navigation/dashboard_bottom_navigation.dart';
 
@@ -13,6 +14,14 @@ class NoticeDetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final headingColor =
+        isDark ? AppColors.noticesHeadingDark : AppColors.noticesHeadingLight;
+    final mutedColor =
+        isDark ? AppColors.noticesMutedDark : AppColors.noticesMutedLight;
+    final bodyColor =
+        isDark ? AppColors.noticesBodyTextDark : AppColors.noticesBodyTextLight;
+
     String headerTitle = 'Notice 1';
     if (notice.noticeId == 'not_2') {
       headerTitle = 'Notice 2';
@@ -23,18 +32,20 @@ class NoticeDetailsScreen extends StatelessWidget {
     }
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor:
+          isDark ? AppColors.noticesBackgroundDark : AppColors.noticesBackgroundLight,
       appBar: AppBar(
-        backgroundColor: const Color(0xFFE0F2FE),
+        backgroundColor:
+            isDark ? AppColors.noticesAppBarDark : AppColors.noticesAppBarLight,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Color(0xFF0F172A)),
+          icon: Icon(Icons.arrow_back, color: headingColor),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: const Text(
+        title: Text(
           'Notice Board',
           style: TextStyle(
-            color: Color(0xFF0F172A),
+            color: headingColor,
             fontWeight: FontWeight.bold,
             fontSize: 18,
           ),
@@ -50,15 +61,18 @@ class NoticeDetailsScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: isDark ? AppColors.surfaceDark : AppColors.surfaceLight,
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
-                  color: const Color(0xFF2DD4BF).withValues(alpha: .5),
+                  color: (isDark
+                          ? AppColors.noticesTealAccentDark
+                          : AppColors.noticesTealAccentLight)
+                      .withValues(alpha: .5),
                   width: 1,
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: .03),
+                    color: Colors.black.withValues(alpha: isDark ? .3 : .03),
                     blurRadius: 6,
                     offset: const Offset(0, 2),
                   ),
@@ -75,19 +89,21 @@ class NoticeDetailsScreen extends StatelessWidget {
                         height: 42,
                         width: 42,
                         decoration: BoxDecoration(
-                          color: const Color(0xFFE0F2FE),
+                          color: isDark
+                              ? AppColors.noticesAppBarDark
+                              : AppColors.noticesAppBarLight,
                           borderRadius: BorderRadius.circular(12),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withValues(alpha: .06),
+                              color: Colors.black.withValues(alpha: isDark ? .3 : .06),
                               blurRadius: 4,
                               offset: const Offset(0, 2),
                             ),
                           ],
                         ),
-                        child: const Icon(
+                        child: Icon(
                           Icons.assignment_add,
-                          color: Color(0xFF0F172A),
+                          color: headingColor,
                           size: 22,
                         ),
                       ),
@@ -98,15 +114,20 @@ class NoticeDetailsScreen extends StatelessWidget {
                           children: [
                             Text(
                               headerTitle,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 16,
-                                color: Color(0xFF0F172A),
+                                color: headingColor,
                               ),
                             ),
                             const SizedBox(height: 4),
                             Row(
                               children: [
+                                // "Postedby" stamp badge — deliberately kept as
+                                // a fixed dark chip with white on-badge text in
+                                // both themes (same treatment as an on-primary
+                                // colored badge; branching the fill would break
+                                // contrast with the fixed white label).
                                 Container(
                                   padding: const EdgeInsets.symmetric(
                                     horizontal: 8,
@@ -128,8 +149,8 @@ class NoticeDetailsScreen extends StatelessWidget {
                                 const SizedBox(width: 8),
                                 Text(
                                   notice.date,
-                                  style: const TextStyle(
-                                    color: Color(0xFF94A3B8),
+                                  style: TextStyle(
+                                    color: mutedColor,
                                     fontSize: 11.5,
                                     fontWeight: FontWeight.w500,
                                   ),
@@ -139,9 +160,9 @@ class NoticeDetailsScreen extends StatelessWidget {
                           ],
                         ),
                       ),
-                      const Icon(
+                      Icon(
                         Icons.more_vert,
-                        color: Color(0xFF0F172A),
+                        color: headingColor,
                         size: 20,
                       ),
                     ],
@@ -153,7 +174,7 @@ class NoticeDetailsScreen extends StatelessWidget {
                     height: 2,
                     width: double.infinity,
                     decoration: BoxDecoration(
-                      color: const Color(0xFFE57C00),
+                      color: isDark ? AppColors.noticesAmberDark : AppColors.noticesAmberLight,
                       borderRadius: BorderRadius.circular(1),
                     ),
                   ),
@@ -162,44 +183,44 @@ class NoticeDetailsScreen extends StatelessWidget {
                   // Title & Full Content Body
                   Text(
                     notice.title,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 15,
-                      color: Color(0xFF0F172A),
+                      color: headingColor,
                     ),
                   ),
                   const SizedBox(height: 10),
                   Text(
                     notice.body,
-                    style: const TextStyle(
-                      color: Color(0xFF334155),
+                    style: TextStyle(
+                      color: bodyColor,
                       fontSize: 13,
                       height: 1.5,
                     ),
                   ),
                   const SizedBox(height: 12),
-                  const Text(
+                  Text(
                     'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
                     style: TextStyle(
-                      color: Color(0xFF334155),
+                      color: bodyColor,
                       fontSize: 13,
                       height: 1.5,
                     ),
                   ),
                   const SizedBox(height: 12),
-                  const Text(
+                  Text(
                     'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
                     style: TextStyle(
-                      color: Color(0xFF334155),
+                      color: bodyColor,
                       fontSize: 13,
                       height: 1.5,
                     ),
                   ),
                   const SizedBox(height: 12),
-                  const Text(
+                  Text(
                     'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
                     style: TextStyle(
-                      color: Color(0xFF334155),
+                      color: bodyColor,
                       fontSize: 13,
                       height: 1.5,
                     ),
@@ -219,7 +240,9 @@ class NoticeDetailsScreen extends StatelessWidget {
                         );
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF0284C7),
+                        backgroundColor: isDark
+                            ? AppColors.noticesAccentBlueDark
+                            : AppColors.noticesAccentBlueLight,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),

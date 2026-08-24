@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter_nivasshub/services/core/api_client.dart';
 import 'package:flutter_nivasshub/widgets/dashboard/navigation/dashboard_bottom_navigation.dart';
 import 'package:flutter_nivasshub/providers/notices/notices_provider.dart';
@@ -27,26 +28,32 @@ class _CommunityPostsSelectionView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final headingColor =
+        isDark ? AppColors.noticesHeadingDark : AppColors.noticesHeadingLight;
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor:
+          isDark ? AppColors.noticesBackgroundDark : AppColors.noticesBackgroundLight,
       appBar: AppBar(
-        backgroundColor: const Color(0xFFE0F2FE),
+        backgroundColor:
+            isDark ? AppColors.noticesAppBarDark : AppColors.noticesAppBarLight,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Color(0xFF0F172A)),
+          icon: Icon(Icons.arrow_back, color: headingColor),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: const Text(
+        title: Text(
           'Community Posts',
           style: TextStyle(
-            color: Color(0xFF0F172A),
+            color: headingColor,
             fontWeight: FontWeight.bold,
             fontSize: 18,
           ),
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.notifications_none_outlined, color: Color(0xFF0F172A), size: 22),
+            icon: Icon(Icons.notifications_none_outlined, color: headingColor, size: 22),
             onPressed: () {},
           ),
           const SizedBox(width: 4),
@@ -64,12 +71,16 @@ class _CommunityPostsSelectionView extends StatelessWidget {
             // Hero Ad Banner Card (ALTURA)
             Container(
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: isDark ? AppColors.surfaceDark : AppColors.surfaceLight,
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: const Color(0xFFE2E8F0)),
+                border: Border.all(
+                  color: isDark
+                      ? AppColors.noticesCardBorderDark
+                      : AppColors.noticesCardBorderLight,
+                ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: .04),
+                    color: Colors.black.withValues(alpha: isDark ? .3 : .04),
                     blurRadius: 8,
                     offset: const Offset(0, 3),
                   ),
@@ -77,6 +88,9 @@ class _CommunityPostsSelectionView extends StatelessWidget {
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(16),
+                // The photo, its legibility scrim, and the text/badges
+                // painted directly on top of it are intentionally
+                // theme-independent (a photo does not change with app theme).
                 child: Stack(
                   children: [
                     SizedBox(
@@ -86,8 +100,11 @@ class _CommunityPostsSelectionView extends StatelessWidget {
                         imageUrl:
                             'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=600&q=80',
                         fit: BoxFit.cover,
-                        placeholder: (context, url) =>
-                            Container(color: const Color(0xFFE2E8F0)),
+                        placeholder: (context, url) => Container(
+                          color: isDark
+                              ? AppColors.noticesCardBorderDark
+                              : AppColors.noticesCardBorderLight,
+                        ),
                         errorWidget: (context, url, err) => Container(
                           color: const Color(0xFF0F172A),
                           child: const Icon(Icons.apartment,

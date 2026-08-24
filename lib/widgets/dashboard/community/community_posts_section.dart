@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter_nivasshub/services/core/api_client.dart';
 import 'package:flutter_nivasshub/screens/notices/community_posts_selection_screen.dart';
 import 'package:flutter_nivasshub/screens/notices/notice_details_screen.dart';
@@ -25,6 +26,7 @@ class CommunityPostsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final provider = context.watch<DashboardProvider>();
 
     final meeting = provider.communityMeeting;
@@ -40,12 +42,12 @@ class CommunityPostsSection extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text(
+            Text(
               'Community Posts',
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF0F172A),
+                color: isDark ? AppColors.textPrimaryDark : const Color(0xFF0F172A),
               ),
             ),
             InkWell(
@@ -54,23 +56,25 @@ class CommunityPostsSection extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFECFDF5),
+                  color: isDark ? const Color(0xFF123B2E) : const Color(0xFFECFDF5),
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: const Color(0xFF6EE7B7)),
+                  border: Border.all(
+                    color: isDark ? const Color(0xFF10B981) : const Color(0xFF6EE7B7),
+                  ),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
-                  children: const [
+                  children: [
                     Icon(
                       Icons.edit_note,
                       size: 16,
-                      color: Color(0xFF059669),
+                      color: isDark ? const Color(0xFF34D399) : const Color(0xFF059669),
                     ),
-                    SizedBox(width: 4),
+                    const SizedBox(width: 4),
                     Text(
                       'New Posts',
                       style: TextStyle(
-                        color: Color(0xFF059669),
+                        color: isDark ? const Color(0xFF34D399) : const Color(0xFF059669),
                         fontWeight: FontWeight.bold,
                         fontSize: 12,
                       ),
@@ -111,30 +115,30 @@ class CommunityPostsSection extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
+              Text(
                 'Notice Board',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF0F172A),
+                  color: isDark ? AppColors.textPrimaryDark : const Color(0xFF0F172A),
                 ),
               ),
               Row(
                 mainAxisSize: MainAxisSize.min,
-                children: const [
+                children: [
                   Text(
                     'View All',
                     style: TextStyle(
-                      color: Color(0xFF0284C7),
+                      color: isDark ? AppColors.info : const Color(0xFF0284C7),
                       fontWeight: FontWeight.bold,
                       fontSize: 12.5,
                     ),
                   ),
-                  SizedBox(width: 2),
+                  const SizedBox(width: 2),
                   Icon(
                     Icons.chevron_right,
                     size: 16,
-                    color: Color(0xFF0284C7),
+                    color: isDark ? AppColors.info : const Color(0xFF0284C7),
                   ),
                 ],
               ),

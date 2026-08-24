@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:flutter_nivasshub/constants/app_colors.dart';
+
 class OnlineAdvertisingBannerCard extends StatelessWidget {
   const OnlineAdvertisingBannerCard({
     super.key,
@@ -12,20 +14,21 @@ class OnlineAdvertisingBannerCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       width: double.infinity,
       height: 100,
       margin: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
-        color: const Color(0xFFF9F9FB),
+        color: isDark ? AppColors.surfaceDark : const Color(0xFFF9F9FB),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: const Color(0xFFCBD5E1),
+          color: isDark ? AppColors.borderDark : const Color(0xFFCBD5E1),
           width: 1,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: .02),
+            color: Colors.black.withValues(alpha: isDark ? .3 : .02),
             blurRadius: 6,
             offset: const Offset(0, 2),
           ),
@@ -197,10 +200,10 @@ class OnlineAdvertisingBannerCard extends StatelessWidget {
                     child: Text(
                       title,
                       textAlign: TextAlign.right,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w900,
-                        color: Color(0xFF163E75),
+                        color: isDark ? AppColors.primaryLight : const Color(0xFF163E75),
                         height: 1.1,
                         letterSpacing: 0.2,
                       ),

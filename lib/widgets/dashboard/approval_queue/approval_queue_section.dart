@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter_nivasshub/routes/app_routes.dart';
 import 'package:flutter_nivasshub/providers/dashboard/dashboard_provider.dart';
 import 'package:flutter_nivasshub/widgets/dashboard/empty/section_empty.dart';
@@ -18,6 +19,7 @@ class ApprovalQueueSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final provider = context.watch<DashboardProvider>();
 
     final visitors = provider.visitors;
@@ -34,14 +36,14 @@ class ApprovalQueueSection extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? AppColors.surfaceDark : Colors.white,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: const Color(0xFFE2E8F0),
+          color: isDark ? AppColors.borderDark : const Color(0xFFE2E8F0),
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: .03),
+            color: Colors.black.withValues(alpha: isDark ? .3 : .03),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -54,19 +56,19 @@ class ApprovalQueueSection extends StatelessWidget {
             children: [
               Text(
                 'Approval Queue (${visitors.length})',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF0F172A),
+                  color: isDark ? AppColors.textPrimaryDark : const Color(0xFF0F172A),
                 ),
               ),
               InkWell(
                 onTap: () => Navigator.pushNamed(context, AppRoutes.activities),
                 borderRadius: BorderRadius.circular(4),
-                child: const Text(
+                child: Text(
                   'View all',
                   style: TextStyle(
-                    color: Color(0xFF0284C7),
+                    color: isDark ? AppColors.info : const Color(0xFF0284C7),
                     fontWeight: FontWeight.bold,
                     fontSize: 12.5,
                   ),
@@ -112,6 +114,7 @@ class _VisitorAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Column(
       children: [
         if (isImage)
@@ -149,10 +152,10 @@ class _VisitorAvatar extends StatelessWidget {
             textAlign: TextAlign.center,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.bold,
-              color: Color(0xFF0F172A),
+              color: isDark ? AppColors.textPrimaryDark : const Color(0xFF0F172A),
             ),
           ),
         ),
@@ -166,9 +169,9 @@ class _VisitorAvatar extends StatelessWidget {
             textAlign: TextAlign.center,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 11,
-              color: Color(0xFF64748B),
+              color: isDark ? AppColors.textSecondaryDark : const Color(0xFF64748B),
             ),
           ),
         ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
+import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter_nivasshub/services/core/api_client.dart';
 import 'package:flutter_nivasshub/widgets/shared/loaders/loader.dart';
 import 'package:flutter_nivasshub/widgets/shared/states/custom_error_widget.dart';
@@ -165,15 +166,22 @@ class _NoticeBoardViewState extends State<_NoticeBoardView> {
     final rawFeedItems = provider.feedItems;
     final displayItems = _getFilteredItems(rawFeedItems);
     final statusBarHeight = MediaQuery.of(context).padding.top;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final headerBlue =
+        isDark ? AppColors.dashboardHeaderDark : AppColors.dashboardHeaderLight;
+    final headingColor =
+        isDark ? AppColors.noticesHeadingDark : AppColors.noticesHeadingLight;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: isDark
+          ? AppColors.noticesBackgroundDark
+          : AppColors.noticesBackgroundLight,
       bottomNavigationBar: const DashboardBottomNavigation(),
       body: AnnotatedRegion<SystemUiOverlayStyle>(
-        value: const SystemUiOverlayStyle(
+        value: SystemUiOverlayStyle(
           statusBarColor: Colors.transparent,
-          statusBarIconBrightness: Brightness.dark,
-          statusBarBrightness: Brightness.light,
+          statusBarIconBrightness: isDark ? Brightness.light : Brightness.dark,
+          statusBarBrightness: isDark ? Brightness.dark : Brightness.light,
         ),
         child: SafeArea(
           top: false,
@@ -190,18 +198,18 @@ class _NoticeBoardViewState extends State<_NoticeBoardView> {
                   right: 16,
                   bottom: 14,
                 ),
-                decoration: const BoxDecoration(
-                  color: Color(0xFFC7E1F8),
-                  borderRadius: BorderRadius.only(
+                decoration: BoxDecoration(
+                  color: headerBlue,
+                  borderRadius: const BorderRadius.only(
                     bottomLeft: Radius.circular(20),
                     bottomRight: Radius.circular(20),
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: Color(0x10000000),
+                      color: Colors.black.withValues(alpha: isDark ? 0.24 : 0.06),
                       blurRadius: 6,
                       spreadRadius: 0,
-                      offset: Offset(0, 2),
+                      offset: const Offset(0, 2),
                     ),
                   ],
                 ),
@@ -210,10 +218,10 @@ class _NoticeBoardViewState extends State<_NoticeBoardView> {
                     // Notice Board is the parent/root screen of this flow,
                     // so it intentionally has no back arrow (see sub-category
                     // and detail screens for the back navigation entry point).
-                    const Text(
+                    Text(
                       'Notice Board',
                       style: TextStyle(
-                        color: Color(0xFF0F172A),
+                        color: headingColor,
                         fontWeight: FontWeight.bold,
                         fontSize: 18,
                       ),
@@ -254,13 +262,21 @@ class _NoticeBoardViewState extends State<_NoticeBoardView> {
                                     ),
                                     decoration: BoxDecoration(
                                       color: isSelected
-                                          ? const Color(0xFFE57C00)
-                                          : Colors.white,
+                                          ? (isDark
+                                              ? AppColors.noticesAmberDark
+                                              : AppColors.noticesAmberLight)
+                                          : (isDark
+                                              ? AppColors.surfaceDark
+                                              : Colors.white),
                                       borderRadius: BorderRadius.circular(20),
                                       border: Border.all(
                                         color: isSelected
-                                            ? const Color(0xFFE57C00)
-                                            : const Color(0xFFCBD5E1),
+                                            ? (isDark
+                                                ? AppColors.noticesAmberDark
+                                                : AppColors.noticesAmberLight)
+                                            : (isDark
+                                                ? AppColors.noticesBorderDark
+                                                : AppColors.noticesBorderLight),
                                       ),
                                     ),
                                     child: Text(
@@ -268,7 +284,7 @@ class _NoticeBoardViewState extends State<_NoticeBoardView> {
                                       style: TextStyle(
                                         color: isSelected
                                             ? Colors.white
-                                            : const Color(0xFF0F172A),
+                                            : headingColor,
                                         fontWeight: isSelected
                                             ? FontWeight.bold
                                             : FontWeight.w500,
@@ -302,23 +318,32 @@ class _NoticeBoardViewState extends State<_NoticeBoardView> {
                               vertical: 10,
                             ),
                             decoration: BoxDecoration(
-                              color: const Color(0xFFFEF2F2),
+                              color: isDark
+                                  ? AppColors.noticesDangerBgDark
+                                  : AppColors.noticesDangerBgLight,
                               borderRadius: BorderRadius.circular(8),
-                              border:
-                                  Border.all(color: const Color(0xFFFECACA)),
+                              border: Border.all(
+                                color: isDark
+                                    ? AppColors.noticesDangerBorderDark
+                                    : AppColors.noticesDangerBorderLight,
+                              ),
                             ),
                             child: Row(
-                              children: const [
+                              children: [
                                 Icon(
                                   Icons.circle,
-                                  color: Color(0xFFEF4444),
+                                  color: isDark
+                                      ? AppColors.noticesDangerDotDark
+                                      : AppColors.noticesDangerDotLight,
                                   size: 8,
                                 ),
-                                SizedBox(width: 8),
+                                const SizedBox(width: 8),
                                 Text(
                                   '1 Unread Notice',
                                   style: TextStyle(
-                                    color: Color(0xFFDC2626),
+                                    color: isDark
+                                        ? AppColors.noticesDangerTextDark
+                                        : AppColors.noticesDangerTextLight,
                                     fontWeight: FontWeight.bold,
                                     fontSize: 12,
                                   ),

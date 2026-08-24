@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter_nivasshub/screens/notices/create_event_screen.dart';
 import 'package:flutter_nivasshub/screens/notices/create_poll_screen.dart';
 import 'package:flutter_nivasshub/screens/notices/create_post_screen.dart';
@@ -9,11 +10,12 @@ class CreateCommunityPostBottomSheet extends StatelessWidget {
   const CreateCommunityPostBottomSheet({super.key});
 
   static Future<void> show(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       useRootNavigator: true,
-      backgroundColor: Colors.white,
+      backgroundColor: isDark ? AppColors.surfaceDark : AppColors.surfaceLight,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -23,6 +25,12 @@ class CreateCommunityPostBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final headingColor =
+        isDark ? AppColors.noticesHeadingDark : Colors.black87;
+    final secondaryColor =
+        isDark ? AppColors.textSecondaryDark : Colors.grey.shade600;
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       child: Column(
@@ -34,30 +42,31 @@ class CreateCommunityPostBottomSheet extends StatelessWidget {
               width: 40,
               height: 4,
               decoration: BoxDecoration(
-                color: Colors.grey.shade300,
+                color: isDark ? AppColors.grey700 : Colors.grey.shade300,
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
           ),
           const SizedBox(height: 16),
-          const Text(
+          Text(
             'Create a community post',
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
-              color: Colors.black87,
+              color: headingColor,
             ),
           ),
           const SizedBox(height: 4),
           Text(
             'Choose a post format to engage with your neighbors',
-            style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
+            style: TextStyle(fontSize: 13, color: secondaryColor),
           ),
           const SizedBox(height: 20),
           _OptionCard(
             icon: Icons.edit_outlined,
-            iconColor: const Color(0xFF2563EB),
-            iconBg: const Color(0xFFEFF6FF),
+            iconColor:
+                isDark ? AppColors.communityAccentBlueDark : AppColors.communityAccentBlueLight,
+            iconBg: isDark ? AppColors.noticesBlueTintBgDark : AppColors.noticesBlueTintBgLight,
             title: 'Create Post',
             subtitle: 'Share news, updates, or helpful recommendations',
             onTap: () {
@@ -71,8 +80,8 @@ class CreateCommunityPostBottomSheet extends StatelessWidget {
           const SizedBox(height: 12),
           _OptionCard(
             icon: Icons.bar_chart_outlined,
-            iconColor: const Color(0xFF0284C7),
-            iconBg: const Color(0xFFE0F2FE),
+            iconColor: isDark ? AppColors.noticesAccentBlueDark : AppColors.noticesAccentBlueLight,
+            iconBg: isDark ? AppColors.noticesAppBarDark : AppColors.noticesAppBarLight,
             title: 'Create Poll',
             subtitle: 'Get quick feedback or vote on community matters',
             onTap: () {
@@ -86,8 +95,9 @@ class CreateCommunityPostBottomSheet extends StatelessWidget {
           const SizedBox(height: 12),
           _OptionCard(
             icon: Icons.calendar_today_outlined,
-            iconColor: const Color(0xFF2563EB),
-            iconBg: const Color(0xFFEFF6FF),
+            iconColor:
+                isDark ? AppColors.communityAccentBlueDark : AppColors.communityAccentBlueLight,
+            iconBg: isDark ? AppColors.noticesBlueTintBgDark : AppColors.noticesBlueTintBgLight,
             title: 'Host an Event',
             subtitle: 'Invite residents to gatherings or meetings',
             onTap: () {
@@ -124,13 +134,16 @@ class _OptionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(12),
       child: Container(
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          border: Border.all(color: const Color(0xFFE2E8F0)),
+          border: Border.all(
+            color: isDark ? AppColors.noticesCardBorderDark : AppColors.noticesCardBorderLight,
+          ),
           borderRadius: BorderRadius.circular(12),
         ),
         child: Row(
@@ -150,16 +163,19 @@ class _OptionCard extends StatelessWidget {
                 children: [
                   Text(
                     title,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 15,
-                      color: Colors.black87,
+                      color: isDark ? AppColors.noticesHeadingDark : Colors.black87,
                     ),
                   ),
                   const SizedBox(height: 2),
                   Text(
                     subtitle,
-                    style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: isDark ? AppColors.textSecondaryDark : Colors.grey.shade600,
+                    ),
                   ),
                 ],
               ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter_nivasshub/models/profile/address_model.dart';
 import 'package:flutter_nivasshub/providers/profile/profile_provider.dart';
 
@@ -18,17 +19,28 @@ class _AddAddressDetailsScreenState extends State<AddAddressDetailsScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   // ============================================================
-  // COLORS
+  // THEME
   // ============================================================
 
-  static const Color primaryBlue = Color(0xFF0878D1);
-  static const Color headerBlue = Color(0xFFC8E3FC);
-  static const Color backgroundBlue = Color(0xFFF3F7FD);
+  bool get _isDark => Theme.of(context).brightness == Brightness.dark;
 
-  static const Color labelColor = Color(0xFF202124);
-  static const Color valueColor = Color(0xFF29496F);
-
-  static const Color borderColor = Color(0xFFD9DEE4);
+  Color get primaryBlue => _isDark
+      ? AppColors.addAddressPrimaryBlueDark
+      : AppColors.addAddressPrimaryBlueLight;
+  Color get headerBlue => _isDark
+      ? AppColors.addAddressHeaderDark
+      : AppColors.addAddressHeaderLight;
+  Color get backgroundBlue => _isDark
+      ? AppColors.addAddressBackgroundDark
+      : AppColors.addAddressBackgroundLight;
+  Color get labelColor =>
+      _isDark ? AppColors.textPrimaryDark : AppColors.addAddressLabelLight;
+  Color get valueColor =>
+      _isDark ? AppColors.addAddressValueDark : AppColors.addAddressValueLight;
+  Color get borderColor =>
+      _isDark ? AppColors.borderDark : AppColors.addAddressBorderLight;
+  Color get hintColor =>
+      _isDark ? AppColors.textSecondaryDark : AppColors.addAddressHintLight;
 
   // ============================================================
   // CONTROLLERS
@@ -151,7 +163,11 @@ class _AddAddressDetailsScreenState extends State<AddAddressDetailsScreen> {
 
           leading: IconButton(
             padding: EdgeInsets.zero,
-            icon: const Icon(Icons.arrow_back, color: Colors.black, size: 20),
+            icon: Icon(
+              Icons.arrow_back,
+              color: _isDark ? AppColors.textPrimaryDark : Colors.black,
+              size: 20,
+            ),
             onPressed: () {
               Navigator.pop(context);
             },
@@ -162,7 +178,7 @@ class _AddAddressDetailsScreenState extends State<AddAddressDetailsScreen> {
           title: Text(
             'Add Address Details',
             style: TextStyle(
-              color: Colors.black,
+              color: _isDark ? AppColors.textPrimaryDark : Colors.black,
               fontSize: 14 * scale,
               fontWeight: FontWeight.w700,
             ),
@@ -198,13 +214,13 @@ class _AddAddressDetailsScreenState extends State<AddAddressDetailsScreen> {
               ),
 
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: _isDark ? AppColors.surfaceDark : Colors.white,
 
                 borderRadius: BorderRadius.circular(13 * scale),
 
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.08),
+                    color: Colors.black.withValues(alpha: _isDark ? 0.4 : 0.08),
                     blurRadius: 5,
                     offset: const Offset(0, 2),
                   ),
@@ -437,11 +453,12 @@ class _AddAddressDetailsScreenState extends State<AddAddressDetailsScreen> {
                     },
 
                     style: OutlinedButton.styleFrom(
-                      backgroundColor: Colors.white,
+                      backgroundColor:
+                          _isDark ? AppColors.surfaceDark : Colors.white,
 
                       foregroundColor: primaryBlue,
 
-                      side: const BorderSide(color: primaryBlue, width: 1),
+                      side: BorderSide(color: primaryBlue, width: 1),
 
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8 * scale),
@@ -551,14 +568,14 @@ class _AddAddressDetailsScreenState extends State<AddAddressDetailsScreen> {
                 hintText: hint,
 
                 hintStyle: TextStyle(
-                  color: const Color(0xFFB5B9BE),
+                  color: hintColor,
                   fontSize: 12 * scale,
                   fontWeight: FontWeight.w400,
                 ),
 
                 filled: true,
 
-                fillColor: Colors.white,
+                fillColor: _isDark ? AppColors.surfaceDark : Colors.white,
 
                 contentPadding: EdgeInsets.symmetric(
                   horizontal: 11 * scale,
@@ -568,19 +585,19 @@ class _AddAddressDetailsScreenState extends State<AddAddressDetailsScreen> {
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(7 * scale),
 
-                  borderSide: const BorderSide(color: borderColor, width: 0.8),
+                  borderSide: BorderSide(color: borderColor, width: 0.8),
                 ),
 
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(7 * scale),
 
-                  borderSide: const BorderSide(color: borderColor, width: 0.8),
+                  borderSide: BorderSide(color: borderColor, width: 0.8),
                 ),
 
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(7 * scale),
 
-                  borderSide: const BorderSide(color: primaryBlue, width: 1.2),
+                  borderSide: BorderSide(color: primaryBlue, width: 1.2),
                 ),
 
                 errorBorder: OutlineInputBorder(

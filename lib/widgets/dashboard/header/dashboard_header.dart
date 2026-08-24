@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
+import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter_nivasshub/routes/app_routes.dart';
 import 'package:flutter_nivasshub/widgets/shared/feedback/custom_snackbar.dart';
 import 'package:flutter_nivasshub/providers/dashboard/dashboard_provider.dart';
@@ -15,11 +16,16 @@ class DashboardHeader extends StatelessWidget {
   // COLORS
   // ============================================================
 
-  static const Color _headerBlue = Color(0xFFC7E1F8);
+  static const Color _headerBlueLight = AppColors.dashboardHeaderLight;
+  static const Color _headerBlueDark = AppColors.dashboardHeaderDark;
 
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<DashboardProvider>();
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final headerBlue = isDark ? _headerBlueDark : _headerBlueLight;
+    final headerTextColor =
+        isDark ? AppColors.textPrimaryDark : const Color(0xFF1F1F1F);
 
     final user = provider.home?.data.user;
     final addresses = provider.addresses;
@@ -40,10 +46,10 @@ class DashboardHeader extends StatelessWidget {
     // ============================================================
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: const SystemUiOverlayStyle(
-        statusBarColor: _headerBlue,
-        statusBarIconBrightness: Brightness.dark,
-        statusBarBrightness: Brightness.light,
+      value: SystemUiOverlayStyle(
+        statusBarColor: headerBlue,
+        statusBarIconBrightness: isDark ? Brightness.light : Brightness.dark,
+        statusBarBrightness: isDark ? Brightness.dark : Brightness.light,
       ),
 
       child: Container(
@@ -68,7 +74,7 @@ class DashboardHeader extends StatelessWidget {
         clipBehavior: Clip.antiAlias,
 
         decoration: BoxDecoration(
-          color: _headerBlue,
+          color: headerBlue,
 
           // ======================================================
           // FIGMA BOTTOM ROUNDED CORNERS
@@ -85,7 +91,7 @@ class DashboardHeader extends StatelessWidget {
 
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.12),
+              color: Colors.black.withValues(alpha: isDark ? 0.32 : 0.12),
               blurRadius: 8,
               spreadRadius: 0,
               offset: const Offset(0, 3),
@@ -132,10 +138,10 @@ class DashboardHeader extends StatelessWidget {
                         'Hello! ${user?.name ?? 'User name'} 👋',
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 13.5,
                           fontWeight: FontWeight.w800,
-                          color: Color(0xFF1F1F1F),
+                          color: headerTextColor,
                           height: 1.15,
                           letterSpacing: 0.05,
                         ),
@@ -182,10 +188,10 @@ class DashboardHeader extends StatelessWidget {
                                   error,
                                   stackTrace,
                                 ) {
-                                  return const Icon(
+                                  return Icon(
                                     Icons.chat_bubble_outline_rounded,
                                     size: 18,
-                                    color: Color.fromARGB(255, 9, 9, 9),
+                                    color: headerTextColor,
                                   );
                                 },
                               ),
@@ -203,20 +209,20 @@ class DashboardHeader extends StatelessWidget {
                                 ? flatLabel
                                 : 'B - 402',
 
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 11,
                               fontWeight: FontWeight.w700,
-                              color: Color.fromARGB(255, 9, 9, 9),
+                              color: headerTextColor,
                               height: 1.1,
                             ),
                           ),
 
                           const SizedBox(width: 2),
 
-                          const Icon(
+                          Icon(
                             Icons.keyboard_arrow_down_rounded,
                             size: 14,
-                            color: Color(0xFF222222),
+                            color: headerTextColor,
                           ),
                         ],
                       ),
@@ -259,15 +265,20 @@ class DashboardHeader extends StatelessWidget {
 
                             fit: BoxFit.contain,
 
+                            // Dark line-art PNG with a transparent
+                            // background — invisible on a dark header
+                            // unless tinted.
+                            color: isDark ? headerTextColor : null,
+
                             errorBuilder: (
                               context,
                               error,
                               stackTrace,
                             ) {
-                              return const Icon(
+                              return Icon(
                                 Icons.search_rounded,
                                 size: 19,
-                                color: Color.fromARGB(255, 11, 11, 11),
+                                color: headerTextColor,
                               );
                             },
                           ),
@@ -304,15 +315,20 @@ class DashboardHeader extends StatelessWidget {
 
                             fit: BoxFit.contain,
 
+                            // Dark line-art PNG with a transparent
+                            // background — invisible on a dark header
+                            // unless tinted.
+                            color: isDark ? headerTextColor : null,
+
                             errorBuilder: (
                               context,
                               error,
                               stackTrace,
                             ) {
-                              return const Icon(
+                              return Icon(
                                 Icons.chat_bubble_outline_rounded,
                                 size: 19,
-                                color: Color.fromARGB(255, 8, 8, 8),
+                                color: headerTextColor,
                               );
                             },
                           ),

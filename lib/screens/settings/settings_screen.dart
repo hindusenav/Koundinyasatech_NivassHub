@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter_nivasshub/routes/app_routes.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -11,16 +12,31 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   // ============================================================
-  // COLORS
+  // THEME
   // ============================================================
 
-  static const Color backgroundColor = Color(0xFFF3F7FD);
-  static const Color headerColor = Color(0xFFC8E3FC);
-  static const Color primaryBlue = Color(0xFF0878D1);
-  static const Color lightBlue = Color(0xFFEAF4FF);
-  static const Color darkText = Color(0xFF202124);
-  static const Color greyText = Color(0xFF858585);
-  static const Color borderColor = Color(0xFFE2E6EA);
+  bool get _isDark => Theme.of(context).brightness == Brightness.dark;
+
+  Color get backgroundColor => _isDark
+      ? AppColors.settingsBackgroundDark
+      : AppColors.settingsBackgroundLight;
+  Color get headerColor =>
+      _isDark ? AppColors.settingsHeaderDark : AppColors.settingsHeaderLight;
+  Color get primaryBlue => _isDark
+      ? AppColors.settingsPrimaryBlueDark
+      : AppColors.settingsPrimaryBlueLight;
+  Color get lightBlue => _isDark
+      ? AppColors.settingsLightBlueDark
+      : AppColors.settingsLightBlueLight;
+  Color get darkText =>
+      _isDark ? AppColors.textPrimaryDark : AppColors.settingsTextPrimaryLight;
+  Color get greyText => _isDark
+      ? AppColors.textSecondaryDark
+      : AppColors.settingsTextSecondaryLight;
+  Color get borderColor =>
+      _isDark ? AppColors.borderDark : AppColors.settingsBorderLight;
+  Color get sheetBackgroundColor =>
+      _isDark ? AppColors.surfaceDark : Colors.white;
 
   // ============================================================
   // LOCAL VALUES
@@ -82,7 +98,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   void _notificationPreferences() {
     showModalBottomSheet(
       context: context,
-      backgroundColor: Colors.white,
+      backgroundColor: sheetBackgroundColor,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
@@ -205,7 +221,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   void _securityAlerts() {
     showModalBottomSheet(
       context: context,
-      backgroundColor: Colors.white,
+      backgroundColor: sheetBackgroundColor,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -252,7 +268,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   void _feedSettings() {
     showModalBottomSheet(
       context: context,
-      backgroundColor: Colors.white,
+      backgroundColor: sheetBackgroundColor,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -322,7 +338,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   void _myOrders() {
     showModalBottomSheet(
       context: context,
-      backgroundColor: Colors.white,
+      backgroundColor: sheetBackgroundColor,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -369,7 +385,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   void _myPlans() {
     showModalBottomSheet(
       context: context,
-      backgroundColor: Colors.white,
+      backgroundColor: sheetBackgroundColor,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -599,16 +615,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
           leading: IconButton(
             padding: EdgeInsets.zero,
-            icon: const Icon(Icons.arrow_back, color: Colors.black, size: 18),
+            icon: Icon(
+              Icons.arrow_back,
+              color: _isDark ? AppColors.textPrimaryDark : Colors.black,
+              size: 18,
+            ),
             onPressed: () {
               Navigator.maybePop(context);
             },
           ),
 
-          title: const Text(
+          title: Text(
             'Settings',
             style: TextStyle(
-              color: Colors.black,
+              color: _isDark ? AppColors.textPrimaryDark : Colors.black,
               fontSize: 12,
               fontWeight: FontWeight.w700,
             ),
@@ -617,9 +637,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
           actions: [
             IconButton(
               padding: const EdgeInsets.only(right: 10),
-              icon: const Icon(
+              icon: Icon(
                 Icons.help_outline,
-                color: Colors.black,
+                color: _isDark ? AppColors.textPrimaryDark : Colors.black,
                 size: 18,
               ),
               onPressed: _openHelpSupport,
@@ -1030,15 +1050,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
             Container(
               width: 27 * scale,
               height: 27 * scale,
-              decoration: const BoxDecoration(
-                color: Color(0xFFFFEEF0),
+              decoration: BoxDecoration(
+                color: _isDark
+                    ? AppColors.settingsProfileBadgeBgDark
+                    : AppColors.settingsProfileBadgeBgLight,
                 shape: BoxShape.circle,
               ),
               alignment: Alignment.center,
               child: Text(
                 '0%',
                 style: TextStyle(
-                  color: Colors.red,
+                  color: _isDark ? AppColors.noticesDangerTextDark : Colors.red,
                   fontSize: 7 * scale,
                   fontWeight: FontWeight.w700,
                 ),
@@ -1193,9 +1215,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         vertical: 2 * scale,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: _isDark ? AppColors.surfaceDark : Colors.white,
                         borderRadius: BorderRadius.circular(5 * scale),
-                        border: Border.all(color: const Color(0xFFD6DCE2)),
+                        border: Border.all(
+                          color: _isDark
+                              ? AppColors.settingsAddBorderDark
+                              : AppColors.settingsAddBorderLight,
+                        ),
                       ),
                       child: Text(
                         '+ Add',
@@ -1289,9 +1315,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
       height: 48 * scale,
       padding: EdgeInsets.symmetric(horizontal: 8 * scale),
       decoration: BoxDecoration(
-        color: const Color(0xFFFFFAEE),
+        color: _isDark
+            ? AppColors.settingsNotifyBgDark
+            : AppColors.settingsNotifyBgLight,
         borderRadius: BorderRadius.circular(9 * scale),
-        border: Border.all(color: const Color(0xFFFFD477), width: 0.8),
+        border: Border.all(
+          color: _isDark
+              ? AppColors.settingsNotifyBorderDark
+              : AppColors.settingsNotifyBorderLight,
+          width: 0.8,
+        ),
       ),
       child: Row(
         children: [
@@ -1299,7 +1332,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
             child: Text(
               'Not Getting Notifications?',
               style: TextStyle(
-                color: const Color(0xFFFF8A00),
+                color: _isDark
+                    ? AppColors.settingsNotifyTextDark
+                    : AppColors.settingsNotifyTextLight,
                 fontSize: 7 * scale,
                 fontWeight: FontWeight.w500,
               ),
@@ -1355,12 +1390,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
       height: (hasSubtitle ? 52 : 48) * scale,
       margin: EdgeInsets.only(bottom: 6 * scale),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: _isDark ? AppColors.surfaceDark : Colors.white,
         borderRadius: BorderRadius.circular(9 * scale),
         border: Border.all(color: borderColor, width: 0.5),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.08),
+            color: Colors.black.withValues(alpha: _isDark ? 0.4 : 0.08),
             blurRadius: 3,
             offset: const Offset(0, 2),
           ),
@@ -1380,13 +1415,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   height: 29 * scale,
                   decoration: BoxDecoration(
                     color: iconColor == Colors.red
-                        ? const Color(0xFFFFF0F0)
+                        ? (_isDark
+                              ? AppColors.settingsDangerIconBgDark
+                              : AppColors.settingsDangerIconBgLight)
                         : lightBlue,
                     borderRadius: BorderRadius.circular(7 * scale),
                   ),
                   child: Icon(
                     icon,
-                    color: iconColor ?? primaryBlue,
+                    color: iconColor == Colors.red
+                        ? (_isDark
+                              ? AppColors.noticesDangerTextDark
+                              : Colors.red)
+                        : (iconColor ?? primaryBlue),
                     size: 15 * scale,
                   ),
                 ),
@@ -1403,7 +1444,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
-                          color: titleColor ?? darkText,
+                          color: titleColor == Colors.red
+                              ? (_isDark
+                                    ? AppColors.noticesDangerTextDark
+                                    : Colors.red)
+                              : (titleColor ?? darkText),
                           fontSize: 9.5 * scale,
                           fontWeight: FontWeight.w600,
                         ),
@@ -1450,7 +1495,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
                 Icon(
                   Icons.chevron_right,
-                  color: const Color(0xFF5E6165),
+                  color: _isDark
+                      ? AppColors.textSecondaryDark
+                      : AppColors.settingsChevronLight,
                   size: 17 * scale,
                 ),
               ],
@@ -1473,12 +1520,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return Container(
       height: height,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: _isDark ? AppColors.surfaceDark : Colors.white,
         borderRadius: BorderRadius.circular(radius),
         border: Border.all(color: borderColor, width: 0.5),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.08),
+            color: Colors.black.withValues(alpha: _isDark ? 0.4 : 0.08),
             blurRadius: 3,
             offset: const Offset(0, 2),
           ),
@@ -1497,7 +1544,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       width: 38,
       height: 4,
       decoration: BoxDecoration(
-        color: Colors.grey.shade300,
+        color: _isDark ? AppColors.borderDark : Colors.grey.shade300,
         borderRadius: BorderRadius.circular(10),
       ),
     );
@@ -1525,7 +1572,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       ),
       subtitle: Text(
         subtitle,
-        style: const TextStyle(fontSize: 11, color: greyText),
+        style: TextStyle(fontSize: 11, color: greyText),
       ),
     );
   }

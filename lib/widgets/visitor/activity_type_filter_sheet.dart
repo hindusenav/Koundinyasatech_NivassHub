@@ -89,6 +89,7 @@ class _ActivityTypeFilterSheetView extends StatelessWidget {
   }
 
   Widget _buildHeader(BuildContext context) {
+    final isDark = context.theme.brightness == Brightness.dark;
     return Row(
       children: [
         Expanded(
@@ -102,8 +103,12 @@ class _ActivityTypeFilterSheetView extends StatelessWidget {
           borderRadius: AppRadius.radiusFull,
           child: CircleAvatar(
             radius: AppDimensions.iconMd,
-            backgroundColor: AppColors.grey100,
-            child: Icon(AppIcons.close, size: AppDimensions.iconSm, color: AppColors.grey600),
+            backgroundColor: isDark ? AppColors.grey800 : AppColors.grey100,
+            child: Icon(
+              AppIcons.close,
+              size: AppDimensions.iconSm,
+              color: isDark ? AppColors.grey300 : AppColors.grey600,
+            ),
           ),
         ),
       ],
@@ -111,6 +116,7 @@ class _ActivityTypeFilterSheetView extends StatelessWidget {
   }
 
   Widget _buildBody(BuildContext context, ActivityTypeFilterProvider provider) {
+    final isDark = context.theme.brightness == Brightness.dark;
     if (provider.isLoading) {
       return const SizedBox(height: 200, child: Loader());
     }
@@ -142,7 +148,9 @@ class _ActivityTypeFilterSheetView extends StatelessWidget {
           children: [
             Text(
               '${provider.selectedCount} filters active',
-              style: AppTextStyles.bodyMedium.copyWith(color: AppColors.grey500),
+              style: AppTextStyles.bodyMedium.copyWith(
+                color: isDark ? AppColors.grey300 : AppColors.grey500,
+              ),
             ),
             const Spacer(),
             TextButton(
@@ -199,11 +207,15 @@ class _FilterOptionCard extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: AppDimensions.iconLg / 2,
-                  backgroundColor: selected ? AppColors.info : AppColors.grey100,
+                  backgroundColor: selected
+                      ? AppColors.info
+                      : (isDark ? AppColors.grey800 : AppColors.grey100),
                   child: Icon(
                     AppFeatureIcons.icon(option.iconKey),
                     size: AppDimensions.iconMd,
-                    color: selected ? AppColors.white : AppColors.grey600,
+                    color: selected
+                        ? AppColors.white
+                        : (isDark ? AppColors.grey300 : AppColors.grey600),
                   ),
                 ),
                 AppSpacing.gapSm,

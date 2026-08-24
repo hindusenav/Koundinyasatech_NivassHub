@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter_nivasshub/models/dashboard/quick_action_model.dart';
 
 class QuickActionCard extends StatelessWidget {
@@ -20,6 +21,7 @@ class QuickActionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(18),
@@ -38,21 +40,23 @@ class QuickActionCard extends StatelessWidget {
                 width: 70,
                 height: 70,
                 decoration: BoxDecoration(
+                  // Amber "View More" tile stays the same saturated color in
+                  // both themes (white icon on top already works in both).
                   color: _isViewMore
                       ? const Color(0xFFFF8A00)
-                      : Colors.white,
+                      : (isDark ? AppColors.surfaceDark : Colors.white),
 
                   borderRadius: BorderRadius.circular(18),
 
                   border: Border.all(
                     color: _isViewMore
                         ? Colors.transparent
-                        : const Color(0xffECECEC),
+                        : (isDark ? AppColors.borderDark : const Color(0xffECECEC)),
                   ),
 
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withValues(alpha: .06),
+                      color: Colors.black.withValues(alpha: isDark ? .3 : .06),
                       blurRadius: 10,
                       offset: const Offset(0, 4),
                     ),
@@ -84,15 +88,19 @@ class QuickActionCard extends StatelessWidget {
 
                     fit: BoxFit.contain,
 
+                    // Every icon except "Book Now" (a full-color illustration
+                    // that must never be tinted) is a dark/black line-art PNG
+                    // with a transparent background — invisible against a
+                    // dark tile unless tinted light in dark mode.
                     color: _isViewMore
                         ? Colors.white
-                        : null,
+                        : (isDark && !_isBookNow ? AppColors.textPrimaryDark : null),
 
                     errorBuilder: (_, _, _) {
-                      return const Icon(
+                      return Icon(
                         Icons.image_not_supported_outlined,
                         size: 28,
-                        color: Colors.grey,
+                        color: isDark ? AppColors.grey400 : Colors.grey,
                       );
                     },
                   ),
@@ -122,11 +130,11 @@ class QuickActionCard extends StatelessWidget {
               textAlign: TextAlign.center,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 11,
                 height: 1.25,
                 fontWeight: FontWeight.w500,
-                color: Color(0xff303030),
+                color: isDark ? AppColors.textPrimaryDark : const Color(0xff303030),
               ),
             ),
           ),

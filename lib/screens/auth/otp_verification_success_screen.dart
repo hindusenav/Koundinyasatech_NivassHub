@@ -143,7 +143,21 @@ class _OtpVerificationSuccessScreenState extends State<OtpVerificationSuccessScr
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final screenHeight = context.screenHeight;
+    final background = isDark
+        ? AuthColors.backgroundDarkMode
+        : AuthColors.background;
+    final heading = isDark ? AuthColors.headingDarkMode : AuthColors.heading;
+    final bodyText = isDark
+        ? AuthColors.bodyTextDarkMode
+        : AuthColors.bodyText;
+    final primaryBlue = isDark
+        ? AuthColors.primaryBlueDarkMode
+        : AuthColors.primaryBlue;
+    final lightBlue = isDark
+        ? AuthColors.lightBlueDarkMode
+        : AuthColors.lightBlue;
 
     return PopScope(
       canPop: false,
@@ -151,7 +165,7 @@ class _OtpVerificationSuccessScreenState extends State<OtpVerificationSuccessScr
         if (!didPop) _handleBackPress();
       },
       child: Scaffold(
-      backgroundColor: AuthColors.background,
+      backgroundColor: background,
       body: Stack(
         children: [
           Positioned.fill(
@@ -161,9 +175,9 @@ class _OtpVerificationSuccessScreenState extends State<OtpVerificationSuccessScr
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    AuthColors.background,
-                    AuthColors.background,
-                    AuthColors.lightBlue.withValues(alpha: 0.05),
+                    background,
+                    background,
+                    lightBlue.withValues(alpha: 0.05),
                   ],
                   stops: const [0.0, 0.55, 1.0],
                 ),
@@ -242,14 +256,14 @@ class _OtpVerificationSuccessScreenState extends State<OtpVerificationSuccessScr
                                   TextSpan(
                                     text: 'OTP Successfully ',
                                     style: AppTextStyles.headlineSmall.copyWith(
-                                      color: AuthColors.heading,
+                                      color: heading,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
                                   TextSpan(
                                     text: 'Verified!',
                                     style: AppTextStyles.headlineSmall.copyWith(
-                                      color: AuthColors.primaryBlue,
+                                      color: primaryBlue,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
@@ -265,7 +279,7 @@ class _OtpVerificationSuccessScreenState extends State<OtpVerificationSuccessScr
                               'Your mobile number has been verified successfully.',
                               textAlign: TextAlign.center,
                               style: AppTextStyles.bodyLarge.copyWith(
-                                color: AuthColors.bodyText,
+                                color: bodyText,
                               ),
                             ),
                           ),

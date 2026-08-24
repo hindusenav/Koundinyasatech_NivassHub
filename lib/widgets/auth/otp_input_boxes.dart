@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter_nivasshub/constants/app_radius.dart';
 import 'package:flutter_nivasshub/constants/auth/auth_colors.dart';
 
@@ -57,9 +58,15 @@ class _OtpInputBoxesState extends State<OtpInputBoxes> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     const boxSize = 56.0;
     const boxGap = 16.0;
     final totalWidth = widget.length * boxSize + (widget.length - 1) * boxGap;
+    final boxBackground = isDark ? AppColors.surfaceDark : Colors.white;
+    final border = isDark ? AuthColors.borderDarkMode : AuthColors.border;
+    final primaryBlue = isDark
+        ? AuthColors.primaryBlueDarkMode
+        : AuthColors.primaryBlue;
 
     return GestureDetector(
       onTap: () => _focusNode.requestFocus(),
@@ -85,10 +92,10 @@ class _OtpInputBoxesState extends State<OtpInputBoxes> {
                         height: boxSize,
                         alignment: Alignment.center,
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: boxBackground,
                           borderRadius: AppRadius.radiusMd,
                           border: Border.all(
-                            color: isNextToFill ? AuthColors.primaryBlue : AuthColors.border,
+                            color: isNextToFill ? primaryBlue : border,
                             width: isNextToFill ? 2 : 1,
                           ),
                         ),

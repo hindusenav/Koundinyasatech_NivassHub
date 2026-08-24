@@ -168,15 +168,17 @@ class _AdBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final placeholderColor = isDark ? AppColors.grey800 : AppColors.grey100;
     return CachedNetworkImage(
       imageUrl: banner.image,
       width: double.infinity,
       height: _height,
       fit: BoxFit.cover,
-      placeholder: (context, url) => Container(height: _height, color: AppColors.grey100),
+      placeholder: (context, url) => Container(height: _height, color: placeholderColor),
       errorWidget: (context, url, error) => Container(
         height: _height,
-        color: AppColors.grey100,
+        color: placeholderColor,
         alignment: Alignment.center,
         child: Icon(AppIcons.empty, color: AppColors.grey400, size: AppDimensions.iconLg),
       ),
@@ -208,9 +210,10 @@ class _VisitorPhotoAvatar extends StatelessWidget {
   Widget build(BuildContext context) {
     final photoUrl = details.photoUrl;
     if (photoUrl != null && photoUrl.isNotEmpty) {
+      final isDark = Theme.of(context).brightness == Brightness.dark;
       return CircleAvatar(
         radius: AppDimensions.avatarLg / 2,
-        backgroundColor: AppColors.grey200,
+        backgroundColor: isDark ? AppColors.grey700 : AppColors.grey200,
         backgroundImage: CachedNetworkImageProvider(photoUrl),
         onBackgroundImageError: (_, _) {},
       );
