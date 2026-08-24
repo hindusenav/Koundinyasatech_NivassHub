@@ -19,6 +19,7 @@ class StringConstants {
   static const String edit = 'Edit';
   static const String confirm = 'Confirm';
   static const String ok = 'OK';
+  static const String exit = 'Exit';
 
   // ---------------------------------------------------------------------
   // Generic messages
@@ -40,4 +41,6 @@ class StringConstants {
   static const String logoutConfirmationTitle = 'Log Out';
   static const String logoutConfirmationMessage =
       'Are you sure you want to log out?';
+  static const String exitConfirmationTitle = 'Exit App';
+  static const String exitConfirmationMessage = 'Do you want to exit?';
 }

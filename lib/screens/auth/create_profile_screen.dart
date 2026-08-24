@@ -96,9 +96,26 @@ class _CreateProfileScreenState extends State<CreateProfileScreen>
     if (!mounted) return;
 
     if (success) {
+      final accessToken = auth.accessToken;
+      final refreshToken = auth.refreshToken;
+      if (accessToken == null ||
+          accessToken.isEmpty ||
+          refreshToken == null ||
+          refreshToken.isEmpty) {
+        // completeRegistration() reported success but didn't give us usable
+        // session tokens (backend contract violation) — don't persist an
+        // empty/missing token as if it were valid. Recover via Login
+        // instead of landing on Dashboard with a broken session.
+        CustomSnackbar.error(
+          context,
+          'Registration succeeded but signing you in failed. Please log in.',
+        );
+        NavigationService.pushNamedAndRemoveUntil(AppRoutes.login);
+        return;
+      }
       final storage = context.read<SecureStorageService>();
-      await storage.saveAccessToken(auth.accessToken!);
-      await storage.saveRefreshToken(auth.refreshToken!);
+      await storage.saveAccessToken(accessToken);
+      await storage.saveRefreshToken(refreshToken);
       await storage.saveSession();
       if (!mounted) return;
       NavigationService.pushNamedAndRemoveUntil(AppRoutes.dashboard);

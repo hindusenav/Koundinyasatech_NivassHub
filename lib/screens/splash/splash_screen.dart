@@ -50,11 +50,21 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
       // Auto-login: a persisted session means the user already
       // authenticated in a previous app run, so skip Welcome/Login
       // entirely and land straight on the Dashboard.
-      final hasSession =
-          await context.read<SecureStorageService>().hasValidSession();
+      final storage = context.read<SecureStorageService>();
+      final hasSession = await storage.hasValidSession();
       if (!mounted) return;
       if (hasSession) {
         NavigationService.pushNamedAndRemoveUntil(AppRoutes.dashboard);
+        return;
+      }
+
+      // This device has logged out before — go straight to the Login
+      // screen (not Onboarding/Welcome) so the existing Login → OTP
+      // Verification flow continues from there.
+      final hasLoggedOut = await storage.hasLoggedOutBefore();
+      if (!mounted) return;
+      if (hasLoggedOut) {
+        NavigationService.pushNamedAndRemoveUntil(AppRoutes.login);
       } else {
         _goToWelcome();
       }

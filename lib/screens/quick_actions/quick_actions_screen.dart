@@ -80,7 +80,9 @@ class _QuickActionsScreenState extends State<QuickActionsScreen> {
             if (provider.isLoading) return const QuickActionsShimmer();
             if (provider.hasError) {
               return CustomErrorWidget(
-                message: provider.errorMessage ?? 'Something went wrong. Please try again.',
+                message:
+                    provider.errorMessage ??
+                    'Something went wrong. Please try again.',
                 onRetry: provider.retry,
               );
             }
@@ -102,7 +104,10 @@ class _QuickActionsScreenState extends State<QuickActionsScreen> {
 
     if (provider.isSearching && filtered.isEmpty) {
       return SingleChildScrollView(
-        padding: EdgeInsets.symmetric(horizontal: Responsive.horizontalPadding(context), vertical: 16),
+        padding: EdgeInsets.symmetric(
+          horizontal: Responsive.horizontalPadding(context),
+          vertical: 16,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -120,7 +125,9 @@ class _QuickActionsScreenState extends State<QuickActionsScreen> {
       (s) => s.id == 'shortcuts',
       orElse: () => const QuickActionSectionModel(id: 'shortcuts', items: []),
     );
-    final headeredSections = filtered.where((s) => s.id != 'shortcuts').toList();
+    final headeredSections = filtered
+        .where((s) => s.id != 'shortcuts')
+        .toList();
 
     return SingleChildScrollView(
       physics: const BouncingScrollPhysics(),
@@ -140,7 +147,10 @@ class _QuickActionsScreenState extends State<QuickActionsScreen> {
                     (item) => Expanded(
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 4),
-                        child: QuickActionCard(item: item, onTap: () => _handleTap(item)),
+                        child: QuickActionCard(
+                          item: item,
+                          onTap: () => _handleTap(item),
+                        ),
                       ),
                     ),
                   )
@@ -170,7 +180,9 @@ class _QuickActionsScreenState extends State<QuickActionsScreen> {
         section: section,
         onItemTap: _handleTap,
         columns: Responsive.quickActionColumns(context),
-        headerTrailing: RaiseAlertButton(onPressed: () => _handleSectionAction(section)),
+        headerTrailing: RaiseAlertButton(
+          onPressed: () => _handleSectionAction(section),
+        ),
       );
     }
     if (section.id == 'marketplace') {
@@ -178,7 +190,11 @@ class _QuickActionsScreenState extends State<QuickActionsScreen> {
         section: section,
         onItemTap: _handleTap,
         columns: 3,
-        itemBuilder: (item, onTap) => QuickActionCard(item: item, onTap: onTap, iconSize: AppDimensions.iconMd),
+        itemBuilder: (item, onTap) => QuickActionCard(
+          item: item,
+          onTap: onTap,
+          iconSize: AppDimensions.iconMd,
+        ),
         onActionTap: () => _handleSectionAction(section),
       );
     }

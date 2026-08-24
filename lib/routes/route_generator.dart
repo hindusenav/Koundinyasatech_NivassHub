@@ -172,6 +172,8 @@ class RouteGenerator {
             userExists: args.userExists,
             registrationToken: args.registrationToken,
             isRegistrationFlow: args.isRegistrationFlow,
+            mobileNumber: args.mobileNumber,
+            otpExpirySeconds: args.otpExpirySeconds,
           ),
         );
 

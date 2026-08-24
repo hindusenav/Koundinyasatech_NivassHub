@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_nivasshub/routes/app_routes.dart';
 import 'package:flutter_nivasshub/routes/navigation_service.dart';
@@ -9,11 +10,14 @@ import 'package:flutter_nivasshub/constants/app_dimensions.dart';
 import 'package:flutter_nivasshub/constants/app_icons.dart';
 import 'package:flutter_nivasshub/constants/app_spacing.dart';
 import 'package:flutter_nivasshub/constants/app_text_styles.dart';
+import 'package:flutter_nivasshub/constants/string_constants.dart';
 import 'package:flutter_nivasshub/utils/extensions/context_extensions.dart';
 import 'package:flutter_nivasshub/constants/auth/auth_colors.dart';
 import 'package:flutter_nivasshub/widgets/auth/auth_gradient_button.dart';
 import 'package:flutter_nivasshub/widgets/auth/auth_skyline_painter.dart';
 import 'package:flutter_nivasshub/widgets/auth/success_check_icon.dart';
+import 'package:flutter_nivasshub/widgets/shared/dialogs/confirmation_dialog.dart';
+import 'package:flutter_nivasshub/widgets/shared/feedback/custom_snackbar.dart';
 import 'package:flutter_nivasshub/screens/auth/create_profile_screen.dart';
 
 /// Typed arguments for [AppRoutes.otpVerificationSuccess], unpacked in
@@ -23,6 +27,8 @@ class OtpVerificationSuccessScreenArgs {
     required this.userExists,
     this.registrationToken,
     required this.isRegistrationFlow,
+    required this.mobileNumber,
+    required this.otpExpirySeconds,
   });
 
   final bool userExists;
@@ -34,6 +40,11 @@ class OtpVerificationSuccessScreenArgs {
   /// rather than Login — used to send Back to the correct originating
   /// screen.
   final bool isRegistrationFlow;
+
+  /// Carried through from the OTP Verification screen's route arguments so
+  /// route arguments stay complete if this flow needs them again upstream.
+  final String mobileNumber;
+  final int otpExpirySeconds;
 }
 
 /// Celebration screen shown immediately after a successful OTP verification.
@@ -46,11 +57,15 @@ class OtpVerificationSuccessScreen extends StatefulWidget {
     required this.userExists,
     this.registrationToken,
     required this.isRegistrationFlow,
+    required this.mobileNumber,
+    required this.otpExpirySeconds,
   });
 
   final bool userExists;
   final String? registrationToken;
   final bool isRegistrationFlow;
+  final String mobileNumber;
+  final int otpExpirySeconds;
 
   @override
   State<OtpVerificationSuccessScreen> createState() => _OtpVerificationSuccessScreenState();
@@ -84,21 +99,46 @@ class _OtpVerificationSuccessScreenState extends State<OtpVerificationSuccessScr
       if (!mounted) return;
       NavigationService.pushNamedAndRemoveUntil(AppRoutes.dashboard);
     } else {
+      final token = widget.registrationToken;
+      if (token == null || token.isEmpty) {
+        // Contract violation: verify-otp reported userExists == false but
+        // gave no registrationToken to carry into Create Profile.
+        // Recoverable — send back to re-verify rather than crash on a
+        // force-unwrap.
+        CustomSnackbar.error(
+          context,
+          'Something went wrong verifying your number. Please try again.',
+        );
+        NavigationService.pushNamedAndRemoveUntil(
+          widget.isRegistrationFlow ? AppRoutes.register : AppRoutes.login,
+        );
+        return;
+      }
       Navigator.pushReplacementNamed(
         context,
         AppRoutes.createProfile,
-        arguments: CreateProfileScreenArgs(registrationToken: widget.registrationToken!),
+        arguments: CreateProfileScreenArgs(registrationToken: token),
       );
     }
   }
 
-  /// Sends Back to the screen this OTP verification was started from —
-  /// Login or Create Account — clearing the stack so no leftover
-  /// OTP/mobile-entry screens remain reachable via further Back presses.
-  void _handleBackPress() {
-    NavigationService.pushNamedAndRemoveUntil(
-      widget.isRegistrationFlow ? AppRoutes.register : AppRoutes.login,
+  /// Confirms intent before leaving this screen via Back: Cancel dismisses
+  /// the dialog and keeps the user on this screen (never Login/Register/
+  /// Onboarding/Dashboard), Exit closes the app outright.
+  Future<void> _handleBackPress() async {
+    final shouldExit = await ConfirmationDialog.show(
+      context,
+      title: StringConstants.exitConfirmationTitle,
+      message: StringConstants.exitConfirmationMessage,
+      confirmText: StringConstants.exit,
+      isDestructive: true,
     );
+    if (!mounted) return;
+    if (shouldExit) {
+      SystemNavigator.pop();
+    }
+    // Cancel (or dialog dismissed): do nothing — PopScope already blocked
+    // the pop, so the user simply remains on this screen.
   }
 
   @override

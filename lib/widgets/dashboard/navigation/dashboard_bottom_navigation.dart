@@ -34,6 +34,7 @@ class DashboardBottomNavigation extends StatelessWidget {
               _item(context, provider, 1, "assets/icons/visitors.svg.png", "Visitors"),
               _item(context, provider, 2, "assets/icons/community.svg.png", "Community"),
               _item(context, provider, 3, "assets/icons/payments.svg.png", "Payments"),
+              _item(context, provider, 4, "assets/icons/more.svg.png", "More"),
             ],
           ),
         ),
@@ -55,23 +56,27 @@ class DashboardBottomNavigation extends StatelessWidget {
         splashColor: Colors.transparent,
         highlightColor: Colors.transparent,
         onTap: () {
-          if (index == 1 || index == 3) {
-            // Visitors / Payments — not built yet, no screen to navigate to.
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Coming Soon')),
-            );
-            return;
-          }
-
           provider.changeIndex(index);
 
           if (index == 0) {
-            // Home — return to the Home Dashboard, which is always the
-            // first route in the stack (pushed via pushNamedAndRemoveUntil).
-            Navigator.popUntil(context, (route) => route.isFirst);
+            // Home — return to the existing Dashboard already in the
+            // stack instead of pushing a duplicate instance.
+            if (ModalRoute.of(context)?.settings.name != AppRoutes.dashboard) {
+              Navigator.popUntil(context, ModalRoute.withName(AppRoutes.dashboard));
+            }
           } else if (index == 2) {
             // Community — opens the full Community Feed / Notice Board.
-            Navigator.pushNamed(context, AppRoutes.noticeList);
+            // Guard against pushing a duplicate instance when the user
+            // re-taps "Community" while already viewing it (this bottom
+            // nav is also rendered on NoticesScreen itself) — without
+            // this, Back had to pop through multiple stacked copies of
+            // the same screen before it reached the real previous screen.
+            if (ModalRoute.of(context)?.settings.name != AppRoutes.noticeList) {
+              Navigator.pushNamed(context, AppRoutes.noticeList);
+            }
+          } else if (index == 4) {
+            // More — opens the full Quick Actions catalog directly.
+            Navigator.pushNamed(context, AppRoutes.quickActions);
           }
         },
         child: Column(
