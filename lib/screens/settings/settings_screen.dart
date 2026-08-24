@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'package:flutter_nivasshub/constants/app_colors.dart';
+import 'package:flutter_nivasshub/providers/theme/theme_mode_provider.dart';
 import 'package:flutter_nivasshub/routes/app_routes.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -414,13 +416,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
                   const SizedBox(height: 10),
 
-                  RadioListTile<String>(
-                    contentPadding: EdgeInsets.zero,
-                    value: 'Ad-Supported',
+                  RadioGroup<String>(
                     groupValue: selectedPlan,
-                    activeColor: primaryBlue,
-                    title: const Text('Ad-Supported'),
-                    subtitle: const Text('Free plan'),
                     onChanged: (value) {
                       if (value == null) return;
 
@@ -432,28 +429,130 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         selectedPlan = value;
                       });
                     },
-                  ),
+                    child: Column(
+                      children: [
+                        RadioListTile<String>(
+                          contentPadding: EdgeInsets.zero,
+                          value: 'Ad-Supported',
+                          activeColor: primaryBlue,
+                          title: const Text('Ad-Supported'),
+                          subtitle: const Text('Free plan'),
+                        ),
 
-                  RadioListTile<String>(
-                    contentPadding: EdgeInsets.zero,
-                    value: 'Premium',
-                    groupValue: selectedPlan,
-                    activeColor: primaryBlue,
-                    title: const Text('Nivaas Premium (₹99/mo)'),
-                    subtitle: const Text('Premium'),
-                    onChanged: (value) {
-                      if (value == null) return;
-
-                      setModalState(() {
-                        selectedPlan = value;
-                      });
-
-                      setState(() {
-                        selectedPlan = value;
-                      });
-                    },
+                        RadioListTile<String>(
+                          contentPadding: EdgeInsets.zero,
+                          value: 'Premium',
+                          activeColor: primaryBlue,
+                          title: const Text('Nivaas Premium (₹99/mo)'),
+                          subtitle: const Text('Premium'),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  // ============================================================
+  // THEME PICKER
+  // ============================================================
+
+  String _themeModeLabel(ThemeMode mode) {
+    switch (mode) {
+      case ThemeMode.system:
+        return 'System';
+      case ThemeMode.light:
+        return 'Light';
+      case ThemeMode.dark:
+        return 'Dark';
+    }
+  }
+
+  void _chooseTheme() {
+    showModalBottomSheet(
+      context: context,
+      // Transparent here on purpose: `sheetBackgroundColor` would be
+      // captured once at the moment this sheet opens and never update —
+      // if the user then taps a different theme option, the sheet's own
+      // background would stay frozen on the old theme's color while its
+      // text (sourced from the ambient, now-rebuilt Theme) flips to the
+      // new theme's color, risking invisible text. Painting the
+      // background inside the `Consumer` below instead keeps it reactive
+      // to the same theme change the radio tiles respond to.
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return Consumer<ThemeModeProvider>(
+          builder: (context, themeModeProvider, _) {
+            return DecoratedBox(
+              decoration: BoxDecoration(
+                color: sheetBackgroundColor,
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(20),
+                ),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(18, 12, 18, 25),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _sheetHandle(),
+
+                    const SizedBox(height: 18),
+
+                    const Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        'Theme',
+                        style: TextStyle(
+                          fontSize: 17,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 10),
+
+                    RadioGroup<ThemeMode>(
+                      groupValue: themeModeProvider.themeMode,
+                      onChanged: (mode) {
+                        if (mode == null) return;
+                        themeModeProvider.setThemeMode(mode);
+                      },
+                      child: Column(
+                        children: [
+                          RadioListTile<ThemeMode>(
+                            contentPadding: EdgeInsets.zero,
+                            value: ThemeMode.system,
+                            activeColor: primaryBlue,
+                            title: const Text('System'),
+                            subtitle: const Text('Match your device setting'),
+                          ),
+
+                          RadioListTile<ThemeMode>(
+                            contentPadding: EdgeInsets.zero,
+                            value: ThemeMode.light,
+                            activeColor: primaryBlue,
+                            title: const Text('Light'),
+                            subtitle: const Text('Always use light theme'),
+                          ),
+
+                          RadioListTile<ThemeMode>(
+                            contentPadding: EdgeInsets.zero,
+                            value: ThemeMode.dark,
+                            activeColor: primaryBlue,
+                            title: const Text('Dark'),
+                            subtitle: const Text('Always use dark theme'),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             );
           },
@@ -941,6 +1040,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   onTap: _openProfile,
                 ),
 
+                Consumer<ThemeModeProvider>(
+                  builder: (context, themeModeProvider, _) {
+                    return _settingCard(
+                      icon: Icons.brightness_6_outlined,
+                      title: 'Theme',
+                      subtitle: 'Choose light, dark, or match your device',
+                      badge: _themeModeLabel(themeModeProvider.themeMode),
+                      scale: scale,
+                      onTap: _chooseTheme,
+                    );
+                  },
+                ),
+
                 _settingCard(
                   icon: Icons.logout,
                   title: 'Logout',
@@ -1138,7 +1250,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
           ),
 
-          if (trailing != null) trailing,
+          ?trailing,
         ],
       ),
     );
@@ -1570,10 +1682,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         title,
         style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
       ),
-      subtitle: Text(
-        subtitle,
-        style: TextStyle(fontSize: 11, color: greyText),
-      ),
+      subtitle: Text(subtitle, style: TextStyle(fontSize: 11, color: greyText)),
     );
   }
 }
