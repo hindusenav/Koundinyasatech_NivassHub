@@ -123,7 +123,7 @@ class _QuickActionsScreenState extends State<QuickActionsScreen> {
     final headeredSections = filtered.where((s) => s.id != 'shortcuts').toList();
 
     return SingleChildScrollView(
-      physics: const BouncingScrollPhysics(),
+      physics: const ClampingScrollPhysics(),
       padding: EdgeInsets.symmetric(
         horizontal: Responsive.horizontalPadding(context),
         vertical: 16,
