@@ -29,9 +29,7 @@ class ProfileScreen extends StatelessWidget {
     String initialValue,
     Function(String) onSave,
   ) {
-    final controller = TextEditingController(
-      text: initialValue,
-    );
+    final controller = TextEditingController(text: initialValue);
 
     showDialog(
       context: context,
@@ -43,10 +41,7 @@ class ProfileScreen extends StatelessWidget {
           ),
           title: Text(
             'Edit $title',
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w700,
-            ),
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
           ),
           content: TextField(
             controller: controller,
@@ -67,12 +62,7 @@ class ProfileScreen extends StatelessWidget {
               onPressed: () {
                 Navigator.pop(dialogContext);
               },
-              child: const Text(
-                'Cancel',
-                style: TextStyle(
-                  color: Colors.grey,
-                ),
-              ),
+              child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
@@ -114,7 +104,6 @@ class ProfileScreen extends StatelessWidget {
       // ========================================================
       // APP BAR
       // ========================================================
-
       appBar: AppBar(
         backgroundColor: headerBlue,
         elevation: 0,
@@ -127,11 +116,7 @@ class ProfileScreen extends StatelessWidget {
 
         leading: IconButton(
           padding: EdgeInsets.zero,
-          icon: const Icon(
-            Icons.arrow_back,
-            color: Colors.black87,
-            size: 21,
-          ),
+          icon: const Icon(Icons.arrow_back, color: Colors.black87, size: 21),
           onPressed: () {
             Navigator.maybePop(context);
           },
@@ -151,19 +136,14 @@ class ProfileScreen extends StatelessWidget {
         actions: [
           IconButton(
             padding: EdgeInsets.zero,
-            constraints: const BoxConstraints(
-              minWidth: 45,
-            ),
+            constraints: const BoxConstraints(minWidth: 45),
             icon: const Icon(
               Icons.settings_outlined,
               color: Colors.black87,
               size: 20,
             ),
             onPressed: () {
-              Navigator.pushNamed(
-                context,
-                AppRoutes.settings,
-              );
+              Navigator.pushNamed(context, AppRoutes.settings);
             },
           ),
         ],
@@ -172,26 +152,12 @@ class ProfileScreen extends StatelessWidget {
       // ========================================================
       // BODY
       // ========================================================
-
       body: SafeArea(
         bottom: false,
         child: SingleChildScrollView(
-<<<<<<< HEAD
           physics: const ClampingScrollPhysics(),
-=======
-          physics: const BouncingScrollPhysics(),
->>>>>>> f48df002e16cc94f3c12ba1e2f58d88dad4cc4bf
 
-          padding: const EdgeInsets.fromLTRB(
-            12,
-            12,
-            12,
-<<<<<<< HEAD
-            5,
-=======
-            100,
->>>>>>> f48df002e16cc94f3c12ba1e2f58d88dad4cc4bf
-          ),
+          padding: const EdgeInsets.fromLTRB(12, 12, 12, 5),
 
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -199,7 +165,6 @@ class ProfileScreen extends StatelessWidget {
               // ==================================================
               // PROFILE HEADER
               // ==================================================
-
               _buildProfileHeader(profile),
 
               const SizedBox(height: 28),
@@ -207,7 +172,6 @@ class ProfileScreen extends StatelessWidget {
               // ==================================================
               // ENTER YOUR DETAILS
               // ==================================================
-
               const Text(
                 'Enter your details',
                 style: TextStyle(
@@ -222,18 +186,13 @@ class ProfileScreen extends StatelessWidget {
               // ==================================================
               // ENABLE CALLS
               // ==================================================
-
-              _buildEnableCalls(
-                profile,
-                profileProvider,
-              ),
+              _buildEnableCalls(profile, profileProvider),
 
               const SizedBox(height: 9),
 
               // ==================================================
               // USER NAME
               // ==================================================
-
               _buildDetailCard(
                 icon: Icons.person_outline,
                 title: 'User Name',
@@ -242,16 +201,11 @@ class ProfileScreen extends StatelessWidget {
                     : profile.userName,
                 tags: profile.tags,
                 onTap: () {
-                  _showEditDialog(
-                    context,
-                    'User Name',
-                    profile.userName,
-                    (value) {
-                      profileProvider.updateUserName(
-                        value,
-                      );
-                    },
-                  );
+                  _showEditDialog(context, 'User Name', profile.userName, (
+                    value,
+                  ) {
+                    profileProvider.updateUserName(value);
+                  });
                 },
               ),
 
@@ -260,7 +214,6 @@ class ProfileScreen extends StatelessWidget {
               // ==================================================
               // BIO
               // ==================================================
-
               _buildDetailCard(
                 icon: Icons.description_outlined,
                 title: 'Add bio',
@@ -268,16 +221,9 @@ class ProfileScreen extends StatelessWidget {
                     ? 'Tell your neighbors about yourself'
                     : profile.bio,
                 onTap: () {
-                  _showEditDialog(
-                    context,
-                    'Bio',
-                    profile.bio,
-                    (value) {
-                      profileProvider.updateBio(
-                        value,
-                      );
-                    },
-                  );
+                  _showEditDialog(context, 'Bio', profile.bio, (value) {
+                    profileProvider.updateBio(value);
+                  });
                 },
               ),
 
@@ -286,7 +232,6 @@ class ProfileScreen extends StatelessWidget {
               // ==================================================
               // WORK
               // ==================================================
-
               _buildDetailCard(
                 icon: Icons.work_outline,
                 title: 'Add Work',
@@ -294,16 +239,9 @@ class ProfileScreen extends StatelessWidget {
                     ? 'Where do you work?'
                     : profile.work,
                 onTap: () {
-                  _showEditDialog(
-                    context,
-                    'Work',
-                    profile.work,
-                    (value) {
-                      profileProvider.updateWork(
-                        value,
-                      );
-                    },
-                  );
+                  _showEditDialog(context, 'Work', profile.work, (value) {
+                    profileProvider.updateWork(value);
+                  });
                 },
               ),
 
@@ -312,7 +250,6 @@ class ProfileScreen extends StatelessWidget {
               // ==================================================
               // ADDRESS
               // ==================================================
-
               _buildDetailCard(
                 icon: Icons.location_on_outlined,
                 title: profile.address.flatNo.isNotEmpty
@@ -320,16 +257,14 @@ class ProfileScreen extends StatelessWidget {
                     : 'Add Address',
                 subtitle: profile.address.flatNo.isNotEmpty
                     ? '${profile.address.flatNo}, '
-                        '${profile.address.societyName}'
+                          '${profile.address.societyName}'
                     : 'Add Address details',
                 onTap: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context) =>
-                          AddAddressDetailsScreen(
-                        address: profile.address,
-                      ),
+                          AddAddressDetailsScreen(address: profile.address),
                     ),
                   );
                 },
@@ -340,12 +275,7 @@ class ProfileScreen extends StatelessWidget {
               // ==================================================
               // INTERESTS
               // ==================================================
-
-              _buildInterests(
-                context,
-                profile,
-                profileProvider,
-              ),
+              _buildInterests(context, profile, profileProvider),
             ],
           ),
         ),
@@ -354,18 +284,12 @@ class ProfileScreen extends StatelessWidget {
       // ==========================================================
       // BOTTOM BUTTONS
       // ==========================================================
-
       bottomNavigationBar: SafeArea(
         top: false,
         child: Container(
           color: backgroundBlue,
 
-          padding: const EdgeInsets.fromLTRB(
-            12,
-            8,
-            12,
-            8,
-          ),
+          padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
 
           child: SizedBox(
             height: 46,
@@ -375,7 +299,6 @@ class ProfileScreen extends StatelessWidget {
                 // =================================================
                 // SAVE
                 // =================================================
-
                 Expanded(
                   child: ElevatedButton.icon(
                     style: ElevatedButton.styleFrom(
@@ -384,47 +307,35 @@ class ProfileScreen extends StatelessWidget {
                       elevation: 0,
                       padding: EdgeInsets.zero,
                       shape: RoundedRectangleBorder(
-                        borderRadius:
-                            BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(8),
                       ),
                     ),
 
-                    onPressed:
-                        profileProvider.isLoading
-                            ? null
-                            : () async {
-                                await profileProvider
-                                    .saveProfileData();
+                    onPressed: profileProvider.isLoading
+                        ? null
+                        : () async {
+                            await profileProvider.saveProfileData();
 
-                                if (context.mounted) {
-                                  ScaffoldMessenger.of(
-                                    context,
-                                  ).showSnackBar(
-                                    const SnackBar(
-                                      content: Text(
-                                        'Profile saved successfully!',
-                                      ),
-                                      backgroundColor:
-                                          Colors.green,
-                                    ),
-                                  );
-                                }
-                              },
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Profile saved successfully!'),
+                                  backgroundColor: Colors.green,
+                                ),
+                              );
+                            }
+                          },
 
                     icon: profileProvider.isLoading
                         ? const SizedBox(
                             width: 15,
                             height: 15,
-                            child:
-                                CircularProgressIndicator(
+                            child: CircularProgressIndicator(
                               color: Colors.white,
                               strokeWidth: 2,
                             ),
                           )
-                        : const Icon(
-                            Icons.save_outlined,
-                            size: 15,
-                          ),
+                        : const Icon(Icons.save_outlined, size: 15),
 
                     label: const Text(
                       'Save',
@@ -441,7 +352,6 @@ class ProfileScreen extends StatelessWidget {
                 // =================================================
                 // CANCEL
                 // =================================================
-
                 Expanded(
                   child: ElevatedButton.icon(
                     style: ElevatedButton.styleFrom(
@@ -450,8 +360,7 @@ class ProfileScreen extends StatelessWidget {
                       elevation: 0,
                       padding: EdgeInsets.zero,
                       shape: RoundedRectangleBorder(
-                        borderRadius:
-                            BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(8),
                       ),
                     ),
 
@@ -459,10 +368,7 @@ class ProfileScreen extends StatelessWidget {
                       Navigator.maybePop(context);
                     },
 
-                    icon: const Icon(
-                      Icons.close,
-                      size: 15,
-                    ),
+                    icon: const Icon(Icons.close, size: 15),
 
                     label: const Text(
                       'Cancel',
@@ -485,9 +391,7 @@ class ProfileScreen extends StatelessWidget {
   // PROFILE HEADER
   // ============================================================
 
-  Widget _buildProfileHeader(
-    ProfileModel profile,
-  ) {
+  Widget _buildProfileHeader(ProfileModel profile) {
     return SizedBox(
       width: double.infinity,
       height: 105,
@@ -498,7 +402,6 @@ class ProfileScreen extends StatelessWidget {
           // ======================================================
           // BANNER
           // ======================================================
-
           Positioned(
             left: 0,
             right: 0,
@@ -508,21 +411,14 @@ class ProfileScreen extends StatelessWidget {
             child: Container(
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius:
-                    BorderRadius.circular(12),
-                border: Border.all(
-                  color: const Color(0xFFD4DEE9),
-                  width: 0.8,
-                ),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: const Color(0xFFD4DEE9), width: 0.8),
               ),
 
               child: ClipRRect(
-                borderRadius:
-                    BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(12),
 
-                child: CustomPaint(
-                  painter: _ProfileBannerPainter(),
-                ),
+                child: CustomPaint(painter: _ProfileBannerPainter()),
               ),
             ),
           ),
@@ -530,7 +426,6 @@ class ProfileScreen extends StatelessWidget {
           // ======================================================
           // EDIT BUTTON
           // ======================================================
-
           Positioned(
             top: 7,
             right: 7,
@@ -542,10 +437,7 @@ class ProfileScreen extends StatelessWidget {
               decoration: BoxDecoration(
                 color: Colors.white,
                 shape: BoxShape.circle,
-                border: Border.all(
-                  color: Colors.grey.shade400,
-                  width: 0.8,
-                ),
+                border: Border.all(color: Colors.grey.shade400, width: 0.8),
               ),
 
               child: const Icon(
@@ -559,7 +451,6 @@ class ProfileScreen extends StatelessWidget {
           // ======================================================
           // AVATAR
           // ======================================================
-
           Positioned(
             left: 0,
             right: 0,
@@ -575,8 +466,7 @@ class ProfileScreen extends StatelessWidget {
                     height: 62,
 
                     decoration: BoxDecoration(
-                      color:
-                          const Color(0xFFFFFBF2),
+                      color: const Color(0xFFFFFBF2),
                       shape: BoxShape.circle,
 
                       border: Border.all(
@@ -586,13 +476,9 @@ class ProfileScreen extends StatelessWidget {
 
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black
-                              .withValues(
-                            alpha: 0.08,
-                          ),
+                          color: Colors.black.withValues(alpha: 0.08),
                           blurRadius: 5,
-                          offset:
-                              const Offset(0, 2),
+                          offset: const Offset(0, 2),
                         ),
                       ],
                     ),
@@ -607,7 +493,6 @@ class ProfileScreen extends StatelessWidget {
                   // =================================================
                   // CAMERA BUTTON
                   // =================================================
-
                   Positioned(
                     right: -2,
                     bottom: 0,
@@ -620,10 +505,7 @@ class ProfileScreen extends StatelessWidget {
                         color: orange,
                         shape: BoxShape.circle,
 
-                        border: Border.all(
-                          color: Colors.white,
-                          width: 1.5,
-                        ),
+                        border: Border.all(color: Colors.white, width: 1.5),
                       ),
 
                       child: const Icon(
@@ -646,45 +528,31 @@ class ProfileScreen extends StatelessWidget {
   // ENABLE CALLS
   // ============================================================
 
-  Widget _buildEnableCalls(
-    ProfileModel profile,
-    ProfileProvider provider,
-  ) {
+  Widget _buildEnableCalls(ProfileModel profile, ProfileProvider provider) {
     return Align(
       alignment: Alignment.centerRight,
 
       child: Container(
         height: 34,
 
-        padding: const EdgeInsets.only(
-          left: 9,
-          right: 3,
-        ),
+        padding: const EdgeInsets.only(left: 9, right: 3),
 
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius:
-              BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(8),
         ),
 
         child: Row(
           mainAxisSize: MainAxisSize.min,
 
           children: [
-            const Icon(
-              Icons.phone_outlined,
-              size: 13,
-              color: Colors.grey,
-            ),
+            const Icon(Icons.phone_outlined, size: 13, color: Colors.grey),
 
             const SizedBox(width: 5),
 
             const Text(
               'Enable calls',
-              style: TextStyle(
-                fontSize: 10,
-                color: Colors.grey,
-              ),
+              style: TextStyle(fontSize: 10, color: Colors.grey),
             ),
 
             const SizedBox(width: 4),
@@ -696,23 +564,17 @@ class ProfileScreen extends StatelessWidget {
                 value: profile.enableCalls,
 
                 onChanged: (value) {
-                  provider.toggleEnableCalls(
-                    value,
-                  );
+                  provider.toggleEnableCalls(value);
                 },
 
                 activeThumbColor: Colors.white,
                 activeTrackColor: Colors.green,
 
-                inactiveThumbColor:
-                    Colors.white,
+                inactiveThumbColor: Colors.white,
 
-                inactiveTrackColor:
-                    Colors.grey.shade300,
+                inactiveTrackColor: Colors.grey.shade300,
 
-                materialTapTargetSize:
-                    MaterialTapTargetSize
-                        .shrinkWrap,
+                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
               ),
             ),
           ],
@@ -738,8 +600,7 @@ class ProfileScreen extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
 
-        borderRadius:
-            BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(12),
 
         child: Container(
           width: double.infinity,
@@ -747,28 +608,20 @@ class ProfileScreen extends StatelessWidget {
           // ====================================================
           // IMPORTANT CARD HEIGHT
           // ====================================================
-
           height: 78,
 
-          padding: const EdgeInsets.symmetric(
-            horizontal: 14,
-            vertical: 10,
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
 
           decoration: BoxDecoration(
             color: Colors.white,
 
-            borderRadius:
-                BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(12),
 
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(
-                  alpha: 0.045,
-                ),
+                color: Colors.black.withValues(alpha: 0.045),
                 blurRadius: 5,
-                offset:
-                    const Offset(0, 2),
+                offset: const Offset(0, 2),
               ),
             ],
           ),
@@ -778,22 +631,16 @@ class ProfileScreen extends StatelessWidget {
               // =================================================
               // ICON
               // =================================================
-
               Container(
                 width: 40,
                 height: 40,
 
                 decoration: BoxDecoration(
                   color: iconBackground,
-                  borderRadius:
-                      BorderRadius.circular(9),
+                  borderRadius: BorderRadius.circular(9),
                 ),
 
-                child: Icon(
-                  icon,
-                  color: primaryBlue,
-                  size: 21,
-                ),
+                child: Icon(icon, color: primaryBlue, size: 21),
               ),
 
               const SizedBox(width: 12),
@@ -801,14 +648,11 @@ class ProfileScreen extends StatelessWidget {
               // =================================================
               // CONTENT
               // =================================================
-
               Expanded(
                 child: Column(
-                  mainAxisAlignment:
-                      MainAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
 
-                  crossAxisAlignment:
-                      CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
 
                   children: [
                     Text(
@@ -816,71 +660,47 @@ class ProfileScreen extends StatelessWidget {
 
                       maxLines: 1,
 
-                      overflow:
-                          TextOverflow.ellipsis,
+                      overflow: TextOverflow.ellipsis,
 
                       style: const TextStyle(
                         fontSize: 13,
-                        fontWeight:
-                            FontWeight.w600,
-                        color:
-                            Colors.black87,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black87,
                       ),
                     ),
 
                     // ==========================================
                     // TAGS
                     // ==========================================
-
-                    if (tags != null &&
-                        tags.isNotEmpty) ...[
-                      const SizedBox(
-                        height: 4,
-                      ),
+                    if (tags != null && tags.isNotEmpty) ...[
+                      const SizedBox(height: 4),
 
                       Row(
-                        children:
-                            tags.take(2).map(
-                          (tag) {
-                            return Container(
-                              margin:
-                                  const EdgeInsets
-                                      .only(
-                                right: 5,
+                        children: tags.take(2).map((tag) {
+                          return Container(
+                            margin: const EdgeInsets.only(right: 5),
+
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 7,
+                              vertical: 3,
+                            ),
+
+                            decoration: BoxDecoration(
+                              color: iconBackground,
+
+                              borderRadius: BorderRadius.circular(5),
+                            ),
+
+                            child: Text(
+                              tag,
+
+                              style: const TextStyle(
+                                fontSize: 8,
+                                color: primaryBlue,
                               ),
-
-                              padding:
-                                  const EdgeInsets
-                                      .symmetric(
-                                horizontal: 7,
-                                vertical: 3,
-                              ),
-
-                              decoration:
-                                  BoxDecoration(
-                                color:
-                                    iconBackground,
-
-                                borderRadius:
-                                    BorderRadius
-                                        .circular(
-                                  5,
-                                ),
-                              ),
-
-                              child: Text(
-                                tag,
-
-                                style:
-                                    const TextStyle(
-                                  fontSize: 8,
-                                  color:
-                                      primaryBlue,
-                                ),
-                              ),
-                            );
-                          },
-                        ).toList(),
+                            ),
+                          );
+                        }).toList(),
                       ),
                     ],
 
@@ -891,13 +711,11 @@ class ProfileScreen extends StatelessWidget {
 
                       maxLines: 1,
 
-                      overflow:
-                          TextOverflow.ellipsis,
+                      overflow: TextOverflow.ellipsis,
 
                       style: TextStyle(
                         fontSize: 10,
-                        color:
-                            Colors.grey.shade600,
+                        color: Colors.grey.shade600,
                       ),
                     ),
                   ],
@@ -909,12 +727,7 @@ class ProfileScreen extends StatelessWidget {
               // =================================================
               // ARROW
               // =================================================
-
-              const Icon(
-                Icons.chevron_right,
-                color: Colors.black54,
-                size: 21,
-              ),
+              const Icon(Icons.chevron_right, color: Colors.black54, size: 21),
             ],
           ),
         ),
@@ -934,34 +747,24 @@ class ProfileScreen extends StatelessWidget {
     return Container(
       width: double.infinity,
 
-      padding: const EdgeInsets.fromLTRB(
-        14,
-        13,
-        14,
-        13,
-      ),
+      padding: const EdgeInsets.fromLTRB(14, 13, 14, 13),
 
       decoration: BoxDecoration(
         color: Colors.white,
 
-        borderRadius:
-            BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(12),
 
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(
-              alpha: 0.045,
-            ),
+            color: Colors.black.withValues(alpha: 0.045),
             blurRadius: 5,
-            offset:
-                const Offset(0, 2),
+            offset: const Offset(0, 2),
           ),
         ],
       ),
 
       child: Column(
-        crossAxisAlignment:
-            CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
 
         children: [
           const Text(
@@ -969,8 +772,7 @@ class ProfileScreen extends StatelessWidget {
 
             style: TextStyle(
               fontSize: 13,
-              fontWeight:
-                  FontWeight.w600,
+              fontWeight: FontWeight.w600,
               color: Colors.black87,
             ),
           ),
@@ -980,11 +782,7 @@ class ProfileScreen extends StatelessWidget {
           Text(
             'Share what you love with your community',
 
-            style: TextStyle(
-              fontSize: 10,
-              color:
-                  Colors.grey.shade600,
-            ),
+            style: TextStyle(fontSize: 10, color: Colors.grey.shade600),
           ),
 
           const SizedBox(height: 10),
@@ -992,46 +790,31 @@ class ProfileScreen extends StatelessWidget {
           // ======================================================
           // EXISTING INTERESTS
           // ======================================================
-
           if (profile.interests.isNotEmpty) ...[
             Wrap(
               spacing: 6,
               runSpacing: 5,
 
-              children:
-                  profile.interests.map(
-                (interest) {
-                  return Container(
-                    padding:
-                        const EdgeInsets
-                            .symmetric(
-                      horizontal: 8,
-                      vertical: 5,
-                    ),
+              children: profile.interests.map((interest) {
+                return Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 5,
+                  ),
 
-                    decoration:
-                        BoxDecoration(
-                      color:
-                          iconBackground,
+                  decoration: BoxDecoration(
+                    color: iconBackground,
 
-                      borderRadius:
-                          BorderRadius
-                              .circular(6),
-                    ),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
 
-                    child: Text(
-                      interest,
+                  child: Text(
+                    interest,
 
-                      style:
-                          const TextStyle(
-                        fontSize: 9,
-                        color:
-                            primaryBlue,
-                      ),
-                    ),
-                  );
-                },
-              ).toList(),
+                    style: const TextStyle(fontSize: 9, color: primaryBlue),
+                  ),
+                );
+              }).toList(),
             ),
 
             const SizedBox(height: 9),
@@ -1040,45 +823,27 @@ class ProfileScreen extends StatelessWidget {
           // ======================================================
           // ADD INTERESTS
           // ======================================================
-
           SizedBox(
             height: 40,
             width: double.infinity,
 
             child: CustomPaint(
-              painter:
-                  _DashedBorderPainter(
-                color: orange,
-                radius: 7,
-              ),
+              painter: _DashedBorderPainter(color: orange, radius: 7),
 
               child: TextButton.icon(
                 onPressed: () {
-                  _showEditDialog(
-                    context,
-                    'Interest',
-                    '',
-                    (value) {
-                      provider.addInterest(
-                        value,
-                      );
-                    },
-                  );
+                  _showEditDialog(context, 'Interest', '', (value) {
+                    provider.addInterest(value);
+                  });
                 },
 
                 style: TextButton.styleFrom(
                   padding: EdgeInsets.zero,
                   foregroundColor: orange,
-                  tapTargetSize:
-                      MaterialTapTargetSize
-                          .shrinkWrap,
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 ),
 
-                icon: const Icon(
-                  Icons.add,
-                  color: orange,
-                  size: 16,
-                ),
+                icon: const Icon(Icons.add, color: orange, size: 16),
 
                 label: const Text(
                   'Add Interests',
@@ -1086,8 +851,7 @@ class ProfileScreen extends StatelessWidget {
                   style: TextStyle(
                     color: orange,
                     fontSize: 10,
-                    fontWeight:
-                        FontWeight.w600,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ),
@@ -1103,13 +867,9 @@ class ProfileScreen extends StatelessWidget {
 // PROFILE BANNER PAINTER
 // ============================================================================
 
-class _ProfileBannerPainter
-    extends CustomPainter {
+class _ProfileBannerPainter extends CustomPainter {
   @override
-  void paint(
-    Canvas canvas,
-    Size size,
-  ) {
+  void paint(Canvas canvas, Size size) {
     // ==========================================================
     // LIGHT WAVE FILL
     // ==========================================================
@@ -1120,10 +880,7 @@ class _ProfileBannerPainter
 
     final fillPath = Path();
 
-    fillPath.moveTo(
-      0,
-      size.height * 0.60,
-    );
+    fillPath.moveTo(0, size.height * 0.60);
 
     fillPath.cubicTo(
       size.width * 0.12,
@@ -1143,22 +900,13 @@ class _ProfileBannerPainter
       size.height * 0.48,
     );
 
-    fillPath.lineTo(
-      size.width,
-      size.height,
-    );
+    fillPath.lineTo(size.width, size.height);
 
-    fillPath.lineTo(
-      0,
-      size.height,
-    );
+    fillPath.lineTo(0, size.height);
 
     fillPath.close();
 
-    canvas.drawPath(
-      fillPath,
-      fillPaint,
-    );
+    canvas.drawPath(fillPath, fillPaint);
 
     // ==========================================================
     // WAVE OUTLINE
@@ -1171,10 +919,7 @@ class _ProfileBannerPainter
 
     final linePath = Path();
 
-    linePath.moveTo(
-      0,
-      size.height * 0.52,
-    );
+    linePath.moveTo(0, size.height * 0.52);
 
     linePath.cubicTo(
       size.width * 0.14,
@@ -1194,10 +939,7 @@ class _ProfileBannerPainter
       size.height * 0.40,
     );
 
-    canvas.drawPath(
-      linePath,
-      linePaint,
-    );
+    canvas.drawPath(linePath, linePaint);
 
     // ==========================================================
     // DECORATIVE CIRCLES
@@ -1209,28 +951,20 @@ class _ProfileBannerPainter
       ..strokeWidth = 0.6;
 
     canvas.drawCircle(
-      Offset(
-        size.width * 0.12,
-        size.height * 0.20,
-      ),
+      Offset(size.width * 0.12, size.height * 0.20),
       4,
       circlePaint,
     );
 
     canvas.drawCircle(
-      Offset(
-        size.width * 0.78,
-        size.height * 0.56,
-      ),
+      Offset(size.width * 0.78, size.height * 0.56),
       2.5,
       circlePaint,
     );
   }
 
   @override
-  bool shouldRepaint(
-    covariant CustomPainter oldDelegate,
-  ) {
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
     return false;
   }
 }
@@ -1239,21 +973,14 @@ class _ProfileBannerPainter
 // DASHED BORDER PAINTER
 // ============================================================================
 
-class _DashedBorderPainter
-    extends CustomPainter {
+class _DashedBorderPainter extends CustomPainter {
   final Color color;
   final double radius;
 
-  _DashedBorderPainter({
-    required this.color,
-    required this.radius,
-  });
+  _DashedBorderPainter({required this.color, required this.radius});
 
   @override
-  void paint(
-    Canvas canvas,
-    Size size,
-  ) {
+  void paint(Canvas canvas, Size size) {
     final paint = Paint()
       ..color = color
       ..style = PaintingStyle.stroke
@@ -1261,14 +988,8 @@ class _DashedBorderPainter
 
     final path = Path();
 
-    final rect =
-        RRect.fromRectAndRadius(
-      Rect.fromLTWH(
-        0.5,
-        0.5,
-        size.width - 1,
-        size.height - 1,
-      ),
+    final rect = RRect.fromRectAndRadius(
+      Rect.fromLTWH(0.5, 0.5, size.width - 1, size.height - 1),
       Radius.circular(radius),
     );
 
@@ -1277,34 +998,27 @@ class _DashedBorderPainter
     const double dashWidth = 4;
     const double dashSpace = 3;
 
-    for (final metric
-        in path.computeMetrics()) {
+    for (final metric in path.computeMetrics()) {
       double distance = 0;
 
       while (distance < metric.length) {
-        final double end =
-            distance + dashWidth;
+        final double end = distance + dashWidth;
 
         canvas.drawPath(
           metric.extractPath(
             distance,
-            end > metric.length
-                ? metric.length
-                : end,
+            end > metric.length ? metric.length : end,
           ),
           paint,
         );
 
-        distance +=
-            dashWidth + dashSpace;
+        distance += dashWidth + dashSpace;
       }
     }
   }
 
   @override
-  bool shouldRepaint(
-    covariant CustomPainter oldDelegate,
-  ) {
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
     return false;
   }
 }
