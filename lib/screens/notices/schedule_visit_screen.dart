@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter_nivasshub/widgets/dashboard/navigation/dashboard_bottom_navigation.dart';
 
 class ScheduleVisitScreen extends StatefulWidget {
@@ -48,21 +49,44 @@ class _ScheduleVisitScreenState extends State<ScheduleVisitScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final titleName = widget.projectName.isNotEmpty ? widget.projectName : 'Century Bliss';
 
+    final headingColor = isDark ? AppColors.noticesHeadingDark : Colors.black87;
+    final cardColor = isDark ? AppColors.surfaceDark : AppColors.surfaceLight;
+    final cardBorderColor =
+        isDark ? AppColors.noticesCardBorderDark : AppColors.noticesCardBorderLight;
+    final titleTextColor =
+        isDark ? AppColors.noticesTitleTextDark : AppColors.noticesTitleTextLight;
+    final labelColor = isDark ? AppColors.noticesLabelTextDark : AppColors.noticesLabelTextLight;
+    final dividerColor = isDark ? AppColors.noticesDividerDark : AppColors.noticesDividerLight;
+    final amberAccent =
+        isDark ? AppColors.noticesAccentAmberDark : AppColors.noticesAccentAmberLight;
+    final amberStrongBorder =
+        isDark ? AppColors.noticesAmberStrongBorderDark : AppColors.noticesAmberStrongBorderLight;
+    final amberBg = isDark ? AppColors.noticesAmberBgDark : AppColors.noticesAmberBgLight;
+    final mutedColor = isDark ? AppColors.noticesMutedDark : AppColors.noticesMutedLight;
+    final borderColor = isDark ? AppColors.noticesBorderDark : AppColors.noticesBorderLight;
+    final accentBlue =
+        isDark ? AppColors.noticesAccentBlueDark : AppColors.noticesAccentBlueLight;
+    final fieldFillColor =
+        isDark ? AppColors.noticesBackgroundDark : AppColors.noticesBackgroundLight;
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor:
+          isDark ? AppColors.noticesBackgroundDark : AppColors.noticesBackgroundLight,
       appBar: AppBar(
-        backgroundColor: const Color(0xFFE0F2FE),
+        backgroundColor:
+            isDark ? AppColors.noticesAppBarDark : AppColors.noticesAppBarLight,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black87),
+          icon: Icon(Icons.arrow_back, color: headingColor),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: const Text(
+        title: Text(
           'Schedule Your Visit',
           style: TextStyle(
-            color: Colors.black87,
+            color: headingColor,
             fontWeight: FontWeight.bold,
             fontSize: 18,
           ),
@@ -79,7 +103,7 @@ class _ScheduleVisitScreenState extends State<ScheduleVisitScreen> {
               'Pick your preferred day and we\'ll arrange a personalized tour of $titleName.',
               style: TextStyle(
                 fontSize: 13,
-                color: Colors.grey.shade800,
+                color: isDark ? AppColors.noticesSecondaryTextDark : Colors.grey.shade800,
                 height: 1.4,
                 fontWeight: FontWeight.w500,
               ),
@@ -91,15 +115,15 @@ class _ScheduleVisitScreenState extends State<ScheduleVisitScreen> {
               width: double.infinity,
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: cardColor,
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: const Color(0xFFF59E0B)),
+                border: Border.all(color: amberStrongBorder),
               ),
               child: Row(
                 children: [
-                  const Icon(
+                  Icon(
                     Icons.home_outlined,
-                    color: Color(0xFFD97706),
+                    color: amberAccent,
                     size: 18,
                   ),
                   const SizedBox(width: 8),
@@ -108,8 +132,8 @@ class _ScheduleVisitScreenState extends State<ScheduleVisitScreen> {
                       widget.subtitleInfo.isNotEmpty
                           ? widget.subtitleInfo
                           : 'Freespirited 2 & 3 Bed Homes | Starting at ₹93.5 L*',
-                      style: const TextStyle(
-                        color: Color(0xFFD97706),
+                      style: TextStyle(
+                        color: amberAccent,
                         fontSize: 11.5,
                         fontWeight: FontWeight.bold,
                       ),
@@ -124,12 +148,12 @@ class _ScheduleVisitScreenState extends State<ScheduleVisitScreen> {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: cardColor,
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: const Color(0xFFE2E8F0)),
+                border: Border.all(color: cardBorderColor),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: .02),
+                    color: Colors.black.withValues(alpha: isDark ? .25 : .02),
                     blurRadius: 6,
                     offset: const Offset(0, 2),
                   ),
@@ -141,24 +165,24 @@ class _ScheduleVisitScreenState extends State<ScheduleVisitScreen> {
                   // Card Header Row with right-aligned Orange Calendar Icon
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: const [
+                    children: [
                       Text(
                         'Preferred Visit Day',
                         style: TextStyle(
                           fontSize: 14.5,
                           fontWeight: FontWeight.bold,
-                          color: Color(0xFF1E293B),
+                          color: titleTextColor,
                         ),
                       ),
                       Icon(
                         Icons.calendar_today_outlined,
-                        color: Color(0xFFD97706),
+                        color: amberAccent,
                         size: 18,
                       ),
                     ],
                   ),
                   const SizedBox(height: 10),
-                  const Divider(height: 1, color: Color(0xFFF1F5F9)),
+                  Divider(height: 1, color: dividerColor),
                   const SizedBox(height: 12),
 
                   // Option 1: Weekday
@@ -168,14 +192,10 @@ class _ScheduleVisitScreenState extends State<ScheduleVisitScreen> {
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
                       decoration: BoxDecoration(
-                        color: _selectedDay == 'Weekday'
-                            ? const Color(0xFFFFFBEB)
-                            : Colors.white,
+                        color: _selectedDay == 'Weekday' ? amberBg : cardColor,
                         borderRadius: BorderRadius.circular(10),
                         border: Border.all(
-                          color: _selectedDay == 'Weekday'
-                              ? const Color(0xFFF59E0B)
-                              : const Color(0xFFE2E8F0),
+                          color: _selectedDay == 'Weekday' ? amberStrongBorder : cardBorderColor,
                         ),
                       ),
                       child: Row(
@@ -184,24 +204,22 @@ class _ScheduleVisitScreenState extends State<ScheduleVisitScreen> {
                             _selectedDay == 'Weekday'
                                 ? Icons.radio_button_checked
                                 : Icons.radio_button_off,
-                            color: _selectedDay == 'Weekday'
-                                ? const Color(0xFFD97706)
-                                : const Color(0xFFCBD5E1),
+                            color: _selectedDay == 'Weekday' ? amberAccent : borderColor,
                             size: 18,
                           ),
                           const SizedBox(width: 10),
-                          const Icon(
+                          Icon(
                             Icons.business_center_outlined,
-                            color: Color(0xFF475569),
+                            color: labelColor,
                             size: 18,
                           ),
                           const SizedBox(width: 8),
-                          const Text(
+                          Text(
                             'Weekday',
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 13,
-                              color: Color(0xFF1E293B),
+                              color: titleTextColor,
                             ),
                           ),
                           const Spacer(),
@@ -209,9 +227,7 @@ class _ScheduleVisitScreenState extends State<ScheduleVisitScreen> {
                             'Mon – Fri',
                             style: TextStyle(
                               fontSize: 11,
-                              color: _selectedDay == 'Weekday'
-                                  ? const Color(0xFFD97706)
-                                  : const Color(0xFF94A3B8),
+                              color: _selectedDay == 'Weekday' ? amberAccent : mutedColor,
                               fontWeight: FontWeight.w500,
                             ),
                           ),
@@ -228,14 +244,10 @@ class _ScheduleVisitScreenState extends State<ScheduleVisitScreen> {
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
                       decoration: BoxDecoration(
-                        color: _selectedDay == 'Weekend'
-                            ? const Color(0xFFFFFBEB)
-                            : Colors.white,
+                        color: _selectedDay == 'Weekend' ? amberBg : cardColor,
                         borderRadius: BorderRadius.circular(10),
                         border: Border.all(
-                          color: _selectedDay == 'Weekend'
-                              ? const Color(0xFFF59E0B)
-                              : const Color(0xFFE2E8F0),
+                          color: _selectedDay == 'Weekend' ? amberStrongBorder : cardBorderColor,
                           width: 1.5,
                         ),
                       ),
@@ -245,30 +257,30 @@ class _ScheduleVisitScreenState extends State<ScheduleVisitScreen> {
                             _selectedDay == 'Weekend'
                                 ? Icons.radio_button_checked
                                 : Icons.radio_button_off,
-                            color: const Color(0xFFD97706),
+                            color: amberAccent,
                             size: 18,
                           ),
                           const SizedBox(width: 10),
-                          const Icon(
+                          Icon(
                             Icons.wb_sunny_outlined,
-                            color: Color(0xFFD97706),
+                            color: amberAccent,
                             size: 18,
                           ),
                           const SizedBox(width: 8),
-                          const Text(
+                          Text(
                             'Weekend',
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 13,
-                              color: Color(0xFF1E293B),
+                              color: titleTextColor,
                             ),
                           ),
                           const Spacer(),
-                          const Text(
+                          Text(
                             'Sat – Sun',
                             style: TextStyle(
                               fontSize: 11,
-                              color: Color(0xFFD97706),
+                              color: amberAccent,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -285,12 +297,12 @@ class _ScheduleVisitScreenState extends State<ScheduleVisitScreen> {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: cardColor,
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: const Color(0xFFE2E8F0)),
+                border: Border.all(color: cardBorderColor),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: .02),
+                    color: Colors.black.withValues(alpha: isDark ? .25 : .02),
                     blurRadius: 6,
                     offset: const Offset(0, 2),
                   ),
@@ -302,131 +314,131 @@ class _ScheduleVisitScreenState extends State<ScheduleVisitScreen> {
                   // Card Header Row with right-aligned Orange Person Icon
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: const [
+                    children: [
                       Text(
                         'Contact Details',
                         style: TextStyle(
                           fontSize: 14.5,
                           fontWeight: FontWeight.bold,
-                          color: Color(0xFF1E293B),
+                          color: titleTextColor,
                         ),
                       ),
                       Icon(
                         Icons.person_outline,
-                        color: Color(0xFFD97706),
+                        color: amberAccent,
                         size: 20,
                       ),
                     ],
                   ),
                   const SizedBox(height: 10),
-                  const Divider(height: 1, color: Color(0xFFF1F5F9)),
+                  Divider(height: 1, color: dividerColor),
                   const SizedBox(height: 14),
 
                   // Full Name Field
-                  const Text(
+                  Text(
                     'Full Name',
                     style: TextStyle(
                       fontSize: 11.5,
                       fontWeight: FontWeight.w600,
-                      color: Color(0xFF475569),
+                      color: labelColor,
                     ),
                   ),
                   const SizedBox(height: 6),
                   TextField(
                     controller: _nameController,
-                    style: const TextStyle(fontSize: 13, color: Colors.black87),
+                    style: TextStyle(fontSize: 13, color: headingColor),
                     decoration: InputDecoration(
                       hintText: 'Enter full name',
-                      hintStyle: TextStyle(fontSize: 12.5, color: Colors.grey.shade400),
-                      prefixIcon: const Icon(Icons.person_outline, size: 18, color: Colors.grey),
+                      hintStyle: TextStyle(fontSize: 12.5, color: isDark ? AppColors.noticesMutedDark : Colors.grey.shade400),
+                      prefixIcon: Icon(Icons.person_outline, size: 18, color: isDark ? AppColors.noticesMutedDark : Colors.grey),
                       filled: true,
-                      fillColor: const Color(0xFFF8FAFC),
+                      fillColor: fieldFillColor,
                       contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
-                        borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+                        borderSide: BorderSide(color: cardBorderColor),
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
-                        borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+                        borderSide: BorderSide(color: cardBorderColor),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
-                        borderSide: const BorderSide(color: Color(0xFF0284C7)),
+                        borderSide: BorderSide(color: accentBlue),
                       ),
                     ),
                   ),
                   const SizedBox(height: 14),
 
                   // Phone Number Field
-                  const Text(
+                  Text(
                     'Phone Number',
                     style: TextStyle(
                       fontSize: 11.5,
                       fontWeight: FontWeight.w600,
-                      color: Color(0xFF475569),
+                      color: labelColor,
                     ),
                   ),
                   const SizedBox(height: 6),
                   TextField(
                     controller: _phoneController,
                     keyboardType: TextInputType.phone,
-                    style: const TextStyle(fontSize: 13, color: Colors.black87),
+                    style: TextStyle(fontSize: 13, color: headingColor),
                     decoration: InputDecoration(
                       hintText: 'Enter phone number',
-                      hintStyle: TextStyle(fontSize: 12.5, color: Colors.grey.shade400),
-                      prefixIcon: const Icon(Icons.phone_outlined, size: 18, color: Colors.grey),
+                      hintStyle: TextStyle(fontSize: 12.5, color: isDark ? AppColors.noticesMutedDark : Colors.grey.shade400),
+                      prefixIcon: Icon(Icons.phone_outlined, size: 18, color: isDark ? AppColors.noticesMutedDark : Colors.grey),
                       filled: true,
-                      fillColor: const Color(0xFFF8FAFC),
+                      fillColor: fieldFillColor,
                       contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
-                        borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+                        borderSide: BorderSide(color: cardBorderColor),
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
-                        borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+                        borderSide: BorderSide(color: cardBorderColor),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
-                        borderSide: const BorderSide(color: Color(0xFF0284C7)),
+                        borderSide: BorderSide(color: accentBlue),
                       ),
                     ),
                   ),
                   const SizedBox(height: 14),
 
                   // Email Address Field
-                  const Text(
+                  Text(
                     'Email Address',
                     style: TextStyle(
                       fontSize: 11.5,
                       fontWeight: FontWeight.w600,
-                      color: Color(0xFF475569),
+                      color: labelColor,
                     ),
                   ),
                   const SizedBox(height: 6),
                   TextField(
                     controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
-                    style: const TextStyle(fontSize: 13, color: Colors.black87),
+                    style: TextStyle(fontSize: 13, color: headingColor),
                     decoration: InputDecoration(
                       hintText: 'Enter email address',
-                      hintStyle: TextStyle(fontSize: 12.5, color: Colors.grey.shade400),
-                      prefixIcon: const Icon(Icons.email_outlined, size: 18, color: Colors.grey),
+                      hintStyle: TextStyle(fontSize: 12.5, color: isDark ? AppColors.noticesMutedDark : Colors.grey.shade400),
+                      prefixIcon: Icon(Icons.email_outlined, size: 18, color: isDark ? AppColors.noticesMutedDark : Colors.grey),
                       filled: true,
-                      fillColor: const Color(0xFFF8FAFC),
+                      fillColor: fieldFillColor,
                       contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
-                        borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+                        borderSide: BorderSide(color: cardBorderColor),
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
-                        borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+                        borderSide: BorderSide(color: cardBorderColor),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
-                        borderSide: const BorderSide(color: Color(0xFF0284C7)),
+                        borderSide: BorderSide(color: accentBlue),
                       ),
                     ),
                   ),
@@ -442,7 +454,7 @@ class _ScheduleVisitScreenState extends State<ScheduleVisitScreen> {
               child: ElevatedButton(
                 onPressed: _confirmVisit,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF0284C7),
+                  backgroundColor: accentBlue,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
@@ -460,10 +472,10 @@ class _ScheduleVisitScreenState extends State<ScheduleVisitScreen> {
             ),
             const SizedBox(height: 12),
 
-            const Center(
+            Center(
               child: Text(
                 'By submitting, you agree to our Terms & Privacy Policy.',
-                style: TextStyle(fontSize: 11, color: Colors.grey),
+                style: TextStyle(fontSize: 11, color: isDark ? AppColors.noticesMutedDark : Colors.grey),
               ),
             ),
             const SizedBox(height: 16),

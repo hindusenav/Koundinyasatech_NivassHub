@@ -2,7 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'package:flutter_nivasshub/constants/legacy_app_colors.dart';
+import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter_nivasshub/constants/legacy_app_dimensions.dart';
 import 'package:flutter_nivasshub/models/notices/community_post_model.dart';
 import 'package:flutter_nivasshub/providers/notices/notices_provider.dart';
@@ -14,28 +14,37 @@ class CommunityPostCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final isPoll =
         post.type.toLowerCase() == 'poll' || post.pollOptions.isNotEmpty;
     final isEvent = post.type.toLowerCase() == 'event';
 
+    final headingColor =
+        isDark ? AppColors.noticesHeadingDark : AppColors.noticesHeadingLight;
+    final mutedColor = isDark ? AppColors.noticesMutedDark : AppColors.noticesMutedLight;
+    final secondaryColor =
+        isDark ? AppColors.noticesSecondaryTextDark : AppColors.noticesSecondaryTextLight;
+    final bodyColor = isDark ? AppColors.noticesBodyTextDark : AppColors.noticesBodyTextLight;
+    final dividerColor = isDark ? AppColors.noticesDividerDark : AppColors.noticesDividerLight;
+
     return Container(
       decoration: BoxDecoration(
         color: isEvent
-            ? const Color(0xFFEFF6FF)
+            ? (isDark ? AppColors.noticesBlueTintBgDark : AppColors.noticesBlueTintBgLight)
             : isPoll
-            ? const Color(0xFFF8FAFC)
-            : Colors.white,
+            ? (isDark ? AppColors.noticesBackgroundDark : AppColors.noticesBackgroundLight)
+            : (isDark ? AppColors.surfaceDark : AppColors.surfaceLight),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: isEvent
-              ? const Color(0xFFBFDBFE)
+              ? (isDark ? AppColors.noticesBlueBorderDark : AppColors.noticesBlueBorderLight)
               : isPoll
-              ? const Color(0xFFE2E8F0)
-              : const Color(0xFFF1F5F9),
+              ? (isDark ? AppColors.noticesCardBorderDark : AppColors.noticesCardBorderLight)
+              : dividerColor,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
+            color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.04),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -52,7 +61,9 @@ class CommunityPostCard extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 18,
-                backgroundColor: const Color(0xFFDBEAFE),
+                backgroundColor: isDark
+                    ? AppColors.noticesBlueLightBorderDark
+                    : AppColors.noticesBlueLightBorderLight,
                 backgroundImage: post.profileImage.isNotEmpty
                     ? NetworkImage(post.profileImage)
                     : null,
@@ -61,8 +72,10 @@ class CommunityPostCard extends StatelessWidget {
                         post.userName.isNotEmpty
                             ? post.userName[0].toUpperCase()
                             : 'U',
-                        style: const TextStyle(
-                          color: Color(0xFF1E40AF),
+                        style: TextStyle(
+                          color: isDark
+                              ? AppColors.communityAvatarTextDark
+                              : AppColors.communityAvatarTextLight,
                           fontWeight: FontWeight.bold,
                           fontSize: 14,
                         ),
@@ -79,10 +92,10 @@ class CommunityPostCard extends StatelessWidget {
                         Flexible(
                           child: Text(
                             post.userName,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 14,
-                              color: Color(0xFF0F172A),
+                              color: headingColor,
                             ),
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -95,15 +108,17 @@ class CommunityPostCard extends StatelessWidget {
                               vertical: 2,
                             ),
                             decoration: BoxDecoration(
-                              color: const Color(0xFFF1F5F9),
+                              color: dividerColor,
                               borderRadius: BorderRadius.circular(4),
                             ),
                             child: Text(
                               post.userFlat,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 10,
                                 fontWeight: FontWeight.w600,
-                                color: Color(0xFF475569),
+                                color: isDark
+                                    ? AppColors.noticesLabelTextDark
+                                    : AppColors.noticesLabelTextLight,
                               ),
                             ),
                           ),
@@ -115,8 +130,8 @@ class CommunityPostCard extends StatelessWidget {
                       post.timestamp.isNotEmpty
                           ? post.timestamp
                           : post.createdAt,
-                      style: const TextStyle(
-                        color: Color(0xFF94A3B8),
+                      style: TextStyle(
+                        color: mutedColor,
                         fontSize: 11,
                       ),
                     ),
@@ -126,7 +141,7 @@ class CommunityPostCard extends StatelessWidget {
               IconButton(
                 padding: EdgeInsets.zero,
                 constraints: const BoxConstraints(),
-                icon: const Icon(Icons.more_horiz, color: Color(0xFF94A3B8)),
+                icon: Icon(Icons.more_horiz, color: mutedColor),
                 onPressed: () {},
               ),
             ],
@@ -139,19 +154,19 @@ class CommunityPostCard extends StatelessWidget {
           if (post.title.isNotEmpty && post.title != post.userName) ...[
             Text(
               post.title,
-              style: const TextStyle(
+              style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 15,
-                color: Color(0xFF0F172A),
+                color: headingColor,
               ),
             ),
             const SizedBox(height: 6),
           ],
           Text(
             post.content,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 13.5,
-              color: Color(0xFF334155),
+              color: bodyColor,
               height: 1.45,
             ),
           ),
@@ -171,24 +186,28 @@ class CommunityPostCard extends StatelessWidget {
                     vertical: 10,
                   ),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: isDark ? AppColors.surfaceDark : AppColors.surfaceLight,
                     borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: const Color(0xFFCBD5E1)),
+                    border: Border.all(
+                      color: isDark ? AppColors.noticesBorderDark : AppColors.noticesBorderLight,
+                    ),
                   ),
                   child: Row(
                     children: [
-                      const Icon(
+                      Icon(
                         Icons.radio_button_unchecked,
                         size: 18,
-                        color: Color(0xFF64748B),
+                        color: secondaryColor,
                       ),
                       const SizedBox(width: 10),
                       Text(
                         option,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w500,
-                          color: Color(0xFF1E293B),
+                          color: isDark
+                              ? AppColors.noticesTitleTextDark
+                              : AppColors.noticesTitleTextLight,
                         ),
                       ),
                     ],
@@ -212,18 +231,18 @@ class CommunityPostCard extends StatelessWidget {
                 fit: BoxFit.cover,
                 placeholder: (_, _) => Container(
                   height: 180,
-                  color: const Color(0xFFF1F5F9),
+                  color: dividerColor,
                   child: const Center(
                     child: CircularProgressIndicator(strokeWidth: 2),
                   ),
                 ),
                 errorWidget: (_, _, _) => Container(
                   height: 180,
-                  color: const Color(0xFFF1F5F9),
-                  child: const Icon(
+                  color: dividerColor,
+                  child: Icon(
                     Icons.broken_image,
                     size: 36,
-                    color: Color(0xFF94A3B8),
+                    color: mutedColor,
                   ),
                 ),
               ),
@@ -231,7 +250,7 @@ class CommunityPostCard extends StatelessWidget {
           ],
 
           const SizedBox(height: 12),
-          const Divider(height: 1, color: Color(0xFFF1F5F9)),
+          Divider(height: 1, color: dividerColor),
           const SizedBox(height: 8),
 
           //----------------------------------------------------------
@@ -253,9 +272,7 @@ class CommunityPostCard extends StatelessWidget {
                     children: [
                       Icon(
                         post.isLiked ? Icons.favorite : Icons.favorite_border,
-                        color: post.isLiked
-                            ? Colors.red
-                            : const Color(0xFF64748B),
+                        color: post.isLiked ? Colors.red : secondaryColor,
                         size: 20,
                       ),
                       const SizedBox(width: 4),
@@ -264,9 +281,7 @@ class CommunityPostCard extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
-                          color: post.isLiked
-                              ? Colors.red
-                              : const Color(0xFF64748B),
+                          color: post.isLiked ? Colors.red : secondaryColor,
                         ),
                       ),
                     ],
@@ -284,18 +299,18 @@ class CommunityPostCard extends StatelessWidget {
                   ),
                   child: Row(
                     children: [
-                      const Icon(
+                      Icon(
                         Icons.chat_bubble_outline_rounded,
-                        color: Color(0xFF64748B),
+                        color: secondaryColor,
                         size: 19,
                       ),
                       const SizedBox(width: 4),
                       Text(
                         '${post.comments}',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
-                          color: Color(0xFF64748B),
+                          color: secondaryColor,
                         ),
                       ),
                     ],
@@ -309,8 +324,10 @@ class CommunityPostCard extends StatelessWidget {
                   backgroundColor:
                       post.action.toLowerCase().contains('issue') ||
                           post.action.toLowerCase().contains('rsvp')
-                      ? const Color(0xFFF97316)
-                      : AppColors.primary,
+                      ? AppColors.communityReactionOrange
+                      : (isDark
+                          ? AppColors.communityAccentBlueDark
+                          : AppColors.communityAccentBlueLight),
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(
                     horizontal: 14,

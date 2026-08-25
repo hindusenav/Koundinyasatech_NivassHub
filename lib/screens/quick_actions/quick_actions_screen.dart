@@ -61,10 +61,11 @@ class _QuickActionsScreenState extends State<QuickActionsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
-      backgroundColor: AppColors.infoLight,
+      backgroundColor: isDark ? AppColors.infoDark : AppColors.infoLight,
       appBar: AppBar(
-        backgroundColor: AppColors.infoLight,
+        backgroundColor: isDark ? AppColors.infoDark : AppColors.infoLight,
         elevation: 0,
         leading: IconButton(
           icon: Icon(AppIcons.close),

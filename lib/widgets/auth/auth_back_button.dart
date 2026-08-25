@@ -12,15 +12,16 @@ class AuthBackButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Material(
-      color: AppColors.white.withValues(alpha: 0.9),
+      color: (isDark ? AppColors.surfaceDark : AppColors.white).withValues(alpha: 0.9),
       shape: const CircleBorder(),
       elevation: 1,
       clipBehavior: Clip.antiAlias,
       child: IconButton(
         onPressed: onTap,
         icon: const Icon(AppIcons.back, size: AppDimensions.iconSm),
-        color: AppColors.textPrimaryLight,
+        color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight,
       ),
     );
   }

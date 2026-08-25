@@ -40,6 +40,7 @@ class _PanicSosBannerState extends State<PanicSosBanner> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Material(
       color: Colors.transparent,
       borderRadius: BorderRadius.circular(14),
@@ -52,6 +53,16 @@ class _PanicSosBannerState extends State<PanicSosBanner> {
           padding: const EdgeInsets.symmetric(horizontal: 14),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(14),
+            // This banner uses ~4 distinct reds for the gradient stops and
+            // the two icon circles below. Each plays a different visual
+            // role (gradient depth vs. action-icon circle vs. alert-icon
+            // circle), so they're kept distinct rather than converged onto
+            // one token. All of them — plus the white text/icons on top —
+            // are a fixed "emergency alarm" surface, the same category as
+            // an on-primary colored button: they already read clearly in
+            // both themes and are intentionally left unchanged here. Only
+            // the drop shadow (a depth cue, not a brand color) is branched
+            // for dark mode below.
             gradient: const LinearGradient(
               begin: Alignment.centerLeft,
               end: Alignment.centerRight,
@@ -62,7 +73,7 @@ class _PanicSosBannerState extends State<PanicSosBanner> {
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.redAccent.withValues(alpha: 0.20),
+                color: Colors.redAccent.withValues(alpha: isDark ? 0.35 : 0.20),
                 blurRadius: 10,
                 offset: const Offset(0, 4),
               ),

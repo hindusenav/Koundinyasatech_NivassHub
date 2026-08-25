@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:flutter_nivasshub/constants/app_colors.dart';
+
 class SettingItemTile extends StatelessWidget {
   final IconData icon;
   final Color? iconColor;
@@ -32,14 +34,22 @@ class SettingItemTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final defaultBlue = isDark
+        ? AppColors.profileTilePrimaryBlueDark
+        : AppColors.profileTilePrimaryBlueLight;
+    final defaultIconBg = isDark
+        ? AppColors.settingItemIconBgDark
+        : AppColors.settingItemIconBgLight;
+
     return Container(
       margin: const EdgeInsets.only(bottom: 6),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? AppColors.surfaceDark : Colors.white,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.02),
+            color: Colors.black.withValues(alpha: isDark ? 0.25 : 0.02),
             blurRadius: 4,
             offset: const Offset(0, 1),
           ),
@@ -52,12 +62,12 @@ class SettingItemTile extends StatelessWidget {
         leading: Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: iconBgColor ?? const Color(0xFFF0F7FF),
+            color: iconBgColor ?? defaultIconBg,
             borderRadius: BorderRadius.circular(10),
           ),
           child: Icon(
             icon,
-            color: iconColor ?? const Color(0xFF1976D2),
+            color: iconColor ?? defaultBlue,
             size: 20,
           ),
         ),
@@ -66,7 +76,8 @@ class SettingItemTile extends StatelessWidget {
           style: TextStyle(
             fontWeight: FontWeight.w600,
             fontSize: 13,
-            color: titleColor ?? Colors.black87,
+            color: titleColor ??
+                (isDark ? AppColors.textPrimaryDark : Colors.black87),
           ),
         ),
         subtitle: subtitle.isNotEmpty
@@ -74,14 +85,16 @@ class SettingItemTile extends StatelessWidget {
                 subtitle,
                 style: TextStyle(
                   fontSize: 11,
-                  color: Colors.grey.shade600,
+                  color: isDark
+                      ? AppColors.textSecondaryDark
+                      : Colors.grey.shade600,
                 ),
               )
             : null,
         trailing: isSwitch
             ? Switch.adaptive(
                 value: switchValue,
-                activeThumbColor: const Color(0xFF1976D2),
+                activeThumbColor: defaultBlue,
                 onChanged: onSwitchChanged,
               )
             : Row(
@@ -91,7 +104,7 @@ class SettingItemTile extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                       decoration: BoxDecoration(
-                        color: (badgeColor ?? const Color(0xFF1976D2)).withValues(alpha: 0.1),
+                        color: (badgeColor ?? defaultBlue).withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(6),
                       ),
                       child: Text(
@@ -99,13 +112,17 @@ class SettingItemTile extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 10,
                           fontWeight: FontWeight.bold,
-                          color: badgeColor ?? const Color(0xFF1976D2),
+                          color: badgeColor ?? defaultBlue,
                         ),
                       ),
                     ),
                     const SizedBox(width: 6),
                   ],
-                  const Icon(Icons.chevron_right, color: Colors.grey, size: 20),
+                  Icon(
+                    Icons.chevron_right,
+                    color: isDark ? AppColors.textSecondaryDark : Colors.grey,
+                    size: 20,
+                  ),
                 ],
               ),
       ),

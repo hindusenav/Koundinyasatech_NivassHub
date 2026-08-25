@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter_nivasshub/routes/app_routes.dart';
 import 'package:flutter_nivasshub/providers/profile/profile_provider.dart';
 import 'package:flutter_nivasshub/models/profile/profile_model.dart';
@@ -8,16 +9,6 @@ import 'package:flutter_nivasshub/screens/profile/add_address_details_screen.dar
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
-
-  // ============================================================
-  // COLORS
-  // ============================================================
-
-  static const Color primaryBlue = Color(0xFF006FC9);
-  static const Color backgroundBlue = Color(0xFFF2F7FD);
-  static const Color headerBlue = Color(0xFFD8ECFF);
-  static const Color iconBackground = Color(0xFFEAF4FF);
-  static const Color orange = Color(0xFFFF9800);
 
   // ============================================================
   // EDIT DIALOG
@@ -30,22 +21,33 @@ class ProfileScreen extends StatelessWidget {
     Function(String) onSave,
   ) {
     final controller = TextEditingController(text: initialValue);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final primaryBlue = isDark
+        ? AppColors.profilePrimaryBlueDark
+        : AppColors.profilePrimaryBlueLight;
 
     showDialog(
       context: context,
       builder: (dialogContext) {
         return AlertDialog(
-          backgroundColor: Colors.white,
+          backgroundColor: isDark ? AppColors.surfaceDark : Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
           title: Text(
             'Edit $title',
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w700,
+              color: isDark ? AppColors.textPrimaryDark : Colors.black87,
+            ),
           ),
           content: TextField(
             controller: controller,
             autofocus: true,
+            style: TextStyle(
+              color: isDark ? AppColors.textPrimaryDark : Colors.black87,
+            ),
             decoration: InputDecoration(
               hintText: 'Enter $title',
               contentPadding: const EdgeInsets.symmetric(
@@ -62,7 +64,14 @@ class ProfileScreen extends StatelessWidget {
               onPressed: () {
                 Navigator.pop(dialogContext);
               },
-              child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
+              child: Text(
+                'Cancel',
+                style: TextStyle(
+                  color: isDark
+                      ? AppColors.textSecondaryDark
+                      : Colors.grey,
+                ),
+              ),
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
@@ -98,6 +107,15 @@ class ProfileScreen extends StatelessWidget {
     final profileProvider = context.watch<ProfileProvider>();
     final profile = profileProvider.profile;
 
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final backgroundBlue =
+        isDark ? AppColors.profileBackgroundDark : AppColors.profileBackgroundLight;
+    final headerBlue =
+        isDark ? AppColors.profileHeaderDark : AppColors.profileHeaderLight;
+    final primaryBlue =
+        isDark ? AppColors.profilePrimaryBlueDark : AppColors.profilePrimaryBlueLight;
+    final textPrimary = isDark ? AppColors.textPrimaryDark : Colors.black87;
+
     return Scaffold(
       backgroundColor: backgroundBlue,
 
@@ -116,7 +134,7 @@ class ProfileScreen extends StatelessWidget {
 
         leading: IconButton(
           padding: EdgeInsets.zero,
-          icon: const Icon(Icons.arrow_back, color: Colors.black87, size: 21),
+          icon: Icon(Icons.arrow_back, color: textPrimary, size: 21),
           onPressed: () {
             Navigator.maybePop(context);
           },
@@ -124,10 +142,10 @@ class ProfileScreen extends StatelessWidget {
 
         centerTitle: true,
 
-        title: const Text(
+        title: Text(
           'Create Your Profile',
           style: TextStyle(
-            color: Colors.black87,
+            color: textPrimary,
             fontSize: 14,
             fontWeight: FontWeight.w700,
           ),
@@ -137,11 +155,7 @@ class ProfileScreen extends StatelessWidget {
           IconButton(
             padding: EdgeInsets.zero,
             constraints: const BoxConstraints(minWidth: 45),
-            icon: const Icon(
-              Icons.settings_outlined,
-              color: Colors.black87,
-              size: 20,
-            ),
+            icon: Icon(Icons.settings_outlined, color: textPrimary, size: 20),
             onPressed: () {
               Navigator.pushNamed(context, AppRoutes.settings);
             },
@@ -165,19 +179,19 @@ class ProfileScreen extends StatelessWidget {
               // ==================================================
               // PROFILE HEADER
               // ==================================================
-              _buildProfileHeader(profile),
+              _buildProfileHeader(profile, isDark),
 
               const SizedBox(height: 28),
 
               // ==================================================
               // ENTER YOUR DETAILS
               // ==================================================
-              const Text(
+              Text(
                 'Enter your details',
                 style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
-                  color: Colors.black87,
+                  color: textPrimary,
                 ),
               ),
 
@@ -186,7 +200,7 @@ class ProfileScreen extends StatelessWidget {
               // ==================================================
               // ENABLE CALLS
               // ==================================================
-              _buildEnableCalls(profile, profileProvider),
+              _buildEnableCalls(profile, profileProvider, isDark),
 
               const SizedBox(height: 9),
 
@@ -200,6 +214,7 @@ class ProfileScreen extends StatelessWidget {
                     ? 'User Name'
                     : profile.userName,
                 tags: profile.tags,
+                isDark: isDark,
                 onTap: () {
                   _showEditDialog(context, 'User Name', profile.userName, (
                     value,
@@ -220,6 +235,7 @@ class ProfileScreen extends StatelessWidget {
                 subtitle: profile.bio.isEmpty
                     ? 'Tell your neighbors about yourself'
                     : profile.bio,
+                isDark: isDark,
                 onTap: () {
                   _showEditDialog(context, 'Bio', profile.bio, (value) {
                     profileProvider.updateBio(value);
@@ -238,6 +254,7 @@ class ProfileScreen extends StatelessWidget {
                 subtitle: profile.work.isEmpty
                     ? 'Where do you work?'
                     : profile.work,
+                isDark: isDark,
                 onTap: () {
                   _showEditDialog(context, 'Work', profile.work, (value) {
                     profileProvider.updateWork(value);
@@ -259,6 +276,7 @@ class ProfileScreen extends StatelessWidget {
                     ? '${profile.address.flatNo}, '
                           '${profile.address.societyName}'
                     : 'Add Address details',
+                isDark: isDark,
                 onTap: () {
                   Navigator.push(
                     context,
@@ -288,7 +306,6 @@ class ProfileScreen extends StatelessWidget {
         top: false,
         child: Container(
           color: backgroundBlue,
-
           padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
 
           child: SizedBox(
@@ -391,7 +408,7 @@ class ProfileScreen extends StatelessWidget {
   // PROFILE HEADER
   // ============================================================
 
-  Widget _buildProfileHeader(ProfileModel profile) {
+  Widget _buildProfileHeader(ProfileModel profile, bool isDark) {
     return SizedBox(
       width: double.infinity,
       height: 105,
@@ -410,15 +427,20 @@ class ProfileScreen extends StatelessWidget {
 
             child: Container(
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: isDark ? AppColors.surfaceDark : Colors.white,
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: const Color(0xFFD4DEE9), width: 0.8),
+                border: Border.all(
+                  color: isDark
+                      ? AppColors.profileBannerBorderDark
+                      : AppColors.profileBannerBorderLight,
+                  width: 0.8,
+                ),
               ),
 
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(12),
 
-                child: CustomPaint(painter: _ProfileBannerPainter()),
+                child: CustomPaint(painter: _ProfileBannerPainter(isDark)),
               ),
             ),
           ),
@@ -485,7 +507,7 @@ class ProfileScreen extends StatelessWidget {
 
                     child: const Icon(
                       Icons.person_outline,
-                      color: orange,
+                      color: AppColors.profileOrangeLight,
                       size: 30,
                     ),
                   ),
@@ -502,7 +524,7 @@ class ProfileScreen extends StatelessWidget {
                       height: 24,
 
                       decoration: BoxDecoration(
-                        color: orange,
+                        color: AppColors.profileOrangeLight,
                         shape: BoxShape.circle,
 
                         border: Border.all(color: Colors.white, width: 1.5),
@@ -528,7 +550,14 @@ class ProfileScreen extends StatelessWidget {
   // ENABLE CALLS
   // ============================================================
 
-  Widget _buildEnableCalls(ProfileModel profile, ProfileProvider provider) {
+  Widget _buildEnableCalls(
+    ProfileModel profile,
+    ProfileProvider provider,
+    bool isDark,
+  ) {
+    final secondaryColor =
+        isDark ? AppColors.textSecondaryDark : Colors.grey;
+
     return Align(
       alignment: Alignment.centerRight,
 
@@ -538,7 +567,7 @@ class ProfileScreen extends StatelessWidget {
         padding: const EdgeInsets.only(left: 9, right: 3),
 
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: isDark ? AppColors.surfaceDark : Colors.white,
           borderRadius: BorderRadius.circular(8),
         ),
 
@@ -546,13 +575,13 @@ class ProfileScreen extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
 
           children: [
-            const Icon(Icons.phone_outlined, size: 13, color: Colors.grey),
+            Icon(Icons.phone_outlined, size: 13, color: secondaryColor),
 
             const SizedBox(width: 5),
 
-            const Text(
+            Text(
               'Enable calls',
-              style: TextStyle(fontSize: 10, color: Colors.grey),
+              style: TextStyle(fontSize: 10, color: secondaryColor),
             ),
 
             const SizedBox(width: 4),
@@ -572,7 +601,8 @@ class ProfileScreen extends StatelessWidget {
 
                 inactiveThumbColor: Colors.white,
 
-                inactiveTrackColor: Colors.grey.shade300,
+                inactiveTrackColor:
+                    isDark ? AppColors.grey700 : Colors.grey.shade300,
 
                 materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
               ),
@@ -592,8 +622,18 @@ class ProfileScreen extends StatelessWidget {
     required String title,
     required String subtitle,
     required VoidCallback onTap,
+    required bool isDark,
     List<String>? tags,
   }) {
+    final iconBackground =
+        isDark ? AppColors.profileIconBgDark : AppColors.profileIconBgLight;
+    final primaryBlue = isDark
+        ? AppColors.profilePrimaryBlueDark
+        : AppColors.profilePrimaryBlueLight;
+    final titleColor = isDark ? AppColors.textPrimaryDark : Colors.black87;
+    final subtitleColor =
+        isDark ? AppColors.textSecondaryDark : Colors.grey.shade600;
+
     return Material(
       color: Colors.transparent,
 
@@ -613,13 +653,13 @@ class ProfileScreen extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
 
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: isDark ? AppColors.surfaceDark : Colors.white,
 
             borderRadius: BorderRadius.circular(12),
 
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.045),
+                color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.045),
                 blurRadius: 5,
                 offset: const Offset(0, 2),
               ),
@@ -662,10 +702,10 @@ class ProfileScreen extends StatelessWidget {
 
                       overflow: TextOverflow.ellipsis,
 
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
-                        color: Colors.black87,
+                        color: titleColor,
                       ),
                     ),
 
@@ -694,7 +734,7 @@ class ProfileScreen extends StatelessWidget {
                             child: Text(
                               tag,
 
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 8,
                                 color: primaryBlue,
                               ),
@@ -715,7 +755,7 @@ class ProfileScreen extends StatelessWidget {
 
                       style: TextStyle(
                         fontSize: 10,
-                        color: Colors.grey.shade600,
+                        color: subtitleColor,
                       ),
                     ),
                   ],
@@ -727,7 +767,11 @@ class ProfileScreen extends StatelessWidget {
               // =================================================
               // ARROW
               // =================================================
-              const Icon(Icons.chevron_right, color: Colors.black54, size: 21),
+              Icon(
+                Icons.chevron_right,
+                color: isDark ? AppColors.textSecondaryDark : Colors.black54,
+                size: 21,
+              ),
             ],
           ),
         ),
@@ -744,19 +788,28 @@ class ProfileScreen extends StatelessWidget {
     ProfileModel profile,
     ProfileProvider provider,
   ) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final iconBackground =
+        isDark ? AppColors.profileIconBgDark : AppColors.profileIconBgLight;
+    final primaryBlue = isDark
+        ? AppColors.profilePrimaryBlueDark
+        : AppColors.profilePrimaryBlueLight;
+    final orange =
+        isDark ? AppColors.profileOrangeDark : AppColors.profileOrangeLight;
+
     return Container(
       width: double.infinity,
 
       padding: const EdgeInsets.fromLTRB(14, 13, 14, 13),
 
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? AppColors.surfaceDark : Colors.white,
 
         borderRadius: BorderRadius.circular(12),
 
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.045),
+            color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.045),
             blurRadius: 5,
             offset: const Offset(0, 2),
           ),
@@ -767,13 +820,13 @@ class ProfileScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
 
         children: [
-          const Text(
+          Text(
             'Interests',
 
             style: TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.w600,
-              color: Colors.black87,
+              color: isDark ? AppColors.textPrimaryDark : Colors.black87,
             ),
           ),
 
@@ -782,7 +835,10 @@ class ProfileScreen extends StatelessWidget {
           Text(
             'Share what you love with your community',
 
-            style: TextStyle(fontSize: 10, color: Colors.grey.shade600),
+            style: TextStyle(
+              fontSize: 10,
+              color: isDark ? AppColors.textSecondaryDark : Colors.grey.shade600,
+            ),
           ),
 
           const SizedBox(height: 10),
@@ -811,7 +867,7 @@ class ProfileScreen extends StatelessWidget {
                   child: Text(
                     interest,
 
-                    style: const TextStyle(fontSize: 9, color: primaryBlue),
+                    style: TextStyle(fontSize: 9, color: primaryBlue),
                   ),
                 );
               }).toList(),
@@ -843,9 +899,9 @@ class ProfileScreen extends StatelessWidget {
                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 ),
 
-                icon: const Icon(Icons.add, color: orange, size: 16),
+                icon: Icon(Icons.add, color: orange, size: 16),
 
-                label: const Text(
+                label: Text(
                   'Add Interests',
 
                   style: TextStyle(
@@ -868,6 +924,10 @@ class ProfileScreen extends StatelessWidget {
 // ============================================================================
 
 class _ProfileBannerPainter extends CustomPainter {
+  final bool isDark;
+
+  _ProfileBannerPainter(this.isDark);
+
   @override
   void paint(Canvas canvas, Size size) {
     // ==========================================================
@@ -875,7 +935,9 @@ class _ProfileBannerPainter extends CustomPainter {
     // ==========================================================
 
     final fillPaint = Paint()
-      ..color = const Color(0xFFF3F8FE)
+      ..color = isDark
+          ? AppColors.profileBannerFillDark
+          : AppColors.profileBannerFillLight
       ..style = PaintingStyle.fill;
 
     final fillPath = Path();
@@ -913,7 +975,9 @@ class _ProfileBannerPainter extends CustomPainter {
     // ==========================================================
 
     final linePaint = Paint()
-      ..color = const Color(0xFFDCEBFA)
+      ..color = isDark
+          ? AppColors.profileBannerLineDark
+          : AppColors.profileBannerLineLight
       ..style = PaintingStyle.stroke
       ..strokeWidth = 0.7;
 
@@ -946,7 +1010,9 @@ class _ProfileBannerPainter extends CustomPainter {
     // ==========================================================
 
     final circlePaint = Paint()
-      ..color = const Color(0xFFE4F0FC)
+      ..color = isDark
+          ? AppColors.profileBannerCircleDark
+          : AppColors.profileBannerCircleLight
       ..style = PaintingStyle.stroke
       ..strokeWidth = 0.6;
 
@@ -964,8 +1030,8 @@ class _ProfileBannerPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return false;
+  bool shouldRepaint(covariant _ProfileBannerPainter oldDelegate) {
+    return oldDelegate.isDark != isDark;
   }
 }
 

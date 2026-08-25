@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter_nivasshub/providers/notices/notices_provider.dart';
 
 /// Screen matching Figma "Community - New Poll"
@@ -105,25 +106,35 @@ class _CreatePollScreenState extends State<CreatePollScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final headingColor =
+        isDark ? AppColors.noticesHeadingDark : AppColors.noticesHeadingLight;
+    final mutedColor = isDark ? AppColors.noticesMutedDark : AppColors.noticesMutedLight;
+    final accentBlue =
+        isDark ? AppColors.noticesAccentBlueDark : AppColors.noticesAccentBlueLight;
+    final secondaryColor =
+        isDark ? AppColors.noticesSecondaryTextDark : AppColors.noticesSecondaryTextLight;
+
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: isDark ? AppColors.surfaceDark : AppColors.surfaceLight,
       appBar: AppBar(
-        backgroundColor: const Color(0xFFE0F2FE),
+        backgroundColor:
+            isDark ? AppColors.noticesAppBarDark : AppColors.noticesAppBarLight,
         elevation: 0,
         automaticallyImplyLeading: false,
         titleSpacing: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Color(0xFF0F172A)),
+          icon: Icon(Icons.arrow_back, color: headingColor),
           onPressed: () {
             if (Navigator.of(context).canPop()) {
               Navigator.of(context).pop();
             }
           },
         ),
-        title: const Text(
+        title: Text(
           'New Poll',
           style: TextStyle(
-            color: Color(0xFF0F172A),
+            color: headingColor,
             fontWeight: FontWeight.bold,
             fontSize: 18,
           ),
@@ -133,30 +144,28 @@ class _CreatePollScreenState extends State<CreatePollScreen> {
           Container(
             margin: const EdgeInsets.only(right: 12),
             decoration: BoxDecoration(
-              color: const Color(0xFFEFF6FF),
+              color: isDark ? AppColors.noticesBlueTintBgDark : AppColors.noticesBlueTintBgLight,
               borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: const Color(0xFFBFDBFE)),
+              border: Border.all(
+                color: isDark ? AppColors.noticesBlueBorderDark : AppColors.noticesBlueBorderLight,
+              ),
             ),
             child: Material(
               color: Colors.transparent,
               child: InkWell(
                 borderRadius: BorderRadius.circular(20),
                 onTap: () {},
-                child: const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(
-                        Icons.info_outline,
-                        size: 14,
-                        color: Color(0xFF0284C7),
-                      ),
-                      SizedBox(width: 4),
+                      Icon(Icons.info_outline, size: 14, color: accentBlue),
+                      const SizedBox(width: 4),
                       Text(
                         'Guidelines',
                         style: TextStyle(
-                          color: Color(0xFF0284C7),
+                          color: accentBlue,
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
                         ),
@@ -176,10 +185,11 @@ class _CreatePollScreenState extends State<CreatePollScreen> {
           children: [
             Row(
               children: [
-                const CircleAvatar(
+                CircleAvatar(
                   radius: 20,
-                  backgroundColor: Color(0xFFD97706),
-                  child: Text(
+                  backgroundColor:
+                      isDark ? AppColors.noticesAccentAmberDark : AppColors.noticesAccentAmberLight,
+                  child: const Text(
                     'A',
                     style: TextStyle(
                       color: Colors.white,
@@ -193,19 +203,19 @@ class _CreatePollScreenState extends State<CreatePollScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         'User Name',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 14,
-                          color: Color(0xFF0F172A),
+                          color: headingColor,
                         ),
                       ),
                       Text(
                         'Apartment B 402',
                         style: TextStyle(
                           fontSize: 12,
-                          color: Colors.grey.shade600,
+                          color: isDark ? AppColors.textSecondaryDark : Colors.grey.shade600,
                         ),
                       ),
                     ],
@@ -217,7 +227,9 @@ class _CreatePollScreenState extends State<CreatePollScreen> {
                     vertical: 4,
                   ),
                   decoration: BoxDecoration(
-                    border: Border.all(color: const Color(0xFFCBD5E1)),
+                    border: Border.all(
+                      color: isDark ? AppColors.noticesBorderDark : AppColors.noticesBorderLight,
+                    ),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Row(
@@ -225,17 +237,17 @@ class _CreatePollScreenState extends State<CreatePollScreen> {
                     children: [
                       Text(
                         _selectedVisibility,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 12,
-                          color: Color(0xFF0F172A),
+                          color: headingColor,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
                       const SizedBox(width: 4),
-                      const Icon(
+                      Icon(
                         Icons.keyboard_arrow_down,
                         size: 16,
-                        color: Color(0xFF0F172A),
+                        color: headingColor,
                       ),
                     ],
                   ),
@@ -243,24 +255,24 @@ class _CreatePollScreenState extends State<CreatePollScreen> {
               ],
             ),
             const SizedBox(height: 20),
-            const Text(
+            Text(
               'Add a description to your poll...',
-              style: TextStyle(fontSize: 13, color: Color(0xFF64748B)),
+              style: TextStyle(fontSize: 13, color: secondaryColor),
             ),
             const SizedBox(height: 12),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: isDark ? AppColors.surfaceDark : AppColors.surfaceLight,
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: const Color(0xFF0284C7), width: 1.5),
+                border: Border.all(color: accentBlue, width: 1.5),
               ),
               child: TextField(
                 controller: _questionController,
-                style: const TextStyle(fontSize: 14, color: Color(0xFF0F172A)),
-                decoration: const InputDecoration(
+                style: TextStyle(fontSize: 14, color: headingColor),
+                decoration: InputDecoration(
                   hintText: 'Write your poll question here...',
-                  hintStyle: TextStyle(color: Color(0xFF0284C7), fontSize: 14),
+                  hintStyle: TextStyle(color: accentBlue, fontSize: 14),
                   border: InputBorder.none,
                 ),
               ),
@@ -271,24 +283,32 @@ class _CreatePollScreenState extends State<CreatePollScreen> {
                 margin: const EdgeInsets.only(bottom: 10),
                 padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: isDark ? AppColors.surfaceDark : AppColors.surfaceLight,
                   borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: const Color(0xFFE2E8F0)),
+                  border: Border.all(
+                    color: isDark
+                        ? AppColors.noticesCardBorderDark
+                        : AppColors.noticesCardBorderLight,
+                  ),
                 ),
                 child: Row(
                   children: [
                     Expanded(
                       child: TextField(
                         controller: _optionControllers[i],
-                        style: const TextStyle(fontSize: 13, color: Color(0xFF0F172A)),
+                        style: TextStyle(fontSize: 13, color: headingColor),
                         decoration: InputDecoration(
                           hintText: 'Option ${i + 1}',
-                          hintStyle: const TextStyle(color: Color(0xFF94A3B8), fontSize: 13),
+                          hintStyle: TextStyle(color: mutedColor, fontSize: 13),
                           border: InputBorder.none,
                         ),
                       ),
                     ),
-                    const Icon(Icons.crop_square, color: Color(0xFFCBD5E1), size: 18),
+                    Icon(
+                      Icons.crop_square,
+                      color: isDark ? AppColors.noticesBorderDark : AppColors.noticesBorderLight,
+                      size: 18,
+                    ),
                   ],
                 ),
               ),
@@ -296,14 +316,14 @@ class _CreatePollScreenState extends State<CreatePollScreen> {
             const SizedBox(height: 6),
             GestureDetector(
               onTap: _addOption,
-              child: const Row(
+              child: Row(
                 children: [
-                  Icon(Icons.add, color: Color(0xFF0284C7), size: 16),
-                  SizedBox(width: 4),
+                  Icon(Icons.add, color: accentBlue, size: 16),
+                  const SizedBox(width: 4),
                   Text(
                     'Add Option',
                     style: TextStyle(
-                      color: Color(0xFF0284C7),
+                      color: accentBlue,
                       fontWeight: FontWeight.bold,
                       fontSize: 13,
                     ),
@@ -317,9 +337,13 @@ class _CreatePollScreenState extends State<CreatePollScreen> {
       bottomNavigationBar: SafeArea(
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            border: Border(top: BorderSide(color: Color(0xFFE2E8F0))),
+          decoration: BoxDecoration(
+            color: isDark ? AppColors.surfaceDark : AppColors.surfaceLight,
+            border: Border(
+              top: BorderSide(
+                color: isDark ? AppColors.noticesCardBorderDark : AppColors.noticesCardBorderLight,
+              ),
+            ),
           ),
           child: Row(
             children: [
@@ -332,7 +356,7 @@ class _CreatePollScreenState extends State<CreatePollScreen> {
               _MediaIconButton(icon: Icons.mic_none_outlined, onTap: () {}),
               const Spacer(),
               Material(
-                color: const Color(0xFF0284C7),
+                color: accentBlue,
                 borderRadius: BorderRadius.circular(8),
                 child: InkWell(
                   onTap: _isSubmitting ? null : _submitPoll,
@@ -378,21 +402,28 @@ class _MediaIconButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? AppColors.surfaceDark : AppColors.surfaceLight,
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: const Color(0xFFE2E8F0)),
+        border: Border.all(
+          color: isDark ? AppColors.noticesCardBorderDark : AppColors.noticesCardBorderLight,
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: .03),
+            color: Colors.black.withValues(alpha: isDark ? .25 : .03),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),
         ],
       ),
       child: IconButton(
-        icon: Icon(icon, color: const Color(0xFF334155), size: 18),
+        icon: Icon(
+          icon,
+          color: isDark ? AppColors.noticesBodyTextDark : AppColors.noticesBodyTextLight,
+          size: 18,
+        ),
         onPressed: onTap,
         constraints: const BoxConstraints(),
         padding: const EdgeInsets.all(8),

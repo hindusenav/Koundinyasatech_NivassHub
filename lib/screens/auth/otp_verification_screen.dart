@@ -152,13 +152,27 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen>
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final screenHeight = context.screenHeight;
     final auth = context.watch<AuthProvider>();
+    final background = isDark
+        ? AuthColors.backgroundDarkMode
+        : AuthColors.background;
+    final heading = isDark ? AuthColors.headingDarkMode : AuthColors.heading;
+    final bodyText = isDark
+        ? AuthColors.bodyTextDarkMode
+        : AuthColors.bodyText;
+    final primaryBlue = isDark
+        ? AuthColors.primaryBlueDarkMode
+        : AuthColors.primaryBlue;
+    final lightBlue = isDark
+        ? AuthColors.lightBlueDarkMode
+        : AuthColors.lightBlue;
 
     return PopScope(
       canPop: !(auth.isVerifyingOtp || auth.isResendingOtp),
       child: Scaffold(
-        backgroundColor: AuthColors.background,
+        backgroundColor: background,
         body: Stack(
           children: [
             Positioned.fill(
@@ -168,9 +182,9 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen>
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                     colors: [
-                      AuthColors.background,
-                      AuthColors.background,
-                      AuthColors.lightBlue.withValues(alpha: 0.05),
+                      background,
+                      background,
+                      lightBlue.withValues(alpha: 0.05),
                     ],
                     stops: const [0.0, 0.55, 1.0],
                   ),
@@ -244,7 +258,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen>
                                     : 'Verify OTP',
                                 textAlign: TextAlign.center,
                                 style: AppTextStyles.headlineSmall.copyWith(
-                                  color: AuthColors.heading,
+                                  color: heading,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -260,7 +274,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen>
                                           textAlign: TextAlign.center,
                                           style: AppTextStyles.bodyLarge
                                               .copyWith(
-                                                color: AuthColors.heading,
+                                                color: heading,
                                                 fontWeight: FontWeight.bold,
                                               ),
                                         ),
@@ -270,7 +284,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen>
                                           textAlign: TextAlign.center,
                                           style: AppTextStyles.bodyMedium
                                               .copyWith(
-                                                color: AuthColors.bodyText,
+                                                color: bodyText,
                                               ),
                                         ),
                                       ],
@@ -282,7 +296,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen>
                                           textAlign: TextAlign.center,
                                           style: AppTextStyles.bodyLarge
                                               .copyWith(
-                                                color: AuthColors.bodyText,
+                                                color: bodyText,
                                               ),
                                         ),
                                         Text(
@@ -290,7 +304,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen>
                                           textAlign: TextAlign.center,
                                           style: AppTextStyles.bodyLarge
                                               .copyWith(
-                                                color: AuthColors.heading,
+                                                color: heading,
                                                 fontWeight: FontWeight.bold,
                                               ),
                                         ),
@@ -319,15 +333,14 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen>
                                               Icon(
                                                 AppIcons.clock,
                                                 size: AppDimensions.iconXs,
-                                                color: AuthColors.bodyText,
+                                                color: bodyText,
                                               ),
                                               AppSpacing.gapWXs,
                                               Text(
                                                 'Code expires in $_formattedCountdown',
                                                 style: AppTextStyles.bodyMedium
                                                     .copyWith(
-                                                      color:
-                                                          AuthColors.bodyText,
+                                                      color: bodyText,
                                                     ),
                                               ),
                                             ],
@@ -336,7 +349,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen>
                                             'Resend OTP in $_formattedCountdown',
                                             style: AppTextStyles.bodyMedium
                                                 .copyWith(
-                                                  color: AuthColors.bodyText,
+                                                  color: bodyText,
                                                 ),
                                           ))
                                   : GestureDetector(
@@ -350,7 +363,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen>
                                                 Icon(
                                                   AppIcons.refresh,
                                                   size: AppDimensions.iconXs,
-                                                  color: AuthColors.primaryBlue,
+                                                  color: primaryBlue,
                                                 ),
                                                 AppSpacing.gapWXs,
                                                 Text(
@@ -360,8 +373,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen>
                                                   style: AppTextStyles
                                                       .bodyMedium
                                                       .copyWith(
-                                                        color: AuthColors
-                                                            .primaryBlue,
+                                                        color: primaryBlue,
                                                         fontWeight:
                                                             FontWeight.bold,
                                                       ),
@@ -374,8 +386,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen>
                                                   : 'Resend OTP',
                                               style: AppTextStyles.bodyMedium
                                                   .copyWith(
-                                                    color:
-                                                        AuthColors.primaryBlue,
+                                                    color: primaryBlue,
                                                     fontWeight: FontWeight.bold,
                                                   ),
                                             ),

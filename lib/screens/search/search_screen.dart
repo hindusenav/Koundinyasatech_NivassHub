@@ -71,8 +71,9 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   Widget _buildHeader() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
-      color: AppColors.infoLight,
+      color: isDark ? AppColors.infoDark : AppColors.infoLight,
       padding: AppSpacing.symmetric(horizontal: AppSpacing.sm, vertical: AppSpacing.sm),
       child: Row(
         children: [

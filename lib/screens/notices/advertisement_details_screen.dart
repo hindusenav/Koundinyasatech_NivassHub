@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter_nivasshub/services/core/api_client.dart';
 import 'package:flutter_nivasshub/widgets/dashboard/navigation/dashboard_bottom_navigation.dart';
 import 'package:flutter_nivasshub/screens/notices/notices_screen.dart';
@@ -37,6 +38,10 @@ class AdvertisementDetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final headingColor =
+        isDark ? AppColors.noticesHeadingDark : AppColors.noticesHeadingLight;
+
     final title = _isNikoo ? 'Nikoo Homes' : 'Century Bliss';
     final subtitle = _isNikoo
         ? 'by Bhartiya City'
@@ -54,18 +59,21 @@ class AdvertisementDetailsScreen extends StatelessWidget {
         }
       },
       child: Scaffold(
-        backgroundColor: const Color(0xFFF8FAFC),
+        backgroundColor: isDark
+            ? AppColors.noticesBackgroundDark
+            : AppColors.noticesBackgroundLight,
         appBar: AppBar(
-          backgroundColor: const Color(0xFFE0F2FE),
+          backgroundColor:
+              isDark ? AppColors.noticesAppBarDark : AppColors.noticesAppBarLight,
           elevation: 0,
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back, color: Color(0xFF0F172A)),
+            icon: Icon(Icons.arrow_back, color: headingColor),
             onPressed: () => _handleBackPress(context),
           ),
-          title: const Text(
+          title: Text(
             'Advertisement Details',
             style: TextStyle(
-              color: Color(0xFF0F172A),
+              color: headingColor,
               fontWeight: FontWeight.bold,
               fontSize: 18,
             ),
@@ -77,7 +85,10 @@ class AdvertisementDetailsScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Top Cover Hero Image with Overlay Badge
+              // Top Cover Hero Image with Overlay Badge — the photo, its
+              // legibility scrim, and any text/badges painted directly on top
+              // of it are intentionally theme-independent (a photo does not
+              // change with app theme).
               Stack(
                 children: [
                   ClipRRect(
@@ -88,7 +99,11 @@ class AdvertisementDetailsScreen extends StatelessWidget {
                       child: CachedNetworkImage(
                         imageUrl: imageUrl,
                         fit: BoxFit.cover,
-                        placeholder: (context, url) => Container(color: const Color(0xFFE2E8F0)),
+                        placeholder: (context, url) => Container(
+                          color: isDark
+                              ? AppColors.noticesCardBorderDark
+                              : AppColors.noticesCardBorderLight,
+                        ),
                         errorWidget: (context, url, err) => Container(
                           color: const Color(0xFF0F172A),
                           child: const Icon(Icons.apartment, size: 50, color: Colors.white),
@@ -152,7 +167,7 @@ class AdvertisementDetailsScreen extends StatelessWidget {
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                             decoration: BoxDecoration(
-                              color: const Color(0xFFD97706),
+                              color: AppColors.noticesAccentAmberLight,
                               borderRadius: BorderRadius.circular(4),
                             ),
                             child: const Text(
@@ -191,27 +206,33 @@ class AdvertisementDetailsScreen extends StatelessWidget {
                         children: [
                           Text(
                             title,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 22,
                               fontWeight: FontWeight.bold,
-                              color: Color(0xFF1E293B),
+                              color: isDark
+                                  ? AppColors.noticesTitleTextDark
+                                  : AppColors.noticesTitleTextLight,
                             ),
                           ),
                           const SizedBox(height: 4),
                           Row(
                             children: [
-                              const Icon(
+                              Icon(
                                 Icons.location_on,
                                 size: 14,
-                                color: Color(0xFF64748B),
+                                color: isDark
+                                    ? AppColors.noticesSecondaryTextDark
+                                    : AppColors.noticesSecondaryTextLight,
                               ),
                               const SizedBox(width: 4),
                               Expanded(
                                 child: Text(
                                   subtitle,
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 11.5,
-                                    color: Color(0xFF64748B),
+                                    color: isDark
+                                        ? AppColors.noticesSecondaryTextDark
+                                        : AppColors.noticesSecondaryTextLight,
                                     fontWeight: FontWeight.w500,
                                   ),
                                 ),
@@ -224,23 +245,31 @@ class AdvertisementDetailsScreen extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFFFFBEB),
+                        color: isDark ? AppColors.noticesAmberBgDark : AppColors.noticesAmberBgLight,
                         borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: const Color(0xFFFDE68A)),
+                        border: Border.all(
+                          color: isDark
+                              ? AppColors.noticesAmberBorderDark
+                              : AppColors.noticesAmberBorderLight,
+                        ),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(
+                          Icon(
                             Icons.home_outlined,
                             size: 14,
-                            color: Color(0xFFD97706),
+                            color: isDark
+                                ? AppColors.noticesAccentAmberDark
+                                : AppColors.noticesAccentAmberLight,
                           ),
                           const SizedBox(width: 4),
                           Text(
                             priceLabel,
-                            style: const TextStyle(
-                              color: Color(0xFFD97706),
+                            style: TextStyle(
+                              color: isDark
+                                  ? AppColors.noticesAccentAmberDark
+                                  : AppColors.noticesAccentAmberLight,
                               fontSize: 12,
                               fontWeight: FontWeight.bold,
                             ),
@@ -253,7 +282,7 @@ class AdvertisementDetailsScreen extends StatelessWidget {
                 const SizedBox(height: 16),
               ],
 
-              if (_isNikoo) _buildNikooContent() else _buildCenturyContent(),
+              if (_isNikoo) _buildNikooContent(isDark) else _buildCenturyContent(isDark),
 
               const SizedBox(height: 20),
 
@@ -273,7 +302,9 @@ class AdvertisementDetailsScreen extends StatelessWidget {
                     );
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF0284C7),
+                    backgroundColor: isDark
+                        ? AppColors.noticesAccentBlueDark
+                        : AppColors.noticesAccentBlueLight,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
@@ -301,7 +332,9 @@ class AdvertisementDetailsScreen extends StatelessWidget {
                     );
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFD97706),
+                    backgroundColor: isDark
+                        ? AppColors.noticesAccentAmberDark
+                        : AppColors.noticesAccentAmberLight,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
@@ -326,7 +359,15 @@ class AdvertisementDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildCenturyContent() {
+  Widget _buildCenturyContent(bool isDark) {
+    final cardColor = isDark ? AppColors.surfaceDark : AppColors.surfaceLight;
+    final borderColor =
+        isDark ? AppColors.noticesCardBorderDark : AppColors.noticesCardBorderLight;
+    final titleColor =
+        isDark ? AppColors.noticesTitleTextDark : AppColors.noticesTitleTextLight;
+    final dividerColor = isDark ? AppColors.noticesDividerDark : AppColors.noticesDividerLight;
+    final bodyColor = isDark ? AppColors.noticesBodyTextDark : AppColors.noticesBodyTextLight;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -334,12 +375,12 @@ class AdvertisementDetailsScreen extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: cardColor,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: const Color(0xFFE2E8F0)),
+            border: Border.all(color: borderColor),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: .02),
+                color: Colors.black.withValues(alpha: isDark ? .25 : .02),
                 blurRadius: 6,
                 offset: const Offset(0, 2),
               ),
@@ -350,52 +391,60 @@ class AdvertisementDetailsScreen extends StatelessWidget {
             children: [
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: const [
+                children: [
                   Text(
                     'Every Reason to Upgrade',
                     style: TextStyle(
                       fontSize: 14.5,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF1E293B),
+                      color: titleColor,
                     ),
                   ),
                   Icon(
                     Icons.auto_awesome,
-                    color: Color(0xFFD97706),
+                    color: isDark
+                        ? AppColors.noticesAccentAmberDark
+                        : AppColors.noticesAccentAmberLight,
                     size: 18,
                   ),
                 ],
               ),
               const SizedBox(height: 10),
-              const Divider(height: 1, color: Color(0xFFF1F5F9)),
+              Divider(height: 1, color: dividerColor),
               const SizedBox(height: 14),
 
               _buildIconBulletItem(
+                isDark,
                 icon: Icons.location_on_outlined,
                 text: '4.25-acre thoughtfully planned community',
               ),
               const SizedBox(height: 10),
               _buildIconBulletItem(
+                isDark,
                 icon: Icons.star_outline,
                 text: '30+ curated lifestyle amenities',
               ),
               const SizedBox(height: 10),
               _buildIconBulletItem(
+                isDark,
                 icon: Icons.storefront_outlined,
                 text: '27,000+ sq. ft. commercial space',
               ),
               const SizedBox(height: 10),
               _buildIconBulletItem(
+                isDark,
                 icon: Icons.sports_basketball_outlined,
                 text: '26,000+ sq. ft. multi-level clubhouse',
               ),
               const SizedBox(height: 10),
               _buildIconBulletItem(
+                isDark,
                 icon: Icons.park_outlined,
                 text: '75% landscaped open spaces',
               ),
               const SizedBox(height: 10),
               _buildIconBulletItem(
+                isDark,
                 icon: Icons.home_outlined,
                 text: 'Freespirited 2 & 3 Bed Homes',
               ),
@@ -408,12 +457,12 @@ class AdvertisementDetailsScreen extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: cardColor,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: const Color(0xFFE2E8F0)),
+            border: Border.all(color: borderColor),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: .02),
+                color: Colors.black.withValues(alpha: isDark ? .25 : .02),
                 blurRadius: 6,
                 offset: const Offset(0, 2),
               ),
@@ -422,22 +471,22 @@ class AdvertisementDetailsScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
+              Text(
                 'Why Century Bliss?',
                 style: TextStyle(
                   fontSize: 14.5,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF1E293B),
+                  color: titleColor,
                 ),
               ),
               const SizedBox(height: 10),
-              const Divider(height: 1, color: Color(0xFFF1F5F9)),
+              Divider(height: 1, color: dividerColor),
               const SizedBox(height: 12),
               Text(
                 'A thoughtfully planned community built around the way you truly want to live. Nestled on Yelahanka–Doddaballapura Main Road, Century Bliss offers freespirited 2 & 3 BHK homes with world-class amenities and lush green surroundings.',
                 style: TextStyle(
                   fontSize: 12,
-                  color: Colors.grey.shade700,
+                  color: bodyColor,
                   height: 1.45,
                 ),
               ),
@@ -448,44 +497,56 @@ class AdvertisementDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildNikooContent() {
+  Widget _buildNikooContent(bool isDark) {
+    final cardColor = isDark ? AppColors.surfaceDark : AppColors.surfaceLight;
+    final borderColor =
+        isDark ? AppColors.noticesCardBorderDark : AppColors.noticesCardBorderLight;
+    final headingColor =
+        isDark ? AppColors.noticesHeadingDark : AppColors.noticesHeadingLight;
+    final secondaryColor =
+        isDark ? AppColors.noticesSecondaryTextDark : AppColors.noticesSecondaryTextLight;
+    final bodyColor = isDark ? AppColors.noticesBodyTextDark : AppColors.noticesBodyTextLight;
+    final dividerColor = isDark ? AppColors.noticesDividerDark : AppColors.noticesDividerLight;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // 4 Stat grid items matching Figma AD 2
         Row(
           children: [
-            Expanded(child: _buildStatItem(Icons.home_outlined, '6 Towers', 'Development')),
+            Expanded(child: _buildStatItem(isDark, Icons.home_outlined, '6 Towers', 'Development')),
             const SizedBox(width: 8),
-            Expanded(child: _buildStatItem(Icons.grid_view_rounded, '2B+G+34', 'Floors')),
+            Expanded(child: _buildStatItem(isDark, Icons.grid_view_rounded, '2B+G+34', 'Floors')),
             const SizedBox(width: 8),
-            Expanded(child: _buildStatItem(Icons.map_outlined, '11.5 Acres', 'Total Area')),
+            Expanded(child: _buildStatItem(isDark, Icons.map_outlined, '11.5 Acres', 'Total Area')),
             const SizedBox(width: 8),
-            Expanded(child: _buildStatItem(Icons.people_outline_rounded, '1,000+', 'Apartments')),
+            Expanded(
+              child: _buildStatItem(isDark, Icons.people_outline_rounded, '1,000+', 'Apartments'),
+            ),
           ],
         ),
         const SizedBox(height: 20),
 
         // Pricing details section
-        const Text(
+        Text(
           'PRICING DETAILS',
           style: TextStyle(
             fontSize: 10,
             fontWeight: FontWeight.bold,
-            color: Color(0xFF64748B),
+            color: secondaryColor,
             letterSpacing: 0.5,
           ),
         ),
         const SizedBox(height: 2),
         RichText(
-          text: const TextSpan(
+          text: TextSpan(
             children: [
               TextSpan(
                 text: '₹93L ',
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w900,
-                  color: Color(0xFF0F172A),
+                  color: headingColor,
                 ),
               ),
               TextSpan(
@@ -493,7 +554,7 @@ class AdvertisementDetailsScreen extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w500,
-                  color: Color(0xFF64748B),
+                  color: secondaryColor,
                 ),
               ),
             ],
@@ -502,18 +563,13 @@ class AdvertisementDetailsScreen extends StatelessWidget {
         const SizedBox(height: 20),
 
         // Project Highlights Header
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: const [
-            Text(
-              'Project Highlights',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-                color: Color(0xFF0F172A),
-              ),
-            ),
-          ],
+        Text(
+          'Project Highlights',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 16,
+            color: headingColor,
+          ),
         ),
         const SizedBox(height: 12),
 
@@ -537,24 +593,24 @@ class AdvertisementDetailsScreen extends StatelessWidget {
         const SizedBox(height: 20),
 
         // Location Advantages
-        const Text(
+        Text(
           'Location Advantages',
           style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 16,
-            color: Color(0xFF0F172A),
+            color: headingColor,
           ),
         ),
         const SizedBox(height: 12),
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: cardColor,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: const Color(0xFFE2E8F0)),
+            border: Border.all(color: borderColor),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: .02),
+                color: Colors.black.withValues(alpha: isDark ? .25 : .02),
                 blurRadius: 6,
                 offset: const Offset(0, 2),
               ),
@@ -562,37 +618,37 @@ class AdvertisementDetailsScreen extends StatelessWidget {
           ),
           child: Column(
             children: [
-              _buildAdvantageItem('1 km from Bhartiya City Township'),
-              const Divider(height: 20, color: Color(0xFFF1F5F9)),
-              _buildAdvantageItem('Near Hebbal, Yelahanka & Airport Corridor'),
-              const Divider(height: 20, color: Color(0xFFF1F5F9)),
-              _buildAdvantageItem('Upcoming Metro — Phase 2B Airport Line'),
-              const Divider(height: 20, color: Color(0xFFF1F5F9)),
-              _buildAdvantageItem('10 mins to Manyata Tech Park'),
+              _buildAdvantageItem(isDark, '1 km from Bhartiya City Township'),
+              Divider(height: 20, color: dividerColor),
+              _buildAdvantageItem(isDark, 'Near Hebbal, Yelahanka & Airport Corridor'),
+              Divider(height: 20, color: dividerColor),
+              _buildAdvantageItem(isDark, 'Upcoming Metro — Phase 2B Airport Line'),
+              Divider(height: 20, color: dividerColor),
+              _buildAdvantageItem(isDark, '10 mins to Manyata Tech Park'),
             ],
           ),
         ),
         const SizedBox(height: 20),
 
         // About This Project
-        const Text(
+        Text(
           'About This Project',
           style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 16,
-            color: Color(0xFF0F172A),
+            color: headingColor,
           ),
         ),
         const SizedBox(height: 12),
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: cardColor,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: const Color(0xFFE2E8F0)),
+            border: Border.all(color: borderColor),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: .02),
+                color: Colors.black.withValues(alpha: isDark ? .25 : .02),
                 blurRadius: 6,
                 offset: const Offset(0, 2),
               ),
@@ -600,21 +656,21 @@ class AdvertisementDetailsScreen extends StatelessWidget {
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: const [
+            children: [
               Text(
                 'Enjoy luxury living at Bhartiya – Nikoo Homes, Thanisandra (Nikoo 6)!',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 13,
-                  color: Color(0xFF0F172A),
+                  color: headingColor,
                 ),
               ),
-              SizedBox(height: 6),
+              const SizedBox(height: 6),
               Text(
                 'Here\'s the biggest residential launch of the year. Live in a premium residential development near Bhartiya City, designed for luxury, convenience, and long-term value.',
                 style: TextStyle(
                   fontSize: 12,
-                  color: Color(0xFF475569),
+                  color: bodyColor,
                   height: 1.45,
                 ),
               ),
@@ -625,20 +681,22 @@ class AdvertisementDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildIconBulletItem({required IconData icon, required String text}) {
+  Widget _buildIconBulletItem(bool isDark, {required IconData icon, required String text}) {
     return Row(
       children: [
         Container(
           height: 28,
           width: 28,
           decoration: BoxDecoration(
-            color: const Color(0xFFFFFBEB),
+            color: isDark ? AppColors.noticesAmberBgDark : AppColors.noticesAmberBgLight,
             borderRadius: BorderRadius.circular(6),
-            border: Border.all(color: const Color(0xFFFDE68A)),
+            border: Border.all(
+              color: isDark ? AppColors.noticesAmberBorderDark : AppColors.noticesAmberBorderLight,
+            ),
           ),
           child: Icon(
             icon,
-            color: const Color(0xFFD97706),
+            color: isDark ? AppColors.noticesAccentAmberDark : AppColors.noticesAccentAmberLight,
             size: 15,
           ),
         ),
@@ -646,9 +704,9 @@ class AdvertisementDetailsScreen extends StatelessWidget {
         Expanded(
           child: Text(
             text,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 12,
-              color: Color(0xFF334155),
+              color: isDark ? AppColors.noticesBodyTextDark : AppColors.noticesBodyTextLight,
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -657,16 +715,18 @@ class AdvertisementDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildStatItem(IconData icon, String main, String sub) {
+  Widget _buildStatItem(bool isDark, IconData icon, String main, String sub) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? AppColors.surfaceDark : AppColors.surfaceLight,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFE2E8F0)),
+        border: Border.all(
+          color: isDark ? AppColors.noticesCardBorderDark : AppColors.noticesCardBorderLight,
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: .02),
+            color: Colors.black.withValues(alpha: isDark ? .25 : .02),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),
@@ -676,26 +736,30 @@ class AdvertisementDetailsScreen extends StatelessWidget {
         children: [
           Container(
             padding: const EdgeInsets.all(6),
-            decoration: const BoxDecoration(
-              color: Color(0xFFFFFBEB),
+            decoration: BoxDecoration(
+              color: isDark ? AppColors.noticesAmberBgDark : AppColors.noticesAmberBgLight,
               shape: BoxShape.circle,
             ),
-            child: Icon(icon, color: const Color(0xFFD97706), size: 16),
+            child: Icon(
+              icon,
+              color: isDark ? AppColors.noticesAccentAmberDark : AppColors.noticesAccentAmberLight,
+              size: 16,
+            ),
           ),
           const SizedBox(height: 6),
           Text(
             main,
-            style: const TextStyle(
+            style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 11,
-              color: Color(0xFF0F172A),
+              color: isDark ? AppColors.noticesHeadingDark : AppColors.noticesHeadingLight,
             ),
           ),
           const SizedBox(height: 1),
           Text(
             sub,
-            style: const TextStyle(
-              color: Color(0xFF94A3B8),
+            style: TextStyle(
+              color: isDark ? AppColors.noticesMutedDark : AppColors.noticesMutedLight,
               fontSize: 9.5,
             ),
           ),
@@ -704,24 +768,28 @@ class AdvertisementDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildAdvantageItem(String text) {
+  Widget _buildAdvantageItem(bool isDark, String text) {
     return Row(
       children: [
         Container(
           padding: const EdgeInsets.all(6),
-          decoration: const BoxDecoration(
-            color: Color(0xFFD1FAE5),
+          decoration: BoxDecoration(
+            color: isDark ? AppColors.noticesSuccessBgDark : AppColors.noticesSuccessBgLight,
             shape: BoxShape.circle,
           ),
-          child: const Icon(Icons.location_on, size: 14, color: Color(0xFF059669)),
+          child: Icon(
+            Icons.location_on,
+            size: 14,
+            color: isDark ? AppColors.noticesSuccessIconDark : AppColors.noticesSuccessIconLight,
+          ),
         ),
         const SizedBox(width: 12),
         Expanded(
           child: Text(
             text,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 12,
-              color: Color(0xFF334155),
+              color: isDark ? AppColors.noticesBodyTextDark : AppColors.noticesBodyTextLight,
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -739,15 +807,18 @@ class _HighlightCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? AppColors.surfaceDark : AppColors.surfaceLight,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFE2E8F0)),
+        border: Border.all(
+          color: isDark ? AppColors.noticesCardBorderDark : AppColors.noticesCardBorderLight,
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: .02),
+            color: Colors.black.withValues(alpha: isDark ? .25 : .02),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),
@@ -757,11 +828,15 @@ class _HighlightCard extends StatelessWidget {
         children: [
           Container(
             padding: const EdgeInsets.all(6),
-            decoration: const BoxDecoration(
-              color: Color(0xFFEFF6FF),
+            decoration: BoxDecoration(
+              color: isDark ? AppColors.noticesBlueTintBgDark : AppColors.noticesBlueTintBgLight,
               shape: BoxShape.circle,
             ),
-            child: Icon(icon, color: const Color(0xFF0284C7), size: 16),
+            child: Icon(
+              icon,
+              color: isDark ? AppColors.noticesAccentBlueDark : AppColors.noticesAccentBlueLight,
+              size: 16,
+            ),
           ),
           const SizedBox(width: 10),
           Expanded(
@@ -771,16 +846,16 @@ class _HighlightCard extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 11.5,
-                    color: Color(0xFF0F172A),
+                    color: isDark ? AppColors.noticesHeadingDark : AppColors.noticesHeadingLight,
                   ),
                 ),
                 Text(
                   sub,
-                  style: const TextStyle(
-                    color: Color(0xFF94A3B8),
+                  style: TextStyle(
+                    color: isDark ? AppColors.noticesMutedDark : AppColors.noticesMutedLight,
                     fontSize: 9.5,
                   ),
                   maxLines: 1,

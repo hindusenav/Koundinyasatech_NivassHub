@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:flutter_nivasshub/constants/app_colors.dart';
+
 class InputField extends StatelessWidget {
   final String label;
   final String hintText;
@@ -18,19 +20,22 @@ class InputField extends StatelessWidget {
     this.obscureText = false,
   });
 
-  static const Color primaryBlue = Color(0xFF1976D2);
-
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final primaryBlue = isDark
+        ? AppColors.profileTilePrimaryBlueDark
+        : AppColors.profileTilePrimaryBlueLight;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           label,
-          style: const TextStyle(
+          style: TextStyle(
             fontWeight: FontWeight.w600,
             fontSize: 13,
-            color: Colors.black87,
+            color: isDark ? AppColors.textPrimaryDark : Colors.black87,
           ),
         ),
         const SizedBox(height: 4),
@@ -38,11 +43,14 @@ class InputField extends StatelessWidget {
           controller: controller,
           keyboardType: keyboardType,
           obscureText: obscureText,
+          style: TextStyle(
+            color: isDark ? AppColors.textPrimaryDark : Colors.black87,
+          ),
           decoration: InputDecoration(
             hintText: hintText,
             hintStyle: TextStyle(
               fontSize: 13,
-              color: Colors.grey.shade400,
+              color: isDark ? AppColors.textSecondaryDark : Colors.grey.shade400,
             ),
             prefixIcon: Icon(
               icon,
@@ -52,18 +60,18 @@ class InputField extends StatelessWidget {
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
               borderSide: BorderSide(
-                color: Colors.grey.shade300,
+                color: isDark ? AppColors.borderDark : Colors.grey.shade300,
               ),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
               borderSide: BorderSide(
-                color: Colors.grey.shade300,
+                color: isDark ? AppColors.borderDark : Colors.grey.shade300,
               ),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
-              borderSide: const BorderSide(
+              borderSide: BorderSide(
                 color: primaryBlue,
                 width: 2,
               ),

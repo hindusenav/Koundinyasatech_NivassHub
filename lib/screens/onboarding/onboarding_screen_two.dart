@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_nivasshub/routes/app_routes.dart';
+import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter_nivasshub/constants/app_dimensions.dart';
 import 'package:flutter_nivasshub/constants/app_spacing.dart';
 import 'package:flutter_nivasshub/utils/extensions/context_extensions.dart';
@@ -40,13 +41,23 @@ class _OnboardingScreenTwoState extends State<OnboardingScreenTwo>
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final screenHeight = context.screenHeight;
     final contentWidth = context.isDesktop
         ? AppDimensions.maxContentWidth * 0.4
         : (context.isTablet ? AppDimensions.maxContentWidth * 0.6 : double.infinity);
+    final background = isDark
+        ? OnboardingColors.backgroundDarkMode
+        : OnboardingColors.background;
+    final heading = isDark
+        ? OnboardingColors.headingDarkMode
+        : OnboardingColors.heading;
+    final bodyText = isDark
+        ? OnboardingColors.bodyTextDarkMode
+        : OnboardingColors.bodyText;
 
     return Scaffold(
-      backgroundColor: OnboardingColors.background,
+      backgroundColor: background,
       body: AnimatedBuilder(
         animation: _entrance,
         builder: (context, _) {
@@ -71,7 +82,10 @@ class _OnboardingScreenTwoState extends State<OnboardingScreenTwo>
                     gradient: LinearGradient(
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
-                      colors: [Colors.white, OnboardingColors.background],
+                      colors: [
+                        isDark ? AppColors.backgroundDark : Colors.white,
+                        background,
+                      ],
                     ),
                   ),
                 ),
@@ -113,13 +127,13 @@ class _OnboardingScreenTwoState extends State<OnboardingScreenTwo>
                               SizedBox(height: AppSpacing.xl),
                               FadeSlideIn(
                                 progress: headingT,
-                                child: const Text(
+                                child: Text(
                                   'One Community,\nOne Platform',
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                     fontSize: 32,
                                     fontWeight: FontWeight.bold,
-                                    color: OnboardingColors.heading,
+                                    color: heading,
                                     height: 1.25,
                                   ),
                                 ),
@@ -130,7 +144,7 @@ class _OnboardingScreenTwoState extends State<OnboardingScreenTwo>
                                 distance: 0,
                                 child: ConstrainedBox(
                                   constraints: const BoxConstraints(maxWidth: 340),
-                                  child: const Text(
+                                  child: Text(
                                     'NivaasHub connects residents, manages visitors, '
                                     'handles payments, and keeps your society running '
                                     'smoothly — all in one place.',
@@ -138,7 +152,7 @@ class _OnboardingScreenTwoState extends State<OnboardingScreenTwo>
                                     style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w500,
-                                      color: OnboardingColors.bodyText,
+                                      color: bodyText,
                                       height: 1.625,
                                     ),
                                   ),

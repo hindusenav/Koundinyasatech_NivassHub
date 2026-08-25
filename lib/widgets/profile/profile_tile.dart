@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:flutter_nivasshub/constants/app_colors.dart';
+
 class ProfileTile extends StatelessWidget {
   final IconData icon;
   final String title;
@@ -26,19 +28,24 @@ class ProfileTile extends StatelessWidget {
     this.onSwitchChanged,
   });
 
-  static const Color primaryBlue = Color(0xFF1976D2);
-  static const Color bgLightBlue = Color(0xFFF4F7FC);
-
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final primaryBlue = isDark
+        ? AppColors.profileTilePrimaryBlueDark
+        : AppColors.profileTilePrimaryBlueLight;
+    final bgLightBlue = isDark
+        ? AppColors.profileTileTagBgDark
+        : AppColors.profileTileTagBgLight;
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? AppColors.surfaceDark : Colors.white,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.02),
+            color: Colors.black.withValues(alpha: isDark ? 0.25 : 0.02),
             blurRadius: 4,
             offset: const Offset(0, 1),
           ),
@@ -52,7 +59,9 @@ class ProfileTile extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: const Color(0xFFF0F7FF),
+                color: isDark
+                    ? AppColors.settingItemIconBgDark
+                    : AppColors.settingItemIconBgLight,
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Icon(
@@ -71,7 +80,8 @@ class ProfileTile extends StatelessWidget {
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
                       fontSize: 13,
-                      color: titleColor ?? Colors.black87,
+                      color: titleColor ??
+                          (isDark ? AppColors.textPrimaryDark : Colors.black87),
                     ),
                   ),
                   const SizedBox(height: 2),
@@ -93,7 +103,9 @@ class ProfileTile extends StatelessWidget {
                             tag,
                             style: TextStyle(
                               fontSize: 10,
-                              color: Colors.grey.shade700,
+                              color: isDark
+                                  ? AppColors.textSecondaryDark
+                                  : Colors.grey.shade700,
                             ),
                           ),
                         );
@@ -105,7 +117,9 @@ class ProfileTile extends StatelessWidget {
                     subtitle,
                     style: TextStyle(
                       fontSize: 11,
-                      color: Colors.grey.shade600,
+                      color: isDark
+                          ? AppColors.textSecondaryDark
+                          : Colors.grey.shade600,
                     ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
@@ -120,9 +134,9 @@ class ProfileTile extends StatelessWidget {
                 onChanged: onSwitchChanged,
               )
             else
-              const Icon(
+              Icon(
                 Icons.chevron_right,
-                color: Colors.grey,
+                color: isDark ? AppColors.textSecondaryDark : Colors.grey,
                 size: 20,
               ),
           ],
