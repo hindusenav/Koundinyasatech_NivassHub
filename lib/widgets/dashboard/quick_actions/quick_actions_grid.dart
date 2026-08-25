@@ -86,6 +86,8 @@ class QuickActionsGrid extends StatelessWidget {
   void _handleAction(BuildContext context, String action) {
     switch (action) {
       case 'Pre-Approve':
+        // case 'Pre-Approve':
+
         break;
       case 'Payments':
         break;
