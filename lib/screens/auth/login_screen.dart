@@ -16,7 +16,6 @@ import 'package:flutter_nivasshub/widgets/shared/feedback/custom_snackbar.dart';
 import 'package:flutter_nivasshub/widgets/shared/inputs/custom_text_field.dart';
 import 'package:flutter_nivasshub/constants/auth/auth_colors.dart';
 import 'package:flutter_nivasshub/providers/auth/auth_provider.dart';
-import 'package:flutter_nivasshub/widgets/auth/auth_back_button.dart';
 import 'package:flutter_nivasshub/widgets/auth/auth_gradient_button.dart';
 import 'package:flutter_nivasshub/widgets/auth/auth_skyline_painter.dart';
 import 'package:flutter_nivasshub/widgets/auth/country_code_badge.dart';
@@ -369,14 +368,6 @@ class _LoginScreenState extends State<LoginScreen>
                       ),
                     ),
                   ),
-                ),
-              ),
-            ),
-            SafeArea(
-              child: Padding(
-                padding: AppSpacing.all(AppSpacing.sm),
-                child: AuthBackButton(
-                  onTap: () => Navigator.of(context).maybePop(),
                 ),
               ),
             ),
