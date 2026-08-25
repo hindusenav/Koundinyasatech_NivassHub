@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter_nivasshub/constants/app_dimensions.dart';
 import 'package:flutter_nivasshub/constants/app_icons.dart';
 import 'package:flutter_nivasshub/constants/app_radius.dart';
@@ -15,22 +16,31 @@ class CountryCodeBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       height: AppDimensions.inputHeight,
       padding: AppSpacing.horizontal(AppSpacing.sm),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? AppColors.surfaceDark : Colors.white,
         borderRadius: AppRadius.radiusSm,
-        border: Border.all(color: AuthColors.border),
+        border: Border.all(
+          color: isDark ? AuthColors.borderDarkMode : AuthColors.border,
+        ),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
             '+91',
-            style: AppTextStyles.bodyLarge.copyWith(color: AuthColors.heading),
+            style: AppTextStyles.bodyLarge.copyWith(
+              color: isDark ? AuthColors.headingDarkMode : AuthColors.heading,
+            ),
           ),
-          Icon(AppIcons.chevronDown, size: AppDimensions.iconXs, color: AuthColors.bodyText),
+          Icon(
+            AppIcons.chevronDown,
+            size: AppDimensions.iconXs,
+            color: isDark ? AuthColors.bodyTextDarkMode : AuthColors.bodyText,
+          ),
         ],
       ),
     );

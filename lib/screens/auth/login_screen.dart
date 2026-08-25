@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_nivasshub/routes/app_routes.dart';
+import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter_nivasshub/constants/app_dimensions.dart';
 import 'package:flutter_nivasshub/constants/app_icons.dart';
 import 'package:flutter_nivasshub/constants/app_radius.dart';
@@ -81,6 +82,7 @@ class _LoginScreenState extends State<LoginScreen>
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final screenHeight = context.screenHeight;
     final contentWidth = context.isDesktop
         ? AppDimensions.maxContentWidth * 0.4
@@ -88,11 +90,25 @@ class _LoginScreenState extends State<LoginScreen>
               ? AppDimensions.maxContentWidth * 0.6
               : double.infinity);
     final isSendingOtp = context.watch<AuthProvider>().isSendingOtp;
+    final background = isDark
+        ? AuthColors.backgroundDarkMode
+        : AuthColors.background;
+    final heading = isDark ? AuthColors.headingDarkMode : AuthColors.heading;
+    final bodyText = isDark
+        ? AuthColors.bodyTextDarkMode
+        : AuthColors.bodyText;
+    final border = isDark ? AuthColors.borderDarkMode : AuthColors.border;
+    final primaryBlue = isDark
+        ? AuthColors.primaryBlueDarkMode
+        : AuthColors.primaryBlue;
+    final lightBlue = isDark
+        ? AuthColors.lightBlueDarkMode
+        : AuthColors.lightBlue;
 
     return PopScope(
       canPop: !isSendingOtp,
       child: Scaffold(
-        backgroundColor: AuthColors.background,
+        backgroundColor: background,
         body: Stack(
           children: [
             Positioned.fill(
@@ -102,9 +118,9 @@ class _LoginScreenState extends State<LoginScreen>
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                     colors: [
-                      AuthColors.background,
-                      AuthColors.background,
-                      AuthColors.lightBlue.withValues(alpha: 0.05),
+                      background,
+                      background,
+                      lightBlue.withValues(alpha: 0.05),
                     ],
                     stops: const [0.0, 0.55, 1.0],
                   ),
@@ -208,7 +224,7 @@ class _LoginScreenState extends State<LoginScreen>
                                     'Welcome Back!',
                                     textAlign: TextAlign.center,
                                     style: AppTextStyles.headlineSmall.copyWith(
-                                      color: AuthColors.heading,
+                                      color: heading,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
@@ -220,7 +236,7 @@ class _LoginScreenState extends State<LoginScreen>
                                     'Login to access your Account',
                                     textAlign: TextAlign.center,
                                     style: AppTextStyles.bodyLarge.copyWith(
-                                      color: AuthColors.bodyText,
+                                      color: bodyText,
                                     ),
                                   ),
                                 ),
@@ -232,7 +248,7 @@ class _LoginScreenState extends State<LoginScreen>
                                     child: Text(
                                       'Mobile Number',
                                       style: AppTextStyles.labelLarge.copyWith(
-                                        color: AuthColors.heading,
+                                        color: heading,
                                       ),
                                     ),
                                   ),
@@ -256,26 +272,27 @@ class _LoginScreenState extends State<LoginScreen>
                                               inputDecorationTheme: Theme.of(
                                                 context,
                                               ).inputDecorationTheme.copyWith(
-                                                fillColor: Colors.white,
+                                                fillColor: isDark
+                                                    ? AppColors.surfaceDark
+                                                    : Colors.white,
                                                 enabledBorder: OutlineInputBorder(
                                                   borderRadius:
                                                       AppRadius.radiusSm,
-                                                  borderSide: const BorderSide(
-                                                    color: AuthColors.border,
+                                                  borderSide: BorderSide(
+                                                    color: border,
                                                   ),
                                                 ),
                                                 border: OutlineInputBorder(
                                                   borderRadius:
                                                       AppRadius.radiusSm,
-                                                  borderSide: const BorderSide(
-                                                    color: AuthColors.border,
+                                                  borderSide: BorderSide(
+                                                    color: border,
                                                   ),
                                                 ),
                                                 hintStyle: AppTextStyles
                                                     .bodyMedium
                                                     .copyWith(
-                                                      color:
-                                                          AuthColors.bodyText,
+                                                      color: bodyText,
                                                     ),
                                               ),
                                             ),
@@ -324,7 +341,7 @@ class _LoginScreenState extends State<LoginScreen>
                                         'New to Nivaas Hub? ',
                                         style: AppTextStyles.bodyMedium
                                             .copyWith(
-                                              color: AuthColors.bodyText,
+                                              color: bodyText,
                                             ),
                                       ),
                                       GestureDetector(
@@ -336,7 +353,7 @@ class _LoginScreenState extends State<LoginScreen>
                                           'Create an account',
                                           style: AppTextStyles.bodyMedium
                                               .copyWith(
-                                                color: AuthColors.primaryBlue,
+                                                color: primaryBlue,
                                                 fontWeight: FontWeight.bold,
                                               ),
                                         ),

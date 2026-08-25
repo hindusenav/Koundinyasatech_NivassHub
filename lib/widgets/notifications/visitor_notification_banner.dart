@@ -55,7 +55,7 @@ class VisitorNotificationBanner extends StatelessWidget {
       decoration: BoxDecoration(
         color: surfaceColor,
         borderRadius: AppRadius.radiusLg,
-        border: Border.all(color: AppColors.borderLight),
+        border: Border.all(color: isDark ? AppColors.borderDark : AppColors.borderLight),
         boxShadow: isDark ? AppShadows.darkSm : AppShadows.sm,
       ),
       clipBehavior: Clip.antiAlias,
@@ -95,14 +95,18 @@ class VisitorNotificationBanner extends StatelessWidget {
                               AppSpacing.gapWXs,
                               Text(
                                 notification.time,
-                                style: AppTextStyles.labelSmall.copyWith(color: AppColors.grey500),
+                                style: AppTextStyles.labelSmall.copyWith(
+                                  color: isDark ? AppColors.grey300 : AppColors.grey500,
+                                ),
                               ),
                             ],
                           ),
                           AppSpacing.gapXs,
                           Text(
                             notification.subtitle,
-                            style: AppTextStyles.bodySmall.copyWith(color: AppColors.grey500),
+                            style: AppTextStyles.bodySmall.copyWith(
+                              color: isDark ? AppColors.grey300 : AppColors.grey500,
+                            ),
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -115,8 +119,12 @@ class VisitorNotificationBanner extends StatelessWidget {
                       borderRadius: AppRadius.radiusFull,
                       child: CircleAvatar(
                         radius: AppDimensions.iconSm,
-                        backgroundColor: AppColors.grey100,
-                        child: Icon(AppIcons.close, size: AppDimensions.iconXs, color: AppColors.grey600),
+                        backgroundColor: isDark ? AppColors.grey800 : AppColors.grey100,
+                        child: Icon(
+                          AppIcons.close,
+                          size: AppDimensions.iconXs,
+                          color: isDark ? AppColors.grey300 : AppColors.grey600,
+                        ),
                       ),
                     ),
                   ],

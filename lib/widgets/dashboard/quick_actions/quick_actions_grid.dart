@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter_nivasshub/routes/app_routes.dart';
 import 'package:flutter_nivasshub/providers/dashboard/dashboard_provider.dart';
 import 'package:flutter_nivasshub/widgets/dashboard/empty/section_empty.dart';
@@ -11,6 +12,7 @@ class QuickActionsGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final provider = context.watch<DashboardProvider>();
     final actions = provider.home?.data.quickActions ?? [];
 
@@ -27,7 +29,7 @@ class QuickActionsGrid extends StatelessWidget {
       children: [
         /// HEADER
         Row(
-          children: const [
+          children: [
             Expanded(
               child: Text(
                 "Quick Actions",
@@ -45,7 +47,7 @@ class QuickActionsGrid extends StatelessWidget {
               color: Color(0xFF000000),
               weight: 600, // Thicker icon
             ),
-            SizedBox(width: 4),
+            const SizedBox(width: 4),
             Text(
               "Customize",
               style: TextStyle(
@@ -72,10 +74,7 @@ class QuickActionsGrid extends StatelessWidget {
             return QuickActionCard(
               action: actions[index],
               onTap: () {
-                _handleAction(
-                  context,
-                  actions[index].name,
-                );
+                _handleAction(context, actions[index].name);
               },
             );
           },
@@ -84,12 +83,11 @@ class QuickActionsGrid extends StatelessWidget {
     );
   }
 
-  void _handleAction(
-    BuildContext context,
-    String action,
-  ) {
+  void _handleAction(BuildContext context, String action) {
     switch (action) {
       case 'Pre-Approve':
+        // case 'Pre-Approve':
+
         break;
       case 'Payments':
         break;

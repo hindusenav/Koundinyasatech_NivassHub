@@ -13,14 +13,21 @@ class AuthShieldBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final lightBlue = isDark
+        ? AuthColors.lightBlueDarkMode
+        : AuthColors.lightBlue;
+    final primaryBlue = isDark
+        ? AuthColors.primaryBlueDarkMode
+        : AuthColors.primaryBlue;
     return Container(
       width: size,
       height: size,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: AuthColors.lightBlue.withValues(alpha: 0.14),
+        color: lightBlue.withValues(alpha: 0.14),
       ),
-      child: Icon(AppIcons.shield, size: size * 0.5, color: AuthColors.primaryBlue),
+      child: Icon(AppIcons.shield, size: size * 0.5, color: primaryBlue),
     );
   }
 }

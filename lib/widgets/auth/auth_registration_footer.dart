@@ -15,19 +15,28 @@ class AuthRegistrationFooter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final border = isDark ? AuthColors.borderDarkMode : AuthColors.border;
+    final bodyText = isDark
+        ? AuthColors.bodyTextDarkMode
+        : AuthColors.bodyText;
+    final primaryBlue = isDark
+        ? AuthColors.primaryBlueDarkMode
+        : AuthColors.primaryBlue;
+
     return Column(
       children: [
         Row(
           children: [
-            const Expanded(child: Divider(color: AuthColors.border)),
+            Expanded(child: Divider(color: border)),
             Padding(
               padding: AppSpacing.horizontal(AppSpacing.sm),
               child: Text(
                 'OR',
-                style: AppTextStyles.labelMedium.copyWith(color: AuthColors.bodyText),
+                style: AppTextStyles.labelMedium.copyWith(color: bodyText),
               ),
             ),
-            const Expanded(child: Divider(color: AuthColors.border)),
+            Expanded(child: Divider(color: border)),
           ],
         ),
         SizedBox(height: AppSpacing.lg),
@@ -36,14 +45,14 @@ class AuthRegistrationFooter extends StatelessWidget {
           children: [
             Text(
               'Already have an account? ',
-              style: AppTextStyles.bodyMedium.copyWith(color: AuthColors.bodyText),
+              style: AppTextStyles.bodyMedium.copyWith(color: bodyText),
             ),
             GestureDetector(
               onTap: () => Navigator.pushNamed(context, AppRoutes.login),
               child: Text(
                 'Login',
                 style: AppTextStyles.bodyMedium.copyWith(
-                  color: AuthColors.primaryBlue,
+                  color: primaryBlue,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -54,7 +63,7 @@ class AuthRegistrationFooter extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(AppIcons.info, size: AppDimensions.iconXs, color: AuthColors.bodyText),
+            Icon(AppIcons.info, size: AppDimensions.iconXs, color: bodyText),
             AppSpacing.gapWXs,
             Text(
               'By continuing, you agree to our Privacy Policy',

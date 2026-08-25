@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter_nivasshub/routes/app_routes.dart';
 import 'package:flutter_nivasshub/providers/dashboard/dashboard_navigation_provider.dart';
 import 'package:flutter_nivasshub/widgets/shared/feedback/custom_snackbar.dart';
@@ -11,6 +12,7 @@ class DashboardBottomNavigation extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<DashboardNavigationProvider>();
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return SafeArea(
       top: false,
@@ -24,17 +26,42 @@ class DashboardBottomNavigation extends StatelessWidget {
           ),
         ),
         child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: 10,
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _item(context, provider, 0, "assets/icons/home.svg.png", "Home"),
-              _item(context, provider, 1, "assets/icons/visitors.svg.png", "Visitors"),
-              _item(context, provider, 2, "assets/icons/community.svg.png", "Community"),
-              _item(context, provider, 3, "assets/icons/payments.svg.png", "Payments"),
+              _item(
+                context,
+                provider,
+                0,
+                "assets/icons/home.svg.png",
+                "Home",
+                isDark,
+              ),
+              _item(
+                context,
+                provider,
+                1,
+                "assets/icons/visitors.svg.png",
+                "Visitors",
+                isDark,
+              ),
+              _item(
+                context,
+                provider,
+                2,
+                "assets/icons/community.svg.png",
+                "Community",
+                isDark,
+              ),
+              _item(
+                context,
+                provider,
+                3,
+                "assets/icons/payments.svg.png",
+                "Payments",
+                isDark,
+              ),
             ],
           ),
         ),
@@ -48,6 +75,7 @@ class DashboardBottomNavigation extends StatelessWidget {
     int index,
     String image,
     String title,
+    bool isDark,
   ) {
     final bool selected = provider.selectedIndex == index;
 
@@ -68,7 +96,10 @@ class DashboardBottomNavigation extends StatelessWidget {
             // DashboardNavObserver updates the highlight once this pop
             // actually lands on the Dashboard route.
             if (ModalRoute.of(context)?.settings.name != AppRoutes.dashboard) {
-              Navigator.popUntil(context, ModalRoute.withName(AppRoutes.dashboard));
+              Navigator.popUntil(
+                context,
+                ModalRoute.withName(AppRoutes.dashboard),
+              );
             }
           } else if (index == 2) {
             // Community — opens the full Community Feed / Notice Board.
@@ -94,7 +125,9 @@ class DashboardBottomNavigation extends StatelessWidget {
               width: 46,
               decoration: BoxDecoration(
                 color: selected
-                    ? const Color(0xff1565C0)
+                    ? (isDark
+                          ? AppColors.bottomNavSelectedDark
+                          : AppColors.bottomNavSelectedLight)
                     : Colors.transparent,
                 shape: BoxShape.circle,
               ),
@@ -106,7 +139,9 @@ class DashboardBottomNavigation extends StatelessWidget {
                   fit: BoxFit.contain,
                   color: selected
                       ? Colors.white
-                      : const Color(0xff1A1A1A), // Darker black for thicker feel
+                      : const Color(
+                          0xff1A1A1A,
+                        ), // Darker black for thicker feel
                   // Better image quality
                   filterQuality: FilterQuality.high,
                   isAntiAlias: true,
@@ -114,9 +149,7 @@ class DashboardBottomNavigation extends StatelessWidget {
                     return Icon(
                       Icons.image_not_supported_outlined,
                       size: 26,
-                      color: selected
-                          ? Colors.white
-                          : const Color(0xff1A1A1A),
+                      color: selected ? Colors.white : const Color(0xff1A1A1A),
                       weight: 600, // Thicker fallback icon
                     );
                   },

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
+import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter_nivasshub/providers/dashboard/dashboard_provider.dart';
 import 'package:flutter_nivasshub/providers/dashboard/dashboard_state.dart';
 import 'package:flutter_nivasshub/widgets/dashboard/dashboard_body.dart';
@@ -19,30 +20,39 @@ class HomeDashboardScreen extends StatelessWidget {
   // COLORS
   // ============================================================
 
-  static const Color _headerBlue = Color(0xFFC7E1F8);
-  static const Color _backgroundColor = Color(0xFFF8F3E9);
+  static const Color _headerBlueLight = AppColors.dashboardHeaderLight;
+  static const Color _headerBlueDark = AppColors.dashboardHeaderDark;
+  static const Color _backgroundColorLight = AppColors.dashboardBackgroundLight;
+  static const Color _backgroundColorDark = AppColors.dashboardBackgroundDark;
 
   @override
   Widget build(BuildContext context) {
     return Consumer<DashboardProvider>(
       builder: (context, provider, child) {
+        final isDark = Theme.of(context).brightness == Brightness.dark;
+        final headerBlue = isDark ? _headerBlueDark : _headerBlueLight;
+        final backgroundColor =
+            isDark ? _backgroundColorDark : _backgroundColorLight;
+
         // ========================================================
         // SYSTEM UI
         // ========================================================
 
         SystemChrome.setSystemUIOverlayStyle(
-          const SystemUiOverlayStyle(
-            statusBarColor: _headerBlue,
-            statusBarIconBrightness: Brightness.dark,
-            statusBarBrightness: Brightness.light,
+          SystemUiOverlayStyle(
+            statusBarColor: headerBlue,
+            statusBarIconBrightness:
+                isDark ? Brightness.light : Brightness.dark,
+            statusBarBrightness: isDark ? Brightness.dark : Brightness.light,
 
-            systemNavigationBarColor: _backgroundColor,
-            systemNavigationBarIconBrightness: Brightness.dark,
+            systemNavigationBarColor: backgroundColor,
+            systemNavigationBarIconBrightness:
+                isDark ? Brightness.light : Brightness.dark,
           ),
         );
 
         return Scaffold(
-          backgroundColor: _backgroundColor,
+          backgroundColor: backgroundColor,
 
           // ======================================================
           // MAIN BODY
@@ -50,7 +60,7 @@ class HomeDashboardScreen extends StatelessWidget {
 
           body: Container(
             width: double.infinity,
-            color: _headerBlue,
+            color: headerBlue,
 
             child: SafeArea(
               // ==================================================
@@ -70,8 +80,8 @@ class HomeDashboardScreen extends StatelessWidget {
               bottom: false,
 
               child: RefreshIndicator(
-                color: const Color(0xFF1976D2),
-                backgroundColor: Colors.white,
+                color: isDark ? AppColors.primaryLight : const Color(0xFF1976D2),
+                backgroundColor: isDark ? AppColors.surfaceDark : Colors.white,
                 onRefresh: provider.refresh,
                 child: _buildBody(provider),
               ),

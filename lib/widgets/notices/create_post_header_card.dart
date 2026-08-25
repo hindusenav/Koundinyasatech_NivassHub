@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter_nivasshub/screens/notices/create_event_screen.dart';
 import 'package:flutter_nivasshub/screens/notices/create_poll_screen.dart';
 import 'package:flutter_nivasshub/screens/notices/create_post_screen.dart';
@@ -10,21 +11,27 @@ class CreateCommunityPostHeaderCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final headingColor =
+        isDark ? AppColors.noticesHeadingDark : AppColors.noticesHeadingLight;
+    final secondaryColor =
+        isDark ? AppColors.noticesSecondaryTextDark : AppColors.noticesSecondaryTextLight;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Create a community post',
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
-            color: Color(0xFF0F172A),
+            color: headingColor,
           ),
         ),
         const SizedBox(height: 4),
-        const Text(
+        Text(
           'Choose a post format to engage with your neighbors',
-          style: TextStyle(fontSize: 13, color: Color(0xFF64748B)),
+          style: TextStyle(fontSize: 13, color: secondaryColor),
         ),
         const SizedBox(height: 16),
         _OptionCard(
@@ -79,14 +86,24 @@ class _OptionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final headingColor =
+        isDark ? AppColors.noticesHeadingDark : AppColors.noticesHeadingLight;
+    final secondaryColor =
+        isDark ? AppColors.noticesSecondaryTextDark : AppColors.noticesSecondaryTextLight;
+    final accentBlue =
+        isDark ? AppColors.noticesAccentBlueDark : AppColors.noticesAccentBlueLight;
+
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? AppColors.surfaceDark : AppColors.surfaceLight,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFF1F5F9)),
+        border: Border.all(
+          color: isDark ? AppColors.noticesDividerDark : AppColors.noticesDividerLight,
+        ),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF0F172A).withValues(alpha: .04),
+            color: const Color(0xFF0F172A).withValues(alpha: isDark ? .3 : .04),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -104,18 +121,24 @@ class _OptionCard extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFEFF6FF),
+                    color: isDark
+                        ? AppColors.noticesBlueTintBgDark
+                        : AppColors.noticesBlueTintBgLight,
                     borderRadius: BorderRadius.circular(14),
-                    border: Border.all(color: const Color(0xFFDBEAFE)),
+                    border: Border.all(
+                      color: isDark
+                          ? AppColors.noticesBlueLightBorderDark
+                          : AppColors.noticesBlueLightBorderLight,
+                    ),
                     boxShadow: [
                       BoxShadow(
-                        color: const Color(0xFF0284C7).withValues(alpha: .06),
+                        color: accentBlue.withValues(alpha: isDark ? .18 : .06),
                         blurRadius: 6,
                         offset: const Offset(0, 2),
                       ),
                     ],
                   ),
-                  child: Icon(icon, color: const Color(0xFF0284C7), size: 22),
+                  child: Icon(icon, color: accentBlue, size: 22),
                 ),
                 const SizedBox(width: 14),
                 Expanded(
@@ -124,18 +147,18 @@ class _OptionCard extends StatelessWidget {
                     children: [
                       Text(
                         title,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.bold,
-                          color: Color(0xFF0F172A),
+                          color: headingColor,
                         ),
                       ),
                       const SizedBox(height: 3),
                       Text(
                         subtitle,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 12,
-                          color: Color(0xFF64748B),
+                          color: secondaryColor,
                           height: 1.3,
                         ),
                       ),
