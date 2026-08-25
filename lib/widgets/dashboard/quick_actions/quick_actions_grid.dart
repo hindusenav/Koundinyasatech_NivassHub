@@ -35,49 +35,46 @@ class QuickActionsGrid extends StatelessWidget {
                 "Quick Actions",
                 style: TextStyle(
                   fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: isDark ? AppColors.textPrimaryDark : const Color(0xFF0F172A),
+                  fontWeight: FontWeight.w700, // Thicker
+                  color: Color(0xFF0F172A),
+                  letterSpacing: 0.3,
                 ),
               ),
             ),
             Icon(
               Icons.settings_outlined,
               size: 14,
-              color: isDark ? AppColors.info : const Color(0xFF0284C7),
+              color: Color(0xFF000000),
+              weight: 600, // Thicker icon
             ),
             const SizedBox(width: 4),
             Text(
               "Customize",
               style: TextStyle(
-                fontSize: 11.5,
-                fontWeight: FontWeight.bold,
-                color: isDark ? AppColors.info : const Color(0xFF0284C7),
+                fontSize: 11,
+                fontWeight: FontWeight.w700, // Thicker
+                color: Color(0xFF000000),
+                letterSpacing: 0.3,
               ),
             ),
           ],
         ),
-
-        const SizedBox(height: 14),
-
-        /// GRID
+        const SizedBox(height: 10),
         GridView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           itemCount: actions.length,
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 4,
-            crossAxisSpacing: 12,
-            mainAxisSpacing: 14,
-            mainAxisExtent: 96,
+            crossAxisSpacing: 2,
+            mainAxisSpacing: 8,
+            mainAxisExtent: 94,
           ),
           itemBuilder: (context, index) {
             return QuickActionCard(
               action: actions[index],
               onTap: () {
-                _handleAction(
-                  context,
-                  actions[index].name,
-                );
+                _handleAction(context, actions[index].name);
               },
             );
           },
@@ -86,32 +83,22 @@ class QuickActionsGrid extends StatelessWidget {
     );
   }
 
-  void _handleAction(
-    BuildContext context,
-    String action,
-  ) {
+  void _handleAction(BuildContext context, String action) {
     switch (action) {
       case 'Pre-Approve':
         break;
-
       case 'Payments':
         break;
-
       case 'Posts':
         break;
-
       case 'Security':
         break;
-
       case 'Book Now':
         break;
-
       case 'Directory':
         break;
-
       case 'Free Trial':
         break;
-
       case 'View More':
         Navigator.pushNamed(context, AppRoutes.quickActions);
         break;

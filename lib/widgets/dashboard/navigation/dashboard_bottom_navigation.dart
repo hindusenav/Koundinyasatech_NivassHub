@@ -17,28 +17,51 @@ class DashboardBottomNavigation extends StatelessWidget {
     return SafeArea(
       top: false,
       child: Container(
-        height: 90, // increased height for bigger icons
-        decoration: BoxDecoration(
-          color: isDark
-              ? AppColors.bottomNavBackgroundDark
-              : AppColors.bottomNavBackgroundLight,
-          borderRadius: const BorderRadius.only(
+        height: 90,
+        decoration: const BoxDecoration(
+          color: Color(0xffD9ECFF),
+          borderRadius: BorderRadius.only(
             topLeft: Radius.circular(32),
             topRight: Radius.circular(32),
           ),
         ),
         child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: 10,
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _item(context, provider, 0, "assets/icons/home.svg.png", "Home", isDark),
-              _item(context, provider, 1, "assets/icons/visitors.svg.png", "Visitors", isDark),
-              _item(context, provider, 2, "assets/icons/community.svg.png", "Community", isDark),
-              _item(context, provider, 3, "assets/icons/payments.svg.png", "Payments", isDark),
+              _item(
+                context,
+                provider,
+                0,
+                "assets/icons/home.svg.png",
+                "Home",
+                isDark,
+              ),
+              _item(
+                context,
+                provider,
+                1,
+                "assets/icons/visitors.svg.png",
+                "Visitors",
+                isDark,
+              ),
+              _item(
+                context,
+                provider,
+                2,
+                "assets/icons/community.svg.png",
+                "Community",
+                isDark,
+              ),
+              _item(
+                context,
+                provider,
+                3,
+                "assets/icons/payments.svg.png",
+                "Payments",
+                isDark,
+              ),
             ],
           ),
         ),
@@ -73,7 +96,10 @@ class DashboardBottomNavigation extends StatelessWidget {
             // DashboardNavObserver updates the highlight once this pop
             // actually lands on the Dashboard route.
             if (ModalRoute.of(context)?.settings.name != AppRoutes.dashboard) {
-              Navigator.popUntil(context, ModalRoute.withName(AppRoutes.dashboard));
+              Navigator.popUntil(
+                context,
+                ModalRoute.withName(AppRoutes.dashboard),
+              );
             }
           } else if (index == 2) {
             // Community — opens the full Community Feed / Notice Board.
@@ -92,7 +118,7 @@ class DashboardBottomNavigation extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            /// 🔵 ICON BACKGROUND (bigger like Figma)
+            /// ICON BACKGROUND
             AnimatedContainer(
               duration: const Duration(milliseconds: 200),
               height: 46,
@@ -100,40 +126,47 @@ class DashboardBottomNavigation extends StatelessWidget {
               decoration: BoxDecoration(
                 color: selected
                     ? (isDark
-                        ? AppColors.bottomNavSelectedDark
-                        : AppColors.bottomNavSelectedLight)
+                          ? AppColors.bottomNavSelectedDark
+                          : AppColors.bottomNavSelectedLight)
                     : Colors.transparent,
                 shape: BoxShape.circle,
               ),
               child: Center(
                 child: Image.asset(
                   image,
-                  width: 26, // 🔥 bigger icon
+                  width: 26,
                   height: 26,
                   fit: BoxFit.contain,
                   color: selected
                       ? Colors.white
-                      : (isDark ? AppColors.grey300 : AppColors.grey600), // darker = thicker feel
+                      : const Color(
+                          0xff1A1A1A,
+                        ), // Darker black for thicker feel
+                  // Better image quality
+                  filterQuality: FilterQuality.high,
+                  isAntiAlias: true,
+                  errorBuilder: (_, _, _) {
+                    return Icon(
+                      Icons.image_not_supported_outlined,
+                      size: 26,
+                      color: selected ? Colors.white : const Color(0xff1A1A1A),
+                      weight: 600, // Thicker fallback icon
+                    );
+                  },
                 ),
               ),
             ),
-
             const SizedBox(height: 6),
-
-            /// 📝 LABEL
             Text(
               title,
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 11.5,
-                fontWeight:
-                    selected ? FontWeight.w700 : FontWeight.w600,
+                fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
                 color: selected
-                    ? (isDark
-                        ? AppColors.bottomNavSelectedDark
-                        : AppColors.bottomNavSelectedLight)
-                    : (isDark ? AppColors.grey300 : AppColors.grey700), // slightly darker
-                letterSpacing: 0.2,
+                    ? const Color(0xff1565C0)
+                    : const Color(0xff1A1A1A), // Darker black
+                letterSpacing: 0.3,
                 height: 1.2,
               ),
             ),
