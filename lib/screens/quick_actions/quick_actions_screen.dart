@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter_nivasshub/constants/app_dimensions.dart';
 import 'package:flutter_nivasshub/constants/app_icons.dart';
+import 'package:flutter_nivasshub/constants/app_spacing.dart';
 import 'package:flutter_nivasshub/utils/responsive.dart';
 import 'package:flutter_nivasshub/models/shared/app_feature_model.dart';
 import 'package:flutter_nivasshub/widgets/shared/feedback/custom_snackbar.dart';
@@ -107,7 +108,7 @@ class _QuickActionsScreenState extends State<QuickActionsScreen> {
       return SingleChildScrollView(
         padding: EdgeInsets.symmetric(
           horizontal: Responsive.horizontalPadding(context),
-          vertical: 16,
+          vertical: AppSpacing.screenVertical,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -134,20 +135,20 @@ class _QuickActionsScreenState extends State<QuickActionsScreen> {
       physics: const BouncingScrollPhysics(),
       padding: EdgeInsets.symmetric(
         horizontal: Responsive.horizontalPadding(context),
-        vertical: 16,
+        vertical: AppSpacing.screenVertical,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildSearchBar(provider),
           if (shortcuts.items.isNotEmpty) ...[
-            const SizedBox(height: 20),
+            AppSpacing.gapMd,
             Row(
               children: shortcuts.items
                   .map(
                     (item) => Expanded(
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 4),
+                        padding: AppSpacing.horizontal(AppSpacing.xs),
                         child: QuickActionCard(
                           item: item,
                           onTap: () => _handleTap(item),
@@ -158,10 +159,10 @@ class _QuickActionsScreenState extends State<QuickActionsScreen> {
                   .toList(),
             ),
           ],
-          const SizedBox(height: 24),
+          AppSpacing.gapMd,
           for (final section in headeredSections) ...[
             _buildSection(section),
-            const SizedBox(height: 24),
+            AppSpacing.gapMd,
           ],
         ],
       ),
@@ -181,6 +182,7 @@ class _QuickActionsScreenState extends State<QuickActionsScreen> {
         section: section,
         onItemTap: _handleTap,
         columns: Responsive.quickActionColumns(context),
+        mainAxisExtent: 120,
         headerTrailing: RaiseAlertButton(
           onPressed: () => _handleSectionAction(section),
         ),
@@ -203,6 +205,7 @@ class _QuickActionsScreenState extends State<QuickActionsScreen> {
       section: section,
       onItemTap: _handleTap,
       columns: Responsive.quickActionColumns(context),
+      mainAxisExtent: 120,
       onActionTap: () => _handleSectionAction(section),
     );
   }
