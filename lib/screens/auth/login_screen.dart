@@ -992,7 +992,7 @@ class _LoginScreenState extends State<LoginScreen>
 
   Widget _buildCountryDropdown(Color border, bool isDark) {
     return Container(
-      height: 56,
+      height: 45,
       decoration: BoxDecoration(
         border: Border.all(color: border),
         borderRadius: AppRadius.radiusSm,
@@ -1023,7 +1023,7 @@ class _LoginScreenState extends State<LoginScreen>
                 child: Row(
                   children: [
                     Text(country['name']!),
-                    const SizedBox(width: 8),
+                    const SizedBox(width: 7),
                     Text(
                       country['code']!,
                       style: AppTextStyles.bodySmall.copyWith(
