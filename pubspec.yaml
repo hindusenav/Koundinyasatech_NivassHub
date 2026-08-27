@@ -74,6 +74,7 @@ flutter:
     - assets/icons/
     - assets/json/
     - assets/icons/quick_actions/
+    - assets/icons/quick_actions/homequick_actions/
     - assets/json/notices/
 
   # fonts:
