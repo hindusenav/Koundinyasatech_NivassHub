@@ -2349,9 +2349,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final isSmallScreen = screenWidth < 360;
-
     return Scaffold(
       backgroundColor: backgroundColor,
       appBar: PreferredSize(
