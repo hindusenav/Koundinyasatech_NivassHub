@@ -52,8 +52,10 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
       // entirely and land straight on the Dashboard.
       final storage = context.read<SecureStorageService>();
       final hasSession = await storage.hasValidSession();
+      debugPrint('[Session] hasValidSession=$hasSession');
       if (!mounted) return;
       if (hasSession) {
+        debugPrint('[Nav] Splash -> Dashboard (existing session)');
         NavigationService.pushNamedAndRemoveUntil(AppRoutes.dashboard);
         return;
       }
@@ -62,10 +64,13 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
       // screen (not Onboarding/Welcome) so the existing Login → OTP
       // Verification flow continues from there.
       final hasLoggedOut = await storage.hasLoggedOutBefore();
+      debugPrint('[Session] hasLoggedOutBefore=$hasLoggedOut');
       if (!mounted) return;
       if (hasLoggedOut) {
+        debugPrint('[Nav] Splash -> Login (no session, previously logged out)');
         NavigationService.pushNamedAndRemoveUntil(AppRoutes.login);
       } else {
+        debugPrint('[Nav] Splash -> Welcome (first-ever launch)');
         _goToWelcome();
       }
     });

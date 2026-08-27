@@ -1693,8 +1693,12 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'package:flutter_nivasshub/constants/app_colors.dart';
+import 'package:flutter_nivasshub/providers/auth/auth_provider.dart';
+import 'package:flutter_nivasshub/providers/dashboard/dashboard_provider.dart';
 import 'package:flutter_nivasshub/providers/theme/theme_mode_provider.dart';
 import 'package:flutter_nivasshub/routes/app_routes.dart';
+import 'package:flutter_nivasshub/routes/navigation_service.dart';
+import 'package:flutter_nivasshub/services/core/secure_storage_service.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -2294,14 +2298,36 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 backgroundColor: Colors.red,
                 foregroundColor: Colors.white,
               ),
-              onPressed: () {
+              onPressed: () async {
+                // Read providers before the first `await` — avoids using
+                // `context` across an async gap.
+                final storage = context.read<SecureStorageService>();
+                final auth = context.read<AuthProvider>();
+                final dashboard = context.read<DashboardProvider>();
+
                 Navigator.pop(dialogContext);
-                if (!mounted) return;
-                Navigator.pushNamedAndRemoveUntil(
-                  context,
-                  AppRoutes.login,
-                  (route) => false,
+                debugPrint('[Session] Logout initiated by user');
+
+                // Clear the persisted session (tokens + isLoggedIn flag) so
+                // a relaunch/force-restart doesn't auto-navigate back to
+                // Dashboard — this is the fix for that exact bug.
+                await storage.clearSession();
+                debugPrint(
+                  '[Session] Storage cleared (tokens + isLoggedIn removed)',
                 );
+
+                if (!mounted) return;
+
+                // Reset in-memory state so a subsequent login doesn't
+                // inherit stale auth/dashboard data from this session.
+                auth.logout();
+                dashboard.reset();
+
+                debugPrint(
+                  '[Nav] Logout complete -> redirecting to Login, '
+                  'nav stack cleared',
+                );
+                NavigationService.logoutAndRedirectToLogin();
               },
               child: const Text('Logout'),
             ),

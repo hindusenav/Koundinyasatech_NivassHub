@@ -69,15 +69,6 @@ class DashboardBottomNavigation extends StatelessWidget {
                 "Payments",
                 isDark,
               ),
-              _item(
-                context,
-                provider,
-                activeIndex,
-                4,
-                "assets/icons/more.svg.png",
-                "More",
-                isDark,
-              ),
             ],
           ),
         ),
@@ -105,12 +96,6 @@ class DashboardBottomNavigation extends StatelessWidget {
           if (index == 1 || index == 3) {
             // Visitors / Payments — screens don't exist yet.
             CustomSnackbar.info(context, '$title coming soon.');
-            return;
-          }
-
-          if (index == 4) {
-            // More — settings screen
-            Navigator.pushNamed(context, AppRoutes.settings);
             return;
           }
 
