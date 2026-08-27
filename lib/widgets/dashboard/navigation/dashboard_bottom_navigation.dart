@@ -263,15 +263,6 @@ class DashboardBottomNavigation extends StatelessWidget {
                 "Payments",
                 isDark,
               ),
-              _item(
-                context,
-                provider,
-                activeIndex,
-                4,
-                "assets/icons/more.svg.png",
-                "More",
-                isDark,
-              ),
             ],
           ),
         ),
@@ -298,54 +289,18 @@ class DashboardBottomNavigation extends StatelessWidget {
         splashColor: Colors.transparent,
         highlightColor: Colors.transparent,
 
-        // onTap: () {
-        //   if (index == 3) {
-        //     // Payments — screens don't exist yet.
-        //     CustomSnackbar.info(context, '$title coming soon.');
-        //     return;
-        //   }
-
-        //   if (index == 1) {
-        //     // Visitors — Navigate to Activities Screen (visitor/delivery activity log)
-        //     if (ModalRoute.of(context)?.settings.name != AppRoutes.activities) {
-        //       Navigator.pushNamed(context, AppRoutes.activities);
-        //     }
-        //     return;
-        //   }
-
-        //   if (index == 4) {
-        //     // More — settings screen
-        //     Navigator.pushNamed(context, AppRoutes.settings);
-        //     return;
-        //   }
-
-        //   if (index == 0) {
-        //     // Home — return to the existing Dashboard already in the stack
-        //     if (ModalRoute.of(context)?.settings.name != AppRoutes.dashboard) {
-        //       Navigator.popUntil(
-        //         context,
-        //         ModalRoute.withName(AppRoutes.dashboard),
-        //       );
-        //     }
-        //   } else if (index == 2) {
-        //     // Community — opens the full Community Feed / Notice Board.
-        //     if (ModalRoute.of(context)?.settings.name != AppRoutes.noticeList) {
-        //       Navigator.pushNamed(context, AppRoutes.noticeList);
-        //     }
-        //   }
-        // },
         onTap: () {
-          // Update the provider first
+          // Update the selected bottom-navigation index.
           provider.changeIndex(index);
 
           if (index == 3) {
-            // Payments — screens don't exist yet.
+            // Payments screen is not available yet.
             CustomSnackbar.info(context, '$title coming soon.');
             return;
           }
 
           if (index == 1) {
-            // Visitors — Navigate to Activities Screen
+            // Visitors — open the visitor list screen.
             if (ModalRoute.of(context)?.settings.name != AppRoutes.activities &&
                 ModalRoute.of(context)?.settings.name !=
                     AppRoutes.visitorList) {
@@ -354,14 +309,8 @@ class DashboardBottomNavigation extends StatelessWidget {
             return;
           }
 
-          if (index == 4) {
-            // More — settings screen
-            Navigator.pushNamed(context, AppRoutes.settings);
-            return;
-          }
-
           if (index == 0) {
-            // Home — return to the existing Dashboard already in the stack
+            // Home — return to the existing Dashboard.
             if (ModalRoute.of(context)?.settings.name != AppRoutes.dashboard) {
               Navigator.popUntil(
                 context,
@@ -369,13 +318,12 @@ class DashboardBottomNavigation extends StatelessWidget {
               );
             }
           } else if (index == 2) {
-            // Community — opens the full Community Feed / Notice Board.
+            // Community — open the Community Feed / Notice Board.
             if (ModalRoute.of(context)?.settings.name != AppRoutes.noticeList) {
               Navigator.pushNamed(context, AppRoutes.noticeList);
             }
           }
         },
-
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
