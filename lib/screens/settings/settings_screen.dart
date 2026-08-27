@@ -1,47 +1,109 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-
-import 'package:flutter_nivasshub/constants/app_colors.dart';
-import 'package:flutter_nivasshub/providers/theme/theme_mode_provider.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_nivasshub/routes/app_routes.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
 
   @override
-  State<SettingsScreen> createState() => _SettingsScreenState();
+  State<SettingsScreen> createState() =>
+      _SettingsScreenState();
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
   // ============================================================
-  // THEME
+  // COLORS
   // ============================================================
 
-  bool get _isDark => Theme.of(context).brightness == Brightness.dark;
+  static const Color backgroundColor =
+      Color(0xFFF3F7FD);
 
-  Color get backgroundColor => _isDark
-      ? AppColors.settingsBackgroundDark
-      : AppColors.settingsBackgroundLight;
-  Color get headerColor =>
-      _isDark ? AppColors.settingsHeaderDark : AppColors.settingsHeaderLight;
-  Color get primaryBlue => _isDark
-      ? AppColors.settingsPrimaryBlueDark
-      : AppColors.settingsPrimaryBlueLight;
-  Color get lightBlue => _isDark
-      ? AppColors.settingsLightBlueDark
-      : AppColors.settingsLightBlueLight;
-  Color get darkText =>
-      _isDark ? AppColors.textPrimaryDark : AppColors.settingsTextPrimaryLight;
-  Color get greyText => _isDark
-      ? AppColors.textSecondaryDark
-      : AppColors.settingsTextSecondaryLight;
-  Color get borderColor =>
-      _isDark ? AppColors.borderDark : AppColors.settingsBorderLight;
-  Color get sheetBackgroundColor =>
-      _isDark ? AppColors.surfaceDark : Colors.white;
+  static const Color headerColor =
+      Color(0xFFC7E1FB);
+
+  static const Color primaryBlue =
+      Color(0xFF0878D1);
+
+  static const Color darkText =
+      Color(0xFF17191C);
+
+  static const Color greyText =
+      Color(0xFF858585);
+
+  static const Color borderColor =
+      Color(0xFFE3E7EB);
 
   // ============================================================
-  // LOCAL VALUES
+  // ASSET PATH
+  // ============================================================
+
+  static const String settingsPath =
+      'assets/icons/settings';
+
+  // ============================================================
+  // HOUSEHOLD ASSETS
+  // ============================================================
+
+  static const String instaHelp =
+      '$settingsPath/instahelp.png';
+
+  static const String family =
+      '$settingsPath/user.png';
+
+  static const String dailyHelp =
+      '$settingsPath/dailyhelp.png';
+
+  static const String vehicles =
+      '$settingsPath/vehicles.png';
+
+  static const String pets =
+      '$settingsPath/pets.png';
+
+  // ============================================================
+  // SETTINGS ASSETS
+  // ============================================================
+
+  static const String notifications =
+      '$settingsPath/notifications.png';
+
+  static const String security =
+      '$settingsPath/security.png';
+
+  static const String feed =
+      '$settingsPath/feed.png';
+
+  static const String orders =
+      '$settingsPath/my orders.png';
+
+  static const String plans =
+      '$settingsPath/my plans.png';
+
+  static const String home =
+      '$settingsPath/home.png';
+
+  static const String addVilla =
+      '$settingsPath/add villa.png';
+
+  static const String support =
+      '$settingsPath/support.png';
+
+  static const String send =
+      '$settingsPath/share(tell a friend).png';
+
+  static const String logout =
+      '$settingsPath/logout.png';
+
+  static const String scanner =
+      '$settingsPath/profile scanner.png';
+
+  static const String shareAction =
+      '$settingsPath/Share Action.png';
+
+  static const String user =
+      '$settingsPath/user.png';
+
+  // ============================================================
+  // STATE
   // ============================================================
 
   int familyCount = 1;
@@ -56,25 +118,39 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool feedEnabled = false;
 
   final List<Map<String, dynamic>> properties = [
-    {'name': 'B-402, Golden Residency', 'active': true},
+    {
+      'name': 'B-402, Golden Residency',
+      'active': true,
+    },
   ];
 
   // ============================================================
-  // MESSAGE
+  // COMMON MESSAGE
   // ============================================================
 
-  void _message(String text) {
+  void _message(String message) {
     if (!mounted) return;
 
-    ScaffoldMessenger.of(context).hideCurrentSnackBar();
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(text),
-        behavior: SnackBarBehavior.floating,
-        duration: const Duration(seconds: 2),
-      ),
-    );
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          content: Text(
+            message,
+            style: const TextStyle(
+              fontSize: 14,
+            ),
+          ),
+          behavior: SnackBarBehavior.floating,
+          duration:
+              const Duration(seconds: 2),
+          margin: const EdgeInsets.all(14),
+          shape: RoundedRectangleBorder(
+            borderRadius:
+                BorderRadius.circular(10),
+          ),
+        ),
+      );
   }
 
   // ============================================================
@@ -82,15 +158,84 @@ class _SettingsScreenState extends State<SettingsScreen> {
   // ============================================================
 
   void _openProfile() {
-    Navigator.pushNamed(context, AppRoutes.profile);
+    Navigator.pushNamed(
+      context,
+      AppRoutes.profile,
+    );
   }
 
   // ============================================================
-  // HELP & SUPPORT
+  // HELP
   // ============================================================
 
   void _openHelpSupport() {
-    Navigator.pushNamed(context, AppRoutes.helpSupport);
+    Navigator.pushNamed(
+      context,
+      AppRoutes.helpSupport,
+    );
+  }
+
+  // ============================================================
+  // SCANNER
+  // ============================================================
+
+  void _openScanner() {
+    showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius:
+                BorderRadius.circular(18),
+          ),
+          title: const Text(
+            'Nivaas Hub ID',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight:
+                  FontWeight.w700,
+            ),
+          ),
+          content: Column(
+            mainAxisSize:
+                MainAxisSize.min,
+            children: [
+              Image.asset(
+                scanner,
+                width: 190,
+                height: 190,
+                fit: BoxFit.contain,
+              ),
+              const SizedBox(height: 12),
+              const Text(
+                'Nivaas Hub ID : 00000',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight:
+                      FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(
+                  dialogContext,
+                );
+              },
+              child: const Text(
+                'Close',
+                style: TextStyle(
+                  color: primaryBlue,
+                  fontSize: 14,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   // ============================================================
@@ -100,110 +245,101 @@ class _SettingsScreenState extends State<SettingsScreen> {
   void _notificationPreferences() {
     showModalBottomSheet(
       context: context,
-      backgroundColor: sheetBackgroundColor,
+      backgroundColor: Colors.white,
       isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      shape:
+          const RoundedRectangleBorder(
+        borderRadius:
+            BorderRadius.vertical(
+          top: Radius.circular(22),
+        ),
       ),
       builder: (context) {
         return StatefulBuilder(
-          builder: (context, setModalState) {
+          builder:
+              (context, setModalState) {
             return Padding(
-              padding: const EdgeInsets.fromLTRB(18, 12, 18, 25),
+              padding:
+                  const EdgeInsets.fromLTRB(
+                20,
+                12,
+                20,
+                28,
+              ),
               child: Column(
-                mainAxisSize: MainAxisSize.min,
+                mainAxisSize:
+                    MainAxisSize.min,
                 children: [
                   _sheetHandle(),
 
-                  const SizedBox(height: 18),
+                  const SizedBox(
+                    height: 18,
+                  ),
 
                   const Align(
-                    alignment: Alignment.centerLeft,
+                    alignment:
+                        Alignment.centerLeft,
                     child: Text(
                       'Notification Preferences',
                       style: TextStyle(
-                        fontSize: 17,
-                        fontWeight: FontWeight.w700,
+                        fontSize: 20,
+                        fontWeight:
+                            FontWeight.w700,
                       ),
                     ),
                   ),
 
-                  const SizedBox(height: 10),
+                  const SizedBox(
+                    height: 12,
+                  ),
 
-                  SwitchListTile(
-                    contentPadding: EdgeInsets.zero,
-                    title: const Text(
-                      'Notification Alerts',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    subtitle: const Text(
-                      'Manage what alerts you receive',
-                      style: TextStyle(fontSize: 11),
-                    ),
-                    value: notificationEnabled,
-                    activeThumbColor: primaryBlue,
-                    onChanged: (value) {
+                  _switchTile(
+                    'Notification Alerts',
+                    'Manage what alerts you receive',
+                    notificationEnabled,
+                    (value) {
                       setModalState(() {
-                        notificationEnabled = value;
+                        notificationEnabled =
+                            value;
                       });
 
                       setState(() {
-                        notificationEnabled = value;
+                        notificationEnabled =
+                            value;
                       });
                     },
                   ),
 
-                  SwitchListTile(
-                    contentPadding: EdgeInsets.zero,
-                    title: const Text(
-                      'Security Alerts',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    subtitle: const Text(
-                      'Receive security notifications',
-                      style: TextStyle(fontSize: 11),
-                    ),
-                    value: securityEnabled,
-                    activeThumbColor: primaryBlue,
-                    onChanged: (value) {
+                  _switchTile(
+                    'Security Alerts',
+                    'Receive security notifications',
+                    securityEnabled,
+                    (value) {
                       setModalState(() {
-                        securityEnabled = value;
+                        securityEnabled =
+                            value;
                       });
 
                       setState(() {
-                        securityEnabled = value;
+                        securityEnabled =
+                            value;
                       });
                     },
                   ),
 
-                  SwitchListTile(
-                    contentPadding: EdgeInsets.zero,
-                    title: const Text(
-                      'Community Feed',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    subtitle: const Text(
-                      'Customize your community feed',
-                      style: TextStyle(fontSize: 11),
-                    ),
-                    value: feedEnabled,
-                    activeThumbColor: primaryBlue,
-                    onChanged: (value) {
+                  _switchTile(
+                    'Community Feed',
+                    'Show community feed updates',
+                    feedEnabled,
+                    (value) {
                       setModalState(() {
-                        feedEnabled = value;
+                        feedEnabled =
+                            value;
                       });
 
                       setState(() {
-                        feedEnabled = value;
+                        feedEnabled =
+                            value;
                       });
                     },
                   ),
@@ -223,16 +359,28 @@ class _SettingsScreenState extends State<SettingsScreen> {
   void _securityAlerts() {
     showModalBottomSheet(
       context: context,
-      backgroundColor: sheetBackgroundColor,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      backgroundColor: Colors.white,
+      shape:
+          const RoundedRectangleBorder(
+        borderRadius:
+            BorderRadius.vertical(
+          top: Radius.circular(22),
+        ),
       ),
       builder: (context) {
         return Padding(
-          padding: const EdgeInsets.fromLTRB(18, 12, 18, 25),
+          padding:
+              const EdgeInsets.fromLTRB(
+            20,
+            12,
+            20,
+            28,
+          ),
           child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize:
+                MainAxisSize.min,
+            crossAxisAlignment:
+                CrossAxisAlignment.start,
             children: [
               _sheetHandle(),
 
@@ -240,21 +388,31 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
               const Text(
                 'Security Alert List',
-                style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700),
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight:
+                      FontWeight.w700,
+                ),
               ),
 
               const SizedBox(height: 12),
 
               _sheetItem(
-                Icons.shield_outlined,
+                security,
                 'Visitor entry approved',
                 'Today, 11:30 AM',
               ),
 
               _sheetItem(
-                Icons.local_shipping_outlined,
+                vehicles,
                 'Delivery received',
                 'Today, 10:15 AM',
+              ),
+
+              _sheetItem(
+                security,
+                'Security check completed',
+                'Yesterday, 8:20 PM',
               ),
             ],
           ),
@@ -270,57 +428,99 @@ class _SettingsScreenState extends State<SettingsScreen> {
   void _feedSettings() {
     showModalBottomSheet(
       context: context,
-      backgroundColor: sheetBackgroundColor,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      backgroundColor: Colors.white,
+      shape:
+          const RoundedRectangleBorder(
+        borderRadius:
+            BorderRadius.vertical(
+          top: Radius.circular(22),
+        ),
       ),
       builder: (context) {
         return StatefulBuilder(
-          builder: (context, setModalState) {
+          builder:
+              (context, setModalState) {
             return Padding(
-              padding: const EdgeInsets.fromLTRB(18, 12, 18, 25),
+              padding:
+                  const EdgeInsets.fromLTRB(
+                20,
+                12,
+                20,
+                28,
+              ),
               child: Column(
-                mainAxisSize: MainAxisSize.min,
+                mainAxisSize:
+                    MainAxisSize.min,
                 children: [
                   _sheetHandle(),
 
-                  const SizedBox(height: 18),
+                  const SizedBox(
+                    height: 18,
+                  ),
 
                   const Align(
-                    alignment: Alignment.centerLeft,
+                    alignment:
+                        Alignment.centerLeft,
                     child: Text(
                       'Feed Settings',
                       style: TextStyle(
-                        fontSize: 17,
-                        fontWeight: FontWeight.w700,
+                        fontSize: 20,
+                        fontWeight:
+                            FontWeight.w700,
                       ),
                     ),
                   ),
 
-                  const SizedBox(height: 10),
+                  const SizedBox(
+                    height: 8,
+                  ),
+
+                  const Align(
+                    alignment:
+                        Alignment.centerLeft,
+                    child: Text(
+                      'Customize your community feed',
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: greyText,
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(
+                    height: 12,
+                  ),
 
                   SwitchListTile(
-                    contentPadding: EdgeInsets.zero,
+                    contentPadding:
+                        EdgeInsets.zero,
                     title: const Text(
                       'Community Feed',
                       style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
+                        fontSize: 15,
+                        fontWeight:
+                            FontWeight.w600,
                       ),
                     ),
-                    subtitle: const Text(
-                      'Customize your community feed',
-                      style: TextStyle(fontSize: 11),
+                    subtitle:
+                        const Text(
+                      'Show community posts and updates',
+                      style: TextStyle(
+                        fontSize: 12,
+                      ),
                     ),
                     value: feedEnabled,
-                    activeThumbColor: primaryBlue,
+                    activeThumbColor:
+                        primaryBlue,
                     onChanged: (value) {
                       setModalState(() {
-                        feedEnabled = value;
+                        feedEnabled =
+                            value;
                       });
 
                       setState(() {
-                        feedEnabled = value;
+                        feedEnabled =
+                            value;
                       });
                     },
                   ),
@@ -334,22 +534,34 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   // ============================================================
-  // ORDERS
+  // MY ORDERS
   // ============================================================
 
   void _myOrders() {
     showModalBottomSheet(
       context: context,
-      backgroundColor: sheetBackgroundColor,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      backgroundColor: Colors.white,
+      shape:
+          const RoundedRectangleBorder(
+        borderRadius:
+            BorderRadius.vertical(
+          top: Radius.circular(22),
+        ),
       ),
       builder: (context) {
         return Padding(
-          padding: const EdgeInsets.fromLTRB(18, 12, 18, 25),
+          padding:
+              const EdgeInsets.fromLTRB(
+            20,
+            12,
+            20,
+            28,
+          ),
           child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize:
+                MainAxisSize.min,
+            crossAxisAlignment:
+                CrossAxisAlignment.start,
             children: [
               _sheetHandle(),
 
@@ -357,20 +569,30 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
               const Text(
                 'My Orders',
-                style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700),
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight:
+                      FontWeight.w700,
+                ),
               ),
 
               const SizedBox(height: 12),
 
               _sheetItem(
-                Icons.shopping_bag_outlined,
+                orders,
                 'Community Store',
                 'Completed',
               ),
 
               _sheetItem(
-                Icons.receipt_long_outlined,
+                orders,
                 'Maintenance Payment',
+                'Completed',
+              ),
+
+              _sheetItem(
+                orders,
+                'Household Service',
                 'Completed',
               ),
             ],
@@ -381,73 +603,152 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   // ============================================================
-  // PLANS
+  // MY PLANS
   // ============================================================
 
   void _myPlans() {
     showModalBottomSheet(
       context: context,
-      backgroundColor: sheetBackgroundColor,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      backgroundColor: Colors.white,
+      shape:
+          const RoundedRectangleBorder(
+        borderRadius:
+            BorderRadius.vertical(
+          top: Radius.circular(22),
+        ),
       ),
       builder: (context) {
         return StatefulBuilder(
-          builder: (context, setModalState) {
+          builder:
+              (context, setModalState) {
             return Padding(
-              padding: const EdgeInsets.fromLTRB(18, 12, 18, 25),
+              padding:
+                  const EdgeInsets.fromLTRB(
+                20,
+                12,
+                20,
+                28,
+              ),
               child: Column(
-                mainAxisSize: MainAxisSize.min,
+                mainAxisSize:
+                    MainAxisSize.min,
                 children: [
                   _sheetHandle(),
 
-                  const SizedBox(height: 18),
+                  const SizedBox(
+                    height: 18,
+                  ),
 
                   const Align(
-                    alignment: Alignment.centerLeft,
+                    alignment:
+                        Alignment.centerLeft,
                     child: Text(
                       'My Plans',
                       style: TextStyle(
-                        fontSize: 17,
-                        fontWeight: FontWeight.w700,
+                        fontSize: 20,
+                        fontWeight:
+                            FontWeight.w700,
                       ),
                     ),
                   ),
 
-                  const SizedBox(height: 10),
+                  const SizedBox(
+                    height: 10,
+                  ),
 
-                  RadioGroup<String>(
-                    groupValue: selectedPlan,
-                    onChanged: (value) {
-                      if (value == null) return;
+                  RadioListTile<String>(
+                    contentPadding:
+                        EdgeInsets.zero,
+                    activeColor:
+                        primaryBlue,
+                    value:
+                        'Ad-Supported',
+                    groupValue:
+                        selectedPlan,
+                    title:
+                        const Text(
+                      'Ad-Supported',
+                      style:
+                          TextStyle(
+                        fontSize: 15,
+                        fontWeight:
+                            FontWeight.w600,
+                      ),
+                    ),
+                    subtitle:
+                        const Text(
+                      'Free plan',
+                      style:
+                          TextStyle(
+                        fontSize: 12,
+                      ),
+                    ),
+                    onChanged:
+                        (value) {
+                      if (value ==
+                          null) {
+                        return;
+                      }
 
                       setModalState(() {
-                        selectedPlan = value;
+                        selectedPlan =
+                            value;
                       });
 
                       setState(() {
-                        selectedPlan = value;
+                        selectedPlan =
+                            value;
                       });
                     },
-                    child: Column(
-                      children: [
-                        RadioListTile<String>(
-                          contentPadding: EdgeInsets.zero,
-                          value: 'Ad-Supported',
-                          activeColor: primaryBlue,
-                          title: const Text('Ad-Supported'),
-                          subtitle: const Text('Free plan'),
-                        ),
+                  ),
 
-                        RadioListTile<String>(
-                          contentPadding: EdgeInsets.zero,
-                          value: 'Premium',
-                          activeColor: primaryBlue,
-                          title: const Text('Nivaas Premium (₹99/mo)'),
-                          subtitle: const Text('Premium'),
-                        ),
-                      ],
+                  RadioListTile<String>(
+                    contentPadding:
+                        EdgeInsets.zero,
+                    activeColor:
+                        primaryBlue,
+                    value: 'Premium',
+                    groupValue:
+                        selectedPlan,
+                    title:
+                        const Text(
+                      'Nivaas Premium',
+                      style:
+                          TextStyle(
+                        fontSize: 15,
+                        fontWeight:
+                            FontWeight.w600,
+                      ),
                     ),
+                    subtitle:
+                        const Text(
+                      'Premium plan',
+                      style:
+                          TextStyle(
+                        fontSize: 12,
+                      ),
+                    ),
+                    onChanged:
+                        (value) {
+                      if (value ==
+                          null) {
+                        return;
+                      }
+
+                      setModalState(() {
+                        selectedPlan =
+                            value;
+                      });
+
+                      setState(() {
+                        selectedPlan =
+                            value;
+                      });
+
+                      _message(
+                        'Premium plan selected',
+                      );
+                    },
                   ),
                 ],
               ),
@@ -459,103 +760,265 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   // ============================================================
-  // THEME PICKER
+  // VIEW ALL HOUSEHOLD
   // ============================================================
 
-  String _themeModeLabel(ThemeMode mode) {
-    switch (mode) {
-      case ThemeMode.system:
-        return 'System';
-      case ThemeMode.light:
-        return 'Light';
-      case ThemeMode.dark:
-        return 'Dark';
-    }
-  }
-
-  void _chooseTheme() {
+  void _viewAllHousehold() {
     showModalBottomSheet(
       context: context,
-      // Transparent here on purpose: `sheetBackgroundColor` would be
-      // captured once at the moment this sheet opens and never update —
-      // if the user then taps a different theme option, the sheet's own
-      // background would stay frozen on the old theme's color while its
-      // text (sourced from the ambient, now-rebuilt Theme) flips to the
-      // new theme's color, risking invisible text. Painting the
-      // background inside the `Consumer` below instead keeps it reactive
-      // to the same theme change the radio tiles respond to.
-      backgroundColor: Colors.transparent,
+      backgroundColor: Colors.white,
+      shape:
+          const RoundedRectangleBorder(
+        borderRadius:
+            BorderRadius.vertical(
+          top: Radius.circular(22),
+        ),
+      ),
       builder: (context) {
-        return Consumer<ThemeModeProvider>(
-          builder: (context, themeModeProvider, _) {
-            return DecoratedBox(
-              decoration: BoxDecoration(
-                color: sheetBackgroundColor,
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(20),
+        return Padding(
+          padding:
+              const EdgeInsets.fromLTRB(
+            20,
+            12,
+            20,
+            28,
+          ),
+          child: Column(
+            mainAxisSize:
+                MainAxisSize.min,
+            children: [
+              _sheetHandle(),
+
+              const SizedBox(height: 18),
+
+              const Align(
+                alignment:
+                    Alignment.centerLeft,
+                child: Text(
+                  'Household',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight:
+                        FontWeight.w700,
+                  ),
                 ),
               ),
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(18, 12, 18, 25),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    _sheetHandle(),
 
-                    const SizedBox(height: 18),
+              const SizedBox(height: 8),
 
-                    const Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        'Theme',
-                        style: TextStyle(
-                          fontSize: 17,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ),
+              _summaryItem(
+                family,
+                'Family',
+                familyCount == 1
+                    ? '1 member'
+                    : '$familyCount members',
+              ),
 
-                    const SizedBox(height: 10),
+              _summaryItem(
+                dailyHelp,
+                'Daily Help',
+                '$dailyHelpCount added',
+              ),
 
-                    RadioGroup<ThemeMode>(
-                      groupValue: themeModeProvider.themeMode,
-                      onChanged: (mode) {
-                        if (mode == null) return;
-                        themeModeProvider.setThemeMode(mode);
-                      },
-                      child: Column(
-                        children: [
-                          RadioListTile<ThemeMode>(
-                            contentPadding: EdgeInsets.zero,
-                            value: ThemeMode.system,
-                            activeColor: primaryBlue,
-                            title: const Text('System'),
-                            subtitle: const Text('Match your device setting'),
-                          ),
+              _summaryItem(
+                vehicles,
+                'Vehicles',
+                '$vehicleCount added',
+              ),
 
-                          RadioListTile<ThemeMode>(
-                            contentPadding: EdgeInsets.zero,
-                            value: ThemeMode.light,
-                            activeColor: primaryBlue,
-                            title: const Text('Light'),
-                            subtitle: const Text('Always use light theme'),
-                          ),
+              _summaryItem(
+                pets,
+                'Pets',
+                '$petCount added',
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
 
-                          RadioListTile<ThemeMode>(
-                            contentPadding: EdgeInsets.zero,
-                            value: ThemeMode.dark,
-                            activeColor: primaryBlue,
-                            title: const Text('Dark'),
-                            subtitle: const Text('Always use dark theme'),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
+  // ============================================================
+  // ADD FAMILY
+  // ============================================================
+
+  void _addFamily() {
+    _addTextDialog(
+      title: 'Add Family Member',
+      hint: 'Enter member name',
+      onAdd: () {
+        setState(() {
+          familyCount++;
+        });
+
+        _message(
+          'Family member added',
+        );
+      },
+    );
+  }
+
+  // ============================================================
+  // ADD DAILY HELP
+  // ============================================================
+
+  void _addDailyHelp() {
+    _addTextDialog(
+      title: 'Add Daily Help',
+      hint: 'Enter helper name',
+      onAdd: () {
+        setState(() {
+          dailyHelpCount++;
+        });
+
+        _message(
+          'Daily help added',
+        );
+      },
+    );
+  }
+
+  // ============================================================
+  // ADD VEHICLE
+  // ============================================================
+
+  void _addVehicle() {
+    _addTextDialog(
+      title: 'Add Vehicle',
+      hint: 'Enter vehicle number',
+      onAdd: () {
+        setState(() {
+          vehicleCount++;
+        });
+
+        _message(
+          'Vehicle added',
+        );
+      },
+    );
+  }
+
+  // ============================================================
+  // ADD PET
+  // ============================================================
+
+  void _addPet() {
+    _addTextDialog(
+      title: 'Add Pet',
+      hint: 'Enter pet name',
+      onAdd: () {
+        setState(() {
+          petCount++;
+        });
+
+        _message(
+          'Pet added',
+        );
+      },
+    );
+  }
+
+  // ============================================================
+  // COMMON ADD DIALOG
+  // ============================================================
+
+  void _addTextDialog({
+    required String title,
+    required String hint,
+    required VoidCallback onAdd,
+  }) {
+    final controller =
+        TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          shape:
+              RoundedRectangleBorder(
+            borderRadius:
+                BorderRadius.circular(
+              18,
+            ),
+          ),
+          title: Text(
+            title,
+            style: const TextStyle(
+              fontSize: 19,
+              fontWeight:
+                  FontWeight.w700,
+            ),
+          ),
+          content: TextField(
+            controller: controller,
+            textCapitalization:
+                TextCapitalization.words,
+            style: const TextStyle(
+              fontSize: 14,
+            ),
+            decoration:
+                InputDecoration(
+              hintText: hint,
+              hintStyle:
+                  const TextStyle(
+                fontSize: 13,
+              ),
+              border:
+                  OutlineInputBorder(
+                borderRadius:
+                    BorderRadius.circular(
+                  10,
                 ),
               ),
-            );
-          },
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(
+                  dialogContext,
+                );
+              },
+              child: const Text(
+                'Cancel',
+                style: TextStyle(
+                  color: greyText,
+                  fontSize: 14,
+                ),
+              ),
+            ),
+            ElevatedButton(
+              style:
+                  ElevatedButton.styleFrom(
+                backgroundColor:
+                    primaryBlue,
+                foregroundColor:
+                    Colors.white,
+              ),
+              onPressed: () {
+                if (controller.text
+                    .trim()
+                    .isEmpty) {
+                  _message(
+                    'Please enter a value',
+                  );
+                  return;
+                }
+
+                onAdd();
+
+                Navigator.pop(
+                  dialogContext,
+                );
+              },
+              child: const Text(
+                'Add',
+                style: TextStyle(
+                  fontSize: 14,
+                ),
+              ),
+            ),
+          ],
         );
       },
     );
@@ -566,47 +1029,363 @@ class _SettingsScreenState extends State<SettingsScreen> {
   // ============================================================
 
   void _addProperty() {
-    final controller = TextEditingController();
+    final controller =
+        TextEditingController();
 
     showDialog(
       context: context,
       builder: (dialogContext) {
         return AlertDialog(
-          title: const Text('Add Flat/Villa/Office'),
+          shape:
+              RoundedRectangleBorder(
+            borderRadius:
+                BorderRadius.circular(
+              18,
+            ),
+          ),
+          title: const Text(
+            'Add Flat/Villa/Office',
+            style: TextStyle(
+              fontSize: 19,
+              fontWeight:
+                  FontWeight.w700,
+            ),
+          ),
           content: TextField(
             controller: controller,
-            decoration: const InputDecoration(
-              hintText: 'Enter property name',
-              border: OutlineInputBorder(),
+            style: const TextStyle(
+              fontSize: 14,
+            ),
+            decoration:
+                InputDecoration(
+              hintText:
+                  'Enter property name',
+              hintStyle:
+                  const TextStyle(
+                fontSize: 13,
+              ),
+              border:
+                  OutlineInputBorder(
+                borderRadius:
+                    BorderRadius.circular(
+                  10,
+                ),
+              ),
             ),
           ),
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.pop(dialogContext);
+                Navigator.pop(
+                  dialogContext,
+                );
               },
-              child: const Text('Cancel'),
+              child: const Text(
+                'Cancel',
+                style: TextStyle(
+                  color: greyText,
+                  fontSize: 14,
+                ),
+              ),
             ),
-
             ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: primaryBlue,
-                foregroundColor: Colors.white,
+              style:
+                  ElevatedButton.styleFrom(
+                backgroundColor:
+                    primaryBlue,
+                foregroundColor:
+                    Colors.white,
               ),
               onPressed: () {
-                final value = controller.text.trim();
+                final value =
+                    controller.text
+                        .trim();
 
-                if (value.isNotEmpty) {
-                  setState(() {
-                    properties.add({'name': value, 'active': false});
-                  });
+                if (value.isEmpty) {
+                  _message(
+                    'Please enter property name',
+                  );
+                  return;
                 }
 
-                Navigator.pop(dialogContext);
+                setState(() {
+                  properties.add({
+                    'name': value,
+                    'active': false,
+                  });
+                });
+
+                Navigator.pop(
+                  dialogContext,
+                );
+
+                _message(
+                  'Property added successfully',
+                );
               },
-              child: const Text('Add'),
+              child: const Text(
+                'Add',
+                style: TextStyle(
+                  fontSize: 14,
+                ),
+              ),
             ),
           ],
+        );
+      },
+    );
+  }
+
+  // ============================================================
+  // SELECT PROPERTY
+  // ============================================================
+
+  void _selectProperty(
+    Map<String, dynamic> property,
+  ) {
+    setState(() {
+      for (final item in properties) {
+        item['active'] = false;
+      }
+
+      property['active'] = true;
+    });
+
+    _message(
+      '${property['name']} selected',
+    );
+  }
+
+  // ============================================================
+  // ADDRESS
+  // ============================================================
+
+  void _openAddress() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.white,
+      shape:
+          const RoundedRectangleBorder(
+        borderRadius:
+            BorderRadius.vertical(
+          top: Radius.circular(22),
+        ),
+      ),
+      builder: (context) {
+        return Padding(
+          padding:
+              const EdgeInsets.fromLTRB(
+            20,
+            12,
+            20,
+            28,
+          ),
+          child: Column(
+            mainAxisSize:
+                MainAxisSize.min,
+            crossAxisAlignment:
+                CrossAxisAlignment.start,
+            children: [
+              _sheetHandle(),
+
+              const SizedBox(height: 18),
+
+              const Text(
+                'My Address',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight:
+                      FontWeight.w700,
+                ),
+              ),
+
+              const SizedBox(height: 14),
+
+              const Text(
+                'B-402, Golden Residency',
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight:
+                      FontWeight.w600,
+                ),
+              ),
+
+              const SizedBox(height: 5),
+
+              const Text(
+                'Address Details',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: greyText,
+                ),
+              ),
+
+              const SizedBox(height: 18),
+
+              SizedBox(
+                width: double.infinity,
+                height: 46,
+                child:
+                    ElevatedButton.icon(
+                  onPressed: () {
+                    Clipboard.setData(
+                      const ClipboardData(
+                        text:
+                            'B-402, Golden Residency',
+                      ),
+                    );
+
+                    Navigator.pop(
+                      context,
+                    );
+
+                    _message(
+                      'Address copied',
+                    );
+                  },
+                  icon: const Icon(
+                    Icons.copy_outlined,
+                    size: 17,
+                  ),
+                  label: const Text(
+                    'Copy Address',
+                    style: TextStyle(
+                      fontSize: 14,
+                    ),
+                  ),
+                  style:
+                      ElevatedButton
+                          .styleFrom(
+                    backgroundColor:
+                        primaryBlue,
+                    foregroundColor:
+                        Colors.white,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  // ============================================================
+  // TEST NOTIFICATION
+  // ============================================================
+
+  void _testNotification() {
+    _message(
+      'Test notification sent successfully',
+    );
+  }
+
+  // ============================================================
+  // TELL A FRIEND
+  // ============================================================
+
+  void _tellFriend() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.white,
+      shape:
+          const RoundedRectangleBorder(
+        borderRadius:
+            BorderRadius.vertical(
+          top: Radius.circular(22),
+        ),
+      ),
+      builder: (context) {
+        return Padding(
+          padding:
+              const EdgeInsets.fromLTRB(
+            20,
+            12,
+            20,
+            28,
+          ),
+          child: Column(
+            mainAxisSize:
+                MainAxisSize.min,
+            children: [
+              _sheetHandle(),
+
+              const SizedBox(height: 18),
+
+              const Align(
+                alignment:
+                    Alignment.centerLeft,
+                child: Text(
+                  'Tell a Friend',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight:
+                        FontWeight.w700,
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 8),
+
+              const Align(
+                alignment:
+                    Alignment.centerLeft,
+                child: Text(
+                  'Invite your neighbours to join Nivaas.',
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: greyText,
+                  ),
+                ),
+              ),
+
+              const SizedBox(
+                height: 18,
+              ),
+
+              SizedBox(
+                width: double.infinity,
+                height: 46,
+                child:
+                    ElevatedButton.icon(
+                  onPressed: () {
+                    Clipboard.setData(
+                      const ClipboardData(
+                        text:
+                            'Join me on Nivaas and connect with your neighbourhood.',
+                      ),
+                    );
+
+                    Navigator.pop(
+                      context,
+                    );
+
+                    _message(
+                      'Invite message copied',
+                    );
+                  },
+                  icon: const Icon(
+                    Icons.copy_outlined,
+                    size: 17,
+                  ),
+                  label: const Text(
+                    'Copy Invite Message',
+                    style: TextStyle(
+                      fontSize: 14,
+                    ),
+                  ),
+                  style:
+                      ElevatedButton
+                          .styleFrom(
+                    backgroundColor:
+                        primaryBlue,
+                    foregroundColor:
+                        Colors.white,
+                  ),
+                ),
+              ),
+            ],
+          ),
         );
       },
     );
@@ -621,25 +1400,54 @@ class _SettingsScreenState extends State<SettingsScreen> {
       context: context,
       builder: (dialogContext) {
         return AlertDialog(
-          title: const Text('Logout'),
-          content: const Text('Are you sure you want to logout?'),
+          shape:
+              RoundedRectangleBorder(
+            borderRadius:
+                BorderRadius.circular(
+              18,
+            ),
+          ),
+          title: const Text(
+            'Logout',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight:
+                  FontWeight.w700,
+            ),
+          ),
+          content: const Text(
+            'Are you sure you want to logout?',
+            style: TextStyle(
+              fontSize: 14,
+            ),
+          ),
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.pop(dialogContext);
+                Navigator.pop(
+                  dialogContext,
+                );
               },
-              child: const Text('Cancel'),
+              child: const Text(
+                'Cancel',
+                style: TextStyle(
+                  color: greyText,
+                  fontSize: 14,
+                ),
+              ),
             ),
-
             ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red,
-                foregroundColor: Colors.white,
+              style:
+                  ElevatedButton.styleFrom(
+                backgroundColor:
+                    Colors.red,
+                foregroundColor:
+                    Colors.white,
               ),
               onPressed: () {
-                Navigator.pop(dialogContext);
-
-                if (!mounted) return;
+                Navigator.pop(
+                  dialogContext,
+                );
 
                 Navigator.pushNamedAndRemoveUntil(
                   context,
@@ -647,48 +1455,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   (route) => false,
                 );
               },
-              child: const Text('Logout'),
+              child: const Text(
+                'Logout',
+                style: TextStyle(
+                  fontSize: 14,
+                ),
+              ),
             ),
           ],
         );
       },
     );
-  }
-
-  // ============================================================
-  // ADD HOUSEHOLD
-  // ============================================================
-
-  void _addHousehold(String type) {
-    setState(() {
-      switch (type) {
-        case 'Family':
-          familyCount++;
-          break;
-
-        case 'Daily Help':
-          dailyHelpCount++;
-          break;
-
-        case 'Vehicles':
-          vehicleCount++;
-          break;
-
-        case 'Pets':
-          petCount++;
-          break;
-      }
-    });
-
-    _message('$type added successfully');
-  }
-
-  // ============================================================
-  // TEST NOTIFICATION
-  // ============================================================
-
-  void _testNotification() {
-    _message('Test notification sent successfully');
   }
 
   // ============================================================
@@ -698,372 +1475,576 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: backgroundColor,
+      backgroundColor:
+          backgroundColor,
 
-      // ========================================================
-      // APP BAR
-      // ========================================================
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(58),
+        preferredSize:
+            const Size.fromHeight(50),
         child: AppBar(
-          backgroundColor: headerColor,
+          backgroundColor:
+              headerColor,
           elevation: 0,
           scrolledUnderElevation: 0,
-          centerTitle: true,
-          leadingWidth: 40,
+          leadingWidth: 42,
+          titleSpacing: 0,
 
           leading: IconButton(
             padding: EdgeInsets.zero,
-            icon: Icon(
+            icon: const Icon(
               Icons.arrow_back,
-              color: _isDark ? AppColors.textPrimaryDark : Colors.black,
-              size: 18,
+              size: 21,
+              color: Colors.black,
             ),
             onPressed: () {
-              Navigator.maybePop(context);
+              Navigator.maybePop(
+                context,
+              );
             },
           ),
 
-          title: Text(
+          title: const Text(
             'Settings',
             style: TextStyle(
-              color: _isDark ? AppColors.textPrimaryDark : Colors.black,
-              fontSize: 12,
-              fontWeight: FontWeight.w700,
+              fontSize: 16,
+              fontWeight:
+                  FontWeight.w700,
+              color: Colors.black,
             ),
           ),
 
           actions: [
             IconButton(
-              padding: const EdgeInsets.only(right: 10),
-              icon: Icon(
-                Icons.help_outline,
-                color: _isDark ? AppColors.textPrimaryDark : Colors.black,
-                size: 18,
+              padding:
+                  const EdgeInsets.only(
+                right: 8,
               ),
-              onPressed: _openHelpSupport,
+              icon: const Icon(
+                Icons.help_outline,
+                size: 21,
+                color: Colors.black,
+              ),
+              onPressed:
+                  _openHelpSupport,
             ),
           ],
         ),
       ),
 
-      // ========================================================
-      // BODY
-      // ========================================================
       body: SafeArea(
         child: LayoutBuilder(
-          builder: (context, constraints) {
-            final width = constraints.maxWidth;
-
-            final scale = (width / 313).clamp(0.95, 1.12);
+          builder:
+              (context, constraints) {
+            final scale =
+                (constraints.maxWidth /
+                        342)
+                    .clamp(
+              0.95,
+              1.08,
+            );
 
             return ListView(
-              physics: const BouncingScrollPhysics(),
+              physics:
+                  const ClampingScrollPhysics(),
 
-              padding: EdgeInsets.fromLTRB(
-                12 * scale,
+              padding:
+                  EdgeInsets.fromLTRB(
                 10 * scale,
-                12 * scale,
-                5 * scale,
+                8 * scale,
+                10 * scale,
+                14 * scale,
               ),
 
               children: [
                 // ==================================================
                 // PROFILE
                 // ==================================================
+
                 _profileCard(scale),
 
-                SizedBox(height: 8 * scale),
+                SizedBox(
+                  height: 8 * scale,
+                ),
 
                 // ==================================================
                 // COMPLETE PROFILE
                 // ==================================================
-                _completeProfileCard(scale),
 
-                SizedBox(height: 3 * scale),
+                _completeProfileCard(
+                  scale,
+                ),
+
+                SizedBox(
+                  height: 10 * scale,
+                ),
 
                 // ==================================================
-                // HOUSEHOLD
+                // HOUSEHOLD HEADER
                 // ==================================================
+
                 _sectionHeader(
                   'Household',
                   scale,
-                  trailing: GestureDetector(
-                    onTap: () {
-                      _message('Household details');
-                    },
-                    child: Text(
-                      'View all  ›',
-                      style: TextStyle(
-                        color: primaryBlue,
-                        fontSize: 8 * scale,
-                        fontWeight: FontWeight.w600,
-                      ),
+                  trailing:
+                      GestureDetector(
+                    onTap:
+                        _viewAllHousehold,
+                    child: Row(
+                      mainAxisSize:
+                          MainAxisSize.min,
+                      children: [
+                        Text(
+                          'View all',
+                          style:
+                              TextStyle(
+                            color:
+                                primaryBlue,
+                            fontSize:
+                                10.5 *
+                                    scale,
+                            fontWeight:
+                                FontWeight
+                                    .w600,
+                          ),
+                        ),
+                        Icon(
+                          Icons
+                              .chevron_right,
+                          color:
+                              primaryBlue,
+                          size:
+                              17 * scale,
+                        ),
+                      ],
                     ),
                   ),
                 ),
 
-                SizedBox(height: 6 * scale),
-
-                Row(
-                  children: [
-                    Expanded(
-                      child: _householdCard(
-                        icon: Icons.face_outlined,
-                        title: 'InstaHelp',
-                        subtitle: '1 Mn+ houses',
-                        rating: '4.8',
-                        showRating: true,
-                        scale: scale,
-                      ),
-                    ),
-
-                    SizedBox(width: 6 * scale),
-
-                    Expanded(
-                      child: _householdCard(
-                        icon: Icons.person_outline,
-                        title: 'Family',
-                        subtitle: '$familyCount member',
-                        showAdd: true,
-                        scale: scale,
-                        onAdd: () {
-                          _addHousehold('Family');
-                        },
-                      ),
-                    ),
-                  ],
+                SizedBox(
+                  height: 7 * scale,
                 ),
-
-                SizedBox(height: 3 * scale),
-
-                Row(
-                  children: [
-                    Expanded(
-                      child: _householdCard(
-                        icon: Icons.person_add_alt_1_outlined,
-                        title: 'Daily Help',
-                        subtitle: dailyHelpCount == 0
-                            ? 'Add helper'
-                            : '$dailyHelpCount added',
-                        showAdd: true,
-                        scale: scale,
-                        onAdd: () {
-                          _addHousehold('Daily Help');
-                        },
-                      ),
-                    ),
-
-                    SizedBox(width: 6 * scale),
-
-                    Expanded(
-                      child: _householdCard(
-                        icon: Icons.directions_car_outlined,
-                        title: 'Vehicles',
-                        subtitle: vehicleCount == 0
-                            ? 'Add vehicle'
-                            : '$vehicleCount added',
-                        showAdd: true,
-                        scale: scale,
-                        onAdd: () {
-                          _addHousehold('Vehicles');
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-
-                SizedBox(height: 3 * scale),
-
-                Row(
-                  children: [
-                    Expanded(
-                      child: _householdCard(
-                        icon: Icons.pets_outlined,
-                        title: 'Pets',
-                        subtitle: petCount == 0 ? 'Add pet' : '$petCount added',
-                        showAdd: true,
-                        scale: scale,
-                        onAdd: () {
-                          _addHousehold('Pets');
-                        },
-                      ),
-                    ),
-
-                    const Expanded(child: SizedBox()),
-                  ],
-                ),
-
-                SizedBox(height: 10 * scale),
 
                 // ==================================================
-                // ADDRESS
+                // HOUSEHOLD ROW 1
                 // ==================================================
+
+                Row(
+                  crossAxisAlignment:
+                      CrossAxisAlignment
+                          .start,
+                  children: [
+                    Expanded(
+                      child:
+                          _householdCard(
+                        imagePath:
+                            instaHelp,
+                        title:
+                            'InstaHelp',
+                        subtitle:
+                            '1 Mn+ houses',
+                        rating:
+                            '4.8',
+                        showRating:
+                            true,
+                        scale:
+                            scale,
+                        onTap: () {
+                          _message(
+                            'InstaHelp selected',
+                          );
+                        },
+                      ),
+                    ),
+
+                    SizedBox(
+                      width:
+                          8 * scale,
+                    ),
+
+                    Expanded(
+                      child:
+                          _householdCard(
+                        imagePath:
+                            family,
+                        title:
+                            'Family',
+                        subtitle:
+                            familyCount ==
+                                    1
+                                ? '1 member'
+                                : '$familyCount members',
+                        showAdd:
+                            true,
+                        scale:
+                            scale,
+                        onAdd:
+                            _addFamily,
+                        onTap:
+                            _addFamily,
+                      ),
+                    ),
+                  ],
+                ),
+
+                SizedBox(
+                  height: 7 * scale,
+                ),
+
+                // ==================================================
+                // HOUSEHOLD ROW 2
+                // ==================================================
+
+                Row(
+                  crossAxisAlignment:
+                      CrossAxisAlignment
+                          .start,
+                  children: [
+                    Expanded(
+                      child:
+                          _householdCard(
+                        imagePath:
+                            dailyHelp,
+                        title:
+                            'Daily Help',
+                        subtitle:
+                            dailyHelpCount ==
+                                    0
+                                ? 'Add helper'
+                                : '$dailyHelpCount added',
+                        showAdd:
+                            true,
+                        scale:
+                            scale,
+                        onAdd:
+                            _addDailyHelp,
+                        onTap:
+                            _addDailyHelp,
+                      ),
+                    ),
+
+                    SizedBox(
+                      width:
+                          8 * scale,
+                    ),
+
+                    Expanded(
+                      child:
+                          _householdCard(
+                        imagePath:
+                            vehicles,
+                        title:
+                            'Vehicles',
+                        subtitle:
+                            vehicleCount ==
+                                    0
+                                ? 'Add vehicle'
+                                : '$vehicleCount added',
+                        showAdd:
+                            true,
+                        scale:
+                            scale,
+                        onAdd:
+                            _addVehicle,
+                        onTap:
+                            _addVehicle,
+                      ),
+                    ),
+                  ],
+                ),
+
+                SizedBox(
+                  height: 7 * scale,
+                ),
+
+                // ==================================================
+                // PETS
+                // ==================================================
+
+                Row(
+                  children: [
+                    SizedBox(
+                      width:
+                          (constraints.maxWidth -
+                                  28 *
+                                      scale) /
+                              2,
+                      child:
+                          _householdCard(
+                        imagePath:
+                            pets,
+                        title:
+                            'Pets',
+                        subtitle:
+                            petCount == 0
+                                ? 'Add pet'
+                                : '$petCount added',
+                        showAdd:
+                            true,
+                        scale:
+                            scale,
+                        onAdd:
+                            _addPet,
+                        onTap:
+                            _addPet,
+                      ),
+                    ),
+                  ],
+                ),
+
+                SizedBox(
+                  height: 10 * scale,
+                ),
+
+                // ==================================================
+                // MY ADDRESS
+                // ==================================================
+
                 _addressCard(scale),
 
-                SizedBox(height: 9 * scale),
+                SizedBox(
+                  height: 9 * scale,
+                ),
 
                 // ==================================================
-                // NOTIFICATION
+                // NOTIFICATION BANNER
                 // ==================================================
-                _notificationBanner(scale),
 
-                SizedBox(height: 10 * scale),
+                _notificationBanner(
+                  scale,
+                ),
+
+                SizedBox(
+                  height: 10 * scale,
+                ),
 
                 // ==================================================
                 // SECURITY & NOTIFICATIONS
                 // ==================================================
-                _sectionHeader('Security & Notifications', scale),
 
-                SizedBox(height: 5 * scale),
+                _sectionHeader(
+                  'Security & Notifications',
+                  scale,
+                ),
 
-                _settingCard(
-                  icon: Icons.notifications_none,
-                  title: 'Notification Preferences',
-                  subtitle: 'Manage what alerts you receive',
-                  scale: scale,
-                  onTap: _notificationPreferences,
+                SizedBox(
+                  height: 7 * scale,
                 ),
 
                 _settingCard(
-                  icon: Icons.shield_outlined,
-                  title: 'Security Alert List',
-                  subtitle: 'View and manage security alerts',
-                  scale: scale,
-                  onTap: _securityAlerts,
+                  assetPath:
+                      notifications,
+                  title:
+                      'Notification Preferences',
+                  subtitle:
+                      'Manage what alerts you receive',
+                  scale:
+                      scale,
+                  onTap:
+                      _notificationPreferences,
                 ),
 
                 _settingCard(
-                  icon: Icons.article_outlined,
-                  title: 'Feed Settings',
-                  subtitle: 'Customize your community feed',
-                  scale: scale,
-                  onTap: _feedSettings,
+                  assetPath:
+                      security,
+                  title:
+                      'Security Alert List',
+                  subtitle:
+                      'View and manage security alerts',
+                  scale:
+                      scale,
+                  onTap:
+                      _securityAlerts,
                 ),
 
-                SizedBox(height: 7 * scale),
+                _settingCard(
+                  assetPath:
+                      feed,
+                  title:
+                      'Feed Settings',
+                  subtitle:
+                      'Customize your community feed',
+                  scale:
+                      scale,
+                  onTap:
+                      _feedSettings,
+                ),
+
+                SizedBox(
+                  height: 8 * scale,
+                ),
 
                 // ==================================================
                 // PURCHASES
                 // ==================================================
-                _sectionHeader('Purchases', scale),
 
-                SizedBox(height: 5 * scale),
+                _sectionHeader(
+                  'Purchases',
+                  scale,
+                ),
 
-                _settingCard(
-                  icon: Icons.shopping_bag_outlined,
-                  title: 'My Orders',
-                  subtitle: 'Track your purchases',
-                  scale: scale,
-                  onTap: _myOrders,
+                SizedBox(
+                  height: 7 * scale,
                 ),
 
                 _settingCard(
-                  icon: Icons.credit_card_outlined,
-                  title: 'My Plans',
-                  subtitle: 'Ad-Supported Active',
-                  badge: selectedPlan,
-                  scale: scale,
-                  onTap: _myPlans,
+                  assetPath:
+                      orders,
+                  title:
+                      'My Orders',
+                  subtitle:
+                      'Track your purchases',
+                  scale:
+                      scale,
+                  onTap:
+                      _myOrders,
                 ),
 
-                SizedBox(height: 7 * scale),
+                _settingCard(
+                  assetPath:
+                      plans,
+                  title:
+                      'My Plans',
+                  subtitle:
+                      '$selectedPlan Active',
+                  badge:
+                      selectedPlan,
+                  scale:
+                      scale,
+                  onTap:
+                      _myPlans,
+                ),
+
+                SizedBox(
+                  height: 8 * scale,
+                ),
 
                 // ==================================================
                 // MANAGE FLATS
                 // ==================================================
-                _sectionHeader('Manage Flats', scale),
 
-                SizedBox(height: 5 * scale),
-
-                ...properties.map((property) {
-                  return _settingCard(
-                    icon: Icons.home_outlined,
-                    title: property['name'] as String,
-                    badge: property['active'] == true ? 'Active' : null,
-                    badgeColor: Colors.green,
-                    scale: scale,
-                    onTap: () {
-                      setState(() {
-                        for (final item in properties) {
-                          item['active'] = false;
-                        }
-
-                        property['active'] = true;
-                      });
-
-                      _message('${property['name']} selected');
-                    },
-                  );
-                }),
-
-                _settingCard(
-                  icon: Icons.add_business_outlined,
-                  title: 'Add Flat/Villa/Office',
-                  subtitle: 'Link another property',
-                  scale: scale,
-                  onTap: _addProperty,
+                _sectionHeader(
+                  'Manage Flats',
+                  scale,
                 ),
 
-                SizedBox(height: 7 * scale),
-
-                // ==================================================
-                // GENERAL SETTINGS
-                // ==================================================
-                _sectionHeader('GENERAL SETTINGS', scale),
-
-                SizedBox(height: 5 * scale),
-
-                _settingCard(
-                  icon: Icons.help_outline,
-                  title: 'Support & Feedback',
-                  subtitle: 'Get help or share your thoughts',
-                  scale: scale,
-                  onTap: _openHelpSupport,
+                SizedBox(
+                  height: 7 * scale,
                 ),
 
-                _settingCard(
-                  icon: Icons.send_outlined,
-                  title: 'Tell a friend about mygate',
-                  subtitle: 'Invite your neighbours',
-                  scale: scale,
-                  onTap: () {
-                    _message('Share option opened');
-                  },
-                ),
-
-                _settingCard(
-                  icon: Icons.person_outline,
-                  title: 'Account Information',
-                  subtitle: 'Manage your personal details',
-                  scale: scale,
-                  onTap: _openProfile,
-                ),
-
-                Consumer<ThemeModeProvider>(
-                  builder: (context, themeModeProvider, _) {
+                ...properties.map(
+                  (property) {
                     return _settingCard(
-                      icon: Icons.brightness_6_outlined,
-                      title: 'Theme',
-                      subtitle: 'Choose light, dark, or match your device',
-                      badge: _themeModeLabel(themeModeProvider.themeMode),
-                      scale: scale,
-                      onTap: _chooseTheme,
+                      assetPath:
+                          home,
+                      title:
+                          property[
+                              'name'] as String,
+                      badge:
+                          property[
+                                      'active'] ==
+                                  true
+                              ? 'Active'
+                              : null,
+                      badgeColor:
+                          Colors.green,
+                      scale:
+                          scale,
+                      onTap: () {
+                        _selectProperty(
+                          property,
+                        );
+                      },
                     );
                   },
                 ),
 
                 _settingCard(
-                  icon: Icons.logout,
-                  title: 'Logout',
-                  subtitle: 'Sign-out of your account',
-                  iconColor: Colors.red,
-                  titleColor: Colors.red,
-                  scale: scale,
-                  onTap: _logout,
+                  assetPath:
+                      addVilla,
+                  title:
+                      'Add Flat/Villa/Office',
+                  subtitle:
+                      'Link another property',
+                  scale:
+                      scale,
+                  onTap:
+                      _addProperty,
                 ),
 
-                SizedBox(height: 10 * scale),
+                SizedBox(
+                  height: 8 * scale,
+                ),
+
+                // ==================================================
+                // GENERAL SETTINGS
+                // ==================================================
+
+                _sectionHeader(
+                  'GENERAL SETTINGS',
+                  scale,
+                ),
+
+                SizedBox(
+                  height: 7 * scale,
+                ),
+
+                _settingCard(
+                  assetPath:
+                      support,
+                  title:
+                      'Support & Feedback',
+                  subtitle:
+                      'Get help or share your thoughts',
+                  scale:
+                      scale,
+                  onTap:
+                      _openHelpSupport,
+                ),
+
+                _settingCard(
+                  assetPath:
+                      send,
+                  title:
+                      'Tell a friend about Nivaas',
+                  subtitle:
+                      'Invite your neighbours',
+                  scale:
+                      scale,
+                  onTap:
+                      _tellFriend,
+                ),
+
+                _settingCard(
+                  assetPath:
+                      user,
+                  title:
+                      'Account Information',
+                  subtitle:
+                      'Manage your personal details',
+                  scale:
+                      scale,
+                  onTap:
+                      _openProfile,
+                ),
+
+                _settingCard(
+                  assetPath:
+                      logout,
+                  title:
+                      'Logout',
+                  subtitle:
+                      'Sign out of your account',
+                  titleColor:
+                      Colors.red,
+                  scale:
+                      scale,
+                  onTap:
+                      _logout,
+                ),
+
+                SizedBox(
+                  height: 12 * scale,
+                ),
               ],
             );
           },
@@ -1076,69 +2057,103 @@ class _SettingsScreenState extends State<SettingsScreen> {
   // PROFILE CARD
   // ============================================================
 
-  Widget _profileCard(double scale) {
+  Widget _profileCard(
+    double scale,
+  ) {
     return _card(
-      height: 59 * scale,
-      radius: 10 * scale,
+      height: 72 * scale,
+      radius: 11 * scale,
       child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 8 * scale),
+        padding:
+            EdgeInsets.symmetric(
+          horizontal: 11 * scale,
+        ),
         child: Row(
           children: [
+            // PROFILE LETTER
             Container(
-              width: 42 * scale,
-              height: 42 * scale,
-              decoration: const BoxDecoration(
-                color: Color(0xFFFFA000),
+              width: 46 * scale,
+              height: 46 * scale,
+              decoration:
+                  const BoxDecoration(
+                color:
+                    Color(0xFFFFA000),
                 shape: BoxShape.circle,
               ),
-              alignment: Alignment.center,
+              alignment:
+                  Alignment.center,
               child: Text(
-                'U',
+                'A',
                 style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 16 * scale,
-                  fontWeight: FontWeight.w500,
+                  fontSize:
+                      18 * scale,
+                  color:
+                      Colors.black,
+                  fontWeight:
+                      FontWeight.w500,
                 ),
               ),
             ),
 
-            SizedBox(width: 9 * scale),
+            SizedBox(
+              width: 11 * scale,
+            ),
 
+            // USER DETAILS
             Expanded(
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment:
+                    MainAxisAlignment
+                        .center,
+                crossAxisAlignment:
+                    CrossAxisAlignment
+                        .start,
                 children: [
                   Text(
                     'User Name',
                     style: TextStyle(
-                      color: darkText,
-                      fontSize: 12 * scale,
-                      fontWeight: FontWeight.w700,
+                      fontSize:
+                          15 * scale,
+                      fontWeight:
+                          FontWeight.w700,
+                      color:
+                          darkText,
                     ),
                   ),
 
-                  SizedBox(height: 2 * scale),
+                  SizedBox(
+                    height: 4 * scale,
+                  ),
 
                   Text(
                     'Nivaas Hub ID : 00000',
-                    style: TextStyle(color: greyText, fontSize: 7.5 * scale),
+                    style: TextStyle(
+                      fontSize:
+                          10 * scale,
+                      color:
+                          greyText,
+                    ),
                   ),
                 ],
               ),
             ),
 
-            Container(
-              width: 31 * scale,
-              height: 31 * scale,
-              decoration: BoxDecoration(
-                color: lightBlue,
-                borderRadius: BorderRadius.circular(8 * scale),
-              ),
-              child: Icon(
-                Icons.qr_code_2,
-                color: primaryBlue,
-                size: 18 * scale,
+            // ==================================================
+            // SCANNER
+            //
+            // DIRECT IMAGE.
+            // NO EXTRA CARD.
+            // ==================================================
+
+            GestureDetector(
+              onTap:
+                  _openScanner,
+              child: Image.asset(
+                scanner,
+                width: 35 * scale,
+                height: 35 * scale,
+                fit:
+                    BoxFit.contain,
               ),
             ),
           ],
@@ -1151,65 +2166,96 @@ class _SettingsScreenState extends State<SettingsScreen> {
   // COMPLETE PROFILE
   // ============================================================
 
-  Widget _completeProfileCard(double scale) {
+  Widget _completeProfileCard(
+    double scale,
+  ) {
     return _card(
-      height: 44 * scale,
+      height: 52 * scale,
       radius: 10 * scale,
       child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 8 * scale),
+        padding:
+            EdgeInsets.symmetric(
+          horizontal: 9 * scale,
+        ),
         child: Row(
           children: [
             Container(
-              width: 27 * scale,
-              height: 27 * scale,
-              decoration: BoxDecoration(
-                color: _isDark
-                    ? AppColors.settingsProfileBadgeBgDark
-                    : AppColors.settingsProfileBadgeBgLight,
-                shape: BoxShape.circle,
+              width: 31 * scale,
+              height: 31 * scale,
+              decoration:
+                  const BoxDecoration(
+                color:
+                    Color(0xFFFFEEF0),
+                shape:
+                    BoxShape.circle,
               ),
-              alignment: Alignment.center,
+              alignment:
+                  Alignment.center,
               child: Text(
                 '0%',
                 style: TextStyle(
-                  color: _isDark ? AppColors.noticesDangerTextDark : Colors.red,
-                  fontSize: 7 * scale,
-                  fontWeight: FontWeight.w700,
+                  color:
+                      Colors.red,
+                  fontSize:
+                      8.5 * scale,
+                  fontWeight:
+                      FontWeight.w700,
                 ),
               ),
             ),
 
-            SizedBox(width: 8 * scale),
+            SizedBox(
+              width: 9 * scale,
+            ),
 
             Expanded(
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment:
+                    MainAxisAlignment
+                        .center,
+                crossAxisAlignment:
+                    CrossAxisAlignment
+                        .start,
                 children: [
                   Text(
                     'Complete your profile',
                     style: TextStyle(
-                      fontSize: 9 * scale,
-                      fontWeight: FontWeight.w700,
+                      fontSize:
+                          12 * scale,
+                      fontWeight:
+                          FontWeight.w700,
                     ),
+                  ),
+
+                  SizedBox(
+                    height: 3 * scale,
                   ),
 
                   Text(
                     'Let neighbours discover you!',
-                    style: TextStyle(fontSize: 7 * scale, color: greyText),
+                    style: TextStyle(
+                      fontSize:
+                          9 * scale,
+                      color:
+                          greyText,
+                    ),
                   ),
                 ],
               ),
             ),
 
             GestureDetector(
-              onTap: _openProfile,
+              onTap:
+                  _openProfile,
               child: Text(
                 'View Profile',
                 style: TextStyle(
-                  color: primaryBlue,
-                  fontSize: 8 * scale,
-                  fontWeight: FontWeight.w700,
+                  color:
+                      primaryBlue,
+                  fontSize:
+                      9.5 * scale,
+                  fontWeight:
+                      FontWeight.w700,
                 ),
               ),
             ),
@@ -1220,48 +2266,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   // ============================================================
-  // SECTION HEADER
-  // ============================================================
-
-  Widget _sectionHeader(String title, double scale, {Widget? trailing}) {
-    return SizedBox(
-      height: 17 * scale,
-      child: Row(
-        children: [
-          Container(
-            width: 3 * scale,
-            height: 13 * scale,
-            decoration: BoxDecoration(
-              color: primaryBlue,
-              borderRadius: BorderRadius.circular(2),
-            ),
-          ),
-
-          SizedBox(width: 5 * scale),
-
-          Expanded(
-            child: Text(
-              title,
-              style: TextStyle(
-                color: darkText,
-                fontSize: 10 * scale,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-          ),
-
-          ?trailing,
-        ],
-      ),
-    );
-  }
-
-  // ============================================================
   // HOUSEHOLD CARD
+  //
+  // IMPORTANT:
+  // ONE WHITE CARD ONLY.
+  //
+  // LOGO IS DIRECTLY INSIDE.
+  // NO EXTRA ICON CARD.
   // ============================================================
 
   Widget _householdCard({
-    required IconData icon,
+    required String imagePath,
     required String title,
     required String subtitle,
     required double scale,
@@ -1269,107 +2284,254 @@ class _SettingsScreenState extends State<SettingsScreen> {
     bool showRating = false,
     bool showAdd = false,
     VoidCallback? onAdd,
+    VoidCallback? onTap,
   }) {
-    return _card(
-      height: 64 * scale,
-      radius: 9 * scale,
-      child: Padding(
-        padding: EdgeInsets.fromLTRB(
-          7 * scale,
-          6 * scale,
-          6 * scale,
-          6 * scale,
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius:
+            BorderRadius.circular(
+          10 * scale,
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Container(
-                  width: 26 * scale,
-                  height: 26 * scale,
-                  decoration: BoxDecoration(
-                    color: lightBlue,
-                    borderRadius: BorderRadius.circular(7 * scale),
-                  ),
-                  child: Icon(icon, color: primaryBlue, size: 14 * scale),
+        child: Container(
+          // ==================================================
+          // INCREASED HEIGHT
+          // ==================================================
+
+          height: 82 * scale,
+
+          padding:
+              EdgeInsets.fromLTRB(
+            8 * scale,
+            6 * scale,
+            7 * scale,
+            6 * scale,
+          ),
+
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius:
+                BorderRadius.circular(
+              10 * scale,
+            ),
+            border: Border.all(
+              color:
+                  borderColor,
+              width: 0.5,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black
+                    .withValues(
+                  alpha: 0.08,
                 ),
-
-                const Spacer(),
-
-                if (showRating)
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.star,
-                        color: const Color(0xFFFF9800),
-                        size: 9 * scale,
-                      ),
-
-                      SizedBox(width: 1 * scale),
-
-                      Text(
-                        rating ?? '',
-                        style: TextStyle(
-                          fontSize: 7 * scale,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ],
-                  ),
-
-                if (showAdd)
-                  GestureDetector(
-                    onTap: onAdd,
-                    child: Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 5 * scale,
-                        vertical: 2 * scale,
-                      ),
-                      decoration: BoxDecoration(
-                        color: _isDark ? AppColors.surfaceDark : Colors.white,
-                        borderRadius: BorderRadius.circular(5 * scale),
-                        border: Border.all(
-                          color: _isDark
-                              ? AppColors.settingsAddBorderDark
-                              : AppColors.settingsAddBorderLight,
-                        ),
-                      ),
-                      child: Text(
-                        '+ Add',
-                        style: TextStyle(
-                          color: primaryBlue,
-                          fontSize: 6.5 * scale,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ),
-              ],
-            ),
-
-            const Spacer(),
-
-            Text(
-              title,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                color: darkText,
-                fontSize: 9 * scale,
-                fontWeight: FontWeight.w700,
+                blurRadius: 3,
+                offset:
+                    const Offset(
+                  0,
+                  2,
+                ),
               ),
-            ),
+            ],
+          ),
 
-            SizedBox(height: 1 * scale),
+          child: Column(
+            crossAxisAlignment:
+                CrossAxisAlignment
+                    .start,
+            children: [
+              // ==================================================
+              // TOP ROW
+              // ==================================================
 
-            Text(
-              subtitle,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(color: greyText, fontSize: 7 * scale),
-            ),
-          ],
+              SizedBox(
+                height: 32 * scale,
+                child: Row(
+                  crossAxisAlignment:
+                      CrossAxisAlignment
+                          .start,
+                  children: [
+                    // DIRECT LOGO
+                    Image.asset(
+                      imagePath,
+                      width:
+                          32 * scale,
+                      height:
+                          32 * scale,
+                      fit:
+                          BoxFit.contain,
+                    ),
+
+                    const Spacer(),
+
+                    // ==================================================
+                    // RATING
+                    // ==================================================
+
+                    if (showRating)
+                      Padding(
+                        padding:
+                            EdgeInsets.only(
+                          top:
+                              3 * scale,
+                          right:
+                              3 * scale,
+                        ),
+                        child: Row(
+                          mainAxisSize:
+                              MainAxisSize
+                                  .min,
+                          children: [
+                            Icon(
+                              Icons.star,
+                              color:
+                                  const Color(
+                                0xFFFF9800,
+                              ),
+                              size:
+                                  11 * scale,
+                            ),
+
+                            SizedBox(
+                              width:
+                                  2 * scale,
+                            ),
+
+                            Text(
+                              rating ??
+                                  '',
+                              style:
+                                  TextStyle(
+                                fontSize:
+                                    9 *
+                                        scale,
+                                fontWeight:
+                                    FontWeight
+                                        .w700,
+                                color:
+                                    darkText,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                    // ==================================================
+                    // ADD BUTTON
+                    // ==================================================
+
+                    if (showAdd)
+                      GestureDetector(
+                        onTap:
+                            onAdd,
+                        child:
+                            Container(
+                          height:
+                              20 * scale,
+                          padding:
+                              EdgeInsets.symmetric(
+                            horizontal:
+                                5 * scale,
+                          ),
+                          alignment:
+                              Alignment
+                                  .center,
+                          decoration:
+                              BoxDecoration(
+                            color:
+                                Colors.white,
+                            borderRadius:
+                                BorderRadius
+                                    .circular(
+                              5 * scale,
+                            ),
+                            border:
+                                Border.all(
+                              color:
+                                  const Color(
+                                0xFFD9DEE3,
+                              ),
+                              width:
+                                  0.7,
+                            ),
+                          ),
+                          child:
+                              Text(
+                            '+ Add',
+                            style:
+                                TextStyle(
+                              color:
+                                  primaryBlue,
+                              fontSize:
+                                  8.5 *
+                                      scale,
+                              fontWeight:
+                                  FontWeight
+                                      .w600,
+                              height:
+                                  1,
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+
+              SizedBox(
+                height: 3 * scale,
+              ),
+
+              // ==================================================
+              // TITLE
+              // ==================================================
+
+              Text(
+                title,
+                maxLines: 1,
+                overflow:
+                    TextOverflow
+                        .ellipsis,
+                style: TextStyle(
+                  color:
+                      darkText,
+                  fontSize:
+                      12.5 * scale,
+                  fontWeight:
+                      FontWeight
+                          .w700,
+                  height: 1,
+                ),
+              ),
+
+              SizedBox(
+                height: 3 * scale,
+              ),
+
+              // ==================================================
+              // SUBTITLE
+              // ==================================================
+
+              Text(
+                subtitle,
+                maxLines: 1,
+                overflow:
+                    TextOverflow
+                        .ellipsis,
+                style: TextStyle(
+                  color:
+                      greyText,
+                  fontSize:
+                      9 * scale,
+                  fontWeight:
+                      FontWeight
+                          .w400,
+                  height: 1,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -1379,40 +2541,89 @@ class _SettingsScreenState extends State<SettingsScreen> {
   // ADDRESS CARD
   // ============================================================
 
-  Widget _addressCard(double scale) {
+  Widget _addressCard(
+    double scale,
+  ) {
     return _card(
-      height: 54 * scale,
+      height: 62 * scale,
       radius: 10 * scale,
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 9 * scale),
-        child: Row(
-          children: [
-            Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'My Address',
-                    style: TextStyle(
-                      color: darkText,
-                      fontSize: 9 * scale,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-
-                  SizedBox(height: 2 * scale),
-
-                  Text(
-                    'Address Details',
-                    style: TextStyle(color: greyText, fontSize: 7 * scale),
-                  ),
-                ],
-              ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap:
+              _openAddress,
+          borderRadius:
+              BorderRadius.circular(
+            10 * scale,
+          ),
+          child: Padding(
+            padding:
+                EdgeInsets.symmetric(
+              horizontal:
+                  11 * scale,
             ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment:
+                        MainAxisAlignment
+                            .center,
+                    crossAxisAlignment:
+                        CrossAxisAlignment
+                            .start,
+                    children: [
+                      Text(
+                        'My Address',
+                        style:
+                            TextStyle(
+                          fontSize:
+                              13.5 *
+                                  scale,
+                          fontWeight:
+                              FontWeight
+                                  .w700,
+                          color:
+                              darkText,
+                        ),
+                      ),
 
-            Icon(Icons.share_outlined, color: primaryBlue, size: 15 * scale),
-          ],
+                      SizedBox(
+                        height:
+                            4 * scale,
+                      ),
+
+                      Text(
+                        'Address Details',
+                        style:
+                            TextStyle(
+                          fontSize:
+                              9.5 *
+                                  scale,
+                          color:
+                              greyText,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                // ==================================================
+                // SMALL SHARE ICON
+                // ==================================================
+
+                Image.asset(
+                  shareAction,
+                  width:
+                      18 * scale,
+                  height:
+                      18 * scale,
+                  fit:
+                      BoxFit.contain,
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );
@@ -1422,20 +2633,30 @@ class _SettingsScreenState extends State<SettingsScreen> {
   // NOTIFICATION BANNER
   // ============================================================
 
-  Widget _notificationBanner(double scale) {
+  Widget _notificationBanner(
+    double scale,
+  ) {
     return Container(
-      height: 48 * scale,
-      padding: EdgeInsets.symmetric(horizontal: 8 * scale),
-      decoration: BoxDecoration(
-        color: _isDark
-            ? AppColors.settingsNotifyBgDark
-            : AppColors.settingsNotifyBgLight,
-        borderRadius: BorderRadius.circular(9 * scale),
+      height: 44 * scale,
+      padding:
+          EdgeInsets.symmetric(
+        horizontal:
+            10 * scale,
+      ),
+      decoration:
+          BoxDecoration(
+        color:
+            const Color(0xFFFFFAEE),
+        borderRadius:
+            BorderRadius.circular(
+          9 * scale,
+        ),
         border: Border.all(
-          color: _isDark
-              ? AppColors.settingsNotifyBorderDark
-              : AppColors.settingsNotifyBorderLight,
-          width: 0.8,
+          color:
+              const Color(
+            0xFFFFD477,
+          ),
+          width: 0.7,
         ),
       ),
       child: Row(
@@ -1443,35 +2664,63 @@ class _SettingsScreenState extends State<SettingsScreen> {
           Expanded(
             child: Text(
               'Not Getting Notifications?',
-              style: TextStyle(
-                color: _isDark
-                    ? AppColors.settingsNotifyTextDark
-                    : AppColors.settingsNotifyTextLight,
-                fontSize: 7 * scale,
-                fontWeight: FontWeight.w500,
+              style:
+                  TextStyle(
+                color:
+                    const Color(
+                  0xFFFF8A00,
+                ),
+                fontSize:
+                    9.5 * scale,
+                fontWeight:
+                    FontWeight.w500,
               ),
             ),
           ),
 
           SizedBox(
-            height: 26 * scale,
-            child: ElevatedButton(
-              onPressed: _testNotification,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFFF8A00),
-                foregroundColor: Colors.white,
+            height:
+                28 * scale,
+            child:
+                ElevatedButton(
+              onPressed:
+                  _testNotification,
+              style:
+                  ElevatedButton
+                      .styleFrom(
+                backgroundColor:
+                    const Color(
+                  0xFFFF8A00,
+                ),
+                foregroundColor:
+                    Colors.white,
                 elevation: 0,
-                padding: EdgeInsets.symmetric(horizontal: 10 * scale),
-                minimumSize: Size.zero,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(6 * scale),
+                padding:
+                    EdgeInsets.symmetric(
+                  horizontal:
+                      10 * scale,
+                ),
+                minimumSize:
+                    Size.zero,
+                shape:
+                    RoundedRectangleBorder(
+                  borderRadius:
+                      BorderRadius
+                          .circular(
+                    7 * scale,
+                  ),
                 ),
               ),
-              child: Text(
+              child:
+                  Text(
                 'Test Now',
-                style: TextStyle(
-                  fontSize: 7 * scale,
-                  fontWeight: FontWeight.w700,
+                style:
+                    TextStyle(
+                  fontSize:
+                      8.5 * scale,
+                  fontWeight:
+                      FontWeight
+                          .w700,
                 ),
               ),
             ),
@@ -1483,98 +2732,150 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   // ============================================================
   // SETTINGS CARD
+  //
+  // ONE WHITE CARD.
+  // DIRECT PNG.
+  // NO EXTRA ICON CARD.
   // ============================================================
 
   Widget _settingCard({
-    required IconData icon,
+    required String assetPath,
     required String title,
     String? subtitle,
     String? badge,
     Color? badgeColor,
-    Color? iconColor,
     Color? titleColor,
     required double scale,
     required VoidCallback onTap,
   }) {
-    final bool hasSubtitle = subtitle != null && subtitle.isNotEmpty;
-
     return Container(
-      height: (hasSubtitle ? 52 : 48) * scale,
-      margin: EdgeInsets.only(bottom: 6 * scale),
-      decoration: BoxDecoration(
-        color: _isDark ? AppColors.surfaceDark : Colors.white,
-        borderRadius: BorderRadius.circular(9 * scale),
-        border: Border.all(color: borderColor, width: 0.5),
+      height:
+          59 * scale,
+      margin:
+          EdgeInsets.only(
+        bottom:
+            7 * scale,
+      ),
+      decoration:
+          BoxDecoration(
+        color:
+            Colors.white,
+        borderRadius:
+            BorderRadius.circular(
+          10 * scale,
+        ),
+        border: Border.all(
+          color:
+              borderColor,
+          width: 0.5,
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: _isDark ? 0.4 : 0.08),
+            color: Colors.black
+                .withValues(
+              alpha: 0.07,
+            ),
             blurRadius: 3,
-            offset: const Offset(0, 2),
+            offset:
+                const Offset(
+              0,
+              2,
+            ),
           ),
         ],
       ),
       child: Material(
-        color: Colors.transparent,
+        color:
+            Colors.transparent,
         child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(9 * scale),
+          onTap:
+              onTap,
+          borderRadius:
+              BorderRadius.circular(
+            10 * scale,
+          ),
           child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 7 * scale),
+            padding:
+                EdgeInsets.symmetric(
+              horizontal:
+                  10 * scale,
+            ),
             child: Row(
               children: [
-                Container(
-                  width: 29 * scale,
-                  height: 29 * scale,
-                  decoration: BoxDecoration(
-                    color: iconColor == Colors.red
-                        ? (_isDark
-                              ? AppColors.settingsDangerIconBgDark
-                              : AppColors.settingsDangerIconBgLight)
-                        : lightBlue,
-                    borderRadius: BorderRadius.circular(7 * scale),
-                  ),
-                  child: Icon(
-                    icon,
-                    color: iconColor == Colors.red
-                        ? (_isDark
-                              ? AppColors.noticesDangerTextDark
-                              : Colors.red)
-                        : (iconColor ?? primaryBlue),
-                    size: 15 * scale,
-                  ),
+                // DIRECT IMAGE
+                Image.asset(
+                  assetPath,
+                  width:
+                      30 * scale,
+                  height:
+                      30 * scale,
+                  fit:
+                      BoxFit.contain,
                 ),
 
-                SizedBox(width: 8 * scale),
+                SizedBox(
+                  width:
+                      11 * scale,
+                ),
 
+                // TEXT
                 Expanded(
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment:
+                        MainAxisAlignment
+                            .center,
+                    crossAxisAlignment:
+                        CrossAxisAlignment
+                            .start,
                     children: [
                       Text(
                         title,
                         maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          color: titleColor == Colors.red
-                              ? (_isDark
-                                    ? AppColors.noticesDangerTextDark
-                                    : Colors.red)
-                              : (titleColor ?? darkText),
-                          fontSize: 9.5 * scale,
-                          fontWeight: FontWeight.w600,
+                        overflow:
+                            TextOverflow
+                                .ellipsis,
+                        style:
+                            TextStyle(
+                          color:
+                              titleColor ??
+                                  darkText,
+                          fontSize:
+                              14 *
+                                  scale,
+                          fontWeight:
+                              FontWeight
+                                  .w600,
+                          height:
+                              1.05,
                         ),
                       ),
 
-                      if (hasSubtitle) ...[
-                        SizedBox(height: 2 * scale),
+                      if (subtitle !=
+                          null) ...[
+                        SizedBox(
+                          height:
+                              3 * scale,
+                        ),
+
                         Text(
                           subtitle,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            color: greyText,
-                            fontSize: 7 * scale,
+                          maxLines:
+                              1,
+                          overflow:
+                              TextOverflow
+                                  .ellipsis,
+                          style:
+                              TextStyle(
+                            color:
+                                greyText,
+                            fontSize:
+                                9.5 *
+                                    scale,
+                            fontWeight:
+                                FontWeight
+                                    .w400,
+                            height:
+                                1.05,
                           ),
                         ),
                       ],
@@ -1582,40 +2883,132 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ),
                 ),
 
-                if (badge != null)
+                // BADGE
+                if (badge !=
+                    null)
                   Container(
-                    margin: EdgeInsets.only(right: 5 * scale),
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 5 * scale,
-                      vertical: 2 * scale,
+                    margin:
+                        EdgeInsets.only(
+                      right:
+                          6 * scale,
                     ),
-                    decoration: BoxDecoration(
-                      color: (badgeColor ?? primaryBlue).withValues(
-                        alpha: 0.10,
+                    padding:
+                        EdgeInsets.symmetric(
+                      horizontal:
+                          6 * scale,
+                      vertical:
+                          3 * scale,
+                    ),
+                    decoration:
+                        BoxDecoration(
+                      color:
+                          (badgeColor ??
+                                  primaryBlue)
+                              .withValues(
+                        alpha:
+                            0.10,
                       ),
-                      borderRadius: BorderRadius.circular(5 * scale),
+                      borderRadius:
+                          BorderRadius
+                              .circular(
+                        7 * scale,
+                      ),
                     ),
-                    child: Text(
+                    child:
+                        Text(
                       badge,
-                      style: TextStyle(
-                        color: badgeColor ?? primaryBlue,
-                        fontSize: 6 * scale,
-                        fontWeight: FontWeight.w700,
+                      style:
+                          TextStyle(
+                        color:
+                            badgeColor ??
+                                primaryBlue,
+                        fontSize:
+                            7.5 *
+                                scale,
+                        fontWeight:
+                            FontWeight
+                                .w700,
                       ),
                     ),
                   ),
 
+                // CHEVRON
                 Icon(
-                  Icons.chevron_right,
-                  color: _isDark
-                      ? AppColors.textSecondaryDark
-                      : AppColors.settingsChevronLight,
-                  size: 17 * scale,
+                  Icons
+                      .chevron_right,
+                  color:
+                      const Color(
+                    0xFF55595D,
+                  ),
+                  size:
+                      19 * scale,
                 ),
               ],
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  // ============================================================
+  // SECTION HEADER
+  // ============================================================
+
+  Widget _sectionHeader(
+    String title,
+    double scale, {
+    Widget? trailing,
+  }) {
+    return SizedBox(
+      height:
+          20 * scale,
+      child: Row(
+        children: [
+          Container(
+            width:
+                3 * scale,
+            height:
+                15 * scale,
+            decoration:
+                BoxDecoration(
+              color:
+                  primaryBlue,
+              borderRadius:
+                  BorderRadius
+                      .circular(
+                2,
+              ),
+            ),
+          ),
+
+          SizedBox(
+            width:
+                6 * scale,
+          ),
+
+          Expanded(
+            child: Text(
+              title,
+              style:
+                  TextStyle(
+                color:
+                    darkText,
+                fontSize:
+                    14 * scale,
+                fontWeight:
+                    FontWeight
+                        .w700,
+                height:
+                    1,
+              ),
+            ),
+          ),
+
+          if (trailing !=
+              null)
+            trailing,
+        ],
       ),
     );
   }
@@ -1630,20 +3023,38 @@ class _SettingsScreenState extends State<SettingsScreen> {
     required Widget child,
   }) {
     return Container(
-      height: height,
-      decoration: BoxDecoration(
-        color: _isDark ? AppColors.surfaceDark : Colors.white,
-        borderRadius: BorderRadius.circular(radius),
-        border: Border.all(color: borderColor, width: 0.5),
+      height:
+          height,
+      decoration:
+          BoxDecoration(
+        color:
+            Colors.white,
+        borderRadius:
+            BorderRadius.circular(
+          radius,
+        ),
+        border: Border.all(
+          color:
+              borderColor,
+          width: 0.5,
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: _isDark ? 0.4 : 0.08),
+            color: Colors.black
+                .withValues(
+              alpha: 0.07,
+            ),
             blurRadius: 3,
-            offset: const Offset(0, 2),
+            offset:
+                const Offset(
+              0,
+              2,
+            ),
           ),
         ],
       ),
-      child: child,
+      child:
+          child,
     );
   }
 
@@ -1655,9 +3066,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return Container(
       width: 38,
       height: 4,
-      decoration: BoxDecoration(
-        color: _isDark ? AppColors.borderDark : Colors.grey.shade300,
-        borderRadius: BorderRadius.circular(10),
+      decoration:
+          BoxDecoration(
+        color:
+            Colors.grey.shade300,
+        borderRadius:
+            BorderRadius.circular(
+          10,
+        ),
       ),
     );
   }
@@ -1666,23 +3082,176 @@ class _SettingsScreenState extends State<SettingsScreen> {
   // SHEET ITEM
   // ============================================================
 
-  Widget _sheetItem(IconData icon, String title, String subtitle) {
-    return ListTile(
-      contentPadding: EdgeInsets.zero,
-      leading: Container(
-        width: 40,
-        height: 40,
-        decoration: BoxDecoration(
-          color: lightBlue,
-          borderRadius: BorderRadius.circular(9),
-        ),
-        child: Icon(icon, color: primaryBlue, size: 20),
+  Widget _sheetItem(
+    String imagePath,
+    String title,
+    String subtitle,
+  ) {
+    return Padding(
+      padding:
+          const EdgeInsets.symmetric(
+        vertical: 5,
       ),
+      child: Row(
+        children: [
+          Image.asset(
+            imagePath,
+            width: 30,
+            height: 30,
+            fit:
+                BoxFit.contain,
+          ),
+
+          const SizedBox(
+            width: 12,
+          ),
+
+          Expanded(
+            child: Column(
+              crossAxisAlignment:
+                  CrossAxisAlignment
+                      .start,
+              children: [
+                Text(
+                  title,
+                  style:
+                      const TextStyle(
+                    fontSize:
+                        14,
+                    fontWeight:
+                        FontWeight
+                            .w600,
+                  ),
+                ),
+
+                const SizedBox(
+                  height: 2,
+                ),
+
+                Text(
+                  subtitle,
+                  style:
+                      const TextStyle(
+                    fontSize:
+                        11,
+                    color:
+                        greyText,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ============================================================
+  // SUMMARY ITEM
+  // ============================================================
+
+  Widget _summaryItem(
+    String imagePath,
+    String title,
+    String subtitle,
+  ) {
+    return Padding(
+      padding:
+          const EdgeInsets.symmetric(
+        vertical: 5,
+      ),
+      child: Row(
+        children: [
+          Image.asset(
+            imagePath,
+            width: 30,
+            height: 30,
+            fit:
+                BoxFit.contain,
+          ),
+
+          const SizedBox(
+            width: 12,
+          ),
+
+          Expanded(
+            child: Column(
+              crossAxisAlignment:
+                  CrossAxisAlignment
+                      .start,
+              children: [
+                Text(
+                  title,
+                  style:
+                      const TextStyle(
+                    fontSize:
+                        14,
+                    fontWeight:
+                        FontWeight
+                            .w600,
+                  ),
+                ),
+
+                const SizedBox(
+                  height: 2,
+                ),
+
+                Text(
+                  subtitle,
+                  style:
+                      const TextStyle(
+                    fontSize:
+                        11,
+                    color:
+                        greyText,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ============================================================
+  // SWITCH TILE
+  // ============================================================
+
+  Widget _switchTile(
+    String title,
+    String subtitle,
+    bool value,
+    ValueChanged<bool>
+        onChanged,
+  ) {
+    return SwitchListTile(
+      contentPadding:
+          EdgeInsets.zero,
       title: Text(
         title,
-        style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+        style:
+            const TextStyle(
+          fontSize: 15,
+          fontWeight:
+              FontWeight.w600,
+        ),
       ),
-      subtitle: Text(subtitle, style: TextStyle(fontSize: 11, color: greyText)),
+      subtitle: Text(
+        subtitle,
+        style:
+            const TextStyle(
+          fontSize: 12,
+          color:
+              greyText,
+        ),
+      ),
+      value:
+          value,
+      activeThumbColor:
+          primaryBlue,
+      onChanged:
+          onChanged,
     );
   }
 }

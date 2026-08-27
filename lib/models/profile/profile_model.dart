@@ -5,9 +5,15 @@ class ProfileModel {
   final String bio;
   final String work;
   final bool enableCalls;
+
   final List<String> tags;
   final List<String> interests;
+
   final AddressModel address;
+
+  // Profile and cover images
+  final String? profileImagePath;
+  final String? coverImagePath;
 
   const ProfileModel({
     this.userName = 'User Name',
@@ -17,6 +23,8 @@ class ProfileModel {
     this.tags = const ['B-402', 'Tenant'],
     this.interests = const [],
     this.address = const AddressModel(),
+    this.profileImagePath,
+    this.coverImagePath,
   });
 
   ProfileModel copyWith({
@@ -27,6 +35,8 @@ class ProfileModel {
     List<String>? tags,
     List<String>? interests,
     AddressModel? address,
+    String? profileImagePath,
+    String? coverImagePath,
   }) {
     return ProfileModel(
       userName: userName ?? this.userName,
@@ -36,6 +46,8 @@ class ProfileModel {
       tags: tags ?? this.tags,
       interests: interests ?? this.interests,
       address: address ?? this.address,
+      profileImagePath: profileImagePath ?? this.profileImagePath,
+      coverImagePath: coverImagePath ?? this.coverImagePath,
     );
   }
 }
