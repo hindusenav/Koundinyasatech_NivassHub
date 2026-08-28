@@ -45,9 +45,12 @@ class CommunityPostsSection extends StatelessWidget {
             Text(
               'Community Posts',
               style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: isDark ? AppColors.textPrimaryDark : const Color(0xFF0F172A),
+                fontFamily: 'DM Sans',
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                height: 1.0,
+                letterSpacing: 0,
+                color: isDark ? AppColors.textPrimaryDark : const Color(0xFF000000),
               ),
             ),
             InkWell(
