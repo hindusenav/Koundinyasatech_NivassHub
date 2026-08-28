@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_nivasshub/providers/profile/profile_provider.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
-
+import 'package:flutter_nivasshub/screens/profile/add_address_details_screen.dart';
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
@@ -23,11 +23,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
   // ============================================================
 
   static const Color _primaryBlue = Color(0xFF2167A5);
+
   static const Color _lightBlue = Color(0xFFEAF3FB);
-  static const Color _headerBlue = Color(0xFFD7E7F7);
+
+  // Updated to match Figma blue header
+  static const Color _headerBlue = Color(0xFFC4D9EE);
+
   static const Color _background = Color(0xFFF4F7FB);
+
   static const Color _orange = Color(0xFFE88700);
+
   static const Color _textDark = Color(0xFF263747);
+
   static const Color _textGrey = Color(0xFF6F7C89);
 
   // ============================================================
@@ -177,7 +184,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   // ============================================================
-  // USER NAME DIALOG
+  // USER NAME
   // ============================================================
 
   void _editUserName() {
@@ -202,7 +209,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   // ============================================================
-  // BIO DIALOG
+  // BIO
   // ============================================================
 
   void _editBio() {
@@ -224,7 +231,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   // ============================================================
-  // WORK DIALOG
+  // WORK
   // ============================================================
 
   void _editWork() {
@@ -245,7 +252,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   // ============================================================
-  // INTEREST DIALOG
+  // INTEREST
   // ============================================================
 
   void _addInterest() {
@@ -329,38 +336,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   // ============================================================
-  // ADDRESS
+  // SETTINGS NAVIGATION
   // ============================================================
 
-  void _openAddress() {
-    /*
-      IMPORTANT:
-
-      Connect this with your existing Add Address screen route.
-
-      Example:
-
-      Navigator.pushNamed(
-        context,
-        '/add-address',
-      );
-
-      OR if your project uses a direct screen:
-
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => const AddAddressDetailsScreen(),
-        ),
-      );
-    */
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Open your Add Address screen here'),
-      ),
+  void _openSettings() {
+    Navigator.pushNamed(
+      context,
+      '/settings',
     );
   }
+
+  // ============================================================
+  // ADD ADDRESS NAVIGATION
+  // ============================================================
+void _openAddress() {
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => const AddAddressDetailsScreen(),
+    ),
+  );
+}
 
   // ============================================================
   // SAVE PROFILE
@@ -396,122 +392,132 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.sizeOf(context).width;
 
-    // Controlled responsiveness.
-    // This prevents the design from becoming too small.
     final horizontalPadding = screenWidth < 360 ? 14.0 : 20.0;
 
     return Scaffold(
       backgroundColor: _background,
-      body: SafeArea(
-        child: Consumer<ProfileProvider>(
-          builder: (context, provider, child) {
-            return Column(
-              children: [
-                _buildHeader(),
 
-                Expanded(
-                  child: SingleChildScrollView(
-                    physics: const BouncingScrollPhysics(),
-                    padding: EdgeInsets.fromLTRB(
-                      horizontalPadding,
-                      10,
-                      horizontalPadding,
-                      24,
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // ====================================================
-                        // COVER + PROFILE IMAGE
-                        // ====================================================
+      // IMPORTANT:
+      // No outer SafeArea because header handles status bar padding.
+      body: Consumer<ProfileProvider>(
+        builder: (context, provider, child) {
+          return Column(
+            children: [
+              // ==================================================
+              // HEADER
+              // ==================================================
 
-                        _buildCoverSection(),
+              _buildHeader(),
 
-                        const SizedBox(height: 34),
+              // ==================================================
+              // SCROLLABLE CONTENT
+              // ==================================================
 
-                        // ====================================================
-                        // DETAILS HEADER
-                        // ====================================================
+              Expanded(
+                child: SingleChildScrollView(
+                  physics: const ClampingScrollPhysics(),
 
-                        _buildDetailsHeader(provider),
+                  padding: EdgeInsets.fromLTRB(
+                    horizontalPadding,
+                    14,
+                    horizontalPadding,
+                    8,
+                  ),
 
-                        const SizedBox(height: 10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // ============================================
+                      // COVER + PROFILE IMAGE
+                      // ============================================
 
-                        // ====================================================
-                        // USER NAME
-                        // ====================================================
+                      _buildCoverSection(),
 
-                        _buildUserNameCard(provider),
+                      const SizedBox(height: 24),
 
-                        const SizedBox(height: 8),
+                      // ============================================
+                      // DETAILS HEADER
+                      // ============================================
 
-                        // ====================================================
-                        // BIO
-                        // ====================================================
+                      _buildDetailsHeader(provider),
 
-                        _buildDetailCard(
-                          assetPath:
-                              'assets/icons/profile/addbio.png',
-                          title: 'Add bio',
-                          subtitle: provider.profile.bio.isEmpty
-                              ? 'Tell your neighbors about yourself'
-                              : provider.profile.bio,
-                          onTap: _editBio,
-                        ),
+                      const SizedBox(height: 9),
 
-                        const SizedBox(height: 8),
+                      // ============================================
+                      // USER NAME
+                      // ============================================
 
-                        // ====================================================
-                        // WORK
-                        // ====================================================
+                      _buildUserNameCard(provider),
 
-                        _buildDetailCard(
-                          assetPath:
-                              'assets/icons/profile/briefcase.png',
-                          title: 'Add Work',
-                          subtitle: provider.profile.work.isEmpty
-                              ? 'Where do you work?'
-                              : provider.profile.work,
-                          onTap: _editWork,
-                        ),
+                      const SizedBox(height: 8),
 
-                        const SizedBox(height: 8),
+                      // ============================================
+                      // BIO
+                      // ============================================
 
-                        // ====================================================
-                        // ADDRESS
-                        // ====================================================
+                      _buildDetailCard(
+                        assetPath:
+                            'assets/icons/profile/addbio.png',
+                        title: 'Add bio',
+                        subtitle: provider.profile.bio.isEmpty
+                            ? 'Tell your neighbors about yourself'
+                            : provider.profile.bio,
+                        onTap: _editBio,
+                      ),
 
-                        _buildDetailCard(
-                          assetPath:
-                              'assets/icons/profile/address(profile).png',
-                          title: 'Add Address',
-                          subtitle: 'Add Address details',
-                          onTap: _openAddress,
-                        ),
+                      const SizedBox(height: 8),
 
-                        const SizedBox(height: 10),
+                      // ============================================
+                      // WORK
+                      // ============================================
 
-                        // ====================================================
-                        // INTERESTS
-                        // ====================================================
+                      _buildDetailCard(
+                        assetPath:
+                            'assets/icons/profile/briefcase.png',
+                        title: 'Add Work',
+                        subtitle: provider.profile.work.isEmpty
+                            ? 'Where do you work?'
+                            : provider.profile.work,
+                        onTap: _editWork,
+                      ),
 
-                        _buildInterestCard(provider),
+                      const SizedBox(height: 8),
 
-                        const SizedBox(height: 18),
-                      ],
-                    ),
+                      // ============================================
+                      // ADDRESS
+                      // ============================================
+
+                      _buildDetailCard(
+                        assetPath:
+                            'assets/icons/profile/address(profile).png',
+                        title: 'Add Address',
+                        subtitle: 'Add Address details',
+                        onTap: _openAddress,
+                      ),
+
+                      const SizedBox(height: 10),
+
+                      // ============================================
+                      // INTERESTS
+                      // ============================================
+
+                      _buildInterestCard(provider),
+
+                      // Reduced unnecessary bottom space
+                      const SizedBox(height: 8),
+                    ],
                   ),
                 ),
+              ),
 
-                // ============================================================
-                // BOTTOM BUTTONS
-                // ============================================================
+              // ==================================================
+              // BOTTOM BUTTONS
+              // ==================================================
 
-                _buildBottomButtons(provider),
-              ],
-            );
-          },
-        ),
+              _buildBottomButtons(provider),
+            ],
+          );
+        },
       ),
     );
   }
@@ -520,72 +526,79 @@ class _ProfileScreenState extends State<ProfileScreen> {
   // HEADER
   // ============================================================
 
-Widget _buildHeader() {
-  return Container(
-    height: 74,
-    decoration: const BoxDecoration(
+  Widget _buildHeader() {
+    final topPadding = MediaQuery.of(context).padding.top;
+
+    return Container(
+      width: double.infinity,
+
+      // Status bar + header
+      height: topPadding + 66,
+
+      padding: EdgeInsets.only(
+        top: topPadding,
+      ),
+
       color: _headerBlue,
-    ),
-    child: Row(
-      children: [
-        const SizedBox(width: 14),
 
-        // BACK BUTTON
-        IconButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          icon: const Icon(
-            Icons.arrow_back,
-            color: _textDark,
-            size: 22,
+      child: Row(
+        children: [
+          const SizedBox(width: 12),
+
+          // BACK
+          IconButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            icon: const Icon(
+              Icons.arrow_back,
+              color: _textDark,
+              size: 21,
+            ),
           ),
-        ),
 
-        const SizedBox(width: 10),
+          const SizedBox(width: 6),
 
-        // TITLE
-        const Text(
-          'Create Your Profile',
-          style: TextStyle(
-            color: _textDark,
-            fontSize: 16,
-            fontWeight: FontWeight.w700,
-            letterSpacing: 0.1,
+          // TITLE
+          const Text(
+            'Create Your Profile',
+            style: TextStyle(
+              color: _textDark,
+              fontSize: 15,
+              fontWeight: FontWeight.w600,
+            ),
           ),
-        ),
 
-        const Spacer(),
+          const Spacer(),
 
-        // SETTINGS ICON
-        IconButton(
-          onPressed: () {
-            // Add settings functionality here if needed
-          },
-          icon: const Icon(
-            Icons.settings_outlined,
-            color: _textDark,
-            size: 21,
+          // SETTINGS
+          IconButton(
+            onPressed: _openSettings,
+            icon: const Icon(
+              Icons.settings_outlined,
+              color: _textDark,
+              size: 20,
+            ),
           ),
-        ),
 
-        const SizedBox(width: 14),
-      ],
-    ),
-  );
-}
+          const SizedBox(width: 12),
+        ],
+      ),
+    );
+  }
+
   // ============================================================
   // COVER SECTION
   // ============================================================
 
   Widget _buildCoverSection() {
     return SizedBox(
-      height: 138,
+      height: 122,
       child: Stack(
         clipBehavior: Clip.none,
         alignment: Alignment.topCenter,
         children: [
-          // COVER CARD
+          // COVER
           GestureDetector(
             onTap: () {
               _showImagePicker(isProfile: false);
@@ -625,17 +638,17 @@ Widget _buildHeader() {
 
           // COVER EDIT BUTTON
           Positioned(
-            top: 10,
+            top: 9,
             right: 10,
             child: GestureDetector(
               onTap: () {
                 _showImagePicker(isProfile: false);
               },
               child: Container(
-                width: 30,
-                height: 30,
+                width: 29,
+                height: 29,
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.9),
+                  color: Colors.white.withValues(alpha: 0.92),
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
@@ -646,7 +659,7 @@ Widget _buildHeader() {
                 ),
                 child: const Icon(
                   Icons.edit_outlined,
-                  size: 15,
+                  size: 14,
                   color: _textGrey,
                 ),
               ),
@@ -655,7 +668,7 @@ Widget _buildHeader() {
 
           // PROFILE IMAGE
           Positioned(
-            top: 52,
+            top: 48,
             child: GestureDetector(
               onTap: () {
                 _showImagePicker(isProfile: true);
@@ -691,12 +704,12 @@ Widget _buildHeader() {
                         ? const Icon(
                             Icons.person_outline_rounded,
                             color: _orange,
-                            size: 30,
+                            size: 29,
                           )
                         : null,
                   ),
 
-                  // CAMERA BUTTON
+                  // CAMERA
                   Positioned(
                     right: -3,
                     bottom: 4,
@@ -780,7 +793,7 @@ Widget _buildHeader() {
                 ),
               ),
 
-              const SizedBox(width: 7),
+              const SizedBox(width: 5),
 
               Transform.scale(
                 scale: 0.72,
@@ -809,14 +822,18 @@ Widget _buildHeader() {
       onTap: _editUserName,
       child: Container(
         width: double.infinity,
-        padding: const EdgeInsets.fromLTRB(14, 12, 12, 10),
+        padding: const EdgeInsets.fromLTRB(
+          14,
+          12,
+          12,
+          10,
+        ),
         decoration: _cardDecoration(),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
-                // NO LOGO HERE AS REQUESTED
                 Expanded(
                   child: Text(
                     provider.profile.userName.isEmpty
@@ -832,7 +849,7 @@ Widget _buildHeader() {
 
                 const Icon(
                   Icons.chevron_right,
-                  size: 20,
+                  size: 19,
                   color: _textDark,
                 ),
               ],
@@ -840,7 +857,6 @@ Widget _buildHeader() {
 
             const SizedBox(height: 7),
 
-            // TAGS WITH YOUR ACTUAL ICONS
             Row(
               children: [
                 _buildTag(
@@ -944,22 +960,27 @@ Widget _buildHeader() {
       onTap: onTap,
       child: Container(
         width: double.infinity,
-        height: 70,
+
+        // Compact size closer to Figma
+        height: 68,
+
         padding: const EdgeInsets.symmetric(
           horizontal: 13,
         ),
+
         decoration: _cardDecoration(),
+
         child: Row(
           children: [
-            // ICON CONTAINER
+            // ICON
             Container(
-              width: 48,
-              height: 48,
+              width: 44,
+              height: 44,
+              padding: const EdgeInsets.all(11),
               decoration: BoxDecoration(
                 color: _lightBlue,
                 borderRadius: BorderRadius.circular(12),
               ),
-              padding: const EdgeInsets.all(12),
               child: Image.asset(
                 assetPath,
                 fit: BoxFit.contain,
@@ -967,8 +988,9 @@ Widget _buildHeader() {
               ),
             ),
 
-            const SizedBox(width: 13),
+            const SizedBox(width: 12),
 
+            // TEXT
             Expanded(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -980,6 +1002,7 @@ Widget _buildHeader() {
                       color: _textDark,
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
+                      height: 1.1,
                     ),
                   ),
 
@@ -993,13 +1016,14 @@ Widget _buildHeader() {
                       color: _textGrey,
                       fontSize: 9,
                       fontWeight: FontWeight.w400,
+                      height: 1.1,
                     ),
                   ),
                 ],
               ),
             ),
 
-            const SizedBox(width: 8),
+            const SizedBox(width: 6),
 
             const Icon(
               Icons.chevron_right,
@@ -1059,7 +1083,9 @@ Widget _buildHeader() {
                     (interest) => Chip(
                       label: Text(
                         interest,
-                        style: const TextStyle(fontSize: 10),
+                        style: const TextStyle(
+                          fontSize: 10,
+                        ),
                       ),
                       backgroundColor: _lightBlue,
                       side: BorderSide.none,
@@ -1117,82 +1143,89 @@ Widget _buildHeader() {
 
   Widget _buildBottomButtons(ProfileProvider provider) {
     return Container(
-      padding: const EdgeInsets.fromLTRB(
-        20,
-        10,
-        20,
-        18,
-      ),
       color: _background,
-      child: Row(
-        children: [
-          Expanded(
-            child: SizedBox(
-              height: 48,
-              child: ElevatedButton.icon(
-                onPressed: provider.isLoading
-                    ? null
-                    : _saveProfile,
-                icon: provider.isLoading
-                    ? const SizedBox(
-                        width: 16,
-                        height: 16,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: Colors.white,
-                        ),
-                      )
-                    : const Icon(
-                        Icons.save_outlined,
-                        size: 16,
+      child: SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(
+            20,
+            8,
+            20,
+            10,
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: SizedBox(
+                  height: 46,
+                  child: ElevatedButton.icon(
+                    onPressed: provider.isLoading
+                        ? null
+                        : _saveProfile,
+                    icon: provider.isLoading
+                        ? const SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white,
+                            ),
+                          )
+                        : const Icon(
+                            Icons.save_outlined,
+                            size: 16,
+                          ),
+                    label: Text(
+                      provider.isLoading
+                          ? 'Saving...'
+                          : 'Save',
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: _primaryBlue,
+                      foregroundColor: Colors.white,
+                      elevation: 3,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(7),
                       ),
-                label: Text(
-                  provider.isLoading ? 'Saving...' : 'Save',
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: _primaryBlue,
-                  foregroundColor: Colors.white,
-                  elevation: 3,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(7),
-                  ),
-                  textStyle: const TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
+                      textStyle: const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ),
                 ),
               ),
-            ),
-          ),
 
-          const SizedBox(width: 9),
+              const SizedBox(width: 9),
 
-          Expanded(
-            child: SizedBox(
-              height: 48,
-              child: ElevatedButton.icon(
-                onPressed: _cancel,
-                icon: const Icon(
-                  Icons.close,
-                  size: 16,
-                ),
-                label: const Text('Cancel'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: _primaryBlue,
-                  foregroundColor: Colors.white,
-                  elevation: 3,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(7),
-                  ),
-                  textStyle: const TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
+              Expanded(
+                child: SizedBox(
+                  height: 46,
+                  child: ElevatedButton.icon(
+                    onPressed: _cancel,
+                    icon: const Icon(
+                      Icons.close,
+                      size: 16,
+                    ),
+                    label: const Text('Cancel'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: _primaryBlue,
+                      foregroundColor: Colors.white,
+                      elevation: 3,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(7),
+                      ),
+                      textStyle: const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ),
                 ),
               ),
-            ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
@@ -1324,12 +1357,10 @@ class _DashedBorderPainter extends CustomPainter {
       double distance = 0;
 
       while (distance < metric.length) {
-        final length = dashWidth;
-
         canvas.drawPath(
           metric.extractPath(
             distance,
-            distance + length,
+            distance + dashWidth,
           ),
           paint,
         );
@@ -1340,7 +1371,9 @@ class _DashedBorderPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant _DashedBorderPainter oldDelegate) {
+  bool shouldRepaint(
+    covariant _DashedBorderPainter oldDelegate,
+  ) {
     return oldDelegate.color != color ||
         oldDelegate.radius != radius;
   }
