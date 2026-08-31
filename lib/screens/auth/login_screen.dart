@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter_nivasshub/routes/app_routes.dart';
 import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter_nivasshub/constants/app_dimensions.dart';
@@ -35,12 +36,13 @@ class _LoginScreenState extends State<LoginScreen>
   final _mobileController = TextEditingController();
   final _passwordController = TextEditingController();
 
-  String _selectedCountryCode = '+91';
+  String _selectedCountryCode = '+91'; // Default to India
   bool _isEmailMode = false;
   bool _obscurePassword = true;
+  bool _isLoadingCountries = false;
 
-  // List of 10 countries with their codes
-  final List<Map<String, String>> _countries = [
+  // Country list - populated from API
+  List<Map<String, String>> _countries = [
     {'code': '+91', 'name': 'India 🇮🇳'},
     {'code': '+1', 'name': 'USA 🇺🇸'},
     {'code': '+44', 'name': 'UK 🇬🇧'},
@@ -62,6 +64,60 @@ class _LoginScreenState extends State<LoginScreen>
     )..forward();
 
     _mobileController.addListener(_onMobileTextChanged);
+
+    // Fetch countries from API after first frame
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _fetchCountriesFromAPI();
+    });
+  }
+
+  /// Fetch countries from API: http://10.10.10.34:3000/country-codes
+  Future<void> _fetchCountriesFromAPI() async {
+    setState(() {
+      _isLoadingCountries = true;
+    });
+
+    try {
+      final dio = Dio();
+      final response = await dio.get('http://10.10.10.34:3000/country-codes');
+
+      if (response.statusCode == 200) {
+        final data = response.data as Map<String, dynamic>;
+
+        // Check if ActiveCountries exists in response
+        if (data['ActiveCountries'] != null) {
+          final List<dynamic> activeCountries = data['ActiveCountries'];
+
+          if (mounted) {
+            setState(() {
+              _countries = activeCountries.map((country) {
+                return {
+                  'code': country['callingCode'].toString(),
+                  'name':
+                      '${country['countryName']} 🇮🇳', // You can add flag emojis based on shortCode
+                };
+              }).toList();
+            });
+          }
+        }
+      }
+    } catch (e) {
+      // API failed - keep default list
+      if (mounted) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          CustomSnackbar.info(
+            context,
+            'Using default country list. Please check connection.',
+          );
+        });
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoadingCountries = false;
+        });
+      }
+    }
   }
 
   void _onMobileTextChanged() {
@@ -129,7 +185,7 @@ class _LoginScreenState extends State<LoginScreen>
           AppRoutes.otpVerification,
           arguments: OtpVerificationScreenArgs(
             mobileNumber: auth.mobileNumber ?? mobile,
-            otpExpirySeconds: auth.otpExpirySeconds,
+            otpExpirySeconds: auth.otpExpirySeconds ?? 120,
             isRegistrationFlow: false,
           ),
         );
@@ -139,6 +195,122 @@ class _LoginScreenState extends State<LoginScreen>
           auth.errorMessage ?? 'Failed to send OTP. Please try again.',
         );
       }
+    }
+  }
+
+  /// Show country picker with bottom sheet (Scalable for 197 countries)
+  Future<void> _showCountryPicker() async {
+    final selected = await showModalBottomSheet<String>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Theme.of(context).brightness == Brightness.dark
+          ? AppColors.surfaceDark
+          : Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return DraggableScrollableSheet(
+          expand: false,
+          initialChildSize: 0.7,
+          maxChildSize: 0.9,
+          minChildSize: 0.5,
+          builder: (context, scrollController) {
+            return Column(
+              children: [
+                // Handle bar
+                Container(
+                  width: 40,
+                  height: 4,
+                  margin: const EdgeInsets.only(top: 12, bottom: 8),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+                // Header
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 8,
+                  ),
+                  child: Row(
+                    children: [
+                      Text(
+                        'Select Country',
+                        style: AppTextStyles.titleMedium.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const Spacer(),
+                      IconButton(
+                        icon: const Icon(Icons.close),
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                    ],
+                  ),
+                ),
+                const Divider(height: 1),
+                // Country List
+                Expanded(
+                  child: _isLoadingCountries
+                      ? const Center(child: CircularProgressIndicator())
+                      : ListView.builder(
+                          controller: scrollController,
+                          itemCount: _countries.length,
+                          itemBuilder: (context, index) {
+                            final country = _countries[index];
+                            final isSelected =
+                                country['code'] == _selectedCountryCode;
+
+                            return ListTile(
+                              leading: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 6,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: isSelected
+                                      ? AuthColors.primaryBlue.withValues(
+                                          alpha: 0.1,
+                                        )
+                                      : Colors.grey.withValues(alpha: 0.1),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Text(
+                                  country['code']!,
+                                  style: AppTextStyles.bodyMedium.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: isSelected
+                                        ? AuthColors.primaryBlue
+                                        : null,
+                                  ),
+                                ),
+                              ),
+                              title: Text(country['name']!),
+                              trailing: isSelected
+                                  ? Icon(
+                                      Icons.check_circle,
+                                      color: AuthColors.primaryBlue,
+                                    )
+                                  : null,
+                              onTap: () =>
+                                  Navigator.pop(context, country['code']),
+                            );
+                          },
+                        ),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+
+    if (selected != null) {
+      setState(() {
+        _selectedCountryCode = selected;
+      });
     }
   }
 
@@ -601,50 +773,34 @@ class _LoginScreenState extends State<LoginScreen>
   }
 
   Widget _buildCountryDropdown(Color border, bool isDark) {
-    return Container(
-      height: 45,
-      decoration: BoxDecoration(
-        border: Border.all(color: border),
-        borderRadius: AppRadius.radiusSm,
-        color: isDark ? AppColors.surfaceDark : Colors.white,
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-        child: DropdownButtonHideUnderline(
-          child: DropdownButton<String>(
-            value: _selectedCountryCode,
-            icon: Icon(
+    return InkWell(
+      onTap: _showCountryPicker,
+      borderRadius: AppRadius.radiusSm,
+      child: Container(
+        height: 48,
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+        decoration: BoxDecoration(
+          border: Border.all(color: border),
+          borderRadius: AppRadius.radiusSm,
+          color: isDark ? AppColors.surfaceDark : Colors.white,
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              _selectedCountryCode,
+              style: AppTextStyles.bodyMedium.copyWith(
+                color: isDark ? Colors.white : Colors.black87,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(width: 4),
+            Icon(
               Icons.arrow_drop_down,
               color: isDark ? Colors.white : Colors.black87,
+              size: 20,
             ),
-            iconSize: 24,
-            elevation: 16,
-            style: AppTextStyles.bodyMedium.copyWith(
-              color: isDark ? Colors.white : Colors.black87,
-            ),
-            onChanged: (String? newValue) {
-              setState(() {
-                _selectedCountryCode = newValue!;
-              });
-            },
-            items: _countries.map<DropdownMenuItem<String>>((country) {
-              return DropdownMenuItem<String>(
-                value: country['code'],
-                child: Row(
-                  children: [
-                    Text(country['name']!),
-                    const SizedBox(width: 7),
-                    Text(
-                      country['code']!,
-                      style: AppTextStyles.bodySmall.copyWith(
-                        color: isDark ? Colors.white70 : Colors.black54,
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            }).toList(),
-          ),
+          ],
         ),
       ),
     );
