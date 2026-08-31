@@ -1,3 +1,197 @@
+// import 'package:flutter/material.dart';
+// import 'package:provider/provider.dart';
+
+// import 'package:flutter_nivasshub/constants/app_colors.dart';
+// import 'package:flutter_nivasshub/routes/app_routes.dart';
+// import 'package:flutter_nivasshub/providers/dashboard/dashboard_navigation_provider.dart';
+// import 'package:flutter_nivasshub/widgets/shared/feedback/custom_snackbar.dart';
+
+// class DashboardBottomNavigation extends StatelessWidget {
+//   const DashboardBottomNavigation({super.key, this.selectedIndex});
+
+//   final int? selectedIndex;
+
+//   @override
+//   Widget build(BuildContext context) {
+//     final provider = context.watch<DashboardNavigationProvider>();
+//     final isDark = Theme.of(context).brightness == Brightness.dark;
+//     final activeIndex = selectedIndex ?? provider.selectedIndex;
+
+//     return SafeArea(
+//       top: false,
+//       child: Container(
+//         height: 84,
+//         decoration: BoxDecoration(
+//           color: isDark ? const Color(0xFF1E293B) : const Color(0xFFC7E3FF),
+//           borderRadius: const BorderRadius.only(
+//             topLeft: Radius.circular(24),
+//             topRight: Radius.circular(24),
+//           ),
+//         ),
+//         child: Padding(
+//           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+//           child: Row(
+//             mainAxisAlignment: MainAxisAlignment.spaceAround,
+//             children: [
+//               _item(
+//                 context,
+//                 provider,
+//                 activeIndex,
+//                 0,
+//                 "assets/icons/home.svg.png",
+//                 "Home",
+//                 isDark,
+//               ),
+//               _item(
+//                 context,
+//                 provider,
+//                 activeIndex,
+//                 1,
+//                 "assets/icons/visitors.svg.png",
+//                 "Visitors",
+//                 isDark,
+//               ),
+//               _item(
+//                 context,
+//                 provider,
+//                 activeIndex,
+//                 2,
+//                 "assets/icons/community.svg.png",
+//                 "Community",
+//                 isDark,
+//               ),
+//               _item(
+//                 context,
+//                 provider,
+//                 activeIndex,
+//                 3,
+//                 "assets/icons/payments.svg.png",
+//                 "Payments",
+//                 isDark,
+//               ),
+//               _item(
+//                 context,
+//                 provider,
+//                 activeIndex,
+//                 4,
+//                 "assets/icons/more.svg.png",
+//                 "More",
+//                 isDark,
+//               ),
+//             ],
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+
+//   Widget _item(
+//     BuildContext context,
+//     DashboardNavigationProvider provider,
+//     int activeIndex,
+//     int index,
+//     String image,
+//     String title,
+//     bool isDark,
+//   ) {
+//     final bool selected = activeIndex == index;
+//     final activeBlue = isDark ? AppColors.noticesAccentBlueDark : const Color(0xFF0060BD);
+
+//     return Expanded(
+//       child: InkWell(
+//         splashColor: Colors.transparent,
+//         highlightColor: Colors.transparent,
+//         onTap: () {
+//           if (index == 1 || index == 3) {
+//             // Visitors / Payments — screens don't exist yet.
+//             CustomSnackbar.info(context, '$title coming soon.');
+//             return;
+//           }
+
+//           if (index == 4) {
+//             // More — settings screen
+//             Navigator.pushNamed(context, AppRoutes.settings);
+//             return;
+//           }
+
+//           if (index == 0) {
+//             // Home — return to the existing Dashboard already in the stack
+//             if (ModalRoute.of(context)?.settings.name != AppRoutes.dashboard) {
+//               Navigator.popUntil(
+//                 context,
+//                 ModalRoute.withName(AppRoutes.dashboard),
+//               );
+//             }
+//           } else if (index == 2) {
+//             // Community — opens the full Community Feed / Notice Board.
+//             if (ModalRoute.of(context)?.settings.name != AppRoutes.noticeList) {
+//               Navigator.pushNamed(context, AppRoutes.noticeList);
+//             }
+//           }
+//         },
+//         child: Column(
+//           mainAxisAlignment: MainAxisAlignment.center,
+//           children: [
+//             /// ICON BACKGROUND
+//             AnimatedContainer(
+//               duration: const Duration(milliseconds: 200),
+//               height: 40,
+//               width: 40,
+//               decoration: BoxDecoration(
+//                 color: selected
+//                     ? activeBlue
+//                     : Colors.transparent,
+//                 shape: BoxShape.circle,
+//               ),
+//               child: Center(
+//                 child: Image.asset(
+//                   image,
+//                   width: 22,
+//                   height: 22,
+//                   fit: BoxFit.contain,
+//                   color: selected
+//                       ? Colors.white
+//                       : (isDark
+//                           ? Colors.white70
+//                           : const Color(0xFF475569)),
+//                   filterQuality: FilterQuality.high,
+//                   isAntiAlias: true,
+//                   errorBuilder: (_, _, _) {
+//                     return Icon(
+//                       Icons.circle_outlined,
+//                       size: 22,
+//                       color: selected ? Colors.white : const Color(0xFF475569),
+//                     );
+//                   },
+//                 ),
+//               ),
+//             ),
+//             const SizedBox(height: 4),
+//             Text(
+//               title,
+//               textAlign: TextAlign.center,
+//               style: TextStyle(
+//                 fontFamily: 'DM Sans',
+//                 fontSize: 11,
+//                 fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+//                 color: selected
+//                     ? activeBlue
+//                     : (isDark
+//                         ? AppColors.textSecondaryDark
+//                         : const Color(0xFF475569)),
+//                 letterSpacing: 0.2,
+//                 height: 1.1,
+//               ),
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+/////////////////////////////////
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -7,32 +201,36 @@ import 'package:flutter_nivasshub/providers/dashboard/dashboard_navigation_provi
 import 'package:flutter_nivasshub/widgets/shared/feedback/custom_snackbar.dart';
 
 class DashboardBottomNavigation extends StatelessWidget {
-  const DashboardBottomNavigation({super.key});
+  const DashboardBottomNavigation({super.key, this.selectedIndex});
+
+  final int? selectedIndex;
 
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<DashboardNavigationProvider>();
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final activeIndex = selectedIndex ?? provider.selectedIndex;
 
     return SafeArea(
       top: false,
       child: Container(
-        height: 90,
-        decoration: const BoxDecoration(
-          color: Color(0xffD9ECFF),
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(32),
-            topRight: Radius.circular(32),
+        height: 84,
+        decoration: BoxDecoration(
+          color: isDark ? const Color(0xFF1E293B) : const Color(0xFFC7E3FF),
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(24),
+            topRight: Radius.circular(24),
           ),
         ),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               _item(
                 context,
                 provider,
+                activeIndex,
                 0,
                 "assets/icons/home.svg.png",
                 "Home",
@@ -41,6 +239,7 @@ class DashboardBottomNavigation extends StatelessWidget {
               _item(
                 context,
                 provider,
+                activeIndex,
                 1,
                 "assets/icons/visitors.svg.png",
                 "Visitors",
@@ -49,6 +248,7 @@ class DashboardBottomNavigation extends StatelessWidget {
               _item(
                 context,
                 provider,
+                activeIndex,
                 2,
                 "assets/icons/community.svg.png",
                 "Community",
@@ -57,6 +257,7 @@ class DashboardBottomNavigation extends StatelessWidget {
               _item(
                 context,
                 provider,
+                activeIndex,
                 3,
                 "assets/icons/payments.svg.png",
                 "Payments",
@@ -72,29 +273,44 @@ class DashboardBottomNavigation extends StatelessWidget {
   Widget _item(
     BuildContext context,
     DashboardNavigationProvider provider,
+    int activeIndex,
     int index,
     String image,
     String title,
     bool isDark,
   ) {
-    final bool selected = provider.selectedIndex == index;
+    final bool selected = activeIndex == index;
+    final activeBlue = isDark
+        ? AppColors.noticesAccentBlueDark
+        : const Color(0xFF0060BD);
 
     return Expanded(
       child: InkWell(
         splashColor: Colors.transparent,
         highlightColor: Colors.transparent,
+
         onTap: () {
-          if (index == 1 || index == 3) {
-            // Visitors / Payments — screens don't exist yet.
+          // Update the selected bottom-navigation index.
+          provider.changeIndex(index);
+
+          if (index == 3) {
+            // Payments screen is not available yet.
             CustomSnackbar.info(context, '$title coming soon.');
             return;
           }
 
+          if (index == 1) {
+            // Visitors — open the visitor list screen.
+            if (ModalRoute.of(context)?.settings.name != AppRoutes.activities &&
+                ModalRoute.of(context)?.settings.name !=
+                    AppRoutes.visitorList) {
+              Navigator.pushNamed(context, AppRoutes.visitorList);
+            }
+            return;
+          }
+
           if (index == 0) {
-            // Home — return to the existing Dashboard already in the
-            // stack instead of pushing a duplicate instance.
-            // DashboardNavObserver updates the highlight once this pop
-            // actually lands on the Dashboard route.
+            // Home — return to the existing Dashboard.
             if (ModalRoute.of(context)?.settings.name != AppRoutes.dashboard) {
               Navigator.popUntil(
                 context,
@@ -102,72 +318,60 @@ class DashboardBottomNavigation extends StatelessWidget {
               );
             }
           } else if (index == 2) {
-            // Community — opens the full Community Feed / Notice Board.
-            // Guard against pushing a duplicate instance when the user
-            // re-taps "Community" while already viewing it (this bottom
-            // nav is also rendered on NoticesScreen itself) — without
-            // this, Back had to pop through multiple stacked copies of
-            // the same screen before it reached the real previous screen.
-            // DashboardNavObserver updates the highlight once this push
-            // actually lands on the Community route.
+            // Community — open the Community Feed / Notice Board.
             if (ModalRoute.of(context)?.settings.name != AppRoutes.noticeList) {
               Navigator.pushNamed(context, AppRoutes.noticeList);
             }
           }
         },
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             /// ICON BACKGROUND
             AnimatedContainer(
               duration: const Duration(milliseconds: 200),
-              height: 46,
-              width: 46,
+              height: 40,
+              width: 40,
               decoration: BoxDecoration(
-                color: selected
-                    ? (isDark
-                          ? AppColors.bottomNavSelectedDark
-                          : AppColors.bottomNavSelectedLight)
-                    : Colors.transparent,
+                color: selected ? activeBlue : Colors.transparent,
                 shape: BoxShape.circle,
               ),
               child: Center(
                 child: Image.asset(
                   image,
-                  width: 26,
-                  height: 26,
+                  width: 22,
+                  height: 22,
                   fit: BoxFit.contain,
                   color: selected
                       ? Colors.white
-                      : const Color(
-                          0xff1A1A1A,
-                        ), // Darker black for thicker feel
-                  // Better image quality
+                      : (isDark ? Colors.white70 : const Color(0xFF475569)),
                   filterQuality: FilterQuality.high,
                   isAntiAlias: true,
                   errorBuilder: (_, _, _) {
                     return Icon(
-                      Icons.image_not_supported_outlined,
-                      size: 26,
-                      color: selected ? Colors.white : const Color(0xff1A1A1A),
-                      weight: 600, // Thicker fallback icon
+                      Icons.circle_outlined,
+                      size: 22,
+                      color: selected ? Colors.white : const Color(0xFF475569),
                     );
                   },
                 ),
               ),
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: 4),
             Text(
               title,
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: 11.5,
-                fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
+                fontFamily: 'DM Sans',
+                fontSize: 11,
+                fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
                 color: selected
-                    ? const Color(0xff1565C0)
-                    : const Color(0xff1A1A1A), // Darker black
-                letterSpacing: 0.3,
-                height: 1.2,
+                    ? activeBlue
+                    : (isDark
+                          ? AppColors.textSecondaryDark
+                          : const Color(0xFF475569)),
+                letterSpacing: 0.2,
+                height: 1.1,
               ),
             ),
           ],

@@ -35,16 +35,12 @@ class _QuickActionsScreenState extends State<QuickActionsScreen> {
   // FEED / HOUSEHOLD / SETTINGS
   // ============================================================
 
-  // Slightly larger card width.
   static const double _kFourCardMinWidth = 52;
 
-  // Increased gap between cards.
   static const double _kFourCardGap = 20;
 
-  // Small side padding.
   static const double _kFourCardHorizontalPadding = 2;
 
-  // Card height remains the same.
   static const double _kFourCardHeight = 66;
 
   // ============================================================
@@ -414,10 +410,6 @@ class _QuickActionsScreenState extends State<QuickActionsScreen> {
 
   // ============================================================
   // FEED / HOUSEHOLD / SETTINGS
-  //
-  // Slightly wider cards + increased gap.
-  // Width is calculated from available screen width so it
-  // remains responsive and does not overflow.
   // ============================================================
 
   Widget _buildFourCardRow(
@@ -483,7 +475,6 @@ class _QuickActionsScreenState extends State<QuickActionsScreen> {
 
   // ============================================================
   // MARKETPLACE
-  // Three wider cards.
   // ============================================================
 
   Widget _buildMarketplaceRow(
@@ -543,7 +534,7 @@ class _QuickActionsScreenState extends State<QuickActionsScreen> {
   // ============================================================
 
   Widget _buildFeedSection() {
-    final feedItems = const [
+    const feedItems = [
       _FeatureItem(
         title: 'Create Post',
         id: 'create_post',
@@ -655,8 +646,7 @@ class _QuickActionsScreenState extends State<QuickActionsScreen> {
   // ============================================================
 
   Widget _buildMarketplaceSection() {
-    final marketplaceItems =
-        const [
+    const marketplaceItems = [
       _FeatureItem(
         title: 'Find Homes',
         id: 'find_homes',
@@ -756,8 +746,7 @@ class _QuickActionsScreenState extends State<QuickActionsScreen> {
   // ============================================================
 
   Widget _buildHouseholdSection() {
-    final householdItems =
-        const [
+    const householdItems = [
       _FeatureItem(
         title: 'My Family',
         id: 'my_family',
@@ -816,8 +805,7 @@ class _QuickActionsScreenState extends State<QuickActionsScreen> {
   // ============================================================
 
   Widget _buildSettingsSection() {
-    final settingsItems =
-        const [
+    const settingsItems = [
       _FeatureItem(
         title: 'Test Notifications',
         id: 'test_notifications',
@@ -952,8 +940,7 @@ class _QuickActionsScreenState extends State<QuickActionsScreen> {
           errorBuilder:
               (context, error, stackTrace) {
             return Icon(
-              Icons
-                  .image_not_supported_outlined,
+              Icons.image_not_supported_outlined,
               size: size,
               color: Colors.grey,
             );

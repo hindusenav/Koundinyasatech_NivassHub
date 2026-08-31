@@ -23,15 +23,21 @@ class CreateCommunityPostHeaderCard extends StatelessWidget {
         Text(
           'Create a community post',
           style: TextStyle(
+            fontFamily: 'DM Sans',
             fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: headingColor,
+            fontWeight: FontWeight.w700,
+            color: isDark ? AppColors.noticesHeadingDark : const Color(0xFF05234D),
           ),
         ),
         const SizedBox(height: 4),
         Text(
           'Choose a post format to engage with your neighbors',
-          style: TextStyle(fontSize: 13, color: secondaryColor),
+          style: TextStyle(
+            fontFamily: 'DM Sans',
+            fontSize: 13,
+            fontWeight: FontWeight.w400,
+            color: isDark ? AppColors.noticesSecondaryTextDark : const Color(0xFF6B7280),
+          ),
         ),
         const SizedBox(height: 16),
         _OptionCard(
@@ -88,23 +94,23 @@ class _OptionCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final headingColor =
-        isDark ? AppColors.noticesHeadingDark : AppColors.noticesHeadingLight;
+        isDark ? AppColors.noticesHeadingDark : const Color(0xFF05234D);
     final secondaryColor =
-        isDark ? AppColors.noticesSecondaryTextDark : AppColors.noticesSecondaryTextLight;
+        isDark ? AppColors.noticesSecondaryTextDark : const Color(0xFF6B7280);
     final accentBlue =
-        isDark ? AppColors.noticesAccentBlueDark : AppColors.noticesAccentBlueLight;
+        isDark ? AppColors.noticesAccentBlueDark : const Color(0xFF0060BD);
 
     return Container(
       decoration: BoxDecoration(
-        color: isDark ? AppColors.surfaceDark : AppColors.surfaceLight,
+        color: isDark ? AppColors.surfaceDark : const Color(0xFFFFFFFF),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: isDark ? AppColors.noticesDividerDark : AppColors.noticesDividerLight,
+          color: isDark ? AppColors.noticesCardBorderDark : const Color(0xFFE5E7EB),
         ),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF0F172A).withValues(alpha: isDark ? .3 : .04),
-            blurRadius: 12,
+            color: Colors.black.withValues(alpha: isDark ? .3 : .04),
+            blurRadius: 10,
             offset: const Offset(0, 4),
           ),
         ],
@@ -119,26 +125,22 @@ class _OptionCard extends StatelessWidget {
             child: Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.all(12),
+                  width: 44,
+                  height: 44,
                   decoration: BoxDecoration(
                     color: isDark
                         ? AppColors.noticesBlueTintBgDark
-                        : AppColors.noticesBlueTintBgLight,
-                    borderRadius: BorderRadius.circular(14),
+                        : const Color(0xFFF0F5FA),
+                    borderRadius: BorderRadius.circular(12),
                     border: Border.all(
                       color: isDark
                           ? AppColors.noticesBlueLightBorderDark
-                          : AppColors.noticesBlueLightBorderLight,
+                          : const Color(0xFFE2E8F0),
                     ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: accentBlue.withValues(alpha: isDark ? .18 : .06),
-                        blurRadius: 6,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
                   ),
-                  child: Icon(icon, color: accentBlue, size: 22),
+                  child: Center(
+                    child: Icon(icon, color: accentBlue, size: 22),
+                  ),
                 ),
                 const SizedBox(width: 14),
                 Expanded(
@@ -148,8 +150,9 @@ class _OptionCard extends StatelessWidget {
                       Text(
                         title,
                         style: TextStyle(
+                          fontFamily: 'DM Sans',
                           fontSize: 15,
-                          fontWeight: FontWeight.bold,
+                          fontWeight: FontWeight.w700,
                           color: headingColor,
                         ),
                       ),
@@ -157,7 +160,9 @@ class _OptionCard extends StatelessWidget {
                       Text(
                         subtitle,
                         style: TextStyle(
+                          fontFamily: 'DM Sans',
                           fontSize: 12,
+                          fontWeight: FontWeight.w400,
                           color: secondaryColor,
                           height: 1.3,
                         ),
