@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:flutter_nivasshub/constants/app_spacing.dart';
 import 'package:flutter_nivasshub/models/shared/app_feature_model.dart';
 import 'package:flutter_nivasshub/widgets/shared/common/section_title.dart';
 import 'package:flutter_nivasshub/widgets/shared/grids/category_grid.dart';
@@ -21,6 +22,9 @@ class QuickActionSection extends StatelessWidget {
     this.itemBuilder,
     this.headerTrailing,
     this.onActionTap,
+    this.spacing = AppSpacing.md,
+    this.childAspectRatio = 0.82,
+    this.mainAxisExtent,
   });
 
   final QuickActionSectionModel section;
@@ -29,6 +33,9 @@ class QuickActionSection extends StatelessWidget {
   final Widget Function(AppFeatureModel item, VoidCallback onTap)? itemBuilder;
   final Widget? headerTrailing;
   final VoidCallback? onActionTap;
+  final double spacing;
+  final double childAspectRatio;
+  final double? mainAxisExtent;
 
   @override
   Widget build(BuildContext context) {
@@ -45,6 +52,9 @@ class QuickActionSection extends StatelessWidget {
         CategoryGrid<AppFeatureModel>(
           items: section.items,
           columns: columns,
+          spacing: spacing,
+          childAspectRatio: childAspectRatio,
+          mainAxisExtent: mainAxisExtent,
           itemBuilder: (item) {
             void onTap() => onItemTap(item);
             return itemBuilder != null ? itemBuilder!(item, onTap) : IconCard(item: item, onTap: onTap);

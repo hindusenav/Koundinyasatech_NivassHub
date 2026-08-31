@@ -33,10 +33,10 @@ import 'package:flutter_nivasshub/screens/notifications/delivery_details_screen.
 import 'package:flutter_nivasshub/screens/onboarding/onboarding_screen_two.dart';
 
 // ============================================================
-// PROFILE - ✅ Make sure these are here
+// PROFILE
 // ============================================================
 
-import 'package:flutter_nivasshub/screens/profile/add_address_details_screen.dart';  // ✅ THIS IMPORT
+import 'package:flutter_nivasshub/screens/profile/add_address_details_screen.dart';
 import 'package:flutter_nivasshub/screens/profile/profile_screen.dart';
 
 // ============================================================
@@ -81,9 +81,7 @@ import 'package:flutter_nivasshub/routes/app_routes.dart';
 class RouteGenerator {
   RouteGenerator._();
 
-  static Route<dynamic> generateRoute(
-    RouteSettings settings,
-  ) {
+  static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
       // ========================================================
       // SPLASH
@@ -190,9 +188,8 @@ class RouteGenerator {
 
         return MaterialPageRoute(
           settings: settings,
-          builder: (_) => CreateProfileScreen(
-            registrationToken: args.registrationToken,
-          ),
+          builder: (_) =>
+              CreateProfileScreen(registrationToken: args.registrationToken),
         );
 
       // ========================================================
@@ -216,16 +213,15 @@ class RouteGenerator {
         );
 
       // ========================================================
-      // ADD ADDRESS DETAILS - ✅ FIXED
+      // ADD ADDRESS DETAILS
       // ========================================================
 
       case AppRoutes.addAddressDetails:
         return MaterialPageRoute(
           settings: settings,
-          builder: (_) => const AddAddressDetailsScreen(
-            address: null, // Pass null, handle in screen
-          ),
+          builder: (_) => const AddAddressDetailsScreen(address: null),
         );
+
       // ========================================================
       // SETTINGS
       // ========================================================
@@ -267,6 +263,16 @@ class RouteGenerator {
         );
 
       // ========================================================
+      // VISITOR LIST ✅ ADD THIS
+      // ========================================================
+
+      case AppRoutes.visitorList:
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => const ActivitiesScreen(),
+        );
+
+      // ========================================================
       // ACTIVITIES
       // ========================================================
 
@@ -297,7 +303,6 @@ class RouteGenerator {
         return MaterialPageRoute(
           settings: settings,
           builder: (context) {
-
             ApiClient? apiClient;
             try {
               apiClient = context.read<ApiClient>();
@@ -319,22 +324,12 @@ class RouteGenerator {
   // UNKNOWN ROUTE
   // ============================================================
 
-  static Route<dynamic> _unknownRoute(
-    RouteSettings settings,
-  ) {
+  static Route<dynamic> _unknownRoute(RouteSettings settings) {
     return MaterialPageRoute(
       settings: settings,
       builder: (_) => Scaffold(
-        appBar: AppBar(
-          title: const Text(
-            'Page Not Found',
-          ),
-        ),
-        body: Center(
-          child: Text(
-            'No route defined for "${settings.name}"',
-          ),
-        ),
+        appBar: AppBar(title: const Text('Page Not Found')),
+        body: Center(child: Text('No route defined for "${settings.name}"')),
       ),
     );
   }

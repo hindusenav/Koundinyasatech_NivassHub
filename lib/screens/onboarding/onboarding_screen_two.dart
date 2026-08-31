@@ -45,7 +45,9 @@ class _OnboardingScreenTwoState extends State<OnboardingScreenTwo>
     final screenHeight = context.screenHeight;
     final contentWidth = context.isDesktop
         ? AppDimensions.maxContentWidth * 0.4
-        : (context.isTablet ? AppDimensions.maxContentWidth * 0.6 : double.infinity);
+        : (context.isTablet
+              ? AppDimensions.maxContentWidth * 0.6
+              : double.infinity);
     final background = isDark
         ? OnboardingColors.backgroundDarkMode
         : OnboardingColors.background;
@@ -62,16 +64,36 @@ class _OnboardingScreenTwoState extends State<OnboardingScreenTwo>
         animation: _entrance,
         builder: (context, _) {
           final t = _entrance.value;
-          final logoT = const Interval(0.00, 0.45, curve: Curves.easeOutCubic).transform(t);
-          final headingT =
-              const Interval(0.25, 0.65, curve: Curves.easeOutCubic).transform(t);
-          final descriptionT =
-              const Interval(0.32, 0.70, curve: Curves.easeOutCubic).transform(t);
-          final illustrationT =
-              const Interval(0.30, 0.70, curve: Curves.easeOutCubic).transform(t);
-          final createAccountT =
-              const Interval(0.55, 0.90, curve: Curves.easeOutCubic).transform(t);
-          final loginT = const Interval(0.68, 1.00, curve: Curves.easeOutCubic).transform(t);
+          final logoT = const Interval(
+            0.00,
+            0.45,
+            curve: Curves.easeOutCubic,
+          ).transform(t);
+          final headingT = const Interval(
+            0.25,
+            0.65,
+            curve: Curves.easeOutCubic,
+          ).transform(t);
+          final descriptionT = const Interval(
+            0.32,
+            0.70,
+            curve: Curves.easeOutCubic,
+          ).transform(t);
+          final illustrationT = const Interval(
+            0.30,
+            0.70,
+            curve: Curves.easeOutCubic,
+          ).transform(t);
+          final createAccountT = const Interval(
+            0.55,
+            0.90,
+            curve: Curves.easeOutCubic,
+          ).transform(t);
+          final loginT = const Interval(
+            0.68,
+            1.00,
+            curve: Curves.easeOutCubic,
+          ).transform(t);
           final illustrationOpacity = illustrationT.clamp(0.0, 1.0);
 
           return Stack(
@@ -102,7 +124,9 @@ class _OnboardingScreenTwoState extends State<OnboardingScreenTwo>
                       offset: Offset(0, (1 - illustrationOpacity) * 20),
                       child: CustomPaint(
                         size: Size.infinite,
-                        painter: OnboardingIllustrationPainter(progress: illustrationOpacity),
+                        painter: OnboardingIllustrationPainter(
+                          progress: illustrationOpacity,
+                        ),
                       ),
                     ),
                   ),
@@ -143,7 +167,9 @@ class _OnboardingScreenTwoState extends State<OnboardingScreenTwo>
                                 progress: descriptionT,
                                 distance: 0,
                                 child: ConstrainedBox(
-                                  constraints: const BoxConstraints(maxWidth: 340),
+                                  constraints: const BoxConstraints(
+                                    maxWidth: 340,
+                                  ),
                                   child: Text(
                                     'NivaasHub connects residents, manages visitors, '
                                     'handles payments, and keeps your society running '
@@ -162,16 +188,20 @@ class _OnboardingScreenTwoState extends State<OnboardingScreenTwo>
                               FadeSlideIn(
                                 progress: createAccountT,
                                 child: CreateAccountButton(
-                                  onPressed: () =>
-                                      Navigator.pushNamed(context, AppRoutes.register),
+                                  onPressed: () => Navigator.pushNamed(
+                                    context,
+                                    AppRoutes.register,
+                                  ),
                                 ),
                               ),
                               SizedBox(height: AppSpacing.md),
                               FadeSlideIn(
                                 progress: loginT,
                                 child: OnboardingLoginButton(
-                                  onPressed: () =>
-                                      Navigator.pushNamed(context, AppRoutes.login),
+                                  onPressed: () => Navigator.pushNamed(
+                                    context,
+                                    AppRoutes.login,
+                                  ),
                                 ),
                               ),
                               SizedBox(height: AppSpacing.xl),

@@ -37,6 +37,7 @@ import 'package:flutter_nivasshub/services/profile/profile_repository.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  debugPrint('[App] Startup begin');
 
   // ============================================================
   // LOCAL STORAGE
@@ -70,6 +71,7 @@ Future<void> main() async {
     onUnauthorized: () async {
       // A 401 means the persisted session is no longer valid — clear it so
       // a relaunch doesn't incorrectly auto-navigate to the Dashboard.
+      debugPrint('[Auth] 401 received - clearing session and redirecting to Login');
       await secureStorageService.clearSession();
       await NavigationService.logoutAndRedirectToLogin();
     },
