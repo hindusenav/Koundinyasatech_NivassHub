@@ -12,10 +12,6 @@ class CreateCommunityPostHeaderCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final headingColor =
-        isDark ? AppColors.noticesHeadingDark : AppColors.noticesHeadingLight;
-    final secondaryColor =
-        isDark ? AppColors.noticesSecondaryTextDark : AppColors.noticesSecondaryTextLight;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
