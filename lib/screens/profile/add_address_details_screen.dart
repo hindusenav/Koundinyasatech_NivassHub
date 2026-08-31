@@ -1,46 +1,44 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter_nivasshub/models/profile/address_model.dart';
 import 'package:flutter_nivasshub/providers/profile/profile_provider.dart';
 
 class AddAddressDetailsScreen extends StatefulWidget {
   final AddressModel? address;
 
-  const AddAddressDetailsScreen({super.key, this.address});
+  const AddAddressDetailsScreen({
+    super.key,
+    this.address,
+  });
 
   @override
   State<AddAddressDetailsScreen> createState() =>
       _AddAddressDetailsScreenState();
 }
 
-class _AddAddressDetailsScreenState extends State<AddAddressDetailsScreen> {
+class _AddAddressDetailsScreenState
+    extends State<AddAddressDetailsScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   // ============================================================
-  // THEME
+  // FIGMA COLORS
   // ============================================================
 
-  bool get _isDark => Theme.of(context).brightness == Brightness.dark;
+  static const Color _primaryBlue = Color(0xFF2167A5);
 
-  Color get primaryBlue => _isDark
-      ? AppColors.addAddressPrimaryBlueDark
-      : AppColors.addAddressPrimaryBlueLight;
-  Color get headerBlue => _isDark
-      ? AppColors.addAddressHeaderDark
-      : AppColors.addAddressHeaderLight;
-  Color get backgroundBlue => _isDark
-      ? AppColors.addAddressBackgroundDark
-      : AppColors.addAddressBackgroundLight;
-  Color get labelColor =>
-      _isDark ? AppColors.textPrimaryDark : AppColors.addAddressLabelLight;
-  Color get valueColor =>
-      _isDark ? AppColors.addAddressValueDark : AppColors.addAddressValueLight;
-  Color get borderColor =>
-      _isDark ? AppColors.borderDark : AppColors.addAddressBorderLight;
-  Color get hintColor =>
-      _isDark ? AppColors.textSecondaryDark : AppColors.addAddressHintLight;
+  // Header blue
+  static const Color _headerBlue = Color(0xFFD4E4F4);
+
+  static const Color _screenBackground = Color(0xFFF3F6FA);
+
+  static const Color _textDark = Color(0xFF263747);
+
+  static const Color _labelColor = Color(0xFF344454);
+
+  static const Color _hintColor = Color(0xFF9AA6B2);
+
+  static const Color _borderColor = Color(0xFFD6DDE5);
 
   // ============================================================
   // CONTROLLERS
@@ -56,40 +54,48 @@ class _AddAddressDetailsScreenState extends State<AddAddressDetailsScreen> {
   late TextEditingController _stateController;
   late TextEditingController _pinController;
 
-  // ============================================================
-  // INIT
-  // ============================================================
-
   @override
   void initState() {
     super.initState();
 
     final address = widget.address;
 
-    _flatController = TextEditingController(text: address?.flatNo ?? '');
+    _flatController = TextEditingController(
+      text: address?.flatNo ?? '',
+    );
 
     _societyController = TextEditingController(
       text: address?.societyName ?? '',
     );
 
-    _wingController = TextEditingController(text: address?.wing ?? '');
+    _wingController = TextEditingController(
+      text: address?.wing ?? '',
+    );
 
-    _streetController = TextEditingController(text: address?.street ?? '');
+    _streetController = TextEditingController(
+      text: address?.street ?? '',
+    );
 
-    _areaController = TextEditingController(text: address?.area ?? '');
+    _areaController = TextEditingController(
+      text: address?.area ?? '',
+    );
 
-    _landmarkController = TextEditingController(text: address?.landmark ?? '');
+    _landmarkController = TextEditingController(
+      text: address?.landmark ?? '',
+    );
 
-    _cityController = TextEditingController(text: address?.city ?? '');
+    _cityController = TextEditingController(
+      text: address?.city ?? '',
+    );
 
-    _stateController = TextEditingController(text: address?.state ?? '');
+    _stateController = TextEditingController(
+      text: address?.state ?? '',
+    );
 
-    _pinController = TextEditingController(text: address?.pinCode ?? '');
+    _pinController = TextEditingController(
+      text: address?.pinCode ?? '',
+    );
   }
-
-  // ============================================================
-  // DISPOSE
-  // ============================================================
 
   @override
   void dispose() {
@@ -107,15 +113,11 @@ class _AddAddressDetailsScreenState extends State<AddAddressDetailsScreen> {
   }
 
   // ============================================================
-  // SAVE
+  // SAVE ADDRESS
   // ============================================================
 
   void _saveAddress() {
-    if (!_formKey.currentState!.validate()) {
-      return;
-    }
-
-    final updatedAddress = AddressModel(
+    final address = AddressModel(
       flatNo: _flatController.text.trim(),
       societyName: _societyController.text.trim(),
       wing: _wingController.text.trim(),
@@ -127,7 +129,7 @@ class _AddAddressDetailsScreenState extends State<AddAddressDetailsScreen> {
       pinCode: _pinController.text.trim(),
     );
 
-    context.read<ProfileProvider>().updateAddress(updatedAddress);
+    context.read<ProfileProvider>().updateAddress(address);
 
     Navigator.pop(context);
   }
@@ -140,355 +142,208 @@ class _AddAddressDetailsScreenState extends State<AddAddressDetailsScreen> {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
 
-    /*
-      Reference width is approximately 320px.
+    // Responsive width without making the design too large/small
+    final scale = (screenWidth / 360).clamp(0.88, 1.0);
 
-      This keeps the UI compact on mobile while allowing
-      reasonable scaling on larger devices.
-    */
-    final double scale = (screenWidth / 320).clamp(0.95, 1.08);
+    // ============================================================
+    // DYNAMIC FIELD LIST
+    // ============================================================
 
+final fields = <_AddressFieldData>[
+  _AddressFieldData(
+    label: 'Flat/House No.',
+    hint: 'B-402',
+    iconPath: 'assets/icons/profile/address(profile).png',
+    controller: _flatController,
+  ),
+
+  _AddressFieldData(
+    label: 'Society/Building Name',
+    hint: 'Golden Residence',
+    iconPath: 'assets/icons/profile/block.png',
+    controller: _societyController,
+  ),
+
+  _AddressFieldData(
+    label: 'Wing/Tower',
+    hint: 'Tower B',
+    iconPath: 'assets/icons/profile/wing(addaddress).png',
+    controller: _wingController,
+  ),
+
+  _AddressFieldData(
+    label: 'Street/Lane',
+    hint: 'MG Road',
+    iconPath: 'assets/icons/profile/street(addaddress).png',
+    controller: _streetController,
+  ),
+
+  _AddressFieldData(
+    label: 'Area/Locality',
+    hint: 'Andheri West',
+    iconPath: 'assets/icons/profile/area(addaddress).png',
+    controller: _areaController,
+  ),
+
+  _AddressFieldData(
+    label: 'Landmark',
+    hint: 'Near City Mall',
+    iconPath: 'assets/icons/profile/landmark(addaddress).png',
+    controller: _landmarkController,
+  ),
+
+  _AddressFieldData(
+    label: 'City',
+    hint: 'Mumbai',
+    iconPath: 'assets/icons/profile/block.png',
+    controller: _cityController,
+  ),
+
+  _AddressFieldData(
+    label: 'State',
+    hint: 'Maharashtra',
+    iconPath: 'assets/icons/profile/street(addaddress).png',
+    controller: _stateController,
+  ),
+
+  _AddressFieldData(
+    label: 'PIN Code',
+    hint: '400053',
+    iconPath: 'assets/icons/profile/area(addaddress).png',
+    controller: _pinController,
+    keyboardType: TextInputType.number,
+  ),
+];
     return Scaffold(
-      backgroundColor: backgroundBlue,
+      backgroundColor: _screenBackground,
 
-      // ========================================================
+      // ============================================================
       // HEADER
-      // ========================================================
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(56),
-        child: AppBar(
-          backgroundColor: headerBlue,
-          elevation: 0,
-          scrolledUnderElevation: 0,
+      // ============================================================
 
-          leading: IconButton(
-            padding: EdgeInsets.zero,
-            icon: Icon(
-              Icons.arrow_back,
-              color: _isDark ? AppColors.textPrimaryDark : Colors.black,
-              size: 20,
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+
+        backgroundColor: _headerBlue,
+
+        elevation: 0,
+
+        scrolledUnderElevation: 0,
+
+        toolbarHeight: 74 * scale,
+
+        titleSpacing: 0,
+
+        title: Row(
+          children: [
+            SizedBox(width: 10 * scale),
+
+            IconButton(
+              splashRadius: 20,
+
+              onPressed: () {
+                Navigator.pop(context);
+              },
+
+              icon: Icon(
+                Icons.arrow_back,
+                size: 21 * scale,
+                color: _textDark,
+              ),
             ),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
 
-          centerTitle: true,
+            Expanded(
+              child: Center(
+                child: Padding(
+                  padding: EdgeInsets.only(
+                    right: 42 * scale,
+                  ),
+                  child: Text(
+                    'Add Address Details',
 
-          title: Text(
-            'Add Address Details',
-            style: TextStyle(
-              color: _isDark ? AppColors.textPrimaryDark : Colors.black,
-              fontSize: 14 * scale,
-              fontWeight: FontWeight.w700,
+                    style: TextStyle(
+                      color: _textDark,
+                      fontSize: 15 * scale,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ),
             ),
-          ),
+          ],
         ),
       ),
 
-      // ========================================================
+      // ============================================================
       // BODY
-      // ========================================================
+      // ============================================================
+
       body: SafeArea(
-        child: Form(
-          key: _formKey,
-
-          child: SingleChildScrollView(
-            physics: const ClampingScrollPhysics(),
-
-            padding: EdgeInsets.fromLTRB(
-              13 * scale,
-              10 * scale,
-              13 * scale,
-              5 * scale,
-            ),
-
-            child: Container(
-              width: double.infinity,
-
-              padding: EdgeInsets.fromLTRB(
-                12 * scale,
-                14 * scale,
-                12 * scale,
-                14 * scale,
-              ),
-
-              decoration: BoxDecoration(
-                color: _isDark ? AppColors.surfaceDark : Colors.white,
-
-                borderRadius: BorderRadius.circular(13 * scale),
-
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: _isDark ? 0.4 : 0.08),
-                    blurRadius: 5,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-
-                children: [
-                  // ==================================================
-                  // 1. FLAT / HOUSE
-                  // ==================================================
-                  _addressField(
-                    scale: scale,
-                    icon: Icons.home_outlined,
-                    label: 'Flat/House No.',
-                    hint: 'B-402',
-                    controller: _flatController,
-                    validator: (value) {
-                      if (value == null || value.trim().isEmpty) {
-                        return 'Please enter Flat/House No.';
-                      }
-
-                      return null;
-                    },
-                  ),
-
-                  // ==================================================
-                  // 2. SOCIETY
-                  // ==================================================
-                  _addressField(
-                    scale: scale,
-                    icon: Icons.business_outlined,
-                    label: 'Society/Building Name',
-                    hint: 'Golden Residence',
-                    controller: _societyController,
-                    validator: (value) {
-                      if (value == null || value.trim().isEmpty) {
-                        return 'Please enter Society/Building Name';
-                      }
-
-                      return null;
-                    },
-                  ),
-
-                  // ==================================================
-                  // 3. WING
-                  // ==================================================
-                  _addressField(
-                    scale: scale,
-                    icon: Icons.location_city_outlined,
-                    label: 'Wing/Tower',
-                    hint: 'Tower B',
-                    controller: _wingController,
-                  ),
-
-                  // ==================================================
-                  // 4. STREET
-                  // ==================================================
-                  _addressField(
-                    scale: scale,
-                    icon: Icons.map_outlined,
-                    label: 'Street/Lane',
-                    hint: 'MG Road',
-                    controller: _streetController,
-                  ),
-
-                  // ==================================================
-                  // 5. AREA
-                  // ==================================================
-                  _addressField(
-                    scale: scale,
-                    icon: Icons.mail_outline,
-                    label: 'Area/Locality',
-                    hint: 'Andheri West',
-                    controller: _areaController,
-                  ),
-
-                  // ==================================================
-                  // 6. LANDMARK
-                  // ==================================================
-                  _addressField(
-                    scale: scale,
-                    icon: Icons.language_outlined,
-                    label: 'Landmark',
-                    hint: 'Near City Mall',
-                    controller: _landmarkController,
-                  ),
-
-                  // ==================================================
-                  // 7. CITY
-                  // ==================================================
-                  _addressField(
-                    scale: scale,
-                    icon: Icons.location_city_outlined,
-                    label: 'City',
-                    hint: 'Mumbai',
-                    controller: _cityController,
-                    validator: (value) {
-                      if (value == null || value.trim().isEmpty) {
-                        return 'Please enter City';
-                      }
-
-                      return null;
-                    },
-                  ),
-
-                  // ==================================================
-                  // 8. STATE
-                  // ==================================================
-                  _addressField(
-                    scale: scale,
-                    icon: Icons.map_outlined,
-                    label: 'State',
-                    hint: 'Maharashtra',
-                    controller: _stateController,
-                    validator: (value) {
-                      if (value == null || value.trim().isEmpty) {
-                        return 'Please enter State';
-                      }
-
-                      return null;
-                    },
-                  ),
-
-                  // ==================================================
-                  // 9. PIN
-                  // ==================================================
-                  _addressField(
-                    scale: scale,
-                    icon: Icons.mail_outline,
-                    label: 'PIN Code',
-                    hint: '400053',
-                    controller: _pinController,
-                    keyboardType: TextInputType.number,
-                    isLast: true,
-                    validator: (value) {
-                      if (value == null || value.trim().isEmpty) {
-                        return 'Please enter PIN Code';
-                      }
-
-                      if (value.trim().length != 6) {
-                        return 'PIN Code must be 6 digits';
-                      }
-
-                      return null;
-                    },
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-
-      // ========================================================
-      // BOTTOM BUTTONS
-      // ========================================================
-      bottomNavigationBar: SafeArea(
         top: false,
 
-        child: Container(
-          color: backgroundBlue,
+        child: Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                physics: const ClampingScrollPhysics(),
 
-          padding: EdgeInsets.fromLTRB(
-            13 * scale,
-            7 * scale,
-            13 * scale,
-            10 * scale,
-          ),
+                padding: EdgeInsets.fromLTRB(
+                  16 * scale,
+                  16 * scale,
+                  16 * scale,
+                  10 * scale,
+                ),
 
-          child: Row(
-            children: [
-              // ==================================================
-              // SAVE
-              // ==================================================
-              Expanded(
-                child: SizedBox(
-                  height: 43 * scale,
+                child: Container(
+                  width: double.infinity,
 
-                  child: ElevatedButton(
-                    onPressed: _saveAddress,
+                  padding: EdgeInsets.fromLTRB(
+                    12 * scale,
+                    14 * scale,
+                    12 * scale,
+                    14 * scale,
+                  ),
 
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: primaryBlue,
-                      foregroundColor: Colors.white,
-                      elevation: 0,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
 
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8 * scale),
-                      ),
-
-                      padding: EdgeInsets.zero,
+                    borderRadius: BorderRadius.circular(
+                      16 * scale,
                     ),
 
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.07),
+                        blurRadius: 10,
+                        offset: const Offset(0, 3),
+                      ),
+                    ],
+                  ),
 
-                      children: [
-                        Icon(Icons.save_outlined, size: 15 * scale),
+                  child: Column(
+                    children: List.generate(
+                      fields.length,
+                      (index) {
+                        final field = fields[index];
 
-                        SizedBox(width: 5 * scale),
-
-                        Text(
-                          'Save',
-                          style: TextStyle(
-                            fontSize: 13 * scale,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ],
+                        return _buildAddressField(
+                          field: field,
+                          scale: scale,
+                          isLast: index == fields.length - 1,
+                        );
+                      },
                     ),
                   ),
                 ),
               ),
+            ),
 
-              SizedBox(width: 7 * scale),
+            // ======================================================
+            // BOTTOM BUTTONS
+            // ======================================================
 
-              // ==================================================
-              // CANCEL
-              // ==================================================
-              Expanded(
-                child: SizedBox(
-                  height: 43 * scale,
-
-                  child: OutlinedButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-
-                    style: OutlinedButton.styleFrom(
-                      backgroundColor:
-                          _isDark ? AppColors.surfaceDark : Colors.white,
-
-                      foregroundColor: primaryBlue,
-
-                      side: BorderSide(color: primaryBlue, width: 1),
-
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8 * scale),
-                      ),
-
-                      padding: EdgeInsets.zero,
-                    ),
-
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-
-                      children: [
-                        Icon(Icons.close, size: 15 * scale),
-
-                        SizedBox(width: 5 * scale),
-
-                        Text(
-                          'Cancel',
-                          style: TextStyle(
-                            fontSize: 13 * scale,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
+            _buildBottomButtons(scale),
+          ],
         ),
       ),
     );
@@ -498,118 +353,129 @@ class _AddAddressDetailsScreenState extends State<AddAddressDetailsScreen> {
   // ADDRESS FIELD
   // ============================================================
 
-  Widget _addressField({
+  Widget _buildAddressField({
+    required _AddressFieldData field,
     required double scale,
-    required IconData icon,
-    required String label,
-    required String hint,
-    required TextEditingController controller,
-    String? Function(String?)? validator,
-    TextInputType? keyboardType,
-    bool isLast = false,
+    required bool isLast,
   }) {
     return Padding(
-      padding: EdgeInsets.only(bottom: isLast ? 0 : 10 * scale),
+      padding: EdgeInsets.only(
+        bottom: isLast ? 0 : 11 * scale,
+      ),
 
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
 
         children: [
-          // ======================================================
-          // LABEL
-          // ======================================================
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
+          // ========================================================
+          // LABEL + ICON
+          // ========================================================
 
-            children: [
-              Icon(icon, color: primaryBlue, size: 16 * scale),
+          Padding(
+            padding: EdgeInsets.only(
+              left: 1 * scale,
+              bottom: 6 * scale,
+            ),
 
-              SizedBox(width: 7 * scale),
+            child: Row(
+              children: [
+                SizedBox(
+                  width: 17 * scale,
+                  height: 17 * scale,
 
-              Expanded(
-                child: Text(
-                  label,
+                  child: Image.asset(
+                    field.iconPath,
+
+                    width: 15 * scale,
+                    height: 15 * scale,
+
+                    fit: BoxFit.contain,
+                  ),
+                ),
+
+                SizedBox(width: 8 * scale),
+
+                Text(
+                  field.label,
+
                   style: TextStyle(
-                    color: labelColor,
-                    fontSize: 13 * scale,
+                    color: _labelColor,
+                    fontSize: 12.5 * scale,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
 
-          SizedBox(height: 5 * scale),
-
-          // ======================================================
+          // ========================================================
           // TEXT FIELD
-          // ======================================================
+          // ========================================================
+
           SizedBox(
-            height: 38 * scale,
+            height: 39 * scale,
 
             child: TextFormField(
-              controller: controller,
+              controller: field.controller,
 
-              keyboardType: keyboardType,
-
-              validator: validator,
-
-              textAlignVertical: TextAlignVertical.center,
+              keyboardType: field.keyboardType,
 
               style: TextStyle(
-                color: valueColor,
+                color: _textDark,
                 fontSize: 12 * scale,
                 fontWeight: FontWeight.w400,
               ),
 
-              cursorColor: primaryBlue,
+              cursorColor: _primaryBlue,
 
               decoration: InputDecoration(
-                hintText: hint,
+                hintText: field.hint,
 
                 hintStyle: TextStyle(
-                  color: hintColor,
+                  color: _hintColor,
                   fontSize: 12 * scale,
                   fontWeight: FontWeight.w400,
                 ),
 
                 filled: true,
 
-                fillColor: _isDark ? AppColors.surfaceDark : Colors.white,
+                fillColor: const Color(0xFFFCFDFE),
 
                 contentPadding: EdgeInsets.symmetric(
                   horizontal: 11 * scale,
                   vertical: 0,
                 ),
 
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(7 * scale),
-
-                  borderSide: BorderSide(color: borderColor, width: 0.8),
-                ),
-
                 enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(7 * scale),
+                  borderRadius: BorderRadius.circular(
+                    8 * scale,
+                  ),
 
-                  borderSide: BorderSide(color: borderColor, width: 0.8),
+                  borderSide: const BorderSide(
+                    color: _borderColor,
+                    width: 1,
+                  ),
                 ),
 
                 focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(7 * scale),
+                  borderRadius: BorderRadius.circular(
+                    8 * scale,
+                  ),
 
-                  borderSide: BorderSide(color: primaryBlue, width: 1.2),
+                  borderSide: const BorderSide(
+                    color: _primaryBlue,
+                    width: 1.2,
+                  ),
                 ),
 
-                errorBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(7 * scale),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(
+                    8 * scale,
+                  ),
 
-                  borderSide: const BorderSide(color: Colors.red, width: 0.8),
-                ),
-
-                focusedErrorBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(7 * scale),
-
-                  borderSide: const BorderSide(color: Colors.red, width: 1.2),
+                  borderSide: const BorderSide(
+                    color: _borderColor,
+                  ),
                 ),
               ),
             ),
@@ -618,4 +484,160 @@ class _AddAddressDetailsScreenState extends State<AddAddressDetailsScreen> {
       ),
     );
   }
+
+  // ============================================================
+  // BOTTOM BUTTONS
+  // ============================================================
+
+  Widget _buildBottomButtons(double scale) {
+    return Container(
+      width: double.infinity,
+
+      color: _screenBackground,
+
+      padding: EdgeInsets.fromLTRB(
+        16 * scale,
+        8 * scale,
+        16 * scale,
+        18 * scale,
+      ),
+
+      child: Row(
+        children: [
+          // ========================================================
+          // SAVE
+          // ========================================================
+
+          Expanded(
+            child: SizedBox(
+              height: 46 * scale,
+
+              child: ElevatedButton(
+                onPressed: _saveAddress,
+
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: _primaryBlue,
+
+                  foregroundColor: Colors.white,
+
+                  elevation: 3,
+
+                  shadowColor:
+                      Colors.black.withOpacity(0.18),
+
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(
+                      8 * scale,
+                    ),
+                  ),
+                ),
+
+                child: Row(
+                  mainAxisAlignment:
+                      MainAxisAlignment.center,
+
+                  children: [
+                    Icon(
+                      Icons.save_outlined,
+                      size: 15 * scale,
+                    ),
+
+                    SizedBox(width: 6 * scale),
+
+                    Text(
+                      'Save',
+
+                      style: TextStyle(
+                        fontSize: 13 * scale,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+
+          SizedBox(width: 8 * scale),
+
+          // ========================================================
+          // CANCEL
+          // FIGMA = BLUE BUTTON
+          // ========================================================
+
+          Expanded(
+            child: SizedBox(
+              height: 46 * scale,
+
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: _primaryBlue,
+
+                  foregroundColor: Colors.white,
+
+                  elevation: 3,
+
+                  shadowColor:
+                      Colors.black.withOpacity(0.18),
+
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(
+                      8 * scale,
+                    ),
+                  ),
+                ),
+
+                child: Row(
+                  mainAxisAlignment:
+                      MainAxisAlignment.center,
+
+                  children: [
+                    Icon(
+                      Icons.close,
+                      size: 16 * scale,
+                    ),
+
+                    SizedBox(width: 6 * scale),
+
+                    Text(
+                      'Cancel',
+
+                      style: TextStyle(
+                        fontSize: 13 * scale,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ============================================================
+// DYNAMIC FIELD DATA MODEL
+// ============================================================
+
+class _AddressFieldData {
+  final String label;
+  final String hint;
+  final String iconPath;
+  final TextEditingController controller;
+  final TextInputType? keyboardType;
+
+  _AddressFieldData({
+    required this.label,
+    required this.hint,
+    required this.iconPath,
+    required this.controller,
+    this.keyboardType,
+  });
 }
