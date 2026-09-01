@@ -19,8 +19,6 @@ class AddAddressDetailsScreen extends StatefulWidget {
 
 class _AddAddressDetailsScreenState
     extends State<AddAddressDetailsScreen> {
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
   // ============================================================
   // FIGMA COLORS
   // ============================================================
@@ -313,7 +311,7 @@ final fields = <_AddressFieldData>[
 
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.07),
+                        color: Colors.black.withValues(alpha: 0.07),
                         blurRadius: 10,
                         offset: const Offset(0, 3),
                       ),
@@ -523,7 +521,7 @@ final fields = <_AddressFieldData>[
                   elevation: 3,
 
                   shadowColor:
-                      Colors.black.withOpacity(0.18),
+                      Colors.black.withValues(alpha: 0.18),
 
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(
@@ -582,7 +580,7 @@ final fields = <_AddressFieldData>[
                   elevation: 3,
 
                   shadowColor:
-                      Colors.black.withOpacity(0.18),
+                      Colors.black.withValues(alpha: 0.18),
 
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(

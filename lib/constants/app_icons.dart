@@ -63,6 +63,7 @@ class AppIcons {
   static const IconData success = Icons.check_circle_outline_rounded;
   static const IconData empty = Icons.inbox_rounded;
   static const IconData noConnection = Icons.wifi_off_rounded;
+  static const IconData signalCheck = Icons.network_check_rounded;
   static const IconData shield = Icons.gpp_good_rounded;
 
   // -----------------------------------------------------------------------

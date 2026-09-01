@@ -185,7 +185,7 @@ class _LoginScreenState extends State<LoginScreen>
           AppRoutes.otpVerification,
           arguments: OtpVerificationScreenArgs(
             mobileNumber: auth.mobileNumber ?? mobile,
-            otpExpirySeconds: auth.otpExpirySeconds ?? 120,
+            otpExpirySeconds: auth.otpExpirySeconds,
             isRegistrationFlow: false,
           ),
         );
