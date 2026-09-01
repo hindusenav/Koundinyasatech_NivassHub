@@ -74,8 +74,17 @@ flutter:
     - assets/icons/
     - assets/json/
     - assets/icons/quick_actions/
+    - assets/icons/quick_actions/homequick_actions/
     - assets/json/notices/
-
+    - assets/icons/profile/addbio.png
+    - assets/icons/profile/address(profile).png
+    - assets/icons/profile/area(addaddress).png
+    - assets/icons/profile/block.png
+    - assets/icons/profile/briefcase.png
+    - assets/icons/profile/house.png
+    - assets/icons/profile/landmark(addaddress).png
+    - assets/icons/profile/street(addaddress).png
+    - assets/icons/profile/wing(addaddress).png
   # fonts:
   #   - family: Poppins
   #     fonts:
