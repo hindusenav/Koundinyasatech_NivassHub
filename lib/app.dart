@@ -223,6 +223,9 @@ ChangeNotifierProvider<ProfileProvider>(
             DashboardNavObserver(
               context.read<DashboardNavigationProvider>(),
             ),
+            ConnectivityRouteObserver(
+              context.read<ConnectivityProvider>(),
+            ),
           ],
 
           theme: AppTheme.light,
