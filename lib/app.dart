@@ -9,6 +9,8 @@ import 'package:flutter_nivasshub/services/core/api_client.dart';
 import 'package:flutter_nivasshub/services/core/connectivity_service.dart';
 import 'package:flutter_nivasshub/services/core/local_storage_service.dart';
 import 'package:flutter_nivasshub/services/core/secure_storage_service.dart';
+import 'package:flutter_nivasshub/providers/connectivity/connectivity_provider.dart';
+import 'package:flutter_nivasshub/widgets/shared/connectivity/no_internet_overlay.dart';
 
 // ============================================================
 // AUTH
@@ -113,6 +115,12 @@ class NivasHubApp extends StatelessWidget {
 
         Provider<ConnectivityService>.value(
           value: connectivityService,
+        ),
+
+        ChangeNotifierProvider<ConnectivityProvider>(
+          create: (_) => ConnectivityProvider(
+            connectivityService: connectivityService,
+          ),
         ),
 
         Provider<ApiClient>.value(
@@ -227,6 +235,8 @@ ChangeNotifierProvider<ProfileProvider>(
 
           onGenerateRoute:
               RouteGenerator.generateRoute,
+
+          builder: (context, child) => NoInternetOverlay(child: child),
         );
       },
     );
