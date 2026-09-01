@@ -51,27 +51,26 @@ Future<void> main() async {
   // SECURE STORAGE
   // ============================================================
 
-  final secureStorageService =
-      SecureStorageService();
+  final secureStorageService = SecureStorageService();
 
   // ============================================================
   // CONNECTIVITY
   // ============================================================
 
-  final connectivityService =
-      ConnectivityService();
+  final connectivityService = ConnectivityService();
 
   // ============================================================
   // API CLIENT
   // ============================================================
 
   final apiClient = ApiClient(
-    getAccessToken:
-        secureStorageService.getAccessToken,
+    getAccessToken: secureStorageService.getAccessToken,
     onUnauthorized: () async {
       // A 401 means the persisted session is no longer valid — clear it so
       // a relaunch doesn't incorrectly auto-navigate to the Dashboard.
-      debugPrint('[Auth] 401 received - clearing session and redirecting to Login');
+      debugPrint(
+        '[Auth] 401 received - clearing session and redirecting to Login',
+      );
       await secureStorageService.clearSession();
       await NavigationService.logoutAndRedirectToLogin();
     },
@@ -81,28 +80,23 @@ Future<void> main() async {
   // AUTH SERVICE
   // ============================================================
 
-  final AuthServiceBase authService =
-      useMockApi
-          ? MockAuthService()
-          : AuthService(apiClient);
+  final AuthServiceBase authService = useMockApi
+      ? MockAuthService()
+      : AuthService(apiClient);
 
   // ============================================================
   // DASHBOARD SERVICE
   // ============================================================
 
-  final HomeApiServiceBase homeApiService =
-      useMockHomeApi
-          ? MockHomeApiService(
-              const DashboardService(),
-            )
-          : HomeApiService(apiClient);
+  final HomeApiServiceBase homeApiService = useMockHomeApi
+      ? MockHomeApiService(const DashboardService())
+      : HomeApiService(apiClient);
 
   // ============================================================
   // DASHBOARD REPOSITORY
   // ============================================================
 
-  final dashboardRepository =
-      DashboardRepository(
+  final dashboardRepository = DashboardRepository(
     const DashboardService(),
     homeApiService,
   );
@@ -111,8 +105,7 @@ Future<void> main() async {
   // QUICK ACTIONS
   // ============================================================
 
-  final quickActionsRepository =
-      QuickActionsRepository(
+  final quickActionsRepository = QuickActionsRepository(
     MockQuickActionsService(),
   );
 
@@ -120,24 +113,19 @@ Future<void> main() async {
   // SEARCH
   // ============================================================
 
-  final SearchServiceBase searchService =
-      MockSearchService();
+  final SearchServiceBase searchService = MockSearchService();
 
   // ============================================================
   // SETTINGS
   // ============================================================
 
-  final settingsRepository =
-      SettingsRepository(
-    localStorageService,
-  );
+  final settingsRepository = SettingsRepository(localStorageService);
 
   // ============================================================
   // PROFILE
   // ============================================================
 
-  final profileRepository =
-      ProfileRepository();
+  final profileRepository = ProfileRepository();
 
   // ============================================================
   // RUN APP
@@ -145,36 +133,26 @@ Future<void> main() async {
 
   runApp(
     NivasHubApp(
-      localStorageService:
-          localStorageService,
+      localStorageService: localStorageService,
 
-      secureStorageService:
-          secureStorageService,
+      secureStorageService: secureStorageService,
 
-      connectivityService:
-          connectivityService,
+      connectivityService: connectivityService,
 
-      apiClient:
-          apiClient,
+      apiClient: apiClient,
 
-      authService:
-          authService,
+      authService: authService,
 
-      dashboardRepository:
-          dashboardRepository,
+      dashboardRepository: dashboardRepository,
 
-      quickActionsRepository:
-          quickActionsRepository,
+      quickActionsRepository: quickActionsRepository,
 
-      searchService:
-          searchService,
+      searchService: searchService,
 
-      settingsRepository:
-          settingsRepository,
+      settingsRepository: settingsRepository,
 
       // Profile repository
-      profileRepository:
-          profileRepository,
+      profileRepository: profileRepository,
     ),
   );
 }

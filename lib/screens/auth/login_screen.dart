@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:dio/dio.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_nivasshub/routes/app_routes.dart';
 import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter_nivasshub/constants/app_dimensions.dart';
@@ -18,10 +19,12 @@ import 'package:flutter_nivasshub/constants/auth/auth_colors.dart';
 import 'package:flutter_nivasshub/providers/auth/auth_provider.dart';
 import 'package:flutter_nivasshub/widgets/auth/auth_gradient_button.dart';
 import 'package:flutter_nivasshub/widgets/auth/auth_skyline_painter.dart';
-import 'package:flutter_nivasshub/screens/auth/otp_verification_screen.dart';
 
-/// Mobile-number entry point into the OTP login flow. Sends an OTP for the
-/// entered number, then navigates to [OtpVerificationScreen].
+/// Login Screen with Email and Phone login support
+/// - Fetches countries from API on load
+/// - Supports email login (cont_code: null)
+/// - Supports phone login (cont_code: +91)
+/// - Stores token in SharedPreferences
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -31,15 +34,26 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen>
     with SingleTickerProviderStateMixin {
+  // Animation controller for entrance animation
   late final AnimationController _entrance;
+
+  // Form key for validation
   final _formKey = GlobalKey<FormState>();
-  final _mobileController = TextEditingController();
+
+  // Text controllers
+  final _emailOrPhoneController = TextEditingController();
   final _passwordController = TextEditingController();
 
-  String _selectedCountryCode = '+91'; // Default to India
+  // State variables
+  String _selectedCountryCode = '+91';
   bool _isEmailMode = false;
   bool _obscurePassword = true;
   bool _isLoadingCountries = false;
+  bool _isLoading = false;
+  String? _errorMessage;
+
+  // Token storage key
+  static const String _tokenKey = 'auth_token';
 
   // Country list - populated from API
   List<Map<String, String>> _countries = [
@@ -63,7 +77,8 @@ class _LoginScreenState extends State<LoginScreen>
       duration: const Duration(milliseconds: 900),
     )..forward();
 
-    _mobileController.addListener(_onMobileTextChanged);
+    // Add listener for auto mode switching
+    _emailOrPhoneController.addListener(_onTextChanged);
 
     // Fetch countries from API after first frame
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -71,7 +86,7 @@ class _LoginScreenState extends State<LoginScreen>
     });
   }
 
-  /// Fetch countries from API: http://10.10.10.34:3000/country-codes
+  /// Fetch countries from API
   Future<void> _fetchCountriesFromAPI() async {
     setState(() {
       _isLoadingCountries = true;
@@ -79,23 +94,31 @@ class _LoginScreenState extends State<LoginScreen>
 
     try {
       final dio = Dio();
-      final response = await dio.get('http://10.10.10.34:3000/country-codes');
+      final response = await dio.get(
+        'http://10.10.10.102:3000/country-codes',
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+          },
+        ),
+      );
 
       if (response.statusCode == 200) {
         final data = response.data as Map<String, dynamic>;
 
-        // Check if ActiveCountries exists in response
         if (data['ActiveCountries'] != null) {
           final List<dynamic> activeCountries = data['ActiveCountries'];
 
           if (mounted) {
             setState(() {
               _countries = activeCountries.map((country) {
-                return {
-                  'code': country['callingCode'].toString(),
-                  'name':
-                      '${country['countryName']} 🇮🇳', // You can add flag emojis based on shortCode
-                };
+                final callingCode = country['callingCode'].toString();
+                final countryName = country['countryName'] ?? '';
+                final shortCode = country['shortCode'] ?? '';
+                // Get flag emoji from short code
+                final flagEmoji = _getFlagEmoji(shortCode);
+                return {'code': callingCode, 'name': '$countryName $flagEmoji'};
               }).toList();
             });
           }
@@ -120,19 +143,28 @@ class _LoginScreenState extends State<LoginScreen>
     }
   }
 
-  void _onMobileTextChanged() {
-    final text = _mobileController.text;
-    // Check if input contains letters (alphabetical characters)
+  /// Convert country code to flag emoji
+  String _getFlagEmoji(String shortCode) {
+    if (shortCode.isEmpty) return '🌍';
+    final upper = shortCode.toUpperCase();
+    if (upper.length != 2) return '🌍';
+    const offset = 0x1F1E6 - 65;
+    final first = upper.codeUnitAt(0) + offset;
+    final second = upper.codeUnitAt(1) + offset;
+    return String.fromCharCodes([first, second]);
+  }
+
+  /// Auto switch between email and phone mode based on input
+  void _onTextChanged() {
+    final text = _emailOrPhoneController.text;
     final hasLetters = RegExp(r'[a-zA-Z]').hasMatch(text);
+
     if (hasLetters && !_isEmailMode) {
       setState(() {
         _isEmailMode = true;
-        // Keep the text when switching to email mode
-        _mobileController.text = text;
       });
-    } else if (!hasLetters && _isEmailMode) {
-      // If no letters and currently in email mode, switch back to number mode
-      // But only if the text is empty or only numbers
+    } else if (!hasLetters && _isEmailMode && text.isNotEmpty) {
+      // Check if it's only numbers
       final onlyNumbers = RegExp(r'^[0-9]*$').hasMatch(text);
       if (onlyNumbers) {
         setState(() {
@@ -145,24 +177,63 @@ class _LoginScreenState extends State<LoginScreen>
   @override
   void dispose() {
     _entrance.dispose();
-    _mobileController.dispose();
+    _emailOrPhoneController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
 
+  /// Check if form is valid
   bool _isFormValid() {
-    final mobileValid = _mobileController.text.isNotEmpty;
-    final passwordValid = _passwordController.text.length >= 8;
-    return mobileValid && passwordValid;
+    final emailOrPhone = _emailOrPhoneController.text.trim();
+    final password = _passwordController.text.trim();
+
+    if (emailOrPhone.isEmpty || password.isEmpty) {
+      return false;
+    }
+
+    if (_isEmailMode) {
+      // Email validation: must be valid email format
+      final emailRegex = RegExp(
+        r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
+      );
+      if (!emailRegex.hasMatch(emailOrPhone)) {
+        return false;
+      }
+    } else {
+      // Phone validation: exactly 10 digits
+      if (emailOrPhone.length != 10 ||
+          !RegExp(r'^[0-9]+$').hasMatch(emailOrPhone)) {
+        return false;
+      }
+    }
+
+    // Password validation: minimum 8 characters
+    if (password.length < 8) {
+      return false;
+    }
+
+    return true;
   }
 
+  /// Save token to SharedPreferences
+  Future<void> _saveToken(String token) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString(_tokenKey, token);
+      debugPrint('[Auth] Token saved successfully');
+    } catch (e) {
+      debugPrint('[Auth] Error saving token: $e');
+    }
+  }
+
+  /// Handle login
   Future<void> _handleLogin() async {
-    // Check if form is valid - properly handle nullable
-    final form = _formKey.currentState;
-    if (form == null || !form.validate()) {
+    // Validate form
+    if (!_formKey.currentState!.validate()) {
       return;
     }
 
+    // Hide keyboard
     context.hideKeyboard();
 
     // Handle login based on mode
@@ -172,11 +243,21 @@ class _LoginScreenState extends State<LoginScreen>
       if (mounted) {
         CustomSnackbar.info(context, 'Email login feature coming soon!');
       }
-    } else {
-      // Phone OTP login logic
-      final mobile = _mobileController.text.trim();
-      final auth = context.read<AuthProvider>();
-      final success = await auth.sendOtp(mobile);
+
+      debugPrint('[Auth] Login request: $requestBody');
+
+      final dio = Dio();
+      final response = await dio.post(
+        'http://10.10.10.102:3000/auth/login',
+        data: requestBody,
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+          },
+        ),
+      );
+
       if (!mounted) return;
 
       if (success) {
@@ -198,7 +279,7 @@ class _LoginScreenState extends State<LoginScreen>
     }
   }
 
-  /// Show country picker with bottom sheet (Scalable for 197 countries)
+  /// Show country picker with bottom sheet
   Future<void> _showCountryPicker() async {
     final selected = await showModalBottomSheet<String>(
       context: context,
@@ -337,12 +418,15 @@ class _LoginScreenState extends State<LoginScreen>
         ? AuthColors.lightBlueDarkMode
         : AuthColors.lightBlue;
 
+    final bool isValid = _isFormValid();
+
     return PopScope(
       canPop: !isSendingOtp,
       child: Scaffold(
         backgroundColor: background,
         body: Stack(
           children: [
+            // Background gradient
             Positioned.fill(
               child: DecoratedBox(
                 decoration: BoxDecoration(
@@ -359,6 +443,7 @@ class _LoginScreenState extends State<LoginScreen>
                 ),
               ),
             ),
+            // Skyline animation
             AnimatedBuilder(
               animation: _entrance,
               builder: (context, _) {
@@ -388,6 +473,7 @@ class _LoginScreenState extends State<LoginScreen>
                 );
               },
             ),
+            // Main content
             SafeArea(
               child: Center(
                 child: ConstrainedBox(
@@ -452,6 +538,7 @@ class _LoginScreenState extends State<LoginScreen>
                             return Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
+                                // Logo
                                 Opacity(
                                   opacity: logoT.clamp(0.0, 1.0),
                                   child: Transform.scale(
@@ -460,6 +547,8 @@ class _LoginScreenState extends State<LoginScreen>
                                   ),
                                 ),
                                 SizedBox(height: AppSpacing.lg),
+
+                                // Welcome text
                                 FadeSlideIn(
                                   progress: headingT,
                                   child: Text(
@@ -472,6 +561,8 @@ class _LoginScreenState extends State<LoginScreen>
                                   ),
                                 ),
                                 SizedBox(height: AppSpacing.xs),
+
+                                // Subtitle
                                 FadeSlideIn(
                                   progress: subheadingT,
                                   child: Text(
@@ -485,41 +576,51 @@ class _LoginScreenState extends State<LoginScreen>
                                   ),
                                 ),
                                 SizedBox(height: AppSpacing.xl),
-                                FadeSlideIn(
-                                  progress: labelT,
-                                  child: Align(
-                                    alignment: Alignment.centerLeft,
-                                    child: Text(
-                                      _isEmailMode
-                                          ? 'Email Address'
-                                          : 'Mobile Number',
-                                      style: AppTextStyles.labelLarge.copyWith(
-                                        color: heading,
+
+                                // Form
+                                Form(
+                                  key: _formKey,
+                                  autovalidateMode:
+                                      AutovalidateMode.onUserInteraction,
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      // Label
+                                      FadeSlideIn(
+                                        progress: labelT,
+                                        child: Text(
+                                          _isEmailMode
+                                              ? 'Email Address'
+                                              : 'Mobile Number',
+                                          style: AppTextStyles.labelLarge
+                                              .copyWith(color: heading),
+                                        ),
                                       ),
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(height: AppSpacing.sm),
-                                FadeSlideIn(
-                                  progress: fieldRowT,
-                                  child: Form(
-                                    key: _formKey,
-                                    autovalidateMode:
-                                        AutovalidateMode.onUserInteraction,
-                                    child: Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        if (!_isEmailMode)
-                                          _buildCountryDropdown(border, isDark),
-                                        if (!_isEmailMode) AppSpacing.gapWSm,
-                                        Expanded(
-                                          child: Theme(
-                                            data: Theme.of(context).copyWith(
-                                              inputDecorationTheme:
-                                                  Theme.of(context)
-                                                      .inputDecorationTheme
-                                                      .copyWith(
+                                      SizedBox(height: AppSpacing.sm),
+
+                                      // Email/Phone input with country dropdown
+                                      FadeSlideIn(
+                                        progress: fieldRowT,
+                                        child: Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            // Country dropdown (only for phone mode)
+                                            if (!_isEmailMode)
+                                              _buildCountryDropdown(
+                                                border,
+                                                isDark,
+                                              ),
+                                            if (!_isEmailMode)
+                                              AppSpacing.gapWSm,
+                                            Expanded(
+                                              child: Theme(
+                                                data: Theme.of(context).copyWith(
+                                                  inputDecorationTheme:
+                                                      Theme.of(
+                                                        context,
+                                                      ).inputDecorationTheme.copyWith(
                                                         fillColor: isDark
                                                             ? AppColors
                                                                   .surfaceDark
@@ -552,141 +653,170 @@ class _LoginScreenState extends State<LoginScreen>
                                                               color: bodyText,
                                                             ),
                                                       ),
+                                                ),
+                                                child: CustomTextField(
+                                                  controller:
+                                                      _emailOrPhoneController,
+                                                  hint: _isEmailMode
+                                                      ? 'Enter email address'
+                                                      : 'Enter mobile number',
+                                                  keyboardType: _isEmailMode
+                                                      ? TextInputType
+                                                            .emailAddress
+                                                      : TextInputType.phone,
+                                                  textInputAction:
+                                                      TextInputAction.next,
+                                                  inputFormatters: _isEmailMode
+                                                      ? []
+                                                      : [
+                                                          FilteringTextInputFormatter
+                                                              .digitsOnly,
+                                                          LengthLimitingTextInputFormatter(
+                                                            10,
+                                                          ),
+                                                        ],
+                                                  validator: (value) {
+                                                    if (value == null ||
+                                                        value.isEmpty) {
+                                                      return _isEmailMode
+                                                          ? 'Please enter your email'
+                                                          : 'Please enter your mobile number';
+                                                    }
+                                                    if (_isEmailMode) {
+                                                      // Email validation
+                                                      final emailRegex = RegExp(
+                                                        r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
+                                                      );
+                                                      if (!emailRegex.hasMatch(
+                                                        value,
+                                                      )) {
+                                                        return 'Please enter a valid email address';
+                                                      }
+                                                    } else {
+                                                      // Mobile validation - exactly 10 digits
+                                                      if (value.length != 10) {
+                                                        return 'Mobile number must be exactly 10 digits';
+                                                      }
+                                                    }
+                                                    return null;
+                                                  },
+                                                  onFieldSubmitted: (_) =>
+                                                      FocusScope.of(
+                                                        context,
+                                                      ).nextFocus(),
+                                                ),
+                                              ),
                                             ),
-                                            child: CustomTextField(
-                                              controller: _mobileController,
-                                              hint: _isEmailMode
-                                                  ? 'Enter email address'
-                                                  : 'Enter mobile number',
-                                              keyboardType: _isEmailMode
-                                                  ? TextInputType.emailAddress
-                                                  : TextInputType.phone,
-                                              textInputAction:
-                                                  TextInputAction.next,
-                                              inputFormatters: _isEmailMode
-                                                  ? []
-                                                  : [
-                                                      FilteringTextInputFormatter
-                                                          .digitsOnly,
-                                                      LengthLimitingTextInputFormatter(
-                                                        10,
+                                          ],
+                                        ),
+                                      ),
+                                      SizedBox(height: AppSpacing.lg),
+
+                                      // Password label
+                                      FadeSlideIn(
+                                        progress: passwordLabelT,
+                                        child: Text(
+                                          'Password',
+                                          style: AppTextStyles.labelLarge
+                                              .copyWith(color: heading),
+                                        ),
+                                      ),
+                                      SizedBox(height: AppSpacing.sm),
+
+                                      // Password input
+                                      FadeSlideIn(
+                                        progress: passwordFieldT,
+                                        child: Theme(
+                                          data: Theme.of(context).copyWith(
+                                            inputDecorationTheme:
+                                                Theme.of(
+                                                  context,
+                                                ).inputDecorationTheme.copyWith(
+                                                  fillColor: isDark
+                                                      ? AppColors.surfaceDark
+                                                      : Colors.white,
+                                                  enabledBorder:
+                                                      OutlineInputBorder(
+                                                        borderRadius:
+                                                            AppRadius.radiusSm,
+                                                        borderSide: BorderSide(
+                                                          color: border,
+                                                        ),
                                                       ),
-                                                    ],
-                                              validator: (value) {
-                                                if (value == null ||
-                                                    value.isEmpty) {
-                                                  return _isEmailMode
-                                                      ? 'Please enter your email'
-                                                      : 'Please enter your mobile number';
-                                                }
-                                                if (_isEmailMode) {
-                                                  // Email validation - must end with @gmail.com
-                                                  if (!value.contains(
-                                                    '@gmail.com',
-                                                  )) {
-                                                    return 'Email must be a valid @gmail.com address';
-                                                  }
-                                                  if (!RegExp(
-                                                    r'^[a-zA-Z0-9._%+-]+@gmail\.com$',
-                                                  ).hasMatch(value)) {
-                                                    return 'Please enter a valid Gmail address';
-                                                  }
-                                                } else {
-                                                  // Mobile validation - exactly 10 digits
-                                                  if (value.length != 10) {
-                                                    return 'Mobile number must be exactly 10 digits';
-                                                  }
-                                                }
-                                                return null;
+                                                  border: OutlineInputBorder(
+                                                    borderRadius:
+                                                        AppRadius.radiusSm,
+                                                    borderSide: BorderSide(
+                                                      color: border,
+                                                    ),
+                                                  ),
+                                                  hintStyle: AppTextStyles
+                                                      .bodyMedium
+                                                      .copyWith(
+                                                        color: bodyText,
+                                                      ),
+                                                ),
+                                          ),
+                                          child: CustomTextField(
+                                            controller: _passwordController,
+                                            hint:
+                                                'Enter password (min 8 characters)',
+                                            obscureText: _obscurePassword,
+                                            keyboardType:
+                                                TextInputType.visiblePassword,
+                                            textInputAction:
+                                                TextInputAction.done,
+                                            inputFormatters: [],
+                                            suffixIcon: IconButton(
+                                              icon: Icon(
+                                                _obscurePassword
+                                                    ? Icons.visibility_off
+                                                    : Icons.visibility,
+                                                color: bodyText,
+                                                size: 20,
+                                              ),
+                                              onPressed: () {
+                                                setState(() {
+                                                  _obscurePassword =
+                                                      !_obscurePassword;
+                                                });
                                               },
-                                              onFieldSubmitted: (_) =>
-                                                  FocusScope.of(
-                                                    context,
-                                                  ).nextFocus(),
                                             ),
+                                            validator: (value) {
+                                              if (value == null ||
+                                                  value.isEmpty) {
+                                                return 'Please enter your password';
+                                              }
+                                              if (value.length < 8) {
+                                                return 'Password must be at least 8 characters';
+                                              }
+                                              return null;
+                                            },
+                                            onFieldSubmitted: (_) =>
+                                                _handleLogin(),
                                           ),
                                         ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(height: AppSpacing.lg),
-                                FadeSlideIn(
-                                  progress: passwordLabelT,
-                                  child: Align(
-                                    alignment: Alignment.centerLeft,
-                                    child: Text(
-                                      'Password',
-                                      style: AppTextStyles.labelLarge.copyWith(
-                                        color: heading,
                                       ),
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(height: AppSpacing.sm),
-                                FadeSlideIn(
-                                  progress: passwordFieldT,
-                                  child: Theme(
-                                    data: Theme.of(context).copyWith(
-                                      inputDecorationTheme: Theme.of(context)
-                                          .inputDecorationTheme
-                                          .copyWith(
-                                            fillColor: isDark
-                                                ? AppColors.surfaceDark
-                                                : Colors.white,
-                                            enabledBorder: OutlineInputBorder(
-                                              borderRadius: AppRadius.radiusSm,
-                                              borderSide: BorderSide(
-                                                color: border,
-                                              ),
-                                            ),
-                                            border: OutlineInputBorder(
-                                              borderRadius: AppRadius.radiusSm,
-                                              borderSide: BorderSide(
-                                                color: border,
-                                              ),
-                                            ),
-                                            hintStyle: AppTextStyles.bodyMedium
-                                                .copyWith(color: bodyText),
-                                          ),
-                                    ),
-                                    child: CustomTextField(
-                                      controller: _passwordController,
-                                      hint: 'Enter password (min 8 characters)',
-                                      obscureText: _obscurePassword,
-                                      keyboardType:
-                                          TextInputType.visiblePassword,
-                                      textInputAction: TextInputAction.done,
-                                      inputFormatters: [],
-                                      suffixIcon: IconButton(
-                                        icon: Icon(
-                                          _obscurePassword
-                                              ? Icons.visibility_off
-                                              : Icons.visibility,
-                                          color: bodyText,
-                                          size: 20,
-                                        ),
-                                        onPressed: () {
-                                          setState(() {
-                                            _obscurePassword =
-                                                !_obscurePassword;
-                                          });
-                                        },
-                                      ),
-                                      validator: (value) {
-                                        if (value == null || value.isEmpty) {
-                                          return 'Please enter your password';
-                                        }
-                                        if (value.length < 8) {
-                                          return 'Password must be at least 8 characters';
-                                        }
-                                        return null;
-                                      },
-                                      onFieldSubmitted: (_) => _handleLogin(),
-                                    ),
+                                    ],
                                   ),
                                 ),
                                 SizedBox(height: AppSpacing.xl),
+
+                                // Error message
+                                if (_errorMessage != null)
+                                  Padding(
+                                    padding: const EdgeInsets.only(bottom: 12),
+                                    child: Text(
+                                      _errorMessage!,
+                                      style: TextStyle(
+                                        color: Colors.red,
+                                        fontSize: 14,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+
+                                // Login button
                                 FadeSlideIn(
                                   progress: buttonT,
                                   child: AuthGradientButton(
@@ -696,13 +826,16 @@ class _LoginScreenState extends State<LoginScreen>
                                     icon: _isEmailMode
                                         ? Icons.email
                                         : AppIcons.phone,
-                                    isLoading: isSendingOtp,
-                                    onPressed: _isFormValid()
+                                    isLoading: _isLoading || isSendingOtp,
+                                    onPressed:
+                                        isValid && !_isLoading && !isSendingOtp
                                         ? _handleLogin
                                         : null,
                                   ),
                                 ),
                                 SizedBox(height: AppSpacing.xl),
+
+                                // Footer
                                 FadeSlideIn(
                                   progress: footerT,
                                   child: Column(
@@ -733,11 +866,14 @@ class _LoginScreenState extends State<LoginScreen>
                                         ],
                                       ),
                                       SizedBox(height: AppSpacing.sm),
+                                      // Toggle between email and phone
                                       GestureDetector(
                                         onTap: () {
                                           setState(() {
                                             _isEmailMode = !_isEmailMode;
-                                            _mobileController.clear();
+                                            _emailOrPhoneController.clear();
+                                            _passwordController.clear();
+                                            _errorMessage = null;
                                           });
                                         },
                                         child: Text(
@@ -772,6 +908,7 @@ class _LoginScreenState extends State<LoginScreen>
     );
   }
 
+  /// Build country dropdown widget
   Widget _buildCountryDropdown(Color border, bool isDark) {
     return InkWell(
       onTap: _showCountryPicker,
