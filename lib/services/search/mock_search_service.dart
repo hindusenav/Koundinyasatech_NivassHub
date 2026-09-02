@@ -1,5 +1,5 @@
-import 'package:flutter_nivasshub/services/core/api_exception.dart';
-import 'package:flutter_nivasshub/services/core/api_response.dart';
+import 'package:flutter_nivasshub/core/api/api_exception.dart';
+import 'package:flutter_nivasshub/core/api/api_response.dart';
 import 'package:flutter_nivasshub/utils/json_asset_loader.dart';
 import 'package:flutter_nivasshub/models/shared/app_feature_model.dart';
 import 'package:flutter_nivasshub/services/search/search_service_base.dart';

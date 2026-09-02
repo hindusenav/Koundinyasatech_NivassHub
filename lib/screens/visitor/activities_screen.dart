@@ -14,7 +14,7 @@ import 'package:flutter_nivasshub/widgets/dashboard/navigation/dashboard_bottom_
 import 'package:flutter_nivasshub/models/visitor/approval_activity_model.dart';
 import 'package:flutter_nivasshub/providers/visitor/visitor_activity_provider.dart';
 import 'package:flutter_nivasshub/services/visitor/mock_visitor_activity_service.dart';
-import 'package:flutter_nivasshub/services/visitor/visitor_activity_repository.dart';
+import 'package:flutter_nivasshub/repositories/visitor/visitor_activity_repository.dart';
 import 'package:flutter_nivasshub/widgets/visitor/activity_card.dart';
 import 'package:flutter_nivasshub/widgets/visitor/activity_filter_chip.dart';
 import 'package:flutter_nivasshub/widgets/visitor/activity_type_filter_sheet.dart';

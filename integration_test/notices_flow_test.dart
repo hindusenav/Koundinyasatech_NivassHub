@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:provider/provider.dart';
 
-import 'package:flutter_nivasshub/services/core/api_client.dart';
+import 'package:flutter_nivasshub/core/api/base_api.dart';
 
 import 'package:flutter_nivasshub/providers/notices/notices_provider.dart';
 import 'package:flutter_nivasshub/screens/notices/notices_screen.dart';

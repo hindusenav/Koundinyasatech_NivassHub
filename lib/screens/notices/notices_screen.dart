@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import 'package:flutter_nivasshub/constants/app_colors.dart';
-import 'package:flutter_nivasshub/services/core/api_client.dart';
+import 'package:flutter_nivasshub/core/api/base_api.dart';
 import 'package:flutter_nivasshub/widgets/shared/loaders/loader.dart';
 import 'package:flutter_nivasshub/widgets/shared/states/custom_error_widget.dart';
 import 'package:flutter_nivasshub/widgets/dashboard/navigation/dashboard_bottom_navigation.dart';
@@ -38,7 +38,12 @@ class _NoticeBoardViewState extends State<_NoticeBoardView> {
   final ScrollController _scrollController = ScrollController();
   String _selectedFilter = 'All';
 
-  final List<String> _filters = ['All', 'Unread', 'Promotions', 'Community'];
+  final List<String> _filters = [
+    'All',
+    'Unread',
+    'Promotions',
+    'Community',
+  ];
 
   static const List<FeedItemModel> _figmaDefaultFeed = [
     FeedItemModel.notice(
@@ -167,10 +172,6 @@ class _NoticeBoardViewState extends State<_NoticeBoardView> {
     final displayItems = _getFilteredItems(rawFeedItems);
     final statusBarHeight = MediaQuery.of(context).padding.top;
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final headerBlue =
-        isDark ? AppColors.dashboardHeaderDark : AppColors.dashboardHeaderLight;
-    final headingColor =
-        isDark ? AppColors.noticesHeadingDark : AppColors.noticesHeadingLight;
 
     return Scaffold(
       backgroundColor: isDark
@@ -188,42 +189,34 @@ class _NoticeBoardViewState extends State<_NoticeBoardView> {
           child: Column(
             children: [
               // =====================================================
-              // APP BAR HEADER MATCHING FIGMA DESIGN (16px PADDING)
+              // APP BAR HEADER CONTAINER MATCHING FIGMA (20px/12px/16px)
               // =====================================================
               Container(
                 width: double.infinity,
                 padding: EdgeInsets.only(
-                  top: statusBarHeight > 0 ? statusBarHeight + 6 : 14,
-                  left: 16,
-                  right: 16,
-                  bottom: 14,
+                  top: statusBarHeight > 0 ? statusBarHeight + 12 : 12,
+                  left: 20,
+                  right: 20,
+                  bottom: 16,
                 ),
                 decoration: BoxDecoration(
-                  color: headerBlue,
-                  borderRadius: const BorderRadius.only(
-                    bottomLeft: Radius.circular(20),
-                    bottomRight: Radius.circular(20),
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: isDark ? 0.24 : 0.06),
-                      blurRadius: 6,
-                      spreadRadius: 0,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
+                  color: isDark
+                      ? AppColors.dashboardHeaderDark
+                      : const Color(0xFFC7E3FF),
                 ),
                 child: Row(
                   children: [
-                    // Notice Board is the parent/root screen of this flow,
-                    // so it intentionally has no back arrow (see sub-category
-                    // and detail screens for the back navigation entry point).
                     Text(
                       'Notice Board',
                       style: TextStyle(
-                        color: headingColor,
-                        fontWeight: FontWeight.bold,
+                        fontFamily: 'DM Sans',
+                        color: isDark
+                            ? AppColors.noticesHeadingDark
+                            : const Color(0xFF000000),
+                        fontWeight: FontWeight.w600,
                         fontSize: 18,
+                        height: 1.0,
+                        letterSpacing: 0,
                       ),
                     ),
                   ],
@@ -243,61 +236,73 @@ class _NoticeBoardViewState extends State<_NoticeBoardView> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Filter Chips Bar matching Figma ['All', 'Unread', 'Promotions', 'Community']
+                        // Filter Chips Bar (Tabs Container) matching Figma properties exactly
                         SingleChildScrollView(
                           scrollDirection: Axis.horizontal,
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          child: Row(
-                            children: _filters.map((filter) {
-                              final isSelected = _selectedFilter == filter;
-                              return Padding(
-                                padding: const EdgeInsets.only(right: 8),
-                                child: InkWell(
-                                  onTap: () => setState(() => _selectedFilter = filter),
-                                  borderRadius: BorderRadius.circular(20),
-                                  child: Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 16,
-                                      vertical: 8,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: isSelected
-                                          ? (isDark
-                                              ? AppColors.noticesAmberDark
-                                              : AppColors.noticesAmberLight)
-                                          : (isDark
-                                              ? AppColors.surfaceDark
-                                              : Colors.white),
-                                      borderRadius: BorderRadius.circular(20),
-                                      border: Border.all(
-                                        color: isSelected
-                                            ? (isDark
-                                                ? AppColors.noticesAmberDark
-                                                : AppColors.noticesAmberLight)
-                                            : (isDark
-                                                ? AppColors.noticesBorderDark
-                                                : AppColors.noticesBorderLight),
+                          padding: const EdgeInsets.symmetric(horizontal: 19),
+                          child: SizedBox(
+                            height: 33,
+                            child: Row(
+                              children: _filters.asMap().entries.map((entry) {
+                                final index = entry.key;
+                                final filter = entry.value;
+                                final isSelected = _selectedFilter == filter;
+                                return Padding(
+                                  padding: EdgeInsets.only(
+                                    right: index == _filters.length - 1 ? 0 : 28,
+                                  ),
+                                  child: InkWell(
+                                    onTap: () => setState(() => _selectedFilter = filter),
+                                    borderRadius: BorderRadius.circular(8),
+                                    child: Container(
+                                      height: 33,
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 12,
+                                        vertical: 8,
                                       ),
-                                    ),
-                                    child: Text(
-                                      filter,
-                                      style: TextStyle(
+                                      decoration: BoxDecoration(
                                         color: isSelected
-                                            ? Colors.white
-                                            : headingColor,
-                                        fontWeight: isSelected
-                                            ? FontWeight.bold
-                                            : FontWeight.w500,
-                                        fontSize: 12,
+                                            ? const Color(0xFFEC9211)
+                                            : (isDark
+                                                ? AppColors.surfaceDark
+                                                : Colors.white),
+                                        borderRadius: BorderRadius.circular(8),
+                                        border: Border.all(
+                                          color: isSelected
+                                              ? const Color(0xFFEC9211)
+                                              : (isDark
+                                                  ? AppColors.noticesBorderDark
+                                                  : const Color(0xFFE2E8F0)),
+                                          width: 1,
+                                        ),
+                                      ),
+                                      child: Center(
+                                        child: Text(
+                                          filter,
+                                          style: TextStyle(
+                                            fontFamily: 'DM Sans',
+                                            color: isSelected
+                                                ? Colors.white
+                                                : (isDark
+                                                    ? AppColors.noticesHeadingDark
+                                                    : const Color(0xFF05234D)),
+                                            fontWeight: isSelected
+                                                ? FontWeight.w600
+                                                : FontWeight.w500,
+                                            fontSize: 13,
+                                            height: 1.0,
+                                            letterSpacing: 0,
+                                          ),
+                                        ),
                                       ),
                                     ),
                                   ),
-                                ),
-                              );
-                            }).toList(),
+                                );
+                              }).toList(),
+                            ),
                           ),
                         ),
-                        const SizedBox(height: 14),
+                        const SizedBox(height: 24),
 
                         if (provider.isLoading && rawFeedItems.isEmpty) ...[
                           const SizedBox(height: 60),
@@ -310,48 +315,55 @@ class _NoticeBoardViewState extends State<_NoticeBoardView> {
                             onRetry: provider.retry,
                           ),
                         ] else ...[
-                          // Unread Notice Alert Banner matching Figma
+                          // Unread Notice Alert Banner matching Figma properties exactly
                           Container(
                             margin: const EdgeInsets.symmetric(horizontal: 16),
                             padding: const EdgeInsets.symmetric(
-                              horizontal: 14,
-                              vertical: 10,
+                              horizontal: 16,
+                              vertical: 15,
                             ),
                             decoration: BoxDecoration(
                               color: isDark
                                   ? AppColors.noticesDangerBgDark
-                                  : AppColors.noticesDangerBgLight,
-                              borderRadius: BorderRadius.circular(8),
+                                  : const Color(0xFFFFF1ED),
+                              borderRadius: BorderRadius.circular(12),
                               border: Border.all(
                                 color: isDark
                                     ? AppColors.noticesDangerBorderDark
-                                    : AppColors.noticesDangerBorderLight,
+                                    : const Color(0xFFFF3B30),
+                                width: 1,
                               ),
                             ),
                             child: Row(
                               children: [
-                                Icon(
-                                  Icons.circle,
-                                  color: isDark
-                                      ? AppColors.noticesDangerDotDark
-                                      : AppColors.noticesDangerDotLight,
-                                  size: 8,
+                                Container(
+                                  width: 8,
+                                  height: 8,
+                                  decoration: BoxDecoration(
+                                    color: isDark
+                                        ? AppColors.noticesDangerDotDark
+                                        : const Color(0xFFFF3B30),
+                                    shape: BoxShape.circle,
+                                  ),
                                 ),
                                 const SizedBox(width: 8),
                                 Text(
                                   '1 Unread Notice',
                                   style: TextStyle(
+                                    fontFamily: 'DM Sans',
                                     color: isDark
                                         ? AppColors.noticesDangerTextDark
-                                        : AppColors.noticesDangerTextLight,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 12,
+                                        : const Color(0xFF0F1A30),
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 14,
+                                    height: 1.0,
+                                    letterSpacing: 0,
                                   ),
                                 ),
                               ],
                             ),
                           ),
-                          const SizedBox(height: 16),
+                          const SizedBox(height: 24),
 
                           FeedList(
                             feedItems: displayItems,

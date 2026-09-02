@@ -12,10 +12,6 @@ class CreateCommunityPostHeaderCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final headingColor =
-        isDark ? AppColors.noticesHeadingDark : AppColors.noticesHeadingLight;
-    final secondaryColor =
-        isDark ? AppColors.noticesSecondaryTextDark : AppColors.noticesSecondaryTextLight;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -23,15 +19,25 @@ class CreateCommunityPostHeaderCard extends StatelessWidget {
         Text(
           'Create a community post',
           style: TextStyle(
+            fontFamily: 'DM Sans',
             fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: headingColor,
+            fontWeight: FontWeight.w700,
+            height: 1.0,
+            letterSpacing: 0,
+            color: isDark ? AppColors.noticesHeadingDark : const Color(0xFF05234D),
           ),
         ),
         const SizedBox(height: 4),
         Text(
           'Choose a post format to engage with your neighbors',
-          style: TextStyle(fontSize: 13, color: secondaryColor),
+          style: TextStyle(
+            fontFamily: 'DM Sans',
+            fontSize: 13,
+            fontWeight: FontWeight.w400,
+            height: 1.0,
+            letterSpacing: 0,
+            color: isDark ? AppColors.noticesSecondaryTextDark : const Color(0xFF3E3E3E),
+          ),
         ),
         const SizedBox(height: 16),
         _OptionCard(
@@ -44,7 +50,7 @@ class CreateCommunityPostHeaderCard extends StatelessWidget {
             ).push(MaterialPageRoute(builder: (_) => const CreatePostScreen()));
           },
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 10),
         _OptionCard(
           icon: Icons.bar_chart_rounded,
           title: 'Create Poll',
@@ -55,7 +61,7 @@ class CreateCommunityPostHeaderCard extends StatelessWidget {
             ).push(MaterialPageRoute(builder: (_) => const CreatePollScreen()));
           },
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 10),
         _OptionCard(
           icon: Icons.calendar_today_outlined,
           title: 'Host an Event',
@@ -88,24 +94,25 @@ class _OptionCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final headingColor =
-        isDark ? AppColors.noticesHeadingDark : AppColors.noticesHeadingLight;
+        isDark ? AppColors.noticesHeadingDark : const Color(0xFF05234D);
     final secondaryColor =
-        isDark ? AppColors.noticesSecondaryTextDark : AppColors.noticesSecondaryTextLight;
+        isDark ? AppColors.noticesSecondaryTextDark : const Color(0xFF3E3E3E);
     final accentBlue =
-        isDark ? AppColors.noticesAccentBlueDark : AppColors.noticesAccentBlueLight;
+        isDark ? AppColors.noticesAccentBlueDark : const Color(0xFF0060BD);
 
     return Container(
       decoration: BoxDecoration(
-        color: isDark ? AppColors.surfaceDark : AppColors.surfaceLight,
-        borderRadius: BorderRadius.circular(16),
+        color: isDark ? AppColors.surfaceDark : const Color(0xFFF8FAFC),
+        borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: isDark ? AppColors.noticesDividerDark : AppColors.noticesDividerLight,
+          color: isDark ? AppColors.noticesCardBorderDark : const Color(0xFFE8F4FF),
+          width: 1,
         ),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF0F172A).withValues(alpha: isDark ? .3 : .04),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
+            color: Colors.black.withValues(alpha: isDark ? .3 : .15),
+            blurRadius: 4,
+            offset: const Offset(4, 4),
           ),
         ],
       ),
@@ -113,32 +120,36 @@ class _OptionCard extends StatelessWidget {
         color: Colors.transparent,
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(12),
           child: Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(14),
             child: Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.all(12),
+                  width: 40,
+                  height: 40,
                   decoration: BoxDecoration(
                     color: isDark
                         ? AppColors.noticesBlueTintBgDark
-                        : AppColors.noticesBlueTintBgLight,
-                    borderRadius: BorderRadius.circular(14),
+                        : const Color(0xFFE8F4FF),
+                    borderRadius: BorderRadius.circular(10),
                     border: Border.all(
                       color: isDark
                           ? AppColors.noticesBlueLightBorderDark
-                          : AppColors.noticesBlueLightBorderLight,
+                          : const Color(0xFFE8F4FF),
+                      width: 1,
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: accentBlue.withValues(alpha: isDark ? .18 : .06),
-                        blurRadius: 6,
-                        offset: const Offset(0, 2),
+                        color: Colors.black.withValues(alpha: isDark ? .3 : .15),
+                        blurRadius: 4,
+                        offset: const Offset(4, 4),
                       ),
                     ],
                   ),
-                  child: Icon(icon, color: accentBlue, size: 22),
+                  child: Center(
+                    child: Icon(icon, color: accentBlue, size: 20),
+                  ),
                 ),
                 const SizedBox(width: 14),
                 Expanded(
@@ -148,18 +159,24 @@ class _OptionCard extends StatelessWidget {
                       Text(
                         title,
                         style: TextStyle(
+                          fontFamily: 'DM Sans',
                           fontSize: 15,
-                          fontWeight: FontWeight.bold,
+                          fontWeight: FontWeight.w600,
+                          height: 1.0,
+                          letterSpacing: 0,
                           color: headingColor,
                         ),
                       ),
-                      const SizedBox(height: 3),
+                      const SizedBox(height: 2),
                       Text(
                         subtitle,
                         style: TextStyle(
+                          fontFamily: 'DM Sans',
                           fontSize: 12,
+                          fontWeight: FontWeight.w400,
+                          height: 1.0,
+                          letterSpacing: 0,
                           color: secondaryColor,
-                          height: 1.3,
                         ),
                       ),
                     ],

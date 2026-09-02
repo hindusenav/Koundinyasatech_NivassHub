@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_nivasshub/routes/app_routes.dart';
 import 'package:flutter_nivasshub/routes/navigation_service.dart';
-import 'package:flutter_nivasshub/services/core/secure_storage_service.dart';
+import 'package:flutter_nivasshub/storage/secure_storage_service.dart';
 import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter_nivasshub/constants/asset_constants.dart';
 import 'package:flutter_nivasshub/utils/extensions/context_extensions.dart';
@@ -52,8 +52,10 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
       // entirely and land straight on the Dashboard.
       final storage = context.read<SecureStorageService>();
       final hasSession = await storage.hasValidSession();
+      debugPrint('[Session] hasValidSession=$hasSession');
       if (!mounted) return;
       if (hasSession) {
+        debugPrint('[Nav] Splash -> Dashboard (existing session)');
         NavigationService.pushNamedAndRemoveUntil(AppRoutes.dashboard);
         return;
       }
@@ -62,10 +64,13 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
       // screen (not Onboarding/Welcome) so the existing Login → OTP
       // Verification flow continues from there.
       final hasLoggedOut = await storage.hasLoggedOutBefore();
+      debugPrint('[Session] hasLoggedOutBefore=$hasLoggedOut');
       if (!mounted) return;
       if (hasLoggedOut) {
+        debugPrint('[Nav] Splash -> Login (no session, previously logged out)');
         NavigationService.pushNamedAndRemoveUntil(AppRoutes.login);
       } else {
+        debugPrint('[Nav] Splash -> Welcome (first-ever launch)');
         _goToWelcome();
       }
     });

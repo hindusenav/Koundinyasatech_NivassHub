@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_nivasshub/providers/dashboard/dashboard_provider.dart';
 import 'package:flutter_nivasshub/routes/app_routes.dart';
 import 'package:flutter_nivasshub/routes/navigation_service.dart';
-import 'package:flutter_nivasshub/services/core/secure_storage_service.dart';
+import 'package:flutter_nivasshub/storage/secure_storage_service.dart';
 import 'package:flutter_nivasshub/constants/asset_constants.dart';
 import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter_nivasshub/constants/app_dimensions.dart';
@@ -21,7 +22,7 @@ import 'package:flutter_nivasshub/widgets/shared/feedback/custom_snackbar.dart';
 import 'package:flutter_nivasshub/screens/auth/create_profile_screen.dart';
 
 /// Typed arguments for [AppRoutes.otpVerificationSuccess], unpacked in
-/// `route_generator.dart`.
+/// `auth_router.dart`.
 class OtpVerificationSuccessScreenArgs {
   const OtpVerificationSuccessScreenArgs({
     required this.userExists,
@@ -97,6 +98,10 @@ class _OtpVerificationSuccessScreenState extends State<OtpVerificationSuccessScr
       // what lets Splash auto-navigate straight to Dashboard on relaunch.
       await context.read<SecureStorageService>().saveSession();
       if (!mounted) return;
+      // A previous logout may have left Dashboard reset to its initial
+      // state (or a prior session's data cached) — refresh explicitly so
+      // this fresh login shows current data rather than stale/empty data.
+      context.read<DashboardProvider>().refresh();
       NavigationService.pushNamedAndRemoveUntil(AppRoutes.dashboard);
     } else {
       final token = widget.registrationToken;

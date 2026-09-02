@@ -139,6 +139,27 @@ class AuthProvider extends ChangeNotifier {
     return false;
   }
 
+  /// Resets all in-memory auth state back to its initial (never-logged-in)
+  /// values. Called on manual logout so a subsequent login flow — within
+  /// the same running app process — starts clean instead of inheriting
+  /// stale OTP/registration state from the previous session. This is a
+  /// superset of [_resetOtpFlowState], which stays scoped to its narrower
+  /// purpose inside [sendOtp].
+  void logout() {
+    _status = AuthOtpStatus.idle;
+    _mobileNumber = null;
+    _otpExpirySeconds = 0;
+    _userExists = false;
+    _registrationToken = null;
+    _errorMessage = null;
+    _isRegistering = false;
+    _userId = null;
+    _accessToken = null;
+    _refreshToken = null;
+    debugPrint('[Auth] AuthProvider.logout() - in-memory auth state reset');
+    notifyListeners();
+  }
+
   Future<bool> completeRegistration({
     required String fullName,
     String? email,

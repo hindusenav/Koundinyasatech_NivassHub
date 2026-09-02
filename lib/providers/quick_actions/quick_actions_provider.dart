@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 
 import 'package:flutter_nivasshub/models/quick_actions/quick_action_section_model.dart';
-import 'package:flutter_nivasshub/services/quick_actions/quick_actions_repository.dart';
+import 'package:flutter_nivasshub/repositories/quick_actions/quick_actions_repository.dart';
 
 /// Owns the Quick Actions catalog — a single-shot load (no pagination), so
 /// bool-flag state is enough (mirrors `NoticesProvider`'s style rather than

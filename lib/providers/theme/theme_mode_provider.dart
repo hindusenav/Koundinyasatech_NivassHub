@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:flutter_nivasshub/services/core/local_storage_service.dart';
+import 'package:flutter_nivasshub/storage/local_storage_service.dart';
 import 'package:flutter_nivasshub/constants/storage_keys.dart';
 
 /// Owns the app's live `ThemeMode`, persisted via `LocalStorageService`.
