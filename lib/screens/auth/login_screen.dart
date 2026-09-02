@@ -1085,7 +1085,7 @@ class _LoginScreenState extends State<LoginScreen>
 
   // Form key for validation
   final _formKey = GlobalKey<FormState>();
-
+  ///////
   // Text controllers
   final _emailOrPhoneController = TextEditingController();
   final _passwordController = TextEditingController();
