@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:flutter_nivasshub/services/core/api_exception.dart';
+import 'package:flutter_nivasshub/core/api/api_exception.dart';
 
 /// Converts every [DioException] into an [ApiException] exactly once, at
 /// the edge of the network layer, and attaches it as `err.error`. Downstream

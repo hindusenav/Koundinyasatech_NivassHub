@@ -5,10 +5,10 @@ import 'package:provider/provider.dart';
 // CORE
 // ============================================================
 
-import 'package:flutter_nivasshub/services/core/api_client.dart';
-import 'package:flutter_nivasshub/services/core/connectivity_service.dart';
-import 'package:flutter_nivasshub/services/core/local_storage_service.dart';
-import 'package:flutter_nivasshub/services/core/secure_storage_service.dart';
+import 'package:flutter_nivasshub/core/api/base_api.dart';
+import 'package:flutter_nivasshub/services/connectivity/connectivity_service.dart';
+import 'package:flutter_nivasshub/storage/local_storage_service.dart';
+import 'package:flutter_nivasshub/storage/secure_storage_service.dart';
 import 'package:flutter_nivasshub/providers/connectivity/connectivity_provider.dart';
 import 'package:flutter_nivasshub/widgets/shared/connectivity/no_internet_overlay.dart';
 
@@ -23,7 +23,7 @@ import 'package:flutter_nivasshub/services/auth/auth_service_base.dart';
 // DASHBOARD
 // ============================================================
 
-import 'package:flutter_nivasshub/services/dashboard/dashboard_repository.dart';
+import 'package:flutter_nivasshub/repositories/dashboard/dashboard_repository.dart';
 import 'package:flutter_nivasshub/providers/dashboard/dashboard_navigation_provider.dart';
 import 'package:flutter_nivasshub/providers/dashboard/dashboard_provider.dart';
 
@@ -32,14 +32,14 @@ import 'package:flutter_nivasshub/providers/dashboard/dashboard_provider.dart';
 // ============================================================
 
 import 'package:flutter_nivasshub/providers/profile/profile_provider.dart';
-import 'package:flutter_nivasshub/services/profile/profile_repository.dart';
+import 'package:flutter_nivasshub/repositories/profile/profile_repository.dart';
 
 // ============================================================
 // QUICK ACTIONS
 // ============================================================
 
 import 'package:flutter_nivasshub/providers/quick_actions/quick_actions_provider.dart';
-import 'package:flutter_nivasshub/services/quick_actions/quick_actions_repository.dart';
+import 'package:flutter_nivasshub/repositories/quick_actions/quick_actions_repository.dart';
 
 // ============================================================
 // SEARCH
@@ -53,7 +53,7 @@ import 'package:flutter_nivasshub/services/search/search_service_base.dart';
 // ============================================================
 
 import 'package:flutter_nivasshub/providers/settings/settings_provider.dart';
-import 'package:flutter_nivasshub/services/settings/settings_repository.dart';
+import 'package:flutter_nivasshub/repositories/settings/settings_repository.dart';
 
 // ============================================================
 // APP
@@ -62,7 +62,8 @@ import 'package:flutter_nivasshub/services/settings/settings_repository.dart';
 import 'package:flutter_nivasshub/routes/app_routes.dart';
 import 'package:flutter_nivasshub/constants/app_theme.dart';
 import 'package:flutter_nivasshub/routes/navigation_service.dart';
-import 'package:flutter_nivasshub/routes/route_generator.dart';
+import 'package:flutter_nivasshub/routes/auth_router.dart';
+import 'package:flutter_nivasshub/routes/app_router.dart';
 import 'package:flutter_nivasshub/providers/theme/theme_mode_provider.dart';
 
 class NivasHubApp extends StatelessWidget {
@@ -236,8 +237,9 @@ ChangeNotifierProvider<ProfileProvider>(
 
           initialRoute: AppRoutes.splash,
 
-          onGenerateRoute:
-              RouteGenerator.generateRoute,
+          onGenerateRoute: (settings) =>
+              AuthRouter.generateRoute(settings) ??
+              AppRouter.generateRoute(settings),
 
           builder: (context, child) => NoInternetOverlay(child: child),
         );

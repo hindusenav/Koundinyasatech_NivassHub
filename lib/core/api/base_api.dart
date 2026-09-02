@@ -1,9 +1,9 @@
 import 'package:dio/dio.dart';
-import 'package:flutter_nivasshub/services/core/api_endpoints.dart';
-import 'package:flutter_nivasshub/services/core/api_exception.dart';
-import 'package:flutter_nivasshub/services/core/interceptors/auth_interceptor.dart';
-import 'package:flutter_nivasshub/services/core/interceptors/error_interceptor.dart';
-import 'package:flutter_nivasshub/services/core/interceptors/logging_interceptor.dart';
+import 'package:flutter_nivasshub/core/api/endpoints.dart';
+import 'package:flutter_nivasshub/core/api/api_exception.dart';
+import 'package:flutter_nivasshub/core/api/interceptors/auth_interceptor.dart';
+import 'package:flutter_nivasshub/core/api/interceptors/error_interceptor.dart';
+import 'package:flutter_nivasshub/core/api/interceptors/logging_interceptor.dart';
 
 /// Thin wrapper around [Dio] — the only place in the app that talks HTTP
 /// directly. Feature services call these generic methods; nothing outside

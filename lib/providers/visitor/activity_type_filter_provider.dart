@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 
 import 'package:flutter_nivasshub/models/visitor/activity_type_filter_option.dart';
-import 'package:flutter_nivasshub/services/visitor/activity_type_filter_repository.dart';
+import 'package:flutter_nivasshub/repositories/visitor/activity_type_filter_repository.dart';
 
 /// Owns the "Filter Activity by Type" bottom sheet's state: a single-shot
 /// load of the filter catalog (mirrors `QuickActionsProvider`'s bool-flag

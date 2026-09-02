@@ -1,5 +1,5 @@
-import 'package:flutter_nivasshub/services/core/api_exception.dart';
-import 'package:flutter_nivasshub/services/core/api_response.dart';
+import 'package:flutter_nivasshub/core/api/api_exception.dart';
+import 'package:flutter_nivasshub/core/api/api_response.dart';
 import 'package:flutter_nivasshub/utils/json_asset_loader.dart';
 import 'package:flutter_nivasshub/models/visitor/approval_activity_model.dart';
 import 'package:flutter_nivasshub/services/visitor/visitor_activity_service_base.dart';

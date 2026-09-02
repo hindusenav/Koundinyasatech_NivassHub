@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import 'package:flutter_nivasshub/constants/app_colors.dart';
-import 'package:flutter_nivasshub/services/core/api_client.dart';
+import 'package:flutter_nivasshub/core/api/base_api.dart';
 import 'package:flutter_nivasshub/widgets/dashboard/navigation/dashboard_bottom_navigation.dart';
 import 'package:flutter_nivasshub/providers/notices/notices_provider.dart';
 import 'package:flutter_nivasshub/widgets/notices/create_post_header_card.dart';

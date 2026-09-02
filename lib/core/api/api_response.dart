@@ -1,4 +1,4 @@
-import 'package:flutter_nivasshub/services/core/api_exception.dart';
+import 'package:flutter_nivasshub/core/api/api_exception.dart';
 
 class ApiResponse<T> {
   const ApiResponse._({

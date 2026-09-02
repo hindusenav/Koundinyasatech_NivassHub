@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
-import 'package:flutter_nivasshub/services/core/api_client.dart';
-import 'package:flutter_nivasshub/services/core/api_exception.dart';
-import 'package:flutter_nivasshub/services/core/api_response.dart';
+import 'package:flutter_nivasshub/core/api/base_api.dart';
+import 'package:flutter_nivasshub/core/api/api_exception.dart';
+import 'package:flutter_nivasshub/core/api/api_response.dart';
 
 /// Base class every feature service (`features/*/services/*.dart`) extends.
 /// Wraps an [ApiClient] call with consistent parsing and error handling so

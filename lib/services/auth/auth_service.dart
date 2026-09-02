@@ -1,7 +1,7 @@
-import 'package:flutter_nivasshub/services/core/api_endpoints.dart';
-import 'package:flutter_nivasshub/services/core/api_exception.dart';
-import 'package:flutter_nivasshub/services/core/api_response.dart';
-import 'package:flutter_nivasshub/services/core/api_service.dart';
+import 'package:flutter_nivasshub/core/api/endpoints.dart';
+import 'package:flutter_nivasshub/core/api/api_exception.dart';
+import 'package:flutter_nivasshub/core/api/api_response.dart';
+import 'package:flutter_nivasshub/core/api/api_service.dart';
 import 'package:flutter_nivasshub/models/auth/register_request.dart';
 import 'package:flutter_nivasshub/models/auth/register_response_data.dart';
 import 'package:flutter_nivasshub/models/auth/resend_otp_request.dart';

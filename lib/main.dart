@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_nivasshub/app.dart';
 import 'package:flutter_nivasshub/routes/navigation_service.dart';
 
-import 'package:flutter_nivasshub/services/core/api_client.dart';
-import 'package:flutter_nivasshub/services/core/connectivity_service.dart';
+import 'package:flutter_nivasshub/core/api/base_api.dart';
+import 'package:flutter_nivasshub/services/connectivity/connectivity_service.dart';
 
-import 'package:flutter_nivasshub/services/core/local_storage_service.dart';
-import 'package:flutter_nivasshub/services/core/secure_storage_service.dart';
+import 'package:flutter_nivasshub/storage/local_storage_service.dart';
+import 'package:flutter_nivasshub/storage/secure_storage_service.dart';
 
 import 'package:flutter_nivasshub/constants/auth/auth_config.dart';
 import 'package:flutter_nivasshub/services/auth/auth_service.dart';
@@ -15,25 +15,25 @@ import 'package:flutter_nivasshub/services/auth/auth_service_base.dart';
 import 'package:flutter_nivasshub/services/auth/mock_auth_service.dart';
 
 import 'package:flutter_nivasshub/constants/dashboard/dashboard_config.dart';
-import 'package:flutter_nivasshub/services/dashboard/dashboard_repository.dart';
+import 'package:flutter_nivasshub/repositories/dashboard/dashboard_repository.dart';
 import 'package:flutter_nivasshub/services/dashboard/dashboard_service.dart';
 import 'package:flutter_nivasshub/services/dashboard/home_api_service.dart';
 import 'package:flutter_nivasshub/services/dashboard/home_api_service_base.dart';
 import 'package:flutter_nivasshub/services/dashboard/mock_home_api_service.dart';
 
 import 'package:flutter_nivasshub/services/quick_actions/mock_quick_actions_service.dart';
-import 'package:flutter_nivasshub/services/quick_actions/quick_actions_repository.dart';
+import 'package:flutter_nivasshub/repositories/quick_actions/quick_actions_repository.dart';
 
 import 'package:flutter_nivasshub/services/search/mock_search_service.dart';
 import 'package:flutter_nivasshub/services/search/search_service_base.dart';
 
-import 'package:flutter_nivasshub/services/settings/settings_repository.dart';
+import 'package:flutter_nivasshub/repositories/settings/settings_repository.dart';
 
 // ============================================================
 // PROFILE
 // ============================================================
 
-import 'package:flutter_nivasshub/services/profile/profile_repository.dart';
+import 'package:flutter_nivasshub/repositories/profile/profile_repository.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

@@ -1,4 +1,4 @@
-import 'package:flutter_nivasshub/services/core/local_storage_service.dart';
+import 'package:flutter_nivasshub/storage/local_storage_service.dart';
 import 'package:flutter_nivasshub/models/settings/settings_model.dart';
 
 class SettingsRepository {

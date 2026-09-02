@@ -1,4 +1,4 @@
-import 'package:flutter_nivasshub/services/core/api_response.dart';
+import 'package:flutter_nivasshub/core/api/api_response.dart';
 import 'package:flutter_nivasshub/models/visitor/activity_type_filter_option.dart';
 
 /// The swappable data-source seam for the "Filter Activity by Type" bottom

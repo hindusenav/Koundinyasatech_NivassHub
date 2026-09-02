@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_nivasshub/models/profile/address_model.dart';
 import 'package:flutter_nivasshub/models/profile/profile_model.dart';
-import 'package:flutter_nivasshub/services/profile/profile_repository.dart';
+import 'package:flutter_nivasshub/repositories/profile/profile_repository.dart';
 
 class ProfileProvider extends ChangeNotifier {
   final ProfileRepository repository;
