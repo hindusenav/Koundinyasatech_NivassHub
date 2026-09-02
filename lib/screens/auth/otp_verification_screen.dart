@@ -18,7 +18,7 @@ import 'package:flutter_nivasshub/widgets/auth/otp_input_boxes.dart';
 import 'package:flutter_nivasshub/screens/auth/otp_verification_success_screen.dart';
 
 /// Typed arguments for [AppRoutes.otpVerification], unpacked in
-/// `route_generator.dart`.
+/// `auth_router.dart`.
 class OtpVerificationScreenArgs {
   const OtpVerificationScreenArgs({
     required this.mobileNumber,

@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/widgets.dart';
 
 import 'package:flutter_nivasshub/routes/app_routes.dart';
-import 'package:flutter_nivasshub/services/core/connectivity_service.dart';
+import 'package:flutter_nivasshub/services/connectivity/connectivity_service.dart';
 
 /// Tracks whether the app currently has real internet access, backing the
 /// app-wide [NoInternetOverlay]. Never trusts the OS adapter/radio status

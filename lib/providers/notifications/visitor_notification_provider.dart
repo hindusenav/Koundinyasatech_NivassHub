@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 
 import 'package:flutter_nivasshub/models/notifications/visitor_notification_model.dart';
-import 'package:flutter_nivasshub/services/notifications/visitor_notification_repository.dart';
+import 'package:flutter_nivasshub/repositories/notifications/visitor_notification_repository.dart';
 import 'package:flutter_nivasshub/services/notifications/visitor_notification_service_base.dart';
 
 enum VisitorNotificationState { initial, loading, success, empty, error }

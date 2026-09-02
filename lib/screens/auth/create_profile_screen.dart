@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:flutter_nivasshub/providers/dashboard/dashboard_provider.dart';
 import 'package:flutter_nivasshub/routes/app_routes.dart';
 import 'package:flutter_nivasshub/routes/navigation_service.dart';
-import 'package:flutter_nivasshub/services/core/secure_storage_service.dart';
+import 'package:flutter_nivasshub/storage/secure_storage_service.dart';
 import 'package:flutter_nivasshub/constants/app_dimensions.dart';
 import 'package:flutter_nivasshub/constants/app_icons.dart';
 import 'package:flutter_nivasshub/constants/app_spacing.dart';
@@ -21,7 +21,7 @@ import 'package:flutter_nivasshub/widgets/auth/auth_gradient_button.dart';
 import 'package:flutter_nivasshub/widgets/auth/auth_skyline_painter.dart';
 
 /// Typed arguments for [AppRoutes.createProfile], unpacked in
-/// `route_generator.dart`.
+/// `auth_router.dart`.
 class CreateProfileScreenArgs {
   const CreateProfileScreenArgs({required this.registrationToken});
 

@@ -1,4 +1,4 @@
-import 'package:flutter_nivasshub/services/core/api_response.dart';
+import 'package:flutter_nivasshub/core/api/api_response.dart';
 import 'package:flutter_nivasshub/models/quick_actions/quick_action_section_model.dart';
 
 /// Contract for fetching the Quick Actions catalog. The API contract notes

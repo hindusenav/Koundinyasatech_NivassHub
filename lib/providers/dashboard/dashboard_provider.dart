@@ -8,7 +8,7 @@ import 'package:flutter_nivasshub/models/dashboard/guard_contact_model.dart';
 import 'package:flutter_nivasshub/models/dashboard/home_response_model.dart';
 import 'package:flutter_nivasshub/models/dashboard/notice_model.dart';
 import 'package:flutter_nivasshub/models/dashboard/visitor_model.dart';
-import 'package:flutter_nivasshub/services/dashboard/dashboard_repository.dart';
+import 'package:flutter_nivasshub/repositories/dashboard/dashboard_repository.dart';
 import 'package:flutter_nivasshub/providers/dashboard/dashboard_state.dart';
 
 class DashboardProvider extends ChangeNotifier {
