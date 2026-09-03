@@ -20,8 +20,7 @@ class QuickActionsScreen extends StatefulWidget {
   const QuickActionsScreen({super.key});
 
   @override
-  State<QuickActionsScreen> createState() =>
-      _QuickActionsScreenState();
+  State<QuickActionsScreen> createState() => _QuickActionsScreenState();
 }
 
 class _QuickActionsScreenState extends State<QuickActionsScreen> {
@@ -36,11 +35,8 @@ class _QuickActionsScreenState extends State<QuickActionsScreen> {
   // ============================================================
 
   static const double _kFourCardMinWidth = 52;
-
   static const double _kFourCardGap = 20;
-
   static const double _kFourCardHorizontalPadding = 2;
-
   static const double _kFourCardHeight = 66;
 
   // ============================================================
@@ -48,9 +44,7 @@ class _QuickActionsScreenState extends State<QuickActionsScreen> {
   // ============================================================
 
   static const double _kMarketplaceHorizontalPadding = 0;
-
   static const double _kMarketplaceGap = 9;
-
   static const double _kMarketplaceCardHeight = 60;
 
   // ============================================================
@@ -58,7 +52,6 @@ class _QuickActionsScreenState extends State<QuickActionsScreen> {
   // ============================================================
 
   static const double _kHeaderToCardGap = 7;
-
   static const double _kSectionGap = 16;
 
   // ============================================================
@@ -66,9 +59,7 @@ class _QuickActionsScreenState extends State<QuickActionsScreen> {
   // ============================================================
 
   static const double _kFeedIconSize = 22;
-
   static const double _kSquareIconSize = 22;
-
   static const double _kMarketplaceIconSize = 22;
 
   // ============================================================
@@ -145,7 +136,6 @@ class _QuickActionsScreenState extends State<QuickActionsScreen> {
     return Scaffold(
       backgroundColor:
           isDark ? AppColors.infoDark : AppColors.infoLight,
-
       appBar: AppBar(
         backgroundColor:
             isDark ? AppColors.infoDark : AppColors.infoLight,
@@ -164,10 +154,8 @@ class _QuickActionsScreenState extends State<QuickActionsScreen> {
         ),
         centerTitle: true,
       ),
-
       bottomNavigationBar:
           const DashboardBottomNavigation(),
-
       body: SafeArea(
         child: Consumer<QuickActionsProvider>(
           builder: (context, provider, _) {
@@ -370,41 +358,6 @@ class _QuickActionsScreenState extends State<QuickActionsScreen> {
           ),
         ),
       ],
-    );
-  }
-
-  // ============================================================
-  // CARD SHELL
-  // ============================================================
-
-  Widget _buildCardShell({
-    required Widget child,
-    required double height,
-    EdgeInsets padding =
-        EdgeInsets.zero,
-  }) {
-    return Container(
-      height: height,
-      padding: padding,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius:
-            BorderRadius.circular(
-          _kCardRadius,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color:
-                Colors.black.withOpacity(
-              0.06,
-            ),
-            blurRadius: 4,
-            offset:
-                const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: child,
     );
   }
 
@@ -910,6 +863,41 @@ class _QuickActionsScreenState extends State<QuickActionsScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  // ============================================================
+  // CARD SHELL
+  // ============================================================
+
+  Widget _buildCardShell({
+    required Widget child,
+    required double height,
+    EdgeInsets padding =
+        EdgeInsets.zero,
+  }) {
+    return Container(
+      height: height,
+      padding: padding,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius:
+            BorderRadius.circular(
+          _kCardRadius,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color:
+                Colors.black.withValues(
+              alpha: 0.06,
+            ),
+            blurRadius: 4,
+            offset:
+                const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: child,
     );
   }
 
