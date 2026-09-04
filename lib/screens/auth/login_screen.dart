@@ -1837,7 +1837,26 @@ class _LoginScreenState extends State<LoginScreen>
                                     ],
                                   ),
                                 ),
-                                SizedBox(height: AppSpacing.xl),
+                                SizedBox(height: AppSpacing.sm),
+
+                                // Forgot Password link
+                                Align(
+                                  alignment: Alignment.centerRight,
+                                  child: GestureDetector(
+                                    onTap: () => Navigator.pushNamed(
+                                      context,
+                                      AppRoutes.forgotPassword,
+                                    ),
+                                    child: Text(
+                                      'Forgot Password?',
+                                      style: AppTextStyles.bodyMedium.copyWith(
+                                        color: primaryBlue,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(height: AppSpacing.md),
 
                                 // Error message
                                 if (_errorMessage != null)

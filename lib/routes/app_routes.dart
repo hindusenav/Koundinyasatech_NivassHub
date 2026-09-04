@@ -25,6 +25,10 @@ class AppRoutes {
   static const String otpVerificationSuccess = '/auth/otp-verification-success';
   static const String createProfile = '/auth/create-profile';
   static const String forgotPassword = '/auth/forgot-password';
+  static const String forgotPasswordMobile = '/auth/forgot-password/mobile';
+  static const String forgotPasswordEmail = '/auth/forgot-password/email';
+  static const String forgotPasswordVerifyOtp = '/auth/forgot-password/verify-otp';
+  static const String updatePassword = '/auth/forgot-password/update-password';
 
   // ---------------------------------------------------------------------
   // Dashboard

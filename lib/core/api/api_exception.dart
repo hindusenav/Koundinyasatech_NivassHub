@@ -11,6 +11,7 @@ enum ApiExceptionType {
   forbidden,
   notFound,
   conflict,
+  tooManyRequests,
   validation,
   server,
   cancelled,
@@ -116,6 +117,12 @@ class ApiException implements Exception {
           type: ApiExceptionType.validation,
           statusCode: statusCode,
           fieldErrors: _extractFieldErrors(body),
+        );
+      case 429:
+        return ApiException(
+          message: serverMessage ?? 'Too many requests. Please wait and try again.',
+          type: ApiExceptionType.tooManyRequests,
+          statusCode: statusCode,
         );
       default:
         if (statusCode != null && statusCode >= 500) {

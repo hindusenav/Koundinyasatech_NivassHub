@@ -13,6 +13,9 @@ import 'package:flutter_nivasshub/constants/auth/auth_config.dart';
 import 'package:flutter_nivasshub/services/auth/auth_service.dart';
 import 'package:flutter_nivasshub/services/auth/auth_service_base.dart';
 import 'package:flutter_nivasshub/services/auth/mock_auth_service.dart';
+import 'package:flutter_nivasshub/services/auth/forgot_password_service.dart';
+import 'package:flutter_nivasshub/services/auth/forgot_password_service_base.dart';
+import 'package:flutter_nivasshub/services/auth/mock_forgot_password_service.dart';
 
 import 'package:flutter_nivasshub/constants/dashboard/dashboard_config.dart';
 import 'package:flutter_nivasshub/repositories/dashboard/dashboard_repository.dart';
@@ -85,6 +88,14 @@ Future<void> main() async {
       : AuthService(apiClient);
 
   // ============================================================
+  // FORGOT PASSWORD SERVICE
+  // ============================================================
+
+  final ForgotPasswordServiceBase forgotPasswordService = useMockApi
+      ? MockForgotPasswordService()
+      : ForgotPasswordService(apiClient);
+
+  // ============================================================
   // DASHBOARD SERVICE
   // ============================================================
 
@@ -142,6 +153,8 @@ Future<void> main() async {
       apiClient: apiClient,
 
       authService: authService,
+
+      forgotPasswordService: forgotPasswordService,
 
       dashboardRepository: dashboardRepository,
 
