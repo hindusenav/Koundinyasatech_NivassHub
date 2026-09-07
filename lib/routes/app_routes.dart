@@ -102,4 +102,11 @@ class AppRoutes {
   // ---------------------------------------------------------------------
   static const String search = '/search';
   static const String quickActions = '/quick-actions';
+
+  // ---------------------------------------------------------------------
+  // KYC
+  // ---------------------------------------------------------------------
+  static const String selectCountry = '/kyc/select-country';
+  static const String selectCity = '/kyc/select-city';
+  static const String cityConfirmation = '/kyc/city-confirmation';
 }
