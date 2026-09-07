@@ -1065,7 +1065,6 @@ import 'package:flutter_nivasshub/providers/auth/auth_provider.dart';
 import 'package:flutter_nivasshub/widgets/auth/auth_gradient_button.dart';
 import 'package:flutter_nivasshub/widgets/auth/auth_skyline_painter.dart';
 import 'package:flutter_nivasshub/services/login/login_service.dart';
-import 'package:flutter_nivasshub/screens/kyc/kyc_status_screen.dart';
 /// Login Screen with Email and Phone login support
 /// - Fetches countries from API on load
 /// - Supports email login (cont_code: null)
@@ -1284,31 +1283,20 @@ class _LoginScreenState extends State<LoginScreen>
       if (!mounted) return;
 
 if (response.isSuccess) {
-  // Login successful
-  CustomSnackbar.success(
-    context,
-    response.errorMsg,
-  );
+      // Login successful
+      CustomSnackbar.success(
+        context,
+        response.errorMsg,
+      );
 
-  // ==========================================================
-  // LOGIN SUCCESS FLOW
-  //
-  // Login Screen
-  //      ↓
-  // KYC Status Screen
-  //      ↓
-  // Dashboard
-  // ==========================================================
-
-  if (mounted) {
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const KycStatusScreen(),
-      ),
-    );
-  }
-} else {
+      // Navigate directly to Dashboard
+      if (mounted) {
+        Navigator.pushReplacementNamed(
+          context,
+          AppRoutes.dashboard,
+        );
+      }
+    } else {
         // Login failed with error code
         setState(() {
           _errorMessage = _getErrorMessage(response);
