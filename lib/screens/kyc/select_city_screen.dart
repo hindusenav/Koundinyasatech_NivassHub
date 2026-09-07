@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter_nivasshub/constants/app_text_styles.dart';
+import 'package:flutter_nivasshub/routes/app_routes.dart';
 import 'package:flutter_nivasshub/screens/kyc/city_confirmation_screen.dart';
 import 'package:flutter_nivasshub/widgets/dashboard/navigation/dashboard_bottom_navigation.dart';
 
@@ -69,13 +70,17 @@ class _SelectCityScreenState extends State<SelectCityScreen> {
     super.dispose();
   }
 
-  void _onCitySelected(CityData city) {
-    CityConfirmationScreen.showModal(
+  void _onCitySelected(CityData city) async {
+    final result = await CityConfirmationScreen.showModal(
       context,
       cityName: city.name,
       stateName: city.state,
       countryName: city.country,
     );
+
+    if (result != null && mounted) {
+      Navigator.pushNamed(context, AppRoutes.kycStatus);
+    }
   }
 
   @override

@@ -122,7 +122,9 @@ class _CreateProfileScreenState extends State<CreateProfileScreen>
       // state (or a prior session's data cached) — refresh explicitly so
       // this fresh login shows current data rather than stale/empty data.
       context.read<DashboardProvider>().refresh();
-      NavigationService.pushNamedAndRemoveUntil(AppRoutes.dashboard);
+      // New user: route into the KYC flow instead of straight to Home
+      // (KycStatusScreen returns to Home once KYC is confirmed).
+      NavigationService.pushNamedAndRemoveUntil(AppRoutes.selectCountry);
     } else {
       CustomSnackbar.error(
         context,

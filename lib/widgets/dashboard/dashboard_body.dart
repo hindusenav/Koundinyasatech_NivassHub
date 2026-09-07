@@ -10,6 +10,7 @@ import 'package:flutter_nivasshub/widgets/dashboard/otp/generate_otp_banner.dart
 import 'package:flutter_nivasshub/widgets/dashboard/panic/panic_sos_banner.dart';
 import 'package:flutter_nivasshub/widgets/dashboard/quick_actions/quick_actions_grid.dart';
 import 'package:flutter_nivasshub/widgets/dashboard/add_property/add_proper_section.dart';
+import 'package:flutter_nivasshub/routes/app_routes.dart';
 
 // KYC Update Card
 import 'package:flutter_nivasshub/widgets/dashboard/kyc_update_card/kyc_update_card_section.dart';
@@ -35,20 +36,7 @@ class DashboardBody extends StatelessWidget {
   // ============================================================
 
   void _openKycFlow(BuildContext context) {
-    // ------------------------------------------------------------
-    // Your KYC navigation will be added here.
-    //
-    // Example when SelectCountryScreen is available:
-    //
-    // Navigator.push(
-    //   context,
-    //   MaterialPageRoute(
-    //     builder: (_) => const SelectCountryScreen(),
-    //   ),
-    // );
-    // ------------------------------------------------------------
-
-    debugPrint('KYC Update Now clicked');
+    Navigator.pushNamed(context, AppRoutes.selectCountry);
   }
 
   @override

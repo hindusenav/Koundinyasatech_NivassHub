@@ -105,4 +105,5 @@ class AppRoutes {
   static const String selectCountry = '/kyc/select-country';
   static const String selectCity = '/kyc/select-city';
   static const String cityConfirmation = '/kyc/city-confirmation';
+  static const String kycStatus = '/kyc/status';
 }

@@ -5,6 +5,7 @@ import 'package:flutter_nivasshub/core/api/base_api.dart';
 
 import 'package:flutter_nivasshub/screens/dashboard/home_dashboard_screen.dart';
 import 'package:flutter_nivasshub/screens/kyc/city_confirmation_screen.dart';
+import 'package:flutter_nivasshub/screens/kyc/kyc_status_screen.dart';
 import 'package:flutter_nivasshub/screens/kyc/select_city_screen.dart';
 import 'package:flutter_nivasshub/screens/kyc/select_country_screen.dart';
 import 'package:flutter_nivasshub/screens/notices/notices_screen.dart';
@@ -168,6 +169,12 @@ class AppRouter {
         return MaterialPageRoute(
           settings: settings,
           builder: (_) => const CityConfirmationScreen(),
+        );
+
+      case AppRoutes.kycStatus:
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => const KycStatusScreen(),
         );
 
       // ========================================================
