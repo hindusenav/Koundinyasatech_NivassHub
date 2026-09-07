@@ -399,4 +399,4 @@ class _KycStatusScreenState extends State<KycStatusScreen>
       ),
     );
   }
-}
+    }
