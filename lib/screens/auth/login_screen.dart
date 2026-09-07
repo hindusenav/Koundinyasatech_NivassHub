@@ -1065,7 +1065,6 @@ import 'package:flutter_nivasshub/providers/auth/auth_provider.dart';
 import 'package:flutter_nivasshub/widgets/auth/auth_gradient_button.dart';
 import 'package:flutter_nivasshub/widgets/auth/auth_skyline_painter.dart';
 import 'package:flutter_nivasshub/services/login/login_service.dart';
-
 /// Login Screen with Email and Phone login support
 /// - Fetches countries from API on load
 /// - Supports email login (cont_code: null)
@@ -1283,15 +1282,21 @@ class _LoginScreenState extends State<LoginScreen>
 
       if (!mounted) return;
 
-      if (response.isSuccess) {
-        // Login successful
-        CustomSnackbar.success(context, response.errorMsg);
+if (response.isSuccess) {
+      // Login successful
+      CustomSnackbar.success(
+        context,
+        response.errorMsg,
+      );
 
-        // Navigate to dashboard
-        if (mounted) {
-          Navigator.pushReplacementNamed(context, AppRoutes.dashboard);
-        }
-      } else {
+      // Navigate directly to Dashboard
+      if (mounted) {
+        Navigator.pushReplacementNamed(
+          context,
+          AppRoutes.dashboard,
+        );
+      }
+    } else {
         // Login failed with error code
         setState(() {
           _errorMessage = _getErrorMessage(response);
@@ -1859,7 +1864,7 @@ class _LoginScreenState extends State<LoginScreen>
                                   child: AuthGradientButton(
                                     label: _isEmailMode
                                         ? 'Login with Email'
-                                        : 'Login with OTP',
+                                        : 'Login',
                                     icon: _isEmailMode
                                         ? Icons.email
                                         : AppIcons.phone,

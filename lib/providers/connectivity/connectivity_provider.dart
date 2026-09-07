@@ -40,11 +40,19 @@ class ConnectivityProvider extends ChangeNotifier {
   /// screen — offline, and past the splash screen's own animation.
   bool get shouldShowNoInternetScreen => _isOffline && !isSplashActive;
 
-  void _setCurrentRoute(String? routeName) {
-    if (_currentRouteName == routeName) return;
-    _currentRouteName = routeName;
-    notifyListeners();
+void _setCurrentRoute(String? routeName) {
+  if (_currentRouteName == routeName) {
+    return;
   }
+
+  _currentRouteName = routeName;
+
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    if (hasListeners) {
+      notifyListeners();
+    }
+  });
+}
 
   void _init() {
     _subscription =
