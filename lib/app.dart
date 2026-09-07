@@ -17,7 +17,9 @@ import 'package:flutter_nivasshub/widgets/shared/connectivity/no_internet_overla
 // ============================================================
 
 import 'package:flutter_nivasshub/providers/auth/auth_provider.dart';
+import 'package:flutter_nivasshub/providers/auth/forgot_password_provider.dart';
 import 'package:flutter_nivasshub/services/auth/auth_service_base.dart';
+import 'package:flutter_nivasshub/services/auth/forgot_password_service_base.dart';
 
 // ============================================================
 // DASHBOARD
@@ -74,6 +76,7 @@ class NivasHubApp extends StatelessWidget {
     required this.connectivityService,
     required this.apiClient,
     required this.authService,
+    required this.forgotPasswordService,
     required this.dashboardRepository,
     required this.quickActionsRepository,
     required this.searchService,
@@ -87,6 +90,7 @@ class NivasHubApp extends StatelessWidget {
   final ApiClient apiClient;
 
   final AuthServiceBase authService;
+  final ForgotPasswordServiceBase forgotPasswordService;
 
   final DashboardRepository dashboardRepository;
 
@@ -132,6 +136,10 @@ class NivasHubApp extends StatelessWidget {
           value: authService,
         ),
 
+        Provider<ForgotPasswordServiceBase>.value(
+          value: forgotPasswordService,
+        ),
+
         // ========================================================
         // AUTH
         // ========================================================
@@ -139,6 +147,12 @@ class NivasHubApp extends StatelessWidget {
         ChangeNotifierProvider<AuthProvider>(
           create: (_) => AuthProvider(
             authService: authService,
+          ),
+        ),
+
+        ChangeNotifierProvider<ForgotPasswordProvider>(
+          create: (_) => ForgotPasswordProvider(
+            forgotPasswordService: forgotPasswordService,
           ),
         ),
 
