@@ -28,7 +28,6 @@ class _HomeDashboardScreenState
   // KYC STATUS
   // ============================================================
 
-  bool _kycCompleted = false;
   bool _kycStatusLoaded = false;
 
   // ============================================================
@@ -62,15 +61,11 @@ class _HomeDashboardScreenState
   // ============================================================
 
   Future<void> _loadKycStatus() async {
-    final prefs = await SharedPreferences.getInstance();
-
-    final completed =
-        prefs.getBool('kyc_completed') ?? false;
+    await SharedPreferences.getInstance();
 
     if (!mounted) return;
 
     setState(() {
-      _kycCompleted = completed;
       _kycStatusLoaded = true;
     });
   }
