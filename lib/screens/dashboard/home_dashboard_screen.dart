@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter_nivasshub/providers/dashboard/dashboard_provider.dart';
 import 'package:flutter_nivasshub/providers/dashboard/dashboard_state.dart';
+import 'package:flutter_nivasshub/storage/secure_storage_service.dart';
 import 'package:flutter_nivasshub/widgets/dashboard/dashboard_body.dart';
 import 'package:flutter_nivasshub/widgets/dashboard/loading/dashboard_loading_widget.dart';
 import 'package:flutter_nivasshub/widgets/dashboard/error/dashboard_error_widget.dart';
@@ -29,6 +29,7 @@ class _HomeDashboardScreenState
   // ============================================================
 
   bool _kycStatusLoaded = false;
+  bool _kycApproved = false;
 
   // ============================================================
   // COLORS
@@ -61,11 +62,13 @@ class _HomeDashboardScreenState
   // ============================================================
 
   Future<void> _loadKycStatus() async {
-    await SharedPreferences.getInstance();
+    final approved =
+        await context.read<SecureStorageService>().isKycApproved();
 
     if (!mounted) return;
 
     setState(() {
+      _kycApproved = approved;
       _kycStatusLoaded = true;
     });
   }
@@ -155,7 +158,7 @@ class _HomeDashboardScreenState
           return const DashboardLoadingWidget();
         }
 
-return const DashboardBody();
+return DashboardBody(showKycCard: !_kycApproved);
       case DashboardState.empty:
         return const DashboardEmptyWidget();
 

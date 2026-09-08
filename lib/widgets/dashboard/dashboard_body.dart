@@ -18,7 +18,13 @@ import 'package:flutter_nivasshub/widgets/dashboard/kyc_update_card/kyc_update_c
 class DashboardBody extends StatelessWidget {
   const DashboardBody({
     super.key,
+    required this.showKycCard,
   });
+
+  /// Whether the floating "KYC Update" card should be shown. `false` once
+  /// the user's KYC has been approved (Scenario 1); `true` while it's
+  /// still incomplete (Scenario 2).
+  final bool showKycCard;
 
   static final LayerLink _headerAnchor = LayerLink();
 
@@ -183,16 +189,17 @@ class DashboardBody extends StatelessWidget {
           // This matches Scenario 2 in your flow.
           // ========================================================
 
-          Positioned(
-            left: 12,
-            right: 12,
-            bottom: 8,
+          if (showKycCard)
+            Positioned(
+              left: 12,
+              right: 12,
+              bottom: 8,
 
-            child: SafeArea(
-              top: false,
-              child: _buildKycUpdateCard(context),
+              child: SafeArea(
+                top: false,
+                child: _buildKycUpdateCard(context),
+              ),
             ),
-          ),
         ],
       ),
     );

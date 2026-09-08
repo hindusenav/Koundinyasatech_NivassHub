@@ -82,7 +82,7 @@ class _SelectCityScreenState extends State<SelectCityScreen> {
     );
 
     if (result != null && mounted) {
-      Navigator.pushNamed(context, AppRoutes.kycStatus);
+      Navigator.pushNamed(context, AppRoutes.addHome);
     }
   }
 

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'kyc_verification_screen.dart';
+import 'package:flutter_nivasshub/routes/app_routes.dart';
 
 class AddHomeScreen extends StatefulWidget {
   const AddHomeScreen({super.key});
@@ -317,12 +317,7 @@ class _AddHomeScreenState extends State<AddHomeScreen> {
       height: 28,
       child: ElevatedButton(
         onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => const KycVerificationScreen(),
-            ),
-          );
+          Navigator.pushNamed(context, AppRoutes.kycVerification);
         },
         style: ElevatedButton.styleFrom(
           backgroundColor: const Color(0xFF006FCB),

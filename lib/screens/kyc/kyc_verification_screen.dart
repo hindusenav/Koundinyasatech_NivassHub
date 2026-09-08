@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:flutter_nivasshub/routes/app_routes.dart';
+
 class KycVerificationScreen extends StatefulWidget {
   const KycVerificationScreen({super.key});
 
@@ -13,6 +15,22 @@ class _KycVerificationScreenState
   bool aadhaarUploaded = false;
   bool panUploaded = false;
   bool propertyUploaded = false;
+  bool _submitting = false;
+
+  /// Simulates the "KYC Under Verification" step as a brief loading state
+  /// on the Submit button (no dedicated screen exists for it) before
+  /// landing on the KYC Approved screen.
+  Future<void> _handleSubmit() async {
+    setState(() {
+      _submitting = true;
+    });
+
+    await Future.delayed(const Duration(milliseconds: 1200));
+
+    if (!mounted) return;
+
+    Navigator.pushNamed(context, AppRoutes.kycStatus);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -362,23 +380,14 @@ class _KycVerificationScreenState
     final bool canSubmit =
         aadhaarUploaded &&
         panUploaded &&
-        propertyUploaded;
+        propertyUploaded &&
+        !_submitting;
 
     return SizedBox(
       width: double.infinity,
       height: 29,
       child: ElevatedButton(
-        onPressed: canSubmit
-            ? () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text(
-                      'KYC documents submitted successfully',
-                    ),
-                  ),
-                );
-              }
-            : null,
+        onPressed: canSubmit ? _handleSubmit : null,
         style: ElevatedButton.styleFrom(
           backgroundColor: const Color(0xFF006FCB),
           disabledBackgroundColor:
@@ -390,16 +399,29 @@ class _KycVerificationScreenState
             borderRadius: BorderRadius.circular(5),
           ),
         ),
-        child: Text(
-          'Submit Documents',
-          style: TextStyle(
-            fontSize: 8,
-            fontWeight: FontWeight.w700,
-            color: Colors.white.withOpacity(
-              canSubmit ? 1 : 0.85,
-            ),
-          ),
-        ),
+        child: _submitting
+            ? const SizedBox(
+                width: 14,
+                height: 14,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    Colors.white,
+                  ),
+                ),
+              )
+            : Text(
+                'Submit Documents',
+                style: TextStyle(
+                  fontSize: 8,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.white.withOpacity(
+                    aadhaarUploaded && panUploaded && propertyUploaded
+                        ? 1
+                        : 0.85,
+                  ),
+                ),
+              ),
       ),
     );
   }
