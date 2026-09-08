@@ -114,6 +114,23 @@ class ApiEndpoints {
   static const String activeSociety = '/api/v1/users/active-society';
 
   // ---------------------------------------------------------------------
+  // Forgot Password
+  //
+  // NOTE: per the published Forgot Password API contract these live on a
+  // base URL of `http://localhost:3000` with no `/api/v1` prefix, unlike
+  // every other endpoint above (currently `baseUrl` is
+  // `http://localhost:3001`). Deliberately NOT changing the shared
+  // `baseUrl` for this alone since every other endpoint depends on it.
+  // TODO(backend): confirm the real shared host before `useMockApi` is
+  // flipped to false for this feature — `ForgotPasswordService` may need
+  // an absolute URL override on these three calls instead of relying on
+  // `ApiClient`'s configured `baseUrl`.
+  // ---------------------------------------------------------------------
+  static const String forgotPassword = '/auth/forgot-password';
+  static const String forgotPasswordVerifyOtp = '/auth/forgot-password/verify-otp';
+  static const String forgotPasswordUpdatePassword = '/auth/forgot-password/update-password';
+
+  // ---------------------------------------------------------------------
   // Shared
   // ---------------------------------------------------------------------
   static const String uploadFile = '/upload';
