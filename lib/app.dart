@@ -109,61 +109,45 @@ class NivasHubApp extends StatelessWidget {
         // ========================================================
         // CORE SERVICES
         // ========================================================
+        Provider<LocalStorageService>.value(value: localStorageService),
 
-        Provider<LocalStorageService>.value(
-          value: localStorageService,
-        ),
+        Provider<SecureStorageService>.value(value: secureStorageService),
 
-        Provider<SecureStorageService>.value(
-          value: secureStorageService,
-        ),
-
-        Provider<ConnectivityService>.value(
-          value: connectivityService,
-        ),
+        Provider<ConnectivityService>.value(value: connectivityService),
 
         ChangeNotifierProvider<ConnectivityProvider>(
-          create: (_) => ConnectivityProvider(
-            connectivityService: connectivityService,
-          ),
+          create: (_) =>
+              ConnectivityProvider(connectivityService: connectivityService),
         ),
 
-        Provider<ApiClient>.value(
-          value: apiClient,
-        ),
+        Provider<ApiClient>.value(value: apiClient),
 
-        Provider<AuthServiceBase>.value(
-          value: authService,
-        ),
+        Provider<AuthServiceBase>.value(value: authService),
 
-        Provider<ForgotPasswordServiceBase>.value(
-          value: forgotPasswordService,
-        ),
+        Provider<ForgotPasswordServiceBase>.value(value: forgotPasswordService),
 
         // ========================================================
         // AUTH
         // ========================================================
-
         ChangeNotifierProvider<AuthProvider>(
-          create: (_) => AuthProvider(
-            authService: authService,
-          ),
+          create: (_) => AuthProvider(authService: authService),
         ),
 
+        // ChangeNotifierProvider<ForgotPasswordProvider>(
+        //   create: (_) => ForgotPasswordProvider(
+        //     forgotPasswordService: forgotPasswordService,
+        //   ),
+        // ),
         ChangeNotifierProvider<ForgotPasswordProvider>(
-          create: (_) => ForgotPasswordProvider(
-            forgotPasswordService: forgotPasswordService,
-          ),
+          create: (_) => ForgotPasswordProvider(), // ✅ No parameters needed
         ),
 
         // ========================================================
         // DASHBOARD
         // ========================================================
-
         ChangeNotifierProvider<DashboardProvider>(
-          create: (_) => DashboardProvider(
-            dashboardRepository,
-          )..loadDashboard(),
+          create: (_) =>
+              DashboardProvider(dashboardRepository)..loadDashboard(),
         ),
 
         ChangeNotifierProvider<DashboardNavigationProvider>(
@@ -173,59 +157,45 @@ class NivasHubApp extends StatelessWidget {
         // ========================================================
         // QUICK ACTIONS
         // ========================================================
-
         ChangeNotifierProvider<QuickActionsProvider>(
-          create: (_) => QuickActionsProvider(
-            quickActionsRepository,
-          ),
+          create: (_) => QuickActionsProvider(quickActionsRepository),
         ),
 
         // ========================================================
         // SEARCH
         // ========================================================
-
         ChangeNotifierProvider<SearchProvider>(
-          create: (_) => SearchProvider(
-            searchService,
-          ),
+          create: (_) => SearchProvider(searchService),
         ),
 
         // ========================================================
         // SETTINGS
         // ========================================================
-ChangeNotifierProvider<SettingsProvider>(
-  create: (_) => SettingsProvider(
-    settingsRepository: settingsRepository,
-  ),
-),
+        ChangeNotifierProvider<SettingsProvider>(
+          create: (_) =>
+              SettingsProvider(settingsRepository: settingsRepository),
+        ),
 
         // ========================================================
         // PROFILE
         // ========================================================
-ChangeNotifierProvider<ProfileProvider>(
-  create: (_) => ProfileProvider(
-    repository: profileRepository,
-  ),
-),
+        ChangeNotifierProvider<ProfileProvider>(
+          create: (_) => ProfileProvider(repository: profileRepository),
+        ),
 
         // ========================================================
         // THEME
         // ========================================================
-
         ChangeNotifierProvider<ThemeModeProvider>(
-          create: (_) => ThemeModeProvider(
-            localStorageService,
-          )..init(),
+          create: (_) => ThemeModeProvider(localStorageService)..init(),
         ),
       ],
 
       // ==========================================================
       // MATERIAL APP
       // ==========================================================
-
       builder: (context, child) {
-        final themeModeProvider =
-            context.watch<ThemeModeProvider>();
+        final themeModeProvider = context.watch<ThemeModeProvider>();
 
         return MaterialApp(
           title: 'NivasHub',
@@ -235,12 +205,8 @@ ChangeNotifierProvider<ProfileProvider>(
           navigatorKey: NavigationService.navigatorKey,
 
           navigatorObservers: [
-            DashboardNavObserver(
-              context.read<DashboardNavigationProvider>(),
-            ),
-            ConnectivityRouteObserver(
-              context.read<ConnectivityProvider>(),
-            ),
+            DashboardNavObserver(context.read<DashboardNavigationProvider>()),
+            ConnectivityRouteObserver(context.read<ConnectivityProvider>()),
           ],
 
           theme: AppTheme.light,
