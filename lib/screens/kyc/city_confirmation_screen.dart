@@ -24,7 +24,7 @@ class CityConfirmationScreen extends StatefulWidget {
     required String cityName,
     required String stateName,
     required String countryName,
-    String subRegion = 'Bengaluru Urban',
+    required String subRegion,
     VoidCallback? onConfirm,
   }) {
     return showModalBottomSheet<T>(

@@ -9,12 +9,14 @@ class CityData {
   final String name;
   final String state;
   final String country;
+  final String region;
   final IconData icon;
 
   const CityData({
     required this.name,
     required this.state,
     required this.country,
+    required this.region,
     required this.icon,
   });
 }
@@ -36,22 +38,22 @@ class _SelectCityScreenState extends State<SelectCityScreen> {
   String _searchQuery = '';
 
   static const List<CityData> _popularGridCities = [
-    CityData(name: 'Bangalore', state: 'Karnataka', country: 'India', icon: Icons.account_balance_outlined),
-    CityData(name: 'Mumbai', state: 'Maharashtra', country: 'India', icon: Icons.domain_outlined),
-    CityData(name: 'Delhi NCR', state: 'Delhi', country: 'India', icon: Icons.museum_outlined),
-    CityData(name: 'Pune', state: 'Maharashtra', country: 'India', icon: Icons.location_city_outlined),
-    CityData(name: 'Chennai', state: 'Tamil Nadu', country: 'India', icon: Icons.fort_outlined),
-    CityData(name: 'Hyderabad', state: 'Telangana', country: 'India', icon: Icons.apartment_outlined),
-    CityData(name: 'Ahmedabad', state: 'Gujarat', country: 'India', icon: Icons.landscape_outlined),
-    CityData(name: 'Kolkata', state: 'West Bengal', country: 'India', icon: Icons.directions_boat_outlined),
-    CityData(name: 'Kochi', state: 'Kerala', country: 'India', icon: Icons.water_outlined),
+    CityData(name: 'Bangalore', state: 'Karnataka', country: 'India', region: 'Bengaluru Urban', icon: Icons.account_balance_outlined),
+    CityData(name: 'Mumbai', state: 'Maharashtra', country: 'India', region: 'Mumbai City', icon: Icons.domain_outlined),
+    CityData(name: 'Delhi NCR', state: 'Delhi', country: 'India', region: 'New Delhi', icon: Icons.museum_outlined),
+    CityData(name: 'Pune', state: 'Maharashtra', country: 'India', region: 'Pune City', icon: Icons.location_city_outlined),
+    CityData(name: 'Chennai', state: 'Tamil Nadu', country: 'India', region: 'Chennai', icon: Icons.fort_outlined),
+    CityData(name: 'Hyderabad', state: 'Telangana', country: 'India', region: 'Hyderabad', icon: Icons.apartment_outlined),
+    CityData(name: 'Ahmedabad', state: 'Gujarat', country: 'India', region: 'Ahmedabad', icon: Icons.landscape_outlined),
+    CityData(name: 'Kolkata', state: 'West Bengal', country: 'India', region: 'Kolkata', icon: Icons.directions_boat_outlined),
+    CityData(name: 'Kochi', state: 'Kerala', country: 'India', region: 'Ernakulam', icon: Icons.water_outlined),
   ];
 
   static const List<CityData> _allCitiesList = [
-    CityData(name: 'Amritsar', state: 'Punjab', country: 'India', icon: Icons.location_on_outlined),
-    CityData(name: 'Bhopal', state: 'Madhya Pradesh', country: 'India', icon: Icons.location_on_outlined),
-    CityData(name: 'Chandigarh', state: 'Punjab', country: 'India', icon: Icons.location_on_outlined),
-    CityData(name: 'Dehradun', state: 'Uttarakhand', country: 'India', icon: Icons.location_on_outlined),
+    CityData(name: 'Amritsar', state: 'Punjab', country: 'India', region: 'Amritsar', icon: Icons.location_on_outlined),
+    CityData(name: 'Bhopal', state: 'Madhya Pradesh', country: 'India', region: 'Bhopal', icon: Icons.location_on_outlined),
+    CityData(name: 'Chandigarh', state: 'Punjab', country: 'India', region: 'Chandigarh', icon: Icons.location_on_outlined),
+    CityData(name: 'Dehradun', state: 'Uttarakhand', country: 'India', region: 'Dehradun', icon: Icons.location_on_outlined),
   ];
 
   @override
@@ -76,6 +78,7 @@ class _SelectCityScreenState extends State<SelectCityScreen> {
       cityName: city.name,
       stateName: city.state,
       countryName: city.country,
+      subRegion: city.region,
     );
 
     if (result != null && mounted) {
@@ -171,7 +174,7 @@ class _SelectCityScreenState extends State<SelectCityScreen> {
                           controller: _searchController,
                           style: TextStyle(color: textPrimary, fontSize: 14),
                           decoration: InputDecoration(
-                            hintText: 'Search your country...',
+                            hintText: 'Search your city...',
                             hintStyle: TextStyle(
                               color: isDark ? AppColors.grey400 : AppColors.grey500,
                               fontSize: 14,
