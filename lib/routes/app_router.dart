@@ -6,10 +6,12 @@ import 'package:flutter_nivasshub/core/api/base_api.dart';
 import 'package:flutter_nivasshub/screens/dashboard/home_dashboard_screen.dart';
 import 'package:flutter_nivasshub/screens/kyc/add_home_screen.dart';
 import 'package:flutter_nivasshub/screens/kyc/city_confirmation_screen.dart';
+import 'package:flutter_nivasshub/screens/kyc/kyc_review_screen.dart';
 import 'package:flutter_nivasshub/screens/kyc/kyc_status_screen.dart';
 import 'package:flutter_nivasshub/screens/kyc/kyc_verification_screen.dart';
 import 'package:flutter_nivasshub/screens/kyc/select_city_screen.dart';
 import 'package:flutter_nivasshub/screens/kyc/select_country_screen.dart';
+import 'package:flutter_nivasshub/screens/kyc/society_registration_number_screen.dart';
 import 'package:flutter_nivasshub/screens/notices/notices_screen.dart';
 import 'package:flutter_nivasshub/screens/notifications/delivery_details_screen.dart';
 import 'package:flutter_nivasshub/screens/profile/add_address_details_screen.dart';
@@ -161,10 +163,36 @@ class AppRouter {
         );
 
       case AppRoutes.selectCity:
+        // Select State step removed — this route is reached directly from
+        // Select Country with the country name as a bare String argument.
         final countryName = settings.arguments as String?;
         return MaterialPageRoute(
           settings: settings,
           builder: (_) => SelectCityScreen(countryName: countryName),
+        );
+
+      // Non-India KYC flow (society-based, no citizen/mobile/OTP steps)
+      case AppRoutes.societyRegistrationNumber:
+        final args = settings.arguments as Map? ?? const {};
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => SocietyRegistrationNumberScreen(
+            countryName: args['country'] as String? ?? '',
+            stateName: args['state'] as String? ?? '',
+            cityName: args['city'] as String? ?? '',
+          ),
+        );
+
+      case AppRoutes.kycReview:
+        final args = settings.arguments as Map? ?? const {};
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => KycReviewScreen(
+            countryName: args['country'] as String? ?? '',
+            stateName: args['state'] as String? ?? '',
+            cityName: args['city'] as String? ?? '',
+            registrationNumber: args['registrationNumber'] as String? ?? '',
+          ),
         );
 
       case AppRoutes.cityConfirmation:

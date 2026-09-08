@@ -35,6 +35,7 @@ class SelectCityScreen extends StatefulWidget {
 
 class _SelectCityScreenState extends State<SelectCityScreen> {
   final TextEditingController _searchController = TextEditingController();
+  final TextEditingController _manualCityController = TextEditingController();
   String _searchQuery = '';
 
   static const List<CityData> _popularGridCities = [
@@ -56,6 +57,85 @@ class _SelectCityScreenState extends State<SelectCityScreen> {
     CityData(name: 'Dehradun', state: 'Uttarakhand', country: 'India', region: 'Dehradun', icon: Icons.location_on_outlined),
   ];
 
+  /// Curated (non-exhaustive) sample cities per country for the non-India
+  /// KYC flow. Grouped by state/province/region internally (each `CityData`
+  /// still carries its own `state`), but since there's no Select State step
+  /// any more, all of a country's curated cities are flattened into one
+  /// list (see `_citiesForCountry`). A country with no entry here falls back
+  /// to the "No cities available for ..." message below. India is
+  /// intentionally absent: its city list above is unrelated and unaffected
+  /// by this map.
+  static const Map<String, Map<String, List<CityData>>> _citiesByCountryAndState = {
+    'Kenya': {
+      'Nairobi': [CityData(name: 'Nairobi', state: 'Nairobi', country: 'Kenya', region: 'Nairobi', icon: Icons.location_city_outlined)],
+      'Mombasa': [CityData(name: 'Mombasa', state: 'Mombasa', country: 'Kenya', region: 'Mombasa', icon: Icons.location_city_outlined)],
+      'Kisumu': [CityData(name: 'Kisumu', state: 'Kisumu', country: 'Kenya', region: 'Kisumu', icon: Icons.location_city_outlined)],
+      'Nakuru': [CityData(name: 'Nakuru', state: 'Nakuru', country: 'Kenya', region: 'Nakuru', icon: Icons.location_city_outlined)],
+    },
+    'United Arab Emirates': {
+      'Dubai': [CityData(name: 'Dubai', state: 'Dubai', country: 'United Arab Emirates', region: 'Dubai', icon: Icons.location_city_outlined)],
+      'Abu Dhabi': [CityData(name: 'Abu Dhabi', state: 'Abu Dhabi', country: 'United Arab Emirates', region: 'Abu Dhabi', icon: Icons.location_city_outlined)],
+      'Sharjah': [CityData(name: 'Sharjah', state: 'Sharjah', country: 'United Arab Emirates', region: 'Sharjah', icon: Icons.location_city_outlined)],
+    },
+    'Philippines': {
+      'National Capital Region (NCR)': [
+        CityData(name: 'Manila', state: 'National Capital Region (NCR)', country: 'Philippines', region: 'Manila', icon: Icons.location_city_outlined),
+        CityData(name: 'Quezon City', state: 'National Capital Region (NCR)', country: 'Philippines', region: 'Quezon City', icon: Icons.location_city_outlined),
+      ],
+      'Central Visayas': [CityData(name: 'Cebu City', state: 'Central Visayas', country: 'Philippines', region: 'Cebu City', icon: Icons.location_city_outlined)],
+      'Davao Region': [CityData(name: 'Davao City', state: 'Davao Region', country: 'Philippines', region: 'Davao City', icon: Icons.location_city_outlined)],
+    },
+    'Canada': {
+      'Ontario': [
+        CityData(name: 'Toronto', state: 'Ontario', country: 'Canada', region: 'Toronto', icon: Icons.location_city_outlined),
+        CityData(name: 'Ottawa', state: 'Ontario', country: 'Canada', region: 'Ottawa', icon: Icons.location_city_outlined),
+      ],
+      'British Columbia': [CityData(name: 'Vancouver', state: 'British Columbia', country: 'Canada', region: 'Vancouver', icon: Icons.location_city_outlined)],
+      'Quebec': [CityData(name: 'Montreal', state: 'Quebec', country: 'Canada', region: 'Montreal', icon: Icons.location_city_outlined)],
+      'Alberta': [CityData(name: 'Calgary', state: 'Alberta', country: 'Canada', region: 'Calgary', icon: Icons.location_city_outlined)],
+    },
+    'Australia': {
+      'New South Wales': [CityData(name: 'Sydney', state: 'New South Wales', country: 'Australia', region: 'Sydney', icon: Icons.location_city_outlined)],
+      'Victoria': [CityData(name: 'Melbourne', state: 'Victoria', country: 'Australia', region: 'Melbourne', icon: Icons.location_city_outlined)],
+      'Queensland': [CityData(name: 'Brisbane', state: 'Queensland', country: 'Australia', region: 'Brisbane', icon: Icons.location_city_outlined)],
+      'Western Australia': [CityData(name: 'Perth', state: 'Western Australia', country: 'Australia', region: 'Perth', icon: Icons.location_city_outlined)],
+    },
+    'Germany': {
+      'Bavaria': [CityData(name: 'Munich', state: 'Bavaria', country: 'Germany', region: 'Munich', icon: Icons.location_city_outlined)],
+      'Berlin': [CityData(name: 'Berlin', state: 'Berlin', country: 'Germany', region: 'Berlin', icon: Icons.location_city_outlined)],
+      'Hamburg': [CityData(name: 'Hamburg', state: 'Hamburg', country: 'Germany', region: 'Hamburg', icon: Icons.location_city_outlined)],
+      'North Rhine-Westphalia': [CityData(name: 'Cologne', state: 'North Rhine-Westphalia', country: 'Germany', region: 'Cologne', icon: Icons.location_city_outlined)],
+    },
+    'Singapore': {
+      'Central Region': [CityData(name: 'Singapore', state: 'Central Region', country: 'Singapore', region: 'Central Region', icon: Icons.location_city_outlined)],
+    },
+    'United Kingdom': {
+      'England': [
+        CityData(name: 'London', state: 'England', country: 'United Kingdom', region: 'London', icon: Icons.location_city_outlined),
+        CityData(name: 'Manchester', state: 'England', country: 'United Kingdom', region: 'Manchester', icon: Icons.location_city_outlined),
+      ],
+      'Scotland': [CityData(name: 'Edinburgh', state: 'Scotland', country: 'United Kingdom', region: 'Edinburgh', icon: Icons.location_city_outlined)],
+      'Wales': [CityData(name: 'Cardiff', state: 'Wales', country: 'United Kingdom', region: 'Cardiff', icon: Icons.location_city_outlined)],
+    },
+    'United States': {
+      'California': [
+        CityData(name: 'Los Angeles', state: 'California', country: 'United States', region: 'Los Angeles', icon: Icons.location_city_outlined),
+        CityData(name: 'San Francisco', state: 'California', country: 'United States', region: 'San Francisco', icon: Icons.location_city_outlined),
+      ],
+      'New York': [CityData(name: 'New York City', state: 'New York', country: 'United States', region: 'New York City', icon: Icons.location_city_outlined)],
+      'Texas': [CityData(name: 'Houston', state: 'Texas', country: 'United States', region: 'Houston', icon: Icons.location_city_outlined)],
+      'Illinois': [CityData(name: 'Chicago', state: 'Illinois', country: 'United States', region: 'Chicago', icon: Icons.location_city_outlined)],
+    },
+  };
+
+  /// All curated cities for [country] across every state/region, flattened
+  /// since there's no Select State step to narrow this down first.
+  static List<CityData> _citiesForCountry(String? country) {
+    final byState = _citiesByCountryAndState[country];
+    if (byState == null) return const [];
+    return byState.values.expand((cities) => cities).toList();
+  }
+
   @override
   void initState() {
     super.initState();
@@ -69,7 +149,37 @@ class _SelectCityScreenState extends State<SelectCityScreen> {
   @override
   void dispose() {
     _searchController.dispose();
+    _manualCityController.dispose();
     super.dispose();
+  }
+
+  /// Fallback for non-India countries with no curated city data (see
+  /// `_citiesByCountryAndState`) — lets the user type their city instead of
+  /// dead-ending with no tappable option. Still goes through the same City
+  /// Confirmation modal and non-India branch as a curated city would.
+  void _onManualCityContinue() async {
+    final typedCity = _manualCityController.text.trim();
+    if (typedCity.isEmpty) return;
+
+    final result = await CityConfirmationScreen.showModal(
+      context,
+      cityName: typedCity,
+      stateName: '',
+      countryName: widget.countryName ?? '',
+      subRegion: typedCity,
+    );
+
+    if (result != null && mounted) {
+      Navigator.pushNamed(
+        context,
+        AppRoutes.societyRegistrationNumber,
+        arguments: {
+          'country': widget.countryName,
+          'state': '',
+          'city': typedCity,
+        },
+      );
+    }
   }
 
   void _onCitySelected(CityData city) async {
@@ -82,7 +192,21 @@ class _SelectCityScreenState extends State<SelectCityScreen> {
     );
 
     if (result != null && mounted) {
-      Navigator.pushNamed(context, AppRoutes.addHome);
+      if (city.country == 'India') {
+        // Existing India flow — unchanged.
+        Navigator.pushNamed(context, AppRoutes.addHome);
+      } else {
+        // Non-India flow: Society Registration Number -> KYC Review -> KYC Status.
+        Navigator.pushNamed(
+          context,
+          AppRoutes.societyRegistrationNumber,
+          arguments: {
+            'country': city.country,
+            'state': city.state,
+            'city': city.name,
+          },
+        );
+      }
     }
   }
 
@@ -90,13 +214,26 @@ class _SelectCityScreenState extends State<SelectCityScreen> {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    final filteredGrid = _popularGridCities
-        .where((c) => c.name.toLowerCase().contains(_searchQuery))
-        .toList();
+    // India (including the legacy no-country case) keeps its existing
+    // static city lists and grid/list split exactly as before. Any other
+    // country looks up its curated cities (flattened across all its
+    // states/regions, since there's no Select State step), rendered
+    // through the same "ALL CITIES" list section below.
+    final isIndia = widget.countryName == null || widget.countryName == 'India';
 
-    final filteredAll = _allCitiesList
-        .where((c) => c.name.toLowerCase().contains(_searchQuery))
-        .toList();
+    final filteredGrid = isIndia
+        ? _popularGridCities
+            .where((c) => c.name.toLowerCase().contains(_searchQuery))
+            .toList()
+        : const <CityData>[];
+
+    final filteredAll = isIndia
+        ? _allCitiesList
+            .where((c) => c.name.toLowerCase().contains(_searchQuery))
+            .toList()
+        : _citiesForCountry(widget.countryName)
+            .where((c) => c.name.toLowerCase().contains(_searchQuery))
+            .toList();
 
     final headerBgColor = isDark
         ? AppColors.dashboardHeaderDark
@@ -273,7 +410,7 @@ class _SelectCityScreenState extends State<SelectCityScreen> {
 
                   // ALL CITIES section title & list
                   if (filteredAll.isNotEmpty) ...[
-                    _buildSectionTitle('ALL CITIES', isDark),
+                    _buildSectionTitle(isIndia ? 'ALL CITIES' : 'CITIES', isDark),
                     const SizedBox(height: 10),
                     _buildCityCardGroup(
                       cities: filteredAll,
@@ -286,18 +423,24 @@ class _SelectCityScreenState extends State<SelectCityScreen> {
                   ],
 
                   if (filteredGrid.isEmpty && filteredAll.isEmpty)
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 40),
-                      child: Center(
-                        child: Text(
-                          'No cities match "$_searchQuery"',
-                          style: TextStyle(
-                            color: isDark ? AppColors.grey400 : AppColors.grey500,
-                            fontSize: 14,
+                    if (!isIndia && _searchQuery.isEmpty)
+                      // No curated city data for this state/region — let the
+                      // user type their city instead of dead-ending here.
+                      _buildManualCityEntry(isDark, textPrimary, cardBgColor, borderColor)
+                    else
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 40),
+                        child: Center(
+                          child: Text(
+                            'No cities match "$_searchQuery"',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: isDark ? AppColors.grey400 : AppColors.grey500,
+                              fontSize: 14,
+                            ),
                           ),
                         ),
                       ),
-                    ),
                 ],
               ),
             ),
@@ -305,6 +448,76 @@ class _SelectCityScreenState extends State<SelectCityScreen> {
         ),
       ),
       bottomNavigationBar: const DashboardBottomNavigation(selectedIndex: 0),
+    );
+  }
+
+  Widget _buildManualCityEntry(
+    bool isDark,
+    Color textPrimary,
+    Color cardBgColor,
+    Color borderColor,
+  ) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: cardBgColor,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: borderColor, width: 1),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'No cities available for ${widget.countryName}',
+            style: TextStyle(
+              color: isDark ? AppColors.grey400 : AppColors.grey500,
+              fontSize: 13,
+            ),
+          ),
+          const SizedBox(height: 12),
+          TextField(
+            controller: _manualCityController,
+            style: TextStyle(color: textPrimary, fontSize: 14),
+            decoration: InputDecoration(
+              hintText: 'Enter your city',
+              hintStyle: TextStyle(
+                color: isDark ? AppColors.grey400 : AppColors.grey500,
+                fontSize: 14,
+              ),
+              prefixIcon: Icon(
+                Icons.edit_location_alt_outlined,
+                color: isDark ? AppColors.grey400 : AppColors.grey500,
+              ),
+              filled: true,
+              fillColor: isDark ? AppColors.backgroundDark : const Color(0xFFF8FBFE),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: borderColor),
+              ),
+            ),
+            onSubmitted: (_) => _onManualCityContinue(),
+          ),
+          const SizedBox(height: 12),
+          SizedBox(
+            width: double.infinity,
+            height: 44,
+            child: ElevatedButton(
+              onPressed: _onManualCityContinue,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF006FC9),
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              child: const Text(
+                'Continue',
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
