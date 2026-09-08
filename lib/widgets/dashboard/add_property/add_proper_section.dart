@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:flutter_nivasshub/routes/app_routes.dart';
+
 class AddPropertySection extends StatelessWidget {
   const AddPropertySection({
     super.key,
@@ -68,7 +70,7 @@ class AddPropertySection extends StatelessWidget {
 
             // ======================================================
             // ORANGE DIVIDER
-            // ====================================================== 
+            // ======================================================
 
             const SizedBox(
               height: 9,
@@ -92,7 +94,12 @@ class AddPropertySection extends StatelessWidget {
               height: 42,
               child: InkWell(
                 onTap: () {
-                  // Add Flat / Villa / Office navigation here.
+                  // Reuse the existing KYC flow to add a new
+                  // Flat/Villa/Office (Select Country -> Select City ->
+                  // City Confirmation -> Add Home -> KYC Verification ->
+                  // KYC Status), same entry point as the Home KYC Update
+                  // card.
+                  Navigator.pushNamed(context, AppRoutes.selectCountry);
                 },
                 borderRadius: BorderRadius.circular(24),
                 child: Row(
