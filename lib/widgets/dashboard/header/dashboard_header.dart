@@ -10,12 +10,16 @@ import 'package:flutter_nivasshub/providers/dashboard/dashboard_provider.dart';
 class DashboardHeader extends StatelessWidget {
   const DashboardHeader({
     super.key,
-    required this.onPropertyDropdownTap,
-    required this.isPropertyExpanded,
+    required this.isPropertyPanelExpanded,
+    required this.onTogglePropertyPanel,
   });
 
-  final VoidCallback onPropertyDropdownTap;
-  final bool isPropertyExpanded;
+  /// Whether the "Add Property" panel (the "B - 402 Golden Residency" +
+  /// "Add Flat/Villa/Office" section) is currently shown below the header.
+  final bool isPropertyPanelExpanded;
+
+  /// Called when the "B-402 ▾" row is tapped, to show/hide that panel.
+  final VoidCallback onTogglePropertyPanel;
 
   // ============================================================
   // COLORS
@@ -39,12 +43,14 @@ class DashboardHeader extends StatelessWidget {
     // FLAT NUMBER
     // ============================================================
 
-    final flatLabel = addresses.isNotEmpty
+    final defaultAddress = addresses.isNotEmpty
         ? addresses.firstWhere(
             (e) => e.isDefault,
             orElse: () => addresses.first,
-          ).flatNumber
-        : (user?.flatNumber ?? 'B - 402');
+          )
+        : null;
+
+    final flatLabel = defaultAddress?.flatNumber ?? (user?.flatNumber ?? 'B - 402');
 
     // ============================================================
     // HEADER
@@ -172,36 +178,43 @@ class DashboardHeader extends StatelessWidget {
                           const SizedBox(width: 10),
 
                           // -----------------------------------------
-                          // FLAT NUMBER
+                          // FLAT NUMBER — tap to show/hide the
+                          // "Add Property" panel below the header.
                           // -----------------------------------------
 
-                          Text(
-                            flatLabel.isNotEmpty
-                                ? flatLabel
-                                : 'B - 402',
+                          GestureDetector(
+                            behavior: HitTestBehavior.opaque,
+                            onTap: onTogglePropertyPanel,
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Text(
+                                  flatLabel.isNotEmpty
+                                      ? flatLabel
+                                      : 'B - 402',
 
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w700,
-                              color: headerTextColor,
-                              height: 1.2,
-                              letterSpacing: 0.3,
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w700,
+                                    color: headerTextColor,
+                                    height: 1.2,
+                                    letterSpacing: 0.3,
+                                  ),
+                                ),
+
+                                const SizedBox(width: 4),
+
+                                Icon(
+                                  isPropertyPanelExpanded
+                                      ? Icons.keyboard_arrow_up_rounded
+                                      : Icons.keyboard_arrow_down_rounded,
+                                  size: 18,
+                                  color: headerTextColor,
+                                ),
+                              ],
                             ),
                           ),
-
-                          const SizedBox(width: 4),
-
-GestureDetector(
-  behavior: HitTestBehavior.opaque,
-  onTap: onPropertyDropdownTap,
-  child: Icon(
-    isPropertyExpanded
-        ? Icons.keyboard_arrow_up_rounded
-        : Icons.keyboard_arrow_down_rounded,
-    size: 18,
-    color: headerTextColor,
-  ),
-),
                         ],
                       ),
                     ],

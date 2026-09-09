@@ -10,6 +10,7 @@ import 'package:flutter_nivasshub/widgets/dashboard/otp/generate_otp_banner.dart
 import 'package:flutter_nivasshub/widgets/dashboard/panic/panic_sos_banner.dart';
 import 'package:flutter_nivasshub/widgets/dashboard/quick_actions/quick_actions_grid.dart';
 import 'package:flutter_nivasshub/widgets/dashboard/add_property/add_proper_section.dart';
+import 'package:flutter_nivasshub/routes/app_routes.dart';
 
 // KYC Update Card
 import 'package:flutter_nivasshub/widgets/dashboard/kyc_update_card/kyc_update_card_section.dart';
@@ -17,7 +18,13 @@ import 'package:flutter_nivasshub/widgets/dashboard/kyc_update_card/kyc_update_c
 class DashboardBody extends StatefulWidget {
   const DashboardBody({
     super.key,
+    required this.showKycCard,
   });
+
+  /// Whether the floating "KYC Update" card should be shown. `false` once
+  /// the user's KYC has been approved (Scenario 1); `true` while it's
+  /// still incomplete (Scenario 2).
+  final bool showKycCard;
 
   @override
   State<DashboardBody> createState() => _DashboardBodyState();
@@ -27,33 +34,35 @@ class _DashboardBodyState extends State<DashboardBody> {
   static final LayerLink _headerAnchor = LayerLink();
 
   // ============================================================
-  // PROPERTY DROPDOWN STATE
-  // ============================================================
-
-  bool _isPropertyExpanded = false;
-
-  // ============================================================
   // KYC CARD HEIGHT
+  //
+  // Space reserved at the bottom of the scrollable dashboard
+  // so the floating KYC card does not cover the last content.
   // ============================================================
 
   static const double _kycCardAreaHeight = 150.0;
+
+  // ============================================================
+  // ADD PROPERTY PANEL
+  //
+  // Hidden by default; toggled open/closed by tapping the header's
+  // "B-402 ▾" row.
+  // ============================================================
+
+  bool _showPropertyPanel = false;
+
+  void _togglePropertyPanel() {
+    setState(() {
+      _showPropertyPanel = !_showPropertyPanel;
+    });
+  }
 
   // ============================================================
   // KYC UPDATE ACTION
   // ============================================================
 
   void _openKycFlow(BuildContext context) {
-    debugPrint('KYC Update Now clicked');
-  }
-
-  // ============================================================
-  // PROPERTY DROPDOWN TOGGLE
-  // ============================================================
-
-  void _togglePropertySection() {
-    setState(() {
-      _isPropertyExpanded = !_isPropertyExpanded;
-    });
+    Navigator.pushNamed(context, AppRoutes.selectCountry);
   }
 
   @override
@@ -73,6 +82,7 @@ class _DashboardBodyState extends State<DashboardBody> {
           SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
 
+            // Extra space at bottom for the floating KYC card
             padding: const EdgeInsets.only(
               bottom: _kycCardAreaHeight + 20,
             ),
@@ -87,18 +97,25 @@ class _DashboardBodyState extends State<DashboardBody> {
                 CompositedTransformTarget(
                   link: _headerAnchor,
                   child: DashboardHeader(
-                    onPropertyDropdownTap: _togglePropertySection,
-                    isPropertyExpanded: _isPropertyExpanded,
+                    isPropertyPanelExpanded: _showPropertyPanel,
+                    onTogglePropertyPanel: _togglePropertyPanel,
                   ),
                 ),
 
                 // ==================================================
-                // ADD PROPERTY SECTION
+                // ADD PROPERTY — hidden until the header's "B-402 ▾"
+                // row is tapped.
                 // ==================================================
 
-                AddPropertySection(
-                  isExpanded: _isPropertyExpanded,
-                ),
+               AnimatedSize(
+  duration: const Duration(milliseconds: 200),
+  curve: Curves.easeInOut,
+  child: _showPropertyPanel
+      ? AddPropertySection(
+          isExpanded: _showPropertyPanel,
+        )
+      : const SizedBox(width: double.infinity),
+),
 
                 // ==================================================
                 // DASHBOARD CONTENT
@@ -111,6 +128,7 @@ class _DashboardBodyState extends State<DashboardBody> {
                     horizontalPadding,
                     0,
                   ),
+
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -191,16 +209,29 @@ class _DashboardBodyState extends State<DashboardBody> {
           // ========================================================
           // KYC UPDATE POPUP / FLOATING CARD
           // ========================================================
+          //
+          // This is outside SingleChildScrollView.
+          //
+          // Therefore it:
+          //   - stays at the bottom of Home
+          //   - floats over the dashboard
+          //   - does not scroll with dashboard content
+          //   - does not push the dashboard content down
+          //
+          // This matches Scenario 2 in your flow.
+          // ========================================================
 
-          Positioned(
-            left: 12,
-            right: 12,
-            bottom: 8,
-            child: SafeArea(
-              top: false,
-              child: _buildKycUpdateCard(context),
+          if (widget.showKycCard)
+            Positioned(
+              left: 12,
+              right: 12,
+              bottom: 8,
+
+              child: SafeArea(
+                top: false,
+                child: _buildKycUpdateCard(context),
+              ),
             ),
-          ),
         ],
       ),
     );
@@ -213,6 +244,7 @@ class _DashboardBodyState extends State<DashboardBody> {
   Widget _buildKycUpdateCard(BuildContext context) {
     return Material(
       color: Colors.transparent,
+
       child: KycUpdateCardSection(
         onUpdatePressed: () {
           _openKycFlow(context);

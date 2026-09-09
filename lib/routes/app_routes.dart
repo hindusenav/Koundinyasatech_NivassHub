@@ -98,4 +98,19 @@ class AppRoutes {
   // ---------------------------------------------------------------------
   static const String search = '/search';
   static const String quickActions = '/quick-actions';
+
+  // ---------------------------------------------------------------------
+  // KYC
+  // ---------------------------------------------------------------------
+  static const String selectCountry = '/kyc/select-country';
+  static const String selectCity = '/kyc/select-city';
+  static const String cityConfirmation = '/kyc/city-confirmation';
+  static const String addHome = '/kyc/add-home';
+  static const String kycVerification = '/kyc/verification';
+  static const String kycStatus = '/kyc/status';
+
+  // Non-India KYC flow (society-based, no citizen/mobile/OTP verification)
+  static const String societyRegistrationNumber =
+      '/kyc/society-registration-number';
+  static const String kycReview = '/kyc/review';
 }

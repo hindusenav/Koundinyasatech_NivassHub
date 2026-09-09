@@ -57,7 +57,9 @@ class _KycStatusScreenState extends State<KycStatusScreen>
   ///
   /// Save the session, refresh dashboard data and go directly to Home.
   Future<void> _handleContinue() async {
-    await context.read<SecureStorageService>().saveSession();
+    final storage = context.read<SecureStorageService>();
+    await storage.saveSession();
+    await storage.saveKycApproved();
 
     if (!mounted) return;
 
