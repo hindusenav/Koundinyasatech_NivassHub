@@ -1,26 +1,54 @@
 import 'package:flutter/material.dart';
-
 import 'package:flutter_nivasshub/routes/app_routes.dart';
 
 class KycVerificationScreen extends StatefulWidget {
   const KycVerificationScreen({super.key});
 
   @override
-  State<KycVerificationScreen> createState() =>
-      _KycVerificationScreenState();
+  State<KycVerificationScreen> createState() => _KycVerificationScreenState();
 }
 
-class _KycVerificationScreenState
-    extends State<KycVerificationScreen> {
+class _KycVerificationScreenState extends State<KycVerificationScreen> {
   bool aadhaarUploaded = false;
   bool panUploaded = false;
   bool propertyUploaded = false;
   bool _submitting = false;
 
-  /// Simulates the "KYC Under Verification" step as a brief loading state
-  /// on the Submit button (no dedicated screen exists for it) before
-  /// landing on the KYC Approved screen.
+  // ===========================================================================
+  // ONLY KYC ASSETS
+  // ===========================================================================
+
+  static const String aadhaarIcon = 'assets/icons/aadaarcardimg.png';
+  static const String panIcon = 'assets/icons/pancardimg.png';
+  static const String propertyIcon = 'assets/icons/propertyimg.png';
+  static const String uploadIcon = 'assets/icons/uploadimg.png';
+  static const String verificationIcon = 'assets/icons/verificationimg.png';
+
+  // ===========================================================================
+  // COLORS
+  // ===========================================================================
+
+  static const Color backgroundColor = Color(0xFFF4F8FC);
+  static const Color headerColor = Color(0xFFC7E1F8);
+  static const Color bottomNavColor = Color(0xFFC7E3FF);
+  static const Color primaryBlue = Color(0xFF006FCB);
+  static const Color darkText = Color(0xFF27364A);
+  static const Color greyText = Color(0xFF7A8795);
+  static const Color lightGreyText = Color(0xFFA2ACB7);
+  static const Color borderColor = Color(0xFFD8E1EA);
+  static const Color uploadBackground = Color(0xFFF8FBFE);
+  static const Color pendingBackground = Color(0xFFFFF4D9);
+  static const Color pendingText = Color(0xFFE5A000);
+
+  // ===========================================================================
+  // SUBMIT
+  // ===========================================================================
+
   Future<void> _handleSubmit() async {
+    if (!aadhaarUploaded || !panUploaded || !propertyUploaded || _submitting) {
+      return;
+    }
+
     setState(() {
       _submitting = true;
     });
@@ -32,111 +60,105 @@ class _KycVerificationScreenState
     Navigator.pushNamed(context, AppRoutes.kycStatus);
   }
 
+  // ===========================================================================
+  // BUILD
+  // ===========================================================================
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF3F7FC),
+      backgroundColor: backgroundColor,
       body: SafeArea(
         bottom: false,
         child: Column(
           children: [
             _buildHeader(),
             Expanded(
-              child: Column(
-                children: [
-                  Expanded(
-                    child: SingleChildScrollView(
-                      physics: const BouncingScrollPhysics(),
-                      child: _buildContent(),
-                    ),
-                  ),
-                  _buildBottomNavigation(),
-                ],
+              child: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
+                child: Column(
+                  children: [
+                    _buildContent(),
+                  ],
+                ),
               ),
             ),
+            _buildBottomNavigation(),
           ],
         ),
       ),
     );
   }
 
-  // ---------------------------------------------------------------------------
+  // ===========================================================================
   // HEADER
-  // ---------------------------------------------------------------------------
+  // ===========================================================================
 
   Widget _buildHeader() {
     return Container(
       width: double.infinity,
       height: 56,
-      decoration: const BoxDecoration(
-        color: Color(0xFFC7E1F8),
-      ),
-      child: Row(
+      color: headerColor,
+      child: Stack(
+        alignment: Alignment.center,
         children: [
-          const SizedBox(width: 4),
-
-          GestureDetector(
-            onTap: () => Navigator.pop(context),
-            child: const SizedBox(
-              width: 48,
-              height: 56,
-              child: Icon(
-                Icons.arrow_back,
-                size: 20,
-                color: Color(0xFF17202A),
-              ),
-            ),
-          ),
-
-          const Expanded(
-            child: Center(
-              child: Text(
-                'KYC Verification',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w700,
-                  color: Color(0xFF111827),
+          Positioned(
+            left: 4,
+            top: 0,
+            bottom: 0,
+            child: InkWell(
+              onTap: () {
+                Navigator.pop(context);
+              },
+              borderRadius: BorderRadius.circular(30),
+              child: const SizedBox(
+                width: 48,
+                height: 56,
+                child: Center(
+                  child: Icon(
+                    Icons.arrow_back,
+                    size: 22,
+                    color: Color(0xFF17202A),
+                  ),
                 ),
               ),
             ),
           ),
-
-          const SizedBox(width: 48),
+          const Center(
+            child: Text(
+              'KYC Verification',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                color: Color(0xFF111827),
+                letterSpacing: 0.15,
+              ),
+            ),
+          ),
         ],
       ),
     );
   }
 
-  // ---------------------------------------------------------------------------
+  // ===========================================================================
   // CONTENT
-  // ---------------------------------------------------------------------------
+  // ===========================================================================
 
   Widget _buildContent() {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 28, 20, 20),
+      padding: const EdgeInsets.fromLTRB(20, 24, 20, 16),
       child: Column(
         children: [
-          _buildKycIcon(),
+          _buildVerificationHeader(),
+          const SizedBox(height: 24),
 
-          const SizedBox(height: 16),
-
-          const Text(
-            'Upload your documents for verification',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 13,
-              color: Color(0xFF6B7280),
-            ),
-          ),
-
-          const SizedBox(height: 28),
-
+          // AADHAAR CARD
           _buildDocumentCard(
             title: 'AADHAAR CARD',
             subtitle: 'Government issued National ID',
-            icon: Icons.description_outlined,
-            pending: !aadhaarUploaded,
+            iconPath: aadhaarIcon,
             uploadText: 'Upload Front & Back',
+            uploaded: aadhaarUploaded,
             onUpload: () {
               setState(() {
                 aadhaarUploaded = true;
@@ -144,14 +166,15 @@ class _KycVerificationScreenState
             },
           ),
 
-          const SizedBox(height: 12),
+          const SizedBox(height: 16),
 
+          // PAN CARD
           _buildDocumentCard(
             title: 'PAN CARD',
             subtitle: 'Permanent Account Number',
-            icon: Icons.article_outlined,
-            pending: !panUploaded,
+            iconPath: panIcon,
             uploadText: 'Tap to upload PAN Front',
+            uploaded: panUploaded,
             onUpload: () {
               setState(() {
                 panUploaded = true;
@@ -159,14 +182,15 @@ class _KycVerificationScreenState
             },
           ),
 
-          const SizedBox(height: 12),
+          const SizedBox(height: 16),
 
+          // PROPERTY DOCUMENT
           _buildDocumentCard(
             title: 'PROPERTY DOCUMENT',
             subtitle: 'Proof of ownership or rental lease',
-            icon: Icons.chat_bubble_outline,
-            pending: !propertyUploaded,
+            iconPath: propertyIcon,
             uploadText: 'Upload ownership proof',
+            uploaded: propertyUploaded,
             onUpload: () {
               setState(() {
                 propertyUploaded = true;
@@ -174,199 +198,243 @@ class _KycVerificationScreenState
             },
           ),
 
-          const SizedBox(height: 28),
+          const SizedBox(height: 32),
 
           _buildSubmitButton(),
+          const SizedBox(height: 20),
         ],
       ),
     );
   }
 
-  // ---------------------------------------------------------------------------
-  // KYC ICON
-  // ---------------------------------------------------------------------------
+  // ===========================================================================
+  // VERIFICATION ICON
+  // ===========================================================================
 
-  Widget _buildKycIcon() {
+  Widget _buildVerificationHeader() {
+    return Column(
+      children: [
+        Container(
+          width: 72,
+          height: 72,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            shape: BoxShape.circle,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.08),
+                blurRadius: 16,
+                spreadRadius: 0,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          padding: const EdgeInsets.all(16),
+          child: Image.asset(
+            verificationIcon,
+            fit: BoxFit.contain,
+            errorBuilder: (context, error, stackTrace) {
+              return const Icon(
+                Icons.verified_outlined,
+                size: 40,
+                color: primaryBlue,
+              );
+            },
+          ),
+        ),
+        const SizedBox(height: 12),
+        const Text(
+          'Upload your documents for verification',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w500,
+            color: greyText,
+            letterSpacing: 0.1,
+          ),
+        ),
+      ],
+    );
+  }
+
+  // ===========================================================================
+  // DOCUMENT CARD
+  // ===========================================================================
+
+  Widget _buildDocumentCard({
+    required String title,
+    required String subtitle,
+    required String iconPath,
+    required String uploadText,
+    required bool uploaded,
+    required VoidCallback onUpload,
+  }) {
     return Container(
-      width: 56,
-      height: 56,
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(14, 14, 14, 14),
       decoration: BoxDecoration(
         color: Colors.white,
-        shape: BoxShape.circle,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: borderColor,
+          width: 1.2,
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
         ],
       ),
-      child: const Center(
-        child: Icon(
-          Icons.shield_outlined,
-          size: 28,
-          color: Color(0xFF1677D2),
-        ),
-      ),
-    );
-  }
-
-  // ---------------------------------------------------------------------------
-  // DOCUMENT CARD
-  // ---------------------------------------------------------------------------
-
-  Widget _buildDocumentCard({
-    required String title,
-    required String subtitle,
-    required IconData icon,
-    required bool pending,
-    required String uploadText,
-    required VoidCallback onUpload,
-  }) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: const Color(0xFFE5E9F0),
-          width: 1,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.06),
-            blurRadius: 6,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Title row
+          // ===================================================================
+          // DOCUMENT HEADER
+          // ===================================================================
+
           Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+              // DOCUMENT ICON
               Container(
-                width: 36,
-                height: 36,
+                width: 40,
+                height: 40,
                 decoration: BoxDecoration(
                   color: const Color(0xFFEAF4FF),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: Icon(
-                  icon,
-                  size: 20,
-                  color: const Color(0xFF1478D4),
+                padding: const EdgeInsets.all(8),
+                child: Image.asset(
+                  iconPath,
+                  fit: BoxFit.contain,
+                  errorBuilder: (context, error, stackTrace) {
+                    return const Icon(
+                      Icons.description_outlined,
+                      size: 24,
+                      color: primaryBlue,
+                    );
+                  },
                 ),
               ),
 
               const SizedBox(width: 12),
 
+              // TITLE + SUBTITLE
               Expanded(
                 child: Column(
-                  crossAxisAlignment:
-                      CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w800,
-                        color: Color(0xFF374151),
+                        color: darkText,
+                        letterSpacing: 0.2,
                       ),
                     ),
-                    const SizedBox(height: 2),
+                    const SizedBox(height: 3),
                     Text(
                       subtitle,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
-                        fontSize: 11,
-                        color: Color(0xFF8A95A3),
+                        fontSize: 10,
+                        fontWeight: FontWeight.w400,
+                        color: lightGreyText,
                       ),
                     ),
                   ],
                 ),
               ),
 
-              if (pending)
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFFFF5DD),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: const Text(
-                    'Pending',
-                    style: TextStyle(
-                      fontSize: 11,
-                      color: Color(0xFFE8A300),
-                      fontWeight: FontWeight.w700,
-                    ),
+              const SizedBox(width: 8),
+
+              // PENDING / UPLOADED
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
+                decoration: BoxDecoration(
+                  color: uploaded ? const Color(0xFFE7F8ED) : pendingBackground,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  uploaded ? 'Uploaded' : 'Pending',
+                  style: TextStyle(
+                    fontSize: 9,
+                    fontWeight: FontWeight.w700,
+                    color: uploaded ? const Color(0xFF159447) : pendingText,
+                    letterSpacing: 0.2,
                   ),
                 ),
+              ),
             ],
           ),
 
           const SizedBox(height: 12),
 
-          // Upload area
+          // ===================================================================
+          // UPLOAD BOX with dashed border
+          // ===================================================================
+
           GestureDetector(
             onTap: onUpload,
-            child: CustomPaint(
-              painter: _DashedRoundedRectPainter(
-                color: const Color(0xFFB9C8D7),
-                radius: 10,
-                strokeWidth: 1.2,
+            child: Container(
+              width: double.infinity,
+              height: 76,
+              decoration: BoxDecoration(
+                color: uploadBackground,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(
+                  color: const Color(0xFFB7C7D8),
+                  width: 1.2,
+                  style: BorderStyle.solid,
+                ),
               ),
-              child: Container(
-                width: double.infinity,
-                height: 76,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF8FBFE),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Column(
-                  mainAxisAlignment:
-                      MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      pending
-                          ? Icons.upload_file_outlined
-                          : Icons.check_circle_outline,
-                      size: 20,
-                      color: pending
-                          ? const Color(0xFF0876D1)
-                          : Colors.green,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset(
+                    uploadIcon,
+                    width: 22,
+                    height: 22,
+                    fit: BoxFit.contain,
+                    errorBuilder: (context, error, stackTrace) {
+                      return const Icon(
+                        Icons.cloud_upload_outlined,
+                        size: 22,
+                        color: primaryBlue,
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    uploaded ? 'Document uploaded' : '+ $uploadText',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                      color: uploaded ? const Color(0xFF159447) : primaryBlue,
+                      letterSpacing: 0.1,
                     ),
-
-                    const SizedBox(height: 4),
-
-                    Text(
-                      pending
-                          ? '+ $uploadText'
-                          : 'Document uploaded',
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w700,
-                        color: pending
-                            ? const Color(0xFF0876D1)
-                            : Colors.green,
-                      ),
+                  ),
+                  const SizedBox(height: 2),
+                  const Text(
+                    'PDF, JPG, JPEG up to 5MB',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 8.5,
+                      fontWeight: FontWeight.w400,
+                      color: lightGreyText,
                     ),
-
-                    const SizedBox(height: 2),
-
-                    Text(
-                      'PDF, JPG, JPEG up to 5MB',
-                      style: TextStyle(
-                        fontSize: 10,
-                        color: Colors.grey.shade500,
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -375,16 +443,13 @@ class _KycVerificationScreenState
     );
   }
 
-  // ---------------------------------------------------------------------------
+  // ===========================================================================
   // SUBMIT BUTTON
-  // ---------------------------------------------------------------------------
+  // ===========================================================================
 
   Widget _buildSubmitButton() {
     final bool canSubmit =
-        aadhaarUploaded &&
-        panUploaded &&
-        propertyUploaded &&
-        !_submitting;
+        aadhaarUploaded && panUploaded && propertyUploaded && !_submitting;
 
     return SizedBox(
       width: double.infinity,
@@ -392,14 +457,15 @@ class _KycVerificationScreenState
       child: ElevatedButton(
         onPressed: canSubmit ? _handleSubmit : null,
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFF006FCB),
-          disabledBackgroundColor:
-              const Color(0xFF006FCB),
+          backgroundColor: primaryBlue,
+          disabledBackgroundColor: primaryBlue.withValues(alpha: 0.5),
           foregroundColor: Colors.white,
+          disabledForegroundColor: Colors.white.withValues(alpha: 0.7),
           elevation: 2,
+          shadowColor: Colors.black.withValues(alpha: 0.12),
           padding: EdgeInsets.zero,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(10),
           ),
         ),
         child: _submitting
@@ -407,171 +473,119 @@ class _KycVerificationScreenState
                 width: 20,
                 height: 20,
                 child: CircularProgressIndicator(
-                  strokeWidth: 2,
+                  strokeWidth: 2.5,
                   valueColor: AlwaysStoppedAnimation<Color>(
                     Colors.white,
                   ),
                 ),
               )
-            : Text(
+            : const Text(
                 'Submit Documents',
                 style: TextStyle(
-                  fontSize: 16,
+                  fontSize: 14,
                   fontWeight: FontWeight.w700,
-                  color: Colors.white.withValues(
-                    alpha:
-                        aadhaarUploaded && panUploaded && propertyUploaded
-                            ? 1
-                            : 0.85,
-                  ),
+                  color: Colors.white,
+                  letterSpacing: 0.2,
                 ),
               ),
       ),
     );
   }
 
-  // ---------------------------------------------------------------------------
-  // BOTTOM NAVIGATION
-  // ---------------------------------------------------------------------------
+  // ===========================================================================
+  // BOTTOM NAVIGATION (Fixed at bottom)
+  // ===========================================================================
 
   Widget _buildBottomNavigation() {
-    return SafeArea(
-      top: false,
-      child: Container(
-        height: 84,
-        width: double.infinity,
-        decoration: const BoxDecoration(
-          color: Color(0xFFC7E3FF),
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(24),
-            topRight: Radius.circular(24),
-          ),
-        ),
-        child: Row(
-          mainAxisAlignment:
-              MainAxisAlignment.spaceAround,
-          children: [
-            _navItem(
-              icon: Icons.home,
-              label: 'Home',
-              selected: true,
-            ),
-            _navItem(
-              icon: Icons.person_outline,
-              label: 'Visitors',
-            ),
-            _navItem(
-              icon: Icons.apartment_outlined,
-              label: 'Community',
-            ),
-            _navItem(
-              icon: Icons.account_balance_wallet_outlined,
-              label: 'Payments',
-            ),
-            _navItem(
-              icon: Icons.menu,
-              label: 'More',
-            ),
-          ],
+    return Container(
+      width: double.infinity,
+      height: 76,
+      decoration: const BoxDecoration(
+        color: bottomNavColor,
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(24),
+          topRight: Radius.circular(24),
         ),
       ),
-    );
-  }
-
-  Widget _navItem({
-    required IconData icon,
-    required String label,
-    bool selected = false,
-  }) {
-    return Expanded(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+      child: Row(
         children: [
-          Container(
-            width: 40,
-            height: 40,
-            decoration: selected
-                ? const BoxDecoration(
-                    color: Color(0xFF0060BD),
-                    shape: BoxShape.circle,
-                  )
-                : null,
-            child: Icon(
-              icon,
-              size: 22,
-              color: selected
-                  ? Colors.white
-                  : const Color(0xFF475569),
-            ),
+          _buildBottomItem(
+            iconPath: verificationIcon,
+            label: 'Home',
+            selected: true,
           ),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              fontSize: 11,
-              color: selected
-                  ? const Color(0xFF0060BD)
-                  : const Color(0xFF475569),
-              fontWeight:
-                  selected ? FontWeight.w700 : FontWeight.w500,
-            ),
+          _buildBottomItem(
+            iconPath: aadhaarIcon,
+            label: 'Visitors',
+          ),
+          _buildBottomItem(
+            iconPath: propertyIcon,
+            label: 'Community',
+          ),
+          _buildBottomItem(
+            iconPath: panIcon,
+            label: 'Payments',
+          ),
+          _buildBottomItem(
+            iconPath: uploadIcon,
+            label: 'More',
           ),
         ],
       ),
     );
   }
-}
 
-// ---------------------------------------------------------------------------
-// DASHED ROUNDED-RECT BORDER PAINTER
-// ---------------------------------------------------------------------------
-
-/// Paints a dashed rounded-rectangle outline around its child, matching the
-/// dashed upload-drop-zone border in the Figma design (plain [Border.all]
-/// only supports solid strokes).
-class _DashedRoundedRectPainter extends CustomPainter {
-  const _DashedRoundedRectPainter({
-    required this.color,
-    required this.radius,
-    this.strokeWidth = 1.2,
-  });
-
-  final Color color;
-  final double radius;
-  final double strokeWidth;
-  static const double dashWidth = 5;
-  static const double dashGap = 4;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final rrect = RRect.fromRectAndRadius(
-      Offset.zero & size,
-      Radius.circular(radius),
+  Widget _buildBottomItem({
+    required String iconPath,
+    required String label,
+    bool selected = false,
+  }) {
+    return Expanded(
+      child: InkWell(
+        onTap: () {
+          // Navigation logic here
+        },
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 6),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                width: 38,
+                height: 38,
+                decoration: selected
+                    ? const BoxDecoration(
+                        color: Color(0xFF0068C9),
+                        shape: BoxShape.circle,
+                      )
+                    : null,
+                padding: const EdgeInsets.all(8),
+                child: Image.asset(
+                  iconPath,
+                  fit: BoxFit.contain,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Icon(
+                      Icons.circle_outlined,
+                      size: 22,
+                      color: selected ? Colors.white : const Color(0xFF475569),
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(height: 3),
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 10,
+                  fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+                  color: selected ? const Color(0xFF0068C9) : const Color(0xFF475569),
+                  letterSpacing: 0.1,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
-    final path = Path()..addRRect(rrect);
-    final paint = Paint()
-      ..color = color
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = strokeWidth;
-
-    for (final metric in path.computeMetrics()) {
-      double distance = 0;
-      while (distance < metric.length) {
-        final next = distance + dashWidth;
-        canvas.drawPath(
-          metric.extractPath(distance, next.clamp(0, metric.length)),
-          paint,
-        );
-        distance = next + dashGap;
-      }
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant _DashedRoundedRectPainter oldDelegate) {
-    return color != oldDelegate.color ||
-        radius != oldDelegate.radius ||
-        strokeWidth != oldDelegate.strokeWidth;
   }
 }
