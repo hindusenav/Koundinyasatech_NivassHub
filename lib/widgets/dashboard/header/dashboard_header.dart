@@ -10,7 +10,12 @@ import 'package:flutter_nivasshub/providers/dashboard/dashboard_provider.dart';
 class DashboardHeader extends StatelessWidget {
   const DashboardHeader({
     super.key,
+    required this.onPropertyDropdownTap,
+    required this.isPropertyExpanded,
   });
+
+  final VoidCallback onPropertyDropdownTap;
+  final bool isPropertyExpanded;
 
   // ============================================================
   // COLORS
@@ -186,11 +191,17 @@ class DashboardHeader extends StatelessWidget {
 
                           const SizedBox(width: 4),
 
-                          Icon(
-                            Icons.keyboard_arrow_down_rounded,
-                            size: 18,
-                            color: headerTextColor,
-                          ),
+GestureDetector(
+  behavior: HitTestBehavior.opaque,
+  onTap: onPropertyDropdownTap,
+  child: Icon(
+    isPropertyExpanded
+        ? Icons.keyboard_arrow_up_rounded
+        : Icons.keyboard_arrow_down_rounded,
+    size: 18,
+    color: headerTextColor,
+  ),
+),
                         ],
                       ),
                     ],

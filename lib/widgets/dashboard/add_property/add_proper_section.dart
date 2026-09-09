@@ -3,7 +3,10 @@ import 'package:flutter/material.dart';
 class AddPropertySection extends StatelessWidget {
   const AddPropertySection({
     super.key,
+    required this.isExpanded,
   });
+
+  final bool isExpanded;
 
   // ============================================================
   // COLORS
@@ -15,11 +18,19 @@ class AddPropertySection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // ============================================================
+    // HIDE SECTION WHEN DROPDOWN IS CLOSED
+    // ============================================================
+
+    if (!isExpanded) {
+      return const SizedBox.shrink();
+    }
+
     final screenWidth = MediaQuery.sizeOf(context).width;
 
-    // ==========================================================
+    // ============================================================
     // RESPONSIVE VALUES
-    // ==========================================================
+    // ============================================================
 
     final horizontalPadding = screenWidth < 360
         ? 14.0
@@ -35,11 +46,7 @@ class AddPropertySection extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-
-      // Same blue as the header so there is no visible
-      // background break between the header and property section.
       color: _headerBlue,
-
       child: Padding(
         padding: EdgeInsets.fromLTRB(
           horizontalPadding,
@@ -68,11 +75,9 @@ class AddPropertySection extends StatelessWidget {
 
             // ======================================================
             // ORANGE DIVIDER
-            // ====================================================== 
+            // ======================================================
 
-            const SizedBox(
-              height: 9,
-            ),
+            const SizedBox(height: 9),
 
             Container(
               width: double.infinity,
@@ -84,9 +89,7 @@ class AddPropertySection extends StatelessWidget {
             // ADD PROPERTY ROW
             // ======================================================
 
-            const SizedBox(
-              height: 10,
-            ),
+            const SizedBox(height: 10),
 
             SizedBox(
               height: 42,
@@ -98,9 +101,9 @@ class AddPropertySection extends StatelessWidget {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    // ============================================
+                    // ==================================================
                     // PLUS CIRCLE
-                    // ============================================
+                    // ==================================================
 
                     Container(
                       width: addCircleSize,
@@ -119,17 +122,15 @@ class AddPropertySection extends StatelessWidget {
                       ),
                     ),
 
-                    // ============================================
+                    // ==================================================
                     // SPACE
-                    // ============================================
+                    // ==================================================
 
-                    const SizedBox(
-                      width: 14,
-                    ),
+                    const SizedBox(width: 14),
 
-                    // ============================================
+                    // ==================================================
                     // ADD PROPERTY TEXT
-                    // ============================================
+                    // ==================================================
 
                     Expanded(
                       child: Text(

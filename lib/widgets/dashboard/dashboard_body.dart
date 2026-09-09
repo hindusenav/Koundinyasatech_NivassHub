@@ -14,18 +14,26 @@ import 'package:flutter_nivasshub/widgets/dashboard/add_property/add_proper_sect
 // KYC Update Card
 import 'package:flutter_nivasshub/widgets/dashboard/kyc_update_card/kyc_update_card_section.dart';
 
-class DashboardBody extends StatelessWidget {
+class DashboardBody extends StatefulWidget {
   const DashboardBody({
     super.key,
   });
 
+  @override
+  State<DashboardBody> createState() => _DashboardBodyState();
+}
+
+class _DashboardBodyState extends State<DashboardBody> {
   static final LayerLink _headerAnchor = LayerLink();
 
   // ============================================================
+  // PROPERTY DROPDOWN STATE
+  // ============================================================
+
+  bool _isPropertyExpanded = false;
+
+  // ============================================================
   // KYC CARD HEIGHT
-  //
-  // Space reserved at the bottom of the scrollable dashboard
-  // so the floating KYC card does not cover the last content.
   // ============================================================
 
   static const double _kycCardAreaHeight = 150.0;
@@ -35,20 +43,17 @@ class DashboardBody extends StatelessWidget {
   // ============================================================
 
   void _openKycFlow(BuildContext context) {
-    // ------------------------------------------------------------
-    // Your KYC navigation will be added here.
-    //
-    // Example when SelectCountryScreen is available:
-    //
-    // Navigator.push(
-    //   context,
-    //   MaterialPageRoute(
-    //     builder: (_) => const SelectCountryScreen(),
-    //   ),
-    // );
-    // ------------------------------------------------------------
-
     debugPrint('KYC Update Now clicked');
+  }
+
+  // ============================================================
+  // PROPERTY DROPDOWN TOGGLE
+  // ============================================================
+
+  void _togglePropertySection() {
+    setState(() {
+      _isPropertyExpanded = !_isPropertyExpanded;
+    });
   }
 
   @override
@@ -68,7 +73,6 @@ class DashboardBody extends StatelessWidget {
           SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
 
-            // Extra space at bottom for the floating KYC card
             padding: const EdgeInsets.only(
               bottom: _kycCardAreaHeight + 20,
             ),
@@ -82,14 +86,19 @@ class DashboardBody extends StatelessWidget {
 
                 CompositedTransformTarget(
                   link: _headerAnchor,
-                  child: const DashboardHeader(),
+                  child: DashboardHeader(
+                    onPropertyDropdownTap: _togglePropertySection,
+                    isPropertyExpanded: _isPropertyExpanded,
+                  ),
                 ),
 
                 // ==================================================
-                // ADD PROPERTY
+                // ADD PROPERTY SECTION
                 // ==================================================
 
-                const AddPropertySection(),
+                AddPropertySection(
+                  isExpanded: _isPropertyExpanded,
+                ),
 
                 // ==================================================
                 // DASHBOARD CONTENT
@@ -102,7 +111,6 @@ class DashboardBody extends StatelessWidget {
                     horizontalPadding,
                     0,
                   ),
-
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -183,23 +191,11 @@ class DashboardBody extends StatelessWidget {
           // ========================================================
           // KYC UPDATE POPUP / FLOATING CARD
           // ========================================================
-          //
-          // This is outside SingleChildScrollView.
-          //
-          // Therefore it:
-          //   - stays at the bottom of Home
-          //   - floats over the dashboard
-          //   - does not scroll with dashboard content
-          //   - does not push the dashboard content down
-          //
-          // This matches Scenario 2 in your flow.
-          // ========================================================
 
           Positioned(
             left: 12,
             right: 12,
             bottom: 8,
-
             child: SafeArea(
               top: false,
               child: _buildKycUpdateCard(context),
@@ -217,7 +213,6 @@ class DashboardBody extends StatelessWidget {
   Widget _buildKycUpdateCard(BuildContext context) {
     return Material(
       color: Colors.transparent,
-
       child: KycUpdateCardSection(
         onUpdatePressed: () {
           _openKycFlow(context);
