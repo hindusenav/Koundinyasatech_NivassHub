@@ -32,75 +32,65 @@ class KycSearchHeader extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: headerBgColor,
-        borderRadius: const BorderRadius.only(
-          bottomLeft: Radius.circular(24),
-          bottomRight: Radius.circular(24),
-        ),
       ),
       child: SafeArea(
         bottom: false,
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 12, 16, 20),
-          child: Column(
-            children: [
-              // Header Row: Back button & Title
-              Stack(
-                alignment: Alignment.center,
-                children: [
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: IconButton(
-                      icon: Icon(Icons.arrow_back, color: textPrimary),
-                      onPressed: onBack ?? () => Navigator.of(context).pop(),
-                    ),
-                  ),
-                  Text(
-                    title,
-                    style: AppTextStyles.titleMedium.copyWith(
+          padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
+          child: SizedBox(
+            height: 38,
+            child: Row(
+              children: [
+                // Navigation back button (24x24px, Gap 12px)
+                GestureDetector(
+                  onTap: onBack ?? () => Navigator.of(context).pop(),
+                  behavior: HitTestBehavior.opaque,
+                  child: SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: Icon(
+                      Icons.arrow_back,
+                      size: 24,
                       color: textPrimary,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18,
                     ),
                   ),
-                ],
-              ),
-              const SizedBox(height: 16),
+                ),
+                const SizedBox(width: 12),
 
-              // Search Input Box
-              Container(
-                decoration: BoxDecoration(
-                  color: cardBgColor,
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.04),
-                      blurRadius: 8,
-                      offset: const Offset(0, 2),
+                // Greeting Container (Pill capsule: height 38px, radius 40px, border #CCDFF2)
+                Expanded(
+                  child: Container(
+                    height: 38,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(40),
+                      border: Border.all(
+                        color: isDark
+                            ? AppColors.borderDark
+                            : const Color(0xFFCCDFF2),
+                        width: 1,
+                      ),
                     ),
-                  ],
-                ),
-                child: TextField(
-                  controller: searchController,
-                  style: TextStyle(color: textPrimary, fontSize: 14),
-                  decoration: InputDecoration(
-                    hintText: hintText,
-                    hintStyle: TextStyle(
-                      color: isDark ? AppColors.grey400 : AppColors.grey500,
-                      fontSize: 14,
-                    ),
-                    prefixIcon: Icon(
-                      Icons.search_rounded,
-                      color: isDark ? AppColors.grey400 : AppColors.grey500,
-                    ),
-                    border: InputBorder.none,
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 14,
+                    padding: const EdgeInsets.only(left: 16, right: 12),
+                    child: Center(
+                      child: Text(
+                        title,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontFamily: 'DM Sans',
+                          fontWeight: FontWeight.w600,
+                          fontSize: 18,
+                          height: 1.0,
+                          letterSpacing: 0,
+                          color: isDark
+                              ? AppColors.textPrimaryDark
+                              : const Color(0xFF000000),
+                        ),
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

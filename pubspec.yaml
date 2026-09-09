@@ -71,6 +71,7 @@ flutter:
 
   assets:
     - assets/images/
+    - assets/images/kyc/cities/
     - assets/icons/
     - assets/json/
     - assets/icons/quick_actions/

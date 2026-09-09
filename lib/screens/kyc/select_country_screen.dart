@@ -74,18 +74,30 @@ class _SelectCountryScreenState extends State<SelectCountryScreen> {
       return Container(
         width: 28,
         height: 28,
+        padding: const EdgeInsets.all(6),
         decoration: BoxDecoration(
-          color: isDark ? const Color(0xFF1E3547) : const Color(0xFFEAF4FF),
-          shape: BoxShape.circle,
+          color: isDark ? const Color(0xFF1E3547) : const Color(0xFFE8F4FF),
+          borderRadius: BorderRadius.circular(8),
         ),
         child: const Icon(
           Icons.language,
-          size: 18,
+          size: 16,
           color: Color(0xFF006FC9),
         ),
       );
     }
-    return Text(country.flag, style: const TextStyle(fontSize: 22));
+    return Container(
+      width: 32,
+      height: 24,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(4),
+      ),
+      alignment: Alignment.center,
+      child: Text(
+        country.flag,
+        style: const TextStyle(fontSize: 18, height: 1.0),
+      ),
+    );
   }
 
   List<KycListItemData> _toListItems(List<CountryData> countries, bool isDark) {
@@ -131,8 +143,66 @@ class _SelectCountryScreenState extends State<SelectCountryScreen> {
             // Country Lists Content
             Expanded(
               child: ListView(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
                 children: [
+                  // Search Box: Height 42px, Radius 14px, Border 1px #E5E7EB, Font Inter 400
+                  Container(
+                    height: 42,
+                    decoration: BoxDecoration(
+                      color: isDark ? AppColors.surfaceDark : const Color(0xFFFFFFFF),
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(
+                        color: isDark ? AppColors.borderDark : const Color(0xFFE5E7EB),
+                        width: 1,
+                      ),
+                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.search_rounded,
+                          size: 18,
+                          color: isDark ? AppColors.grey400 : const Color(0xFF6B7280),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: TextField(
+                            controller: _searchController,
+                            style: TextStyle(
+                              fontFamily: 'Inter',
+                              color: isDark ? AppColors.textPrimaryDark : const Color(0xFF1F2937),
+                              fontSize: 14,
+                              fontWeight: FontWeight.w400,
+                              height: 1.0,
+                              letterSpacing: 0,
+                            ),
+                            decoration: InputDecoration(
+                              hintText: 'Search your country...',
+                              hintStyle: TextStyle(
+                                fontFamily: 'Inter',
+                                color: isDark ? AppColors.grey400 : const Color(0xFF6B7280),
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400,
+                                height: 1.0,
+                                letterSpacing: 0,
+                              ),
+                              border: InputBorder.none,
+                              enabledBorder: InputBorder.none,
+                              focusedBorder: InputBorder.none,
+                              disabledBorder: InputBorder.none,
+                              errorBorder: InputBorder.none,
+                              focusedErrorBorder: InputBorder.none,
+                              isDense: true,
+                              contentPadding: EdgeInsets.zero,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+
                   if (filteredPopular.isNotEmpty) ...[
                     const KycSectionTitle(title: 'POPULAR COUNTRIES'),
                     const SizedBox(height: 10),
