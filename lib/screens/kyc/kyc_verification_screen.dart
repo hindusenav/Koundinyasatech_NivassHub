@@ -67,22 +67,22 @@ class _KycVerificationScreenState
   Widget _buildHeader() {
     return Container(
       width: double.infinity,
-      height: 50,
+      height: 56,
       decoration: const BoxDecoration(
         color: Color(0xFFC7E1F8),
       ),
       child: Row(
         children: [
-          const SizedBox(width: 12),
+          const SizedBox(width: 4),
 
           GestureDetector(
             onTap: () => Navigator.pop(context),
             child: const SizedBox(
-              width: 35,
-              height: 40,
+              width: 48,
+              height: 56,
               child: Icon(
                 Icons.arrow_back,
-                size: 16,
+                size: 20,
                 color: Color(0xFF17202A),
               ),
             ),
@@ -93,7 +93,7 @@ class _KycVerificationScreenState
               child: Text(
                 'KYC Verification',
                 style: TextStyle(
-                  fontSize: 10,
+                  fontSize: 18,
                   fontWeight: FontWeight.w700,
                   color: Color(0xFF111827),
                 ),
@@ -101,7 +101,7 @@ class _KycVerificationScreenState
             ),
           ),
 
-          const SizedBox(width: 47),
+          const SizedBox(width: 48),
         ],
       ),
     );
@@ -113,23 +113,23 @@ class _KycVerificationScreenState
 
   Widget _buildContent() {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(9, 17, 9, 12),
+      padding: const EdgeInsets.fromLTRB(20, 28, 20, 20),
       child: Column(
         children: [
           _buildKycIcon(),
 
-          const SizedBox(height: 10),
+          const SizedBox(height: 16),
 
           const Text(
             'Upload your documents for verification',
             textAlign: TextAlign.center,
             style: TextStyle(
-              fontSize: 7,
+              fontSize: 13,
               color: Color(0xFF6B7280),
             ),
           ),
 
-          const SizedBox(height: 17),
+          const SizedBox(height: 28),
 
           _buildDocumentCard(
             title: 'AADHAAR CARD',
@@ -144,7 +144,7 @@ class _KycVerificationScreenState
             },
           ),
 
-          const SizedBox(height: 8),
+          const SizedBox(height: 12),
 
           _buildDocumentCard(
             title: 'PAN CARD',
@@ -159,12 +159,12 @@ class _KycVerificationScreenState
             },
           ),
 
-          const SizedBox(height: 8),
+          const SizedBox(height: 12),
 
           _buildDocumentCard(
             title: 'PROPERTY DOCUMENT',
-            subtitle: 'Proof of ownership or residence',
-            icon: Icons.crop_square,
+            subtitle: 'Proof of ownership or rental lease',
+            icon: Icons.chat_bubble_outline,
             pending: !propertyUploaded,
             uploadText: 'Upload ownership proof',
             onUpload: () {
@@ -174,7 +174,7 @@ class _KycVerificationScreenState
             },
           ),
 
-          const SizedBox(height: 18),
+          const SizedBox(height: 28),
 
           _buildSubmitButton(),
         ],
@@ -188,14 +188,14 @@ class _KycVerificationScreenState
 
   Widget _buildKycIcon() {
     return Container(
-      width: 40,
-      height: 40,
+      width: 56,
+      height: 56,
       decoration: BoxDecoration(
         color: Colors.white,
         shape: BoxShape.circle,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -204,7 +204,7 @@ class _KycVerificationScreenState
       child: const Center(
         child: Icon(
           Icons.shield_outlined,
-          size: 21,
+          size: 28,
           color: Color(0xFF1677D2),
         ),
       ),
@@ -225,18 +225,18 @@ class _KycVerificationScreenState
   }) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(7, 7, 7, 7),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(7),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: const Color(0xFFD5DDE7),
-          width: 0.8,
+          color: const Color(0xFFE5E9F0),
+          width: 1,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 4,
+            color: Colors.black.withValues(alpha: 0.06),
+            blurRadius: 6,
             offset: const Offset(0, 2),
           ),
         ],
@@ -247,20 +247,20 @@ class _KycVerificationScreenState
           Row(
             children: [
               Container(
-                width: 20,
-                height: 20,
+                width: 36,
+                height: 36,
                 decoration: BoxDecoration(
                   color: const Color(0xFFEAF4FF),
-                  borderRadius: BorderRadius.circular(3),
+                  borderRadius: BorderRadius.circular(8),
                 ),
                 child: Icon(
                   icon,
-                  size: 12,
+                  size: 20,
                   color: const Color(0xFF1478D4),
                 ),
               ),
 
-              const SizedBox(width: 6),
+              const SizedBox(width: 12),
 
               Expanded(
                 child: Column(
@@ -270,16 +270,16 @@ class _KycVerificationScreenState
                     Text(
                       title,
                       style: const TextStyle(
-                        fontSize: 7,
+                        fontSize: 13,
                         fontWeight: FontWeight.w800,
                         color: Color(0xFF374151),
                       ),
                     ),
-                    const SizedBox(height: 1),
+                    const SizedBox(height: 2),
                     Text(
                       subtitle,
                       style: const TextStyle(
-                        fontSize: 5.5,
+                        fontSize: 11,
                         color: Color(0xFF8A95A3),
                       ),
                     ),
@@ -290,17 +290,17 @@ class _KycVerificationScreenState
               if (pending)
                 Container(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 5,
-                    vertical: 2,
+                    horizontal: 10,
+                    vertical: 4,
                   ),
                   decoration: BoxDecoration(
                     color: const Color(0xFFFFF5DD),
-                    borderRadius: BorderRadius.circular(4),
+                    borderRadius: BorderRadius.circular(8),
                   ),
                   child: const Text(
                     'Pending',
                     style: TextStyle(
-                      fontSize: 5.5,
+                      fontSize: 11,
                       color: Color(0xFFE8A300),
                       fontWeight: FontWeight.w700,
                     ),
@@ -309,61 +309,64 @@ class _KycVerificationScreenState
             ],
           ),
 
-          const SizedBox(height: 6),
+          const SizedBox(height: 12),
 
           // Upload area
           GestureDetector(
             onTap: onUpload,
-            child: Container(
-              width: double.infinity,
-              height: 43,
-              decoration: BoxDecoration(
-                color: const Color(0xFFF8FBFE),
-                borderRadius: BorderRadius.circular(5),
-                border: Border.all(
-                  color: const Color(0xFFB9C8D7),
-                  width: 0.8,
-                ),
+            child: CustomPaint(
+              painter: _DashedRoundedRectPainter(
+                color: const Color(0xFFB9C8D7),
+                radius: 10,
+                strokeWidth: 1.2,
               ),
-              child: Column(
-                mainAxisAlignment:
-                    MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    pending
-                        ? Icons.upload_file_outlined
-                        : Icons.check_circle_outline,
-                    size: 13,
-                    color: pending
-                        ? const Color(0xFF0876D1)
-                        : Colors.green,
-                  ),
-
-                  const SizedBox(height: 2),
-
-                  Text(
-                    pending
-                        ? '+ $uploadText'
-                        : 'Document uploaded',
-                    style: TextStyle(
-                      fontSize: 6.5,
-                      fontWeight: FontWeight.w700,
+              child: Container(
+                width: double.infinity,
+                height: 76,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF8FBFE),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Column(
+                  mainAxisAlignment:
+                      MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      pending
+                          ? Icons.upload_file_outlined
+                          : Icons.check_circle_outline,
+                      size: 20,
                       color: pending
                           ? const Color(0xFF0876D1)
                           : Colors.green,
                     ),
-                  ),
 
-                  const SizedBox(height: 1),
+                    const SizedBox(height: 4),
 
-                  Text(
-                    'PDF, JPG, JPEG up to 5MB',
-                    style: TextStyle(
-                      fontSize: 5,
-                      color: Colors.grey.shade500,
+                    Text(
+                      pending
+                          ? '+ $uploadText'
+                          : 'Document uploaded',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        color: pending
+                            ? const Color(0xFF0876D1)
+                            : Colors.green,
+                      ),
                     ),
-                  ),
-                ],
+
+                    const SizedBox(height: 2),
+
+                    Text(
+                      'PDF, JPG, JPEG up to 5MB',
+                      style: TextStyle(
+                        fontSize: 10,
+                        color: Colors.grey.shade500,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -385,7 +388,7 @@ class _KycVerificationScreenState
 
     return SizedBox(
       width: double.infinity,
-      height: 29,
+      height: 52,
       child: ElevatedButton(
         onPressed: canSubmit ? _handleSubmit : null,
         style: ElevatedButton.styleFrom(
@@ -396,13 +399,13 @@ class _KycVerificationScreenState
           elevation: 2,
           padding: EdgeInsets.zero,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(5),
+            borderRadius: BorderRadius.circular(12),
           ),
         ),
         child: _submitting
             ? const SizedBox(
-                width: 14,
-                height: 14,
+                width: 20,
+                height: 20,
                 child: CircularProgressIndicator(
                   strokeWidth: 2,
                   valueColor: AlwaysStoppedAnimation<Color>(
@@ -413,12 +416,13 @@ class _KycVerificationScreenState
             : Text(
                 'Submit Documents',
                 style: TextStyle(
-                  fontSize: 8,
+                  fontSize: 16,
                   fontWeight: FontWeight.w700,
-                  color: Colors.white.withOpacity(
-                    aadhaarUploaded && panUploaded && propertyUploaded
-                        ? 1
-                        : 0.85,
+                  color: Colors.white.withValues(
+                    alpha:
+                        aadhaarUploaded && panUploaded && propertyUploaded
+                            ? 1
+                            : 0.85,
                   ),
                 ),
               ),
@@ -431,42 +435,45 @@ class _KycVerificationScreenState
   // ---------------------------------------------------------------------------
 
   Widget _buildBottomNavigation() {
-    return Container(
-      height: 53,
-      width: double.infinity,
-      decoration: const BoxDecoration(
-        color: Color(0xFFC7E1F8),
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(13),
-          topRight: Radius.circular(13),
+    return SafeArea(
+      top: false,
+      child: Container(
+        height: 84,
+        width: double.infinity,
+        decoration: const BoxDecoration(
+          color: Color(0xFFC7E3FF),
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(24),
+            topRight: Radius.circular(24),
+          ),
         ),
-      ),
-      child: Row(
-        mainAxisAlignment:
-            MainAxisAlignment.spaceAround,
-        children: [
-          _navItem(
-            icon: Icons.home,
-            label: 'Home',
-            selected: true,
-          ),
-          _navItem(
-            icon: Icons.person_outline,
-            label: 'Visitors',
-          ),
-          _navItem(
-            icon: Icons.apartment_outlined,
-            label: 'Community',
-          ),
-          _navItem(
-            icon: Icons.account_balance_wallet_outlined,
-            label: 'Payments',
-          ),
-          _navItem(
-            icon: Icons.menu,
-            label: 'More',
-          ),
-        ],
+        child: Row(
+          mainAxisAlignment:
+              MainAxisAlignment.spaceAround,
+          children: [
+            _navItem(
+              icon: Icons.home,
+              label: 'Home',
+              selected: true,
+            ),
+            _navItem(
+              icon: Icons.person_outline,
+              label: 'Visitors',
+            ),
+            _navItem(
+              icon: Icons.apartment_outlined,
+              label: 'Community',
+            ),
+            _navItem(
+              icon: Icons.account_balance_wallet_outlined,
+              label: 'Payments',
+            ),
+            _navItem(
+              icon: Icons.menu,
+              label: 'More',
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -476,43 +483,95 @@ class _KycVerificationScreenState
     required String label,
     bool selected = false,
   }) {
-    return SizedBox(
-      width: 43,
+    return Expanded(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
-            width: 19,
-            height: 19,
+            width: 40,
+            height: 40,
             decoration: selected
                 ? const BoxDecoration(
-                    color: Color(0xFF0876D1),
+                    color: Color(0xFF0060BD),
                     shape: BoxShape.circle,
                   )
                 : null,
             child: Icon(
               icon,
-              size: 11,
+              size: 22,
               color: selected
                   ? Colors.white
-                  : const Color(0xFF526170),
+                  : const Color(0xFF475569),
             ),
           ),
-          const SizedBox(height: 3),
+          const SizedBox(height: 4),
           Text(
             label,
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
-              fontSize: 5.5,
+              fontSize: 11,
               color: selected
-                  ? const Color(0xFF0876D1)
-                  : const Color(0xFF526170),
+                  ? const Color(0xFF0060BD)
+                  : const Color(0xFF475569),
               fontWeight:
-                  selected ? FontWeight.w700 : FontWeight.w400,
+                  selected ? FontWeight.w700 : FontWeight.w500,
             ),
           ),
         ],
       ),
     );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// DASHED ROUNDED-RECT BORDER PAINTER
+// ---------------------------------------------------------------------------
+
+/// Paints a dashed rounded-rectangle outline around its child, matching the
+/// dashed upload-drop-zone border in the Figma design (plain [Border.all]
+/// only supports solid strokes).
+class _DashedRoundedRectPainter extends CustomPainter {
+  const _DashedRoundedRectPainter({
+    required this.color,
+    required this.radius,
+    this.strokeWidth = 1.2,
+  });
+
+  final Color color;
+  final double radius;
+  final double strokeWidth;
+  static const double dashWidth = 5;
+  static const double dashGap = 4;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final rrect = RRect.fromRectAndRadius(
+      Offset.zero & size,
+      Radius.circular(radius),
+    );
+    final path = Path()..addRRect(rrect);
+    final paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = strokeWidth;
+
+    for (final metric in path.computeMetrics()) {
+      double distance = 0;
+      while (distance < metric.length) {
+        final next = distance + dashWidth;
+        canvas.drawPath(
+          metric.extractPath(distance, next.clamp(0, metric.length)),
+          paint,
+        );
+        distance = next + dashGap;
+      }
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _DashedRoundedRectPainter oldDelegate) {
+    return color != oldDelegate.color ||
+        radius != oldDelegate.radius ||
+        strokeWidth != oldDelegate.strokeWidth;
   }
 }

@@ -29,12 +29,11 @@ class _AddHomeScreenState extends State<AddHomeScreen> {
                 child: Column(
                   children: [
                     _buildContent(),
-                    const SizedBox(height: 18),
-                    _buildBottomNavigation(),
                   ],
                 ),
               ),
             ),
+            _buildBottomNavigation(),
           ],
         ),
       ),
@@ -48,23 +47,23 @@ class _AddHomeScreenState extends State<AddHomeScreen> {
   Widget _buildHeader() {
     return Container(
       width: double.infinity,
-      height: 50,
+      height: 56,
       decoration: const BoxDecoration(
         color: Color(0xFFC7E1F8),
       ),
       child: Row(
         children: [
-          const SizedBox(width: 12),
+          const SizedBox(width: 4),
 
           // Back icon
           GestureDetector(
             onTap: () => Navigator.pop(context),
             child: const SizedBox(
-              width: 35,
-              height: 40,
+              width: 48,
+              height: 56,
               child: Icon(
                 Icons.arrow_back,
-                size: 16,
+                size: 20,
                 color: Color(0xFF17202A),
               ),
             ),
@@ -75,7 +74,7 @@ class _AddHomeScreenState extends State<AddHomeScreen> {
               child: Text(
                 'Add Home',
                 style: TextStyle(
-                  fontSize: 10,
+                  fontSize: 18,
                   fontWeight: FontWeight.w700,
                   color: Color(0xFF111827),
                 ),
@@ -83,7 +82,7 @@ class _AddHomeScreenState extends State<AddHomeScreen> {
             ),
           ),
 
-          const SizedBox(width: 47),
+          const SizedBox(width: 48),
         ],
       ),
     );
@@ -95,26 +94,26 @@ class _AddHomeScreenState extends State<AddHomeScreen> {
 
   Widget _buildContent() {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(9, 18, 9, 0),
+      padding: const EdgeInsets.fromLTRB(20, 28, 20, 28),
       child: Column(
         children: [
           _buildHomeIcon(),
-          const SizedBox(height: 12),
+          const SizedBox(height: 16),
 
           const Text(
             'Enter your property details below',
             textAlign: TextAlign.center,
             style: TextStyle(
-              fontSize: 7,
+              fontSize: 13,
               color: Color(0xFF6B7280),
               fontWeight: FontWeight.w400,
             ),
           ),
 
-          const SizedBox(height: 17),
+          const SizedBox(height: 28),
 
           _buildFieldLabel('COUNTRY'),
-          const SizedBox(height: 5),
+          const SizedBox(height: 8),
           _buildDropdownField(
             value: country,
             flag: '🇮🇳',
@@ -123,41 +122,40 @@ class _AddHomeScreenState extends State<AddHomeScreen> {
             },
           ),
 
-          const SizedBox(height: 10),
+          const SizedBox(height: 16),
 
           _buildFieldLabel('CITY'),
-          const SizedBox(height: 5),
+          const SizedBox(height: 8),
           _buildDropdownField(
             value: city,
+            leadingIcon: Icons.location_on_outlined,
             onTap: () {
               _showCityPicker();
             },
           ),
 
-          const SizedBox(height: 10),
+          const SizedBox(height: 16),
 
           _buildFieldLabel('SOCIETY / APARTMENT'),
-          const SizedBox(height: 5),
+          const SizedBox(height: 8),
           _buildSocietyField(),
 
-          const SizedBox(height: 5),
+          const SizedBox(height: 6),
 
           Align(
             alignment: Alignment.centerLeft,
             child: Text(
               'Search for your apartment or society',
               style: TextStyle(
-                fontSize: 6.5,
+                fontSize: 12,
                 color: Colors.grey.shade600,
               ),
             ),
           ),
 
-          const SizedBox(height: 29),
+          const SizedBox(height: 32),
 
           _buildContinueButton(),
-
-          const SizedBox(height: 18),
         ],
       ),
     );
@@ -169,14 +167,14 @@ class _AddHomeScreenState extends State<AddHomeScreen> {
 
   Widget _buildHomeIcon() {
     return Container(
-      width: 40,
-      height: 40,
+      width: 56,
+      height: 56,
       decoration: BoxDecoration(
         color: Colors.white,
         shape: BoxShape.circle,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -186,7 +184,7 @@ class _AddHomeScreenState extends State<AddHomeScreen> {
         child: Icon(
           Icons.home_outlined,
           color: Color(0xFF1677D2),
-          size: 22,
+          size: 28,
         ),
       ),
     );
@@ -202,8 +200,9 @@ class _AddHomeScreenState extends State<AddHomeScreen> {
       child: Text(
         label,
         style: const TextStyle(
-          fontSize: 6.5,
+          fontSize: 12,
           fontWeight: FontWeight.w700,
+          letterSpacing: 0.4,
           color: Color(0xFF374151),
         ),
       ),
@@ -217,20 +216,21 @@ class _AddHomeScreenState extends State<AddHomeScreen> {
   Widget _buildDropdownField({
     required String value,
     String? flag,
+    IconData? leadingIcon,
     required VoidCallback onTap,
   }) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        height: 27,
+        height: 52,
         width: double.infinity,
-        padding: const EdgeInsets.symmetric(horizontal: 9),
+        padding: const EdgeInsets.symmetric(horizontal: 14),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(5),
+          borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: const Color(0xFFD6DEE8),
-            width: 0.7,
+            width: 1,
           ),
         ),
         child: Row(
@@ -238,15 +238,31 @@ class _AddHomeScreenState extends State<AddHomeScreen> {
             if (flag != null) ...[
               Text(
                 flag,
-                style: const TextStyle(fontSize: 11),
+                style: const TextStyle(fontSize: 22),
               ),
-              const SizedBox(width: 7),
+              const SizedBox(width: 12),
+            ],
+            if (leadingIcon != null) ...[
+              Container(
+                width: 28,
+                height: 28,
+                decoration: const BoxDecoration(
+                  color: Color(0xFFEAF4FF),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  leadingIcon,
+                  size: 16,
+                  color: const Color(0xFF006FC9),
+                ),
+              ),
+              const SizedBox(width: 12),
             ],
             Expanded(
               child: Text(
                 value,
                 style: const TextStyle(
-                  fontSize: 7.5,
+                  fontSize: 15,
                   color: Color(0xFF374151),
                   fontWeight: FontWeight.w500,
                 ),
@@ -254,7 +270,7 @@ class _AddHomeScreenState extends State<AddHomeScreen> {
             ),
             const Icon(
               Icons.keyboard_arrow_down,
-              size: 13,
+              size: 22,
               color: Color(0xFF6B7280),
             ),
           ],
@@ -269,14 +285,14 @@ class _AddHomeScreenState extends State<AddHomeScreen> {
 
   Widget _buildSocietyField() {
     return Container(
-      height: 27,
+      height: 52,
       width: double.infinity,
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(5),
+        borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: const Color(0xFF9AAAC0),
-          width: 0.8,
+          width: 1,
         ),
       ),
       child: TextField(
@@ -284,23 +300,23 @@ class _AddHomeScreenState extends State<AddHomeScreen> {
           society = value;
         },
         style: const TextStyle(
-          fontSize: 7.5,
+          fontSize: 15,
           color: Color(0xFF374151),
         ),
         decoration: const InputDecoration(
           border: InputBorder.none,
           prefixIcon: Icon(
             Icons.search,
-            size: 13,
+            size: 20,
             color: Color(0xFF6B7280),
           ),
           hintText: 'Enter Society Name',
           hintStyle: TextStyle(
-            fontSize: 7.5,
+            fontSize: 15,
             color: Color(0xFF6B7280),
           ),
           contentPadding: EdgeInsets.symmetric(
-            vertical: 8,
+            vertical: 14,
           ),
         ),
       ),
@@ -314,7 +330,7 @@ class _AddHomeScreenState extends State<AddHomeScreen> {
   Widget _buildContinueButton() {
     return SizedBox(
       width: double.infinity,
-      height: 28,
+      height: 52,
       child: ElevatedButton(
         onPressed: () {
           Navigator.pushNamed(context, AppRoutes.kycVerification);
@@ -323,16 +339,16 @@ class _AddHomeScreenState extends State<AddHomeScreen> {
           backgroundColor: const Color(0xFF006FCB),
           foregroundColor: Colors.white,
           elevation: 2,
-          shadowColor: Colors.black.withOpacity(0.15),
+          shadowColor: Colors.black.withValues(alpha: 0.15),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(5),
+            borderRadius: BorderRadius.circular(12),
           ),
           padding: EdgeInsets.zero,
         ),
         child: const Text(
           'Continue',
           style: TextStyle(
-            fontSize: 8,
+            fontSize: 16,
             fontWeight: FontWeight.w700,
           ),
         ),
@@ -345,41 +361,44 @@ class _AddHomeScreenState extends State<AddHomeScreen> {
   // ---------------------------------------------------------------------------
 
   Widget _buildBottomNavigation() {
-    return Container(
-      height: 53,
-      width: double.infinity,
-      decoration: const BoxDecoration(
-        color: Color(0xFFC7E1F8),
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(13),
-          topRight: Radius.circular(13),
+    return SafeArea(
+      top: false,
+      child: Container(
+        height: 84,
+        width: double.infinity,
+        decoration: const BoxDecoration(
+          color: Color(0xFFC7E3FF),
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(24),
+            topRight: Radius.circular(24),
+          ),
         ),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          _navItem(
-            icon: Icons.home,
-            label: 'Home',
-            selected: true,
-          ),
-          _navItem(
-            icon: Icons.person_outline,
-            label: 'Visitors',
-          ),
-          _navItem(
-            icon: Icons.apartment_outlined,
-            label: 'Community',
-          ),
-          _navItem(
-            icon: Icons.account_balance_wallet_outlined,
-            label: 'Payments',
-          ),
-          _navItem(
-            icon: Icons.menu,
-            label: 'More',
-          ),
-        ],
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            _navItem(
+              icon: Icons.home,
+              label: 'Home',
+              selected: true,
+            ),
+            _navItem(
+              icon: Icons.person_outline,
+              label: 'Visitors',
+            ),
+            _navItem(
+              icon: Icons.apartment_outlined,
+              label: 'Community',
+            ),
+            _navItem(
+              icon: Icons.account_balance_wallet_outlined,
+              label: 'Payments',
+            ),
+            _navItem(
+              icon: Icons.menu,
+              label: 'More',
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -389,39 +408,38 @@ class _AddHomeScreenState extends State<AddHomeScreen> {
     required String label,
     bool selected = false,
   }) {
-    return SizedBox(
-      width: 43,
+    return Expanded(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
-            width: 19,
-            height: 19,
+            width: 40,
+            height: 40,
             decoration: selected
                 ? const BoxDecoration(
-                    color: Color(0xFF0876D1),
+                    color: Color(0xFF0060BD),
                     shape: BoxShape.circle,
                   )
                 : null,
             child: Icon(
               icon,
-              size: 11,
+              size: 22,
               color: selected
                   ? Colors.white
-                  : const Color(0xFF526170),
+                  : const Color(0xFF475569),
             ),
           ),
-          const SizedBox(height: 3),
+          const SizedBox(height: 4),
           Text(
             label,
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
-              fontSize: 5.5,
+              fontSize: 11,
               color: selected
-                  ? const Color(0xFF0876D1)
-                  : const Color(0xFF526170),
+                  ? const Color(0xFF0060BD)
+                  : const Color(0xFF475569),
               fontWeight:
-                  selected ? FontWeight.w700 : FontWeight.w400,
+                  selected ? FontWeight.w700 : FontWeight.w500,
             ),
           ),
         ],
