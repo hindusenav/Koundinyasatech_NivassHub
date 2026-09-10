@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter_nivasshub/screens/auth/create_profile_screen.dart';
+import 'package:flutter_nivasshub/screens/auth/forgot_password_email_screen.dart';
+import 'package:flutter_nivasshub/screens/auth/forgot_password_mobile_screen.dart';
+import 'package:flutter_nivasshub/screens/auth/forgot_password_options_screen.dart';
+import 'package:flutter_nivasshub/screens/auth/forgot_password_verify_otp_screen.dart';
 import 'package:flutter_nivasshub/screens/auth/login_screen.dart';
 import 'package:flutter_nivasshub/screens/auth/otp_verification_screen.dart';
 import 'package:flutter_nivasshub/screens/auth/otp_verification_success_screen.dart';
 import 'package:flutter_nivasshub/screens/auth/register_screen.dart';
+import 'package:flutter_nivasshub/screens/auth/update_password_screen.dart';
 import 'package:flutter_nivasshub/screens/onboarding/onboarding_screen_two.dart';
 import 'package:flutter_nivasshub/screens/splash/splash_screen.dart';
 import 'package:flutter_nivasshub/screens/welcome/welcome_screen.dart';
@@ -126,6 +131,55 @@ class AuthRouter {
           settings: settings,
           builder: (_) =>
               CreateProfileScreen(registrationToken: args.registrationToken),
+        );
+
+      // ========================================================
+      // FORGOT PASSWORD
+      // ========================================================
+
+      case AppRoutes.forgotPassword:
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => const ForgotPasswordOptionsScreen(),
+        );
+
+      case AppRoutes.forgotPasswordMobile:
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => const ForgotPasswordMobileScreen(),
+        );
+
+      case AppRoutes.forgotPasswordEmail:
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => const ForgotPasswordEmailScreen(),
+        );
+
+      case AppRoutes.forgotPasswordVerifyOtp:
+        final args = settings.arguments;
+
+        if (args is! ForgotPasswordVerifyOtpScreenArgs) {
+          return _unknownRoute(settings);
+        }
+
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => ForgotPasswordVerifyOtpScreen(
+            identifier: args.identifier,
+            channel: args.channel,
+          ),
+        );
+
+      case AppRoutes.updatePassword:
+        final args = settings.arguments;
+
+        if (args is! UpdatePasswordScreenArgs) {
+          return _unknownRoute(settings);
+        }
+
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => UpdatePasswordScreen(fpToken: args.fpToken),
         );
 
       default:
