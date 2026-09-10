@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 /// Base API configuration for the application
 class BaseApi {
   /// Base URL for all API requests
-  static const String baseUrl = 'http://10.10.10.6:3000';
+  static const String baseUrl = 'http://192.168.2.168:3000';
 
   ///
   /// Create Dio instance with default configuration
