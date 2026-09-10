@@ -28,27 +28,35 @@ class KycSectionTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    return Row(
-      children: [
-        Container(
-          width: 3.5,
-          height: 16,
-          decoration: BoxDecoration(
-            color: const Color(0xFF006FC9),
-            borderRadius: BorderRadius.circular(2),
+    return Padding(
+      padding: const EdgeInsets.only(left: 4),
+      child: Row(
+        children: [
+          // accent-indicator: Width 4px, Height 16px, Radius 2px, Color #0060BD
+          Container(
+            width: 4,
+            height: 16,
+            decoration: BoxDecoration(
+              color: const Color(0xFF0060BD),
+              borderRadius: BorderRadius.circular(2),
+            ),
           ),
-        ),
-        const SizedBox(width: 8),
-        Text(
-          title,
-          style: TextStyle(
-            color: isDark ? AppColors.grey300 : const Color(0xFF1E293B),
-            fontWeight: FontWeight.w700,
-            fontSize: 12,
-            letterSpacing: 0.8,
+          const SizedBox(width: 8),
+
+          // section-title: DM Sans 700 Bold 12px, #1D1B20, Letter spacing 1.0
+          Text(
+            title,
+            style: TextStyle(
+              fontFamily: 'DM Sans',
+              color: isDark ? AppColors.grey300 : const Color(0xFF1D1B20),
+              fontWeight: FontWeight.w700,
+              fontSize: 12,
+              height: 1.0,
+              letterSpacing: 1.0,
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
@@ -66,13 +74,24 @@ class KycListCardGroup extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final cardBgColor = isDark ? AppColors.surfaceDark : AppColors.white;
     final borderColor = isDark ? AppColors.borderDark : const Color(0xFFE5E7EB);
-    final textPrimary = isDark ? AppColors.textPrimaryDark : const Color(0xFF1F2937);
+    final textPrimary = isDark ? AppColors.textPrimaryDark : const Color(0xFF000000);
 
     return Container(
+      padding: const EdgeInsets.symmetric(vertical: 8),
       decoration: BoxDecoration(
         color: cardBgColor,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: borderColor, width: 1),
+        boxShadow: isDark
+            ? null
+            : const [
+                BoxShadow(
+                  color: Color.fromRGBO(5, 35, 77, 0.0588),
+                  offset: Offset(0, 6),
+                  blurRadius: 16,
+                  spreadRadius: 0,
+                ),
+              ],
       ),
       child: Column(
         children: List.generate(items.length, (index) {
@@ -87,28 +106,38 @@ class KycListCardGroup extends StatelessWidget {
                   top: index == 0 ? const Radius.circular(16) : Radius.zero,
                   bottom: isLast ? const Radius.circular(16) : Radius.zero,
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                  child: Row(
-                    children: [
-                      item.leading,
-                      const SizedBox(width: 14),
-                      Expanded(
-                        child: Text(
-                          item.title,
-                          style: TextStyle(
-                            color: textPrimary,
-                            fontSize: 15,
-                            fontWeight: FontWeight.w600,
+                child: SizedBox(
+                  height: 52,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        item.leading,
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            item.title,
+                            style: TextStyle(
+                              fontFamily: 'DM Sans',
+                              color: textPrimary,
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                              height: 1.0,
+                              letterSpacing: 0,
+                            ),
                           ),
                         ),
-                      ),
-                      Icon(
-                        Icons.chevron_right,
-                        color: isDark ? AppColors.grey400 : AppColors.grey500,
-                        size: 20,
-                      ),
-                    ],
+                        Icon(
+                          Icons.chevron_right,
+                          color: isDark ? AppColors.grey400 : const Color(0xFF10213D),
+                          size: 16,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),

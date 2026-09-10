@@ -11,6 +11,7 @@ class CityData {
   final String country;
   final String region;
   final IconData icon;
+  final String? imageAsset;
 
   const CityData({
     required this.name,
@@ -18,6 +19,7 @@ class CityData {
     required this.country,
     required this.region,
     required this.icon,
+    this.imageAsset,
   });
 }
 
@@ -39,15 +41,15 @@ class _SelectCityScreenState extends State<SelectCityScreen> {
   String _searchQuery = '';
 
   static const List<CityData> _popularGridCities = [
-    CityData(name: 'Bangalore', state: 'Karnataka', country: 'India', region: 'Bengaluru Urban', icon: Icons.account_balance_outlined),
-    CityData(name: 'Mumbai', state: 'Maharashtra', country: 'India', region: 'Mumbai City', icon: Icons.domain_outlined),
-    CityData(name: 'Delhi NCR', state: 'Delhi', country: 'India', region: 'New Delhi', icon: Icons.museum_outlined),
-    CityData(name: 'Pune', state: 'Maharashtra', country: 'India', region: 'Pune City', icon: Icons.location_city_outlined),
-    CityData(name: 'Chennai', state: 'Tamil Nadu', country: 'India', region: 'Chennai', icon: Icons.fort_outlined),
-    CityData(name: 'Hyderabad', state: 'Telangana', country: 'India', region: 'Hyderabad', icon: Icons.apartment_outlined),
-    CityData(name: 'Ahmedabad', state: 'Gujarat', country: 'India', region: 'Ahmedabad', icon: Icons.landscape_outlined),
-    CityData(name: 'Kolkata', state: 'West Bengal', country: 'India', region: 'Kolkata', icon: Icons.directions_boat_outlined),
-    CityData(name: 'Kochi', state: 'Kerala', country: 'India', region: 'Ernakulam', icon: Icons.water_outlined),
+    CityData(name: 'Bangalore', state: 'Karnataka', country: 'India', region: 'Bengaluru Urban', icon: Icons.account_balance_outlined, imageAsset: 'assets/images/kyc/cities/landmark-illustration.png'),
+    CityData(name: 'Mumbai', state: 'Maharashtra', country: 'India', region: 'Mumbai City', icon: Icons.domain_outlined, imageAsset: 'assets/images/kyc/cities/landmark-illustration (1).png'),
+    CityData(name: 'Delhi NCR', state: 'Delhi', country: 'India', region: 'New Delhi', icon: Icons.museum_outlined, imageAsset: 'assets/images/kyc/cities/landmark-illustration (2).png'),
+    CityData(name: 'Pune', state: 'Maharashtra', country: 'India', region: 'Pune City', icon: Icons.location_city_outlined, imageAsset: 'assets/images/kyc/cities/landmark-illustration (3).png'),
+    CityData(name: 'Chennai', state: 'Tamil Nadu', country: 'India', region: 'Chennai', icon: Icons.fort_outlined, imageAsset: 'assets/images/kyc/cities/landmark-illustration (4).png'),
+    CityData(name: 'Hyderabad', state: 'Telangana', country: 'India', region: 'Hyderabad', icon: Icons.apartment_outlined, imageAsset: 'assets/images/kyc/cities/landmark-illustration (5).png'),
+    CityData(name: 'Ahmedabad', state: 'Gujarat', country: 'India', region: 'Ahmedabad', icon: Icons.landscape_outlined, imageAsset: 'assets/images/kyc/cities/landmark-illustration (6).png'),
+    CityData(name: 'Kolkata', state: 'West Bengal', country: 'India', region: 'Kolkata', icon: Icons.directions_boat_outlined, imageAsset: 'assets/images/kyc/cities/landmark-illustration (7).png'),
+    CityData(name: 'Kochi', state: 'Kerala', country: 'India', region: 'Ernakulam', icon: Icons.water_outlined, imageAsset: 'assets/images/kyc/cities/landmark-illustration (8).png'),
   ];
 
   static const List<CityData> _allCitiesList = [
@@ -253,99 +255,149 @@ class _SelectCityScreenState extends State<SelectCityScreen> {
         top: false,
         child: Column(
           children: [
-            // Top Sky-Blue Header Container
+            // Top Sky-Blue Header Container (Header Container: Padding 20,12,20,16, #C7E3FF)
             Container(
               decoration: BoxDecoration(
                 color: headerBgColor,
-                borderRadius: const BorderRadius.only(
-                  bottomLeft: Radius.circular(24),
-                  bottomRight: Radius.circular(24),
-                ),
               ),
               child: SafeArea(
                 bottom: false,
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 20),
-                  child: Column(
-                    children: [
-                      // Header Row: Back button & Title
-                      Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          Align(
-                            alignment: Alignment.centerLeft,
-                            child: IconButton(
-                              icon: Icon(
-                                Icons.arrow_back,
-                                color: textPrimary,
-                              ),
-                              onPressed: () => Navigator.of(context).pop(),
-                            ),
-                          ),
-                          Text(
-                            'Select City',
-                            style: AppTextStyles.titleMedium.copyWith(
+                  padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
+                  child: SizedBox(
+                    height: 38,
+                    child: Row(
+                      children: [
+                        // Navigation back button (24x24px, Gap 12px)
+                        GestureDetector(
+                          onTap: () => Navigator.of(context).pop(),
+                          behavior: HitTestBehavior.opaque,
+                          child: SizedBox(
+                            width: 24,
+                            height: 24,
+                            child: Icon(
+                              Icons.arrow_back,
+                              size: 24,
                               color: textPrimary,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
                             ),
                           ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
+                        ),
+                        const SizedBox(width: 12),
 
-                      // Search Input Box
-                      Container(
-                        decoration: BoxDecoration(
-                          color: cardBgColor,
-                          borderRadius: BorderRadius.circular(16),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.04),
-                              blurRadius: 8,
-                              offset: const Offset(0, 2),
+                        // Greeting Container (Pill capsule: height 38px, radius 40px, border #CCDFF2)
+                        Expanded(
+                          child: Container(
+                            height: 38,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(40),
+                              border: Border.all(
+                                color: isDark
+                                    ? AppColors.borderDark
+                                    : const Color(0xFFCCDFF2),
+                                width: 1,
+                              ),
                             ),
-                          ],
-                        ),
-                        child: TextField(
-                          controller: _searchController,
-                          style: TextStyle(color: textPrimary, fontSize: 14),
-                          decoration: InputDecoration(
-                            hintText: 'Search your city...',
-                            hintStyle: TextStyle(
-                              color: isDark ? AppColors.grey400 : AppColors.grey500,
-                              fontSize: 14,
-                            ),
-                            prefixIcon: Icon(
-                              Icons.search_rounded,
-                              color: isDark ? AppColors.grey400 : AppColors.grey500,
-                            ),
-                            border: InputBorder.none,
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 14,
+                            padding: const EdgeInsets.only(left: 16, right: 12),
+                            child: Center(
+                              child: Text(
+                                'Select City',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontFamily: 'DM Sans',
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 18,
+                                  height: 1.0,
+                                  letterSpacing: 0,
+                                  color: isDark
+                                      ? AppColors.textPrimaryDark
+                                      : const Color(0xFF000000),
+                                ),
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
             ),
 
+
             // City Content (Grid + List)
             Expanded(
               child: ListView(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
                 children: [
-                  // 3x3 Popular Cities Grid Card
+                  // Search Box: Height 42px, Radius 14px, Border 1px #E5E7EB, Font Inter 400
+                  Container(
+                    height: 42,
+                    decoration: BoxDecoration(
+                      color: isDark ? AppColors.surfaceDark : const Color(0xFFFFFFFF),
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(
+                        color: isDark ? AppColors.borderDark : const Color(0xFFE5E7EB),
+                        width: 1,
+                      ),
+                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.search_rounded,
+                          size: 18,
+                          color: isDark ? AppColors.grey400 : const Color(0xFF6B7280),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: TextField(
+                            controller: _searchController,
+                            style: TextStyle(
+                              fontFamily: 'Inter',
+                              color: textPrimary,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w400,
+                              height: 1.0,
+                              letterSpacing: 0,
+                            ),
+                            decoration: InputDecoration(
+                              hintText: 'Search your city...',
+                              hintStyle: TextStyle(
+                                fontFamily: 'Inter',
+                                color: isDark ? AppColors.grey400 : const Color(0xFF6B7280),
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400,
+                                height: 1.0,
+                                letterSpacing: 0,
+                              ),
+                              border: InputBorder.none,
+                              enabledBorder: InputBorder.none,
+                              focusedBorder: InputBorder.none,
+                              disabledBorder: InputBorder.none,
+                              errorBorder: InputBorder.none,
+                              focusedErrorBorder: InputBorder.none,
+                              isDense: true,
+                              contentPadding: EdgeInsets.zero,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+
+                  // 3x3 Popular Cities Grid Card (seamless-city-grid)
                   if (filteredGrid.isNotEmpty) ...[
                     Container(
+                      clipBehavior: Clip.antiAlias,
                       decoration: BoxDecoration(
                         color: cardBgColor,
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: borderColor, width: 1),
+                        borderRadius: BorderRadius.circular(11.79),
+                        border: Border.all(
+                          color: isDark ? AppColors.borderDark : const Color(0xFFE2E8F0),
+                          width: 0.98,
+                        ),
                       ),
                       child: GridView.builder(
                         shrinkWrap: true,
@@ -353,7 +405,7 @@ class _SelectCityScreenState extends State<SelectCityScreen> {
                         itemCount: filteredGrid.length,
                         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 3,
-                          childAspectRatio: 1.15,
+                          mainAxisExtent: 100,
                         ),
                         itemBuilder: (context, index) {
                           final city = filteredGrid[index];
@@ -366,14 +418,14 @@ class _SelectCityScreenState extends State<SelectCityScreen> {
                               border: Border(
                                 right: col < 2
                                     ? BorderSide(
-                                        color: isDark ? AppColors.grey800 : const Color(0xFFF3F4F6),
-                                        width: 1,
+                                        color: isDark ? AppColors.grey800 : const Color(0xFFE2E8F0),
+                                        width: 0.63,
                                       )
                                     : BorderSide.none,
                                 bottom: row < totalRows - 1
                                     ? BorderSide(
-                                        color: isDark ? AppColors.grey800 : const Color(0xFFF3F4F6),
-                                        width: 1,
+                                        color: isDark ? AppColors.grey800 : const Color(0xFFE2E8F0),
+                                        width: 0.63,
                                       )
                                     : BorderSide.none,
                               ),
@@ -383,19 +435,36 @@ class _SelectCityScreenState extends State<SelectCityScreen> {
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Icon(
-                                    city.icon,
-                                    size: 32,
-                                    color: isDark ? AppColors.grey400 : const Color(0xFF94A3B8),
-                                  ),
-                                  const SizedBox(height: 8),
+                                  if (city.imageAsset != null)
+                                    SizedBox(
+                                      height: 66.67,
+                                      width: 100,
+                                      child: Image.asset(
+                                        city.imageAsset!,
+                                        fit: BoxFit.contain,
+                                        errorBuilder: (context, error, stackTrace) => Icon(
+                                          city.icon,
+                                          size: 32,
+                                          color: isDark ? AppColors.grey400 : const Color(0xFF94A3B8),
+                                        ),
+                                      ),
+                                    )
+                                  else
+                                    Icon(
+                                      city.icon,
+                                      size: 32,
+                                      color: isDark ? AppColors.grey400 : const Color(0xFF94A3B8),
+                                    ),
                                   Text(
                                     city.name,
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
-                                      color: textPrimary,
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w600,
+                                      fontFamily: 'DM Sans',
+                                      color: isDark ? AppColors.textPrimaryDark : const Color(0xFF000000),
+                                      fontSize: 12.61,
+                                      fontWeight: FontWeight.w500,
+                                      height: 1.0,
+                                      letterSpacing: 0,
                                     ),
                                   ),
                                 ],
@@ -522,27 +591,33 @@ class _SelectCityScreenState extends State<SelectCityScreen> {
   }
 
   Widget _buildSectionTitle(String title, bool isDark) {
-    return Row(
-      children: [
-        Container(
-          width: 3.5,
-          height: 16,
-          decoration: BoxDecoration(
-            color: const Color(0xFF006FC9),
-            borderRadius: BorderRadius.circular(2),
+    return Padding(
+      padding: const EdgeInsets.only(left: 4),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Container(
+            width: 4,
+            height: 16,
+            decoration: BoxDecoration(
+              color: const Color(0xFF0060BD),
+              borderRadius: BorderRadius.circular(2),
+            ),
           ),
-        ),
-        const SizedBox(width: 8),
-        Text(
-          title,
-          style: TextStyle(
-            color: isDark ? AppColors.grey300 : const Color(0xFF1E293B),
-            fontWeight: FontWeight.w700,
-            fontSize: 12,
-            letterSpacing: 0.8,
+          const SizedBox(width: 8),
+          Text(
+            title,
+            style: TextStyle(
+              fontFamily: 'DM Sans',
+              color: isDark ? AppColors.grey300 : const Color(0xFF1D1B20),
+              fontWeight: FontWeight.w700,
+              fontSize: 12,
+              height: 1.0,
+              letterSpacing: 1.0,
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -554,10 +629,21 @@ class _SelectCityScreenState extends State<SelectCityScreen> {
     required bool isDark,
   }) {
     return Container(
+      padding: const EdgeInsets.symmetric(vertical: 8),
       decoration: BoxDecoration(
         color: cardBgColor,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: borderColor, width: 1),
+        boxShadow: isDark
+            ? null
+            : const [
+                BoxShadow(
+                  color: Color.fromRGBO(5, 35, 77, 0.0588),
+                  offset: Offset(0, 6),
+                  blurRadius: 16,
+                  spreadRadius: 0,
+                ),
+              ],
       ),
       child: Column(
         children: List.generate(cities.length, (index) {
@@ -572,42 +658,53 @@ class _SelectCityScreenState extends State<SelectCityScreen> {
                   top: index == 0 ? const Radius.circular(16) : Radius.zero,
                   bottom: isLast ? const Radius.circular(16) : Radius.zero,
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 32,
-                        height: 32,
-                        decoration: BoxDecoration(
-                          color: isDark
-                              ? const Color(0xFF1E3547)
-                              : const Color(0xFFEAF4FF),
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.location_on_outlined,
-                          size: 18,
-                          color: Color(0xFF006FC9),
-                        ),
-                      ),
-                      const SizedBox(width: 14),
-                      Expanded(
-                        child: Text(
-                          city.name,
-                          style: TextStyle(
-                            color: textPrimary,
-                            fontSize: 15,
-                            fontWeight: FontWeight.w600,
+                child: SizedBox(
+                  height: 52,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Container(
+                          width: 38,
+                          height: 38,
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: isDark
+                                ? const Color(0xFF1E3547)
+                                : const Color(0xFFE8F4FF),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: const Icon(
+                            Icons.location_on_outlined,
+                            size: 18,
+                            color: Color(0xFF006FC9),
                           ),
                         ),
-                      ),
-                      Icon(
-                        Icons.chevron_right,
-                        color: isDark ? AppColors.grey400 : AppColors.grey500,
-                        size: 20,
-                      ),
-                    ],
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            city.name,
+                            style: TextStyle(
+                              fontFamily: 'DM Sans',
+                              color: isDark ? AppColors.textPrimaryDark : const Color(0xFF000000),
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                              height: 1.0,
+                              letterSpacing: 0,
+                            ),
+                          ),
+                        ),
+                        Icon(
+                          Icons.chevron_right,
+                          color: isDark ? AppColors.grey400 : const Color(0xFF10213D),
+                          size: 16,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),

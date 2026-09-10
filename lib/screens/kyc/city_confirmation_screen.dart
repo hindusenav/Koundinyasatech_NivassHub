@@ -81,10 +81,20 @@ class _CityConfirmationScreenState extends State<CityConfirmationScreen> {
       decoration: BoxDecoration(
         color: sheetBgColor,
         borderRadius: const BorderRadius.vertical(
-          top: Radius.circular(24),
+          top: Radius.circular(32),
         ),
+        boxShadow: isDark
+            ? null
+            : const [
+                BoxShadow(
+                  color: Color.fromRGBO(0, 0, 0, 0.15),
+                  offset: Offset(-4, -4),
+                  blurRadius: 4,
+                  spreadRadius: 0,
+                ),
+              ],
       ),
-      padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
+      padding: const EdgeInsets.fromLTRB(24, 12, 24, 24),
       child: SafeArea(
         top: false,
         child: Column(
@@ -104,59 +114,69 @@ class _CityConfirmationScreenState extends State<CityConfirmationScreen> {
             ),
             const SizedBox(height: 20),
 
-            // Title
+            // SheetTitle: DM Sans 700 Bold 18px #10213D
             Text(
               'Select City',
-              style: AppTextStyles.titleLarge.copyWith(
-                color: textPrimary,
-                fontWeight: FontWeight.bold,
+              style: TextStyle(
+                fontFamily: 'DM Sans',
+                color: isDark ? AppColors.textPrimaryDark : const Color(0xFF10213D),
+                fontWeight: FontWeight.w700,
                 fontSize: 18,
+                height: 1.0,
+                letterSpacing: 0,
               ),
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: 6),
 
-            // Subtitle
+            // SheetSubtitle: DM Sans 400 Regular 13px #3E3E3E
             Text(
               'Confirm the selected region to continue',
               style: TextStyle(
-                color: textSecondary,
-                fontSize: 13,
+                fontFamily: 'DM Sans',
+                color: isDark ? AppColors.grey400 : const Color(0xFF3E3E3E),
                 fontWeight: FontWeight.w400,
+                fontSize: 13,
+                height: 1.0,
+                letterSpacing: 0,
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 24),
 
-            // Selected City Card Container
+            // SelectedCityBox: Radius 16px, Border 1px #3E3E3E, Padding 16px, Gap 12px
             Container(
               decoration: BoxDecoration(
                 color: sheetBgColor,
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: cardBorderColor, width: 1.5),
+                border: Border.all(
+                  color: isDark ? AppColors.borderDark : const Color(0xFF3E3E3E),
+                  width: 1.0,
+                ),
               ),
               padding: const EdgeInsets.all(16),
               child: Column(
                 children: [
-                  // Top Row: Pin icon, City, State/Country, Checkmark
+                  // LabelRow: MainAxisAlignment.spaceBetween, CityDetails gap 12px
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      // Location Pin Icon in Circle
+                      // Location Pin Icon in icon-container (38x38px, radius 10px, padding 10px)
                       Container(
-                        width: 40,
-                        height: 40,
+                        width: 38,
+                        height: 38,
+                        padding: const EdgeInsets.all(10),
                         decoration: BoxDecoration(
                           color: isDark
                               ? const Color(0xFF1E3547)
-                              : const Color(0xFFEAF4FF),
-                          shape: BoxShape.circle,
+                              : const Color(0xFFE8F4FF),
+                          borderRadius: BorderRadius.circular(10),
                         ),
                         child: const Icon(
                           Icons.location_on_outlined,
-                          size: 22,
+                          size: 18,
                           color: Color(0xFF006FC9),
                         ),
                       ),
-                      const SizedBox(width: 14),
+                      const SizedBox(width: 12),
 
                       // City & State details
                       Expanded(
@@ -166,18 +186,24 @@ class _CityConfirmationScreenState extends State<CityConfirmationScreen> {
                             Text(
                               widget.cityName,
                               style: TextStyle(
-                                color: textPrimary,
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
+                                fontFamily: 'DM Sans',
+                                color: isDark ? AppColors.textPrimaryDark : const Color(0xFF000000),
+                                fontSize: 18,
+                                fontWeight: FontWeight.w700,
+                                height: 1.0,
+                                letterSpacing: 0,
                               ),
                             ),
                             const SizedBox(height: 2),
                             Text(
                               '${widget.stateName}, ${widget.countryName}',
                               style: TextStyle(
-                                color: textSecondary,
+                                fontFamily: 'DM Sans',
+                                color: isDark ? AppColors.grey400 : const Color(0xFF3E3E3E),
                                 fontSize: 12,
                                 fontWeight: FontWeight.w400,
+                                height: 1.0,
+                                letterSpacing: 0,
                               ),
                             ),
                           ],
@@ -188,47 +214,49 @@ class _CityConfirmationScreenState extends State<CityConfirmationScreen> {
                       const Icon(
                         Icons.check,
                         color: Color(0xFF006FC9),
-                        size: 22,
+                        size: 20,
                       ),
                     ],
                   ),
-                  const SizedBox(height: 14),
+                  // Inner Divider line
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    child: Divider(
+                      height: 1,
+                      thickness: 1,
+                      color: isDark ? AppColors.grey800 : const Color(0xFF9AA7B5),
+                    ),
+                  ),
 
-                  // Sub-region selector field box
+                  // SubOptionRow: Flow Horizontal, Justify space-between
                   InkWell(
                     onTap: () {
                       // Sub-region selection callback if needed
                     },
-                    borderRadius: BorderRadius.circular(12),
-                    child: Container(
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: subCardBorderColor, width: 1),
-                      ),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 14,
-                        vertical: 12,
-                      ),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              _selectedSubRegion,
-                              style: TextStyle(
-                                color: textPrimary,
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                              ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            _selectedSubRegion,
+                            style: TextStyle(
+                              fontFamily: 'DM Sans',
+                              color: isDark
+                                  ? AppColors.textPrimaryDark
+                                  : const Color(0xFF10213D),
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              height: 1.0,
+                              letterSpacing: 0,
                             ),
                           ),
-                          Icon(
-                            Icons.chevron_right,
-                            color: isDark ? AppColors.grey400 : AppColors.grey600,
-                            size: 20,
-                          ),
-                        ],
-                      ),
+                        ),
+                        Icon(
+                          Icons.chevron_right,
+                          color: isDark ? AppColors.grey400 : const Color(0xFF10213D),
+                          size: 16,
+                        ),
+                      ],
                     ),
                   ),
                 ],
