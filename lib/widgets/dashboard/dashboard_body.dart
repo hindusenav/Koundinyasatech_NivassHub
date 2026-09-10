@@ -107,13 +107,15 @@ class _DashboardBodyState extends State<DashboardBody> {
                 // row is tapped.
                 // ==================================================
 
-                AnimatedSize(
-                  duration: const Duration(milliseconds: 200),
-                  curve: Curves.easeInOut,
-                  child: _showPropertyPanel
-                      ? const AddPropertySection()
-                      : const SizedBox(width: double.infinity),
-                ),
+               AnimatedSize(
+  duration: const Duration(milliseconds: 200),
+  curve: Curves.easeInOut,
+  child: _showPropertyPanel
+      ? AddPropertySection(
+          isExpanded: _showPropertyPanel,
+        )
+      : const SizedBox(width: double.infinity),
+),
 
                 // ==================================================
                 // DASHBOARD CONTENT
