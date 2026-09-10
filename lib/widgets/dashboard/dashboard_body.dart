@@ -10,15 +10,27 @@ import 'package:flutter_nivasshub/widgets/dashboard/otp/generate_otp_banner.dart
 import 'package:flutter_nivasshub/widgets/dashboard/panic/panic_sos_banner.dart';
 import 'package:flutter_nivasshub/widgets/dashboard/quick_actions/quick_actions_grid.dart';
 import 'package:flutter_nivasshub/widgets/dashboard/add_property/add_proper_section.dart';
+import 'package:flutter_nivasshub/routes/app_routes.dart';
 
 // KYC Update Card
 import 'package:flutter_nivasshub/widgets/dashboard/kyc_update_card/kyc_update_card_section.dart';
 
-class DashboardBody extends StatelessWidget {
+class DashboardBody extends StatefulWidget {
   const DashboardBody({
     super.key,
+    required this.showKycCard,
   });
 
+  /// Whether the floating "KYC Update" card should be shown. `false` once
+  /// the user's KYC has been approved (Scenario 1); `true` while it's
+  /// still incomplete (Scenario 2).
+  final bool showKycCard;
+
+  @override
+  State<DashboardBody> createState() => _DashboardBodyState();
+}
+
+class _DashboardBodyState extends State<DashboardBody> {
   static final LayerLink _headerAnchor = LayerLink();
 
   // ============================================================
@@ -31,24 +43,26 @@ class DashboardBody extends StatelessWidget {
   static const double _kycCardAreaHeight = 150.0;
 
   // ============================================================
+  // ADD PROPERTY PANEL
+  //
+  // Hidden by default; toggled open/closed by tapping the header's
+  // "B-402 ▾" row.
+  // ============================================================
+
+  bool _showPropertyPanel = false;
+
+  void _togglePropertyPanel() {
+    setState(() {
+      _showPropertyPanel = !_showPropertyPanel;
+    });
+  }
+
+  // ============================================================
   // KYC UPDATE ACTION
   // ============================================================
 
   void _openKycFlow(BuildContext context) {
-    // ------------------------------------------------------------
-    // Your KYC navigation will be added here.
-    //
-    // Example when SelectCountryScreen is available:
-    //
-    // Navigator.push(
-    //   context,
-    //   MaterialPageRoute(
-    //     builder: (_) => const SelectCountryScreen(),
-    //   ),
-    // );
-    // ------------------------------------------------------------
-
-    debugPrint('KYC Update Now clicked');
+    Navigator.pushNamed(context, AppRoutes.selectCountry);
   }
 
   @override
@@ -82,14 +96,26 @@ class DashboardBody extends StatelessWidget {
 
                 CompositedTransformTarget(
                   link: _headerAnchor,
-                  child: const DashboardHeader(),
+                  child: DashboardHeader(
+                    isPropertyPanelExpanded: _showPropertyPanel,
+                    onTogglePropertyPanel: _togglePropertyPanel,
+                  ),
                 ),
 
                 // ==================================================
-                // ADD PROPERTY
+                // ADD PROPERTY — hidden until the header's "B-402 ▾"
+                // row is tapped.
                 // ==================================================
 
-                const AddPropertySection(),
+               AnimatedSize(
+  duration: const Duration(milliseconds: 200),
+  curve: Curves.easeInOut,
+  child: _showPropertyPanel
+      ? AddPropertySection(
+          isExpanded: _showPropertyPanel,
+        )
+      : const SizedBox(width: double.infinity),
+),
 
                 // ==================================================
                 // DASHBOARD CONTENT
@@ -195,16 +221,17 @@ class DashboardBody extends StatelessWidget {
           // This matches Scenario 2 in your flow.
           // ========================================================
 
-          Positioned(
-            left: 12,
-            right: 12,
-            bottom: 8,
+          if (widget.showKycCard)
+            Positioned(
+              left: 12,
+              right: 12,
+              bottom: 8,
 
-            child: SafeArea(
-              top: false,
-              child: _buildKycUpdateCard(context),
+              child: SafeArea(
+                top: false,
+                child: _buildKycUpdateCard(context),
+              ),
             ),
-          ),
         ],
       ),
     );

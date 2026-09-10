@@ -10,7 +10,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
+  
   cupertino_icons: ^1.0.8
 
   # ---------------------------------------------------------------------------
@@ -71,8 +71,10 @@ flutter:
 
   assets:
     - assets/images/
+    - assets/images/kyc/cities/
     - assets/icons/
     - assets/json/
+    - assets/icons/settings/
     - assets/icons/quick_actions/
     - assets/icons/quick_actions/homequick_actions/
     - assets/json/notices/
@@ -85,7 +87,7 @@ flutter:
     - assets/icons/profile/landmark(addaddress).png
     - assets/icons/profile/street(addaddress).png
     - assets/icons/profile/wing(addaddress).png
-  # fonts:
+  # 
   #   - family: Poppins
   #     fonts:
   #       - asset: assets/fonts/Poppins-Regular.ttf

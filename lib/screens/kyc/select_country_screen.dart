@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_nivasshub/constants/app_colors.dart';
-import 'package:flutter_nivasshub/constants/app_text_styles.dart';
 import 'package:flutter_nivasshub/routes/app_routes.dart';
 import 'package:flutter_nivasshub/widgets/dashboard/navigation/dashboard_bottom_navigation.dart';
+import 'package:flutter_nivasshub/widgets/kyc/kyc_search_header.dart';
+import 'package:flutter_nivasshub/widgets/kyc/kyc_selection_list.dart';
 
 class CountryData {
   final String name;
@@ -40,6 +41,7 @@ class _SelectCountryScreenState extends State<SelectCountryScreen> {
     CountryData(name: 'Germany', flag: '🌐'),
     CountryData(name: 'Singapore', flag: '🌐'),
     CountryData(name: 'United Kingdom', flag: '🌐'),
+    CountryData(name: 'United States', flag: '🇺🇸'),
   ];
 
   @override
@@ -59,11 +61,55 @@ class _SelectCountryScreenState extends State<SelectCountryScreen> {
   }
 
   void _onCountrySelected(CountryData country) {
+    // Select State step removed — go straight from country to city.
     Navigator.pushNamed(
       context,
       AppRoutes.selectCity,
       arguments: country.name,
     );
+  }
+
+  Widget _buildLeading(CountryData country, bool isDark) {
+    if (country.flag == '🌐') {
+      return Container(
+        width: 28,
+        height: 28,
+        padding: const EdgeInsets.all(6),
+        decoration: BoxDecoration(
+          color: isDark ? const Color(0xFF1E3547) : const Color(0xFFE8F4FF),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: const Icon(
+          Icons.language,
+          size: 16,
+          color: Color(0xFF006FC9),
+        ),
+      );
+    }
+    return Container(
+      width: 32,
+      height: 24,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(4),
+      ),
+      alignment: Alignment.center,
+      child: Text(
+        country.flag,
+        style: const TextStyle(fontSize: 18, height: 1.0),
+      ),
+    );
+  }
+
+  List<KycListItemData> _toListItems(List<CountryData> countries, bool isDark) {
+    return countries
+        .map(
+          (country) => KycListItemData(
+            leading: _buildLeading(country, isDark),
+            title: country.name,
+            onTap: () => _onCountrySelected(country),
+          ),
+        )
+        .toList();
   }
 
   @override
@@ -78,17 +124,9 @@ class _SelectCountryScreenState extends State<SelectCountryScreen> {
         .where((c) => c.name.toLowerCase().contains(_searchQuery))
         .toList();
 
-    final headerBgColor = isDark
-        ? AppColors.dashboardHeaderDark
-        : const Color(0xFFC7E3FF);
-
     final scaffoldBgColor = isDark
         ? AppColors.backgroundDark
         : const Color(0xFFF3F7FD);
-
-    final cardBgColor = isDark ? AppColors.surfaceDark : AppColors.white;
-    final borderColor = isDark ? AppColors.borderDark : const Color(0xFFE5E7EB);
-    final textPrimary = isDark ? AppColors.textPrimaryDark : const Color(0xFF1F2937);
 
     return Scaffold(
       backgroundColor: scaffoldBgColor,
@@ -96,115 +134,86 @@ class _SelectCountryScreenState extends State<SelectCountryScreen> {
         top: false,
         child: Column(
           children: [
-            // Top Sky-Blue Header Container
-            Container(
-              decoration: BoxDecoration(
-                color: headerBgColor,
-                borderRadius: const BorderRadius.only(
-                  bottomLeft: Radius.circular(24),
-                  bottomRight: Radius.circular(24),
-                ),
-              ),
-              child: SafeArea(
-                bottom: false,
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 20),
-                  child: Column(
-                    children: [
-                      // Header Row: Back button & Title
-                      Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          Align(
-                            alignment: Alignment.centerLeft,
-                            child: IconButton(
-                              icon: Icon(
-                                Icons.arrow_back,
-                                color: textPrimary,
-                              ),
-                              onPressed: () => Navigator.of(context).pop(),
-                            ),
-                          ),
-                          Text(
-                            'Select Country',
-                            style: AppTextStyles.titleMedium.copyWith(
-                              color: textPrimary,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-
-                      // Search Input Box
-                      Container(
-                        decoration: BoxDecoration(
-                          color: cardBgColor,
-                          borderRadius: BorderRadius.circular(16),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.04),
-                              blurRadius: 8,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: TextField(
-                          controller: _searchController,
-                          style: TextStyle(color: textPrimary, fontSize: 14),
-                          decoration: InputDecoration(
-                            hintText: 'Search your country...',
-                            hintStyle: TextStyle(
-                              color: isDark ? AppColors.grey400 : AppColors.grey500,
-                              fontSize: 14,
-                            ),
-                            prefixIcon: Icon(
-                              Icons.search_rounded,
-                              color: isDark ? AppColors.grey400 : AppColors.grey500,
-                            ),
-                            border: InputBorder.none,
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 14,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+            KycSearchHeader(
+              title: 'Select Country',
+              searchController: _searchController,
+              hintText: 'Search your country...',
             ),
 
             // Country Lists Content
             Expanded(
               child: ListView(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
                 children: [
-                  if (filteredPopular.isNotEmpty) ...[
-                    _buildSectionTitle('POPULAR COUNTRIES', isDark),
-                    const SizedBox(height: 10),
-                    _buildCountryCardGroup(
-                      countries: filteredPopular,
-                      cardBgColor: cardBgColor,
-                      borderColor: borderColor,
-                      textPrimary: textPrimary,
-                      isDark: isDark,
+                  // Search Box: Height 42px, Radius 14px, Border 1px #E5E7EB, Font Inter 400
+                  Container(
+                    height: 42,
+                    decoration: BoxDecoration(
+                      color: isDark ? AppColors.surfaceDark : const Color(0xFFFFFFFF),
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(
+                        color: isDark ? AppColors.borderDark : const Color(0xFFE5E7EB),
+                        width: 1,
+                      ),
                     ),
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.search_rounded,
+                          size: 18,
+                          color: isDark ? AppColors.grey400 : const Color(0xFF6B7280),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: TextField(
+                            controller: _searchController,
+                            style: TextStyle(
+                              fontFamily: 'Inter',
+                              color: isDark ? AppColors.textPrimaryDark : const Color(0xFF1F2937),
+                              fontSize: 14,
+                              fontWeight: FontWeight.w400,
+                              height: 1.0,
+                              letterSpacing: 0,
+                            ),
+                            decoration: InputDecoration(
+                              hintText: 'Search your country...',
+                              hintStyle: TextStyle(
+                                fontFamily: 'Inter',
+                                color: isDark ? AppColors.grey400 : const Color(0xFF6B7280),
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400,
+                                height: 1.0,
+                                letterSpacing: 0,
+                              ),
+                              border: InputBorder.none,
+                              enabledBorder: InputBorder.none,
+                              focusedBorder: InputBorder.none,
+                              disabledBorder: InputBorder.none,
+                              errorBorder: InputBorder.none,
+                              focusedErrorBorder: InputBorder.none,
+                              isDense: true,
+                              contentPadding: EdgeInsets.zero,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+
+                  if (filteredPopular.isNotEmpty) ...[
+                    const KycSectionTitle(title: 'POPULAR COUNTRIES'),
+                    const SizedBox(height: 10),
+                    KycListCardGroup(items: _toListItems(filteredPopular, isDark)),
                     const SizedBox(height: 24),
                   ],
 
                   if (filteredAll.isNotEmpty) ...[
-                    _buildSectionTitle('ALL COUNTRIES', isDark),
+                    const KycSectionTitle(title: 'ALL COUNTRIES'),
                     const SizedBox(height: 10),
-                    _buildCountryCardGroup(
-                      countries: filteredAll,
-                      cardBgColor: cardBgColor,
-                      borderColor: borderColor,
-                      textPrimary: textPrimary,
-                      isDark: isDark,
-                    ),
+                    KycListCardGroup(items: _toListItems(filteredAll, isDark)),
                     const SizedBox(height: 16),
                   ],
 
@@ -228,117 +237,6 @@ class _SelectCountryScreenState extends State<SelectCountryScreen> {
         ),
       ),
       bottomNavigationBar: const DashboardBottomNavigation(selectedIndex: 0),
-    );
-  }
-
-  Widget _buildSectionTitle(String title, bool isDark) {
-    return Row(
-      children: [
-        Container(
-          width: 3.5,
-          height: 16,
-          decoration: BoxDecoration(
-            color: const Color(0xFF006FC9),
-            borderRadius: BorderRadius.circular(2),
-          ),
-        ),
-        const SizedBox(width: 8),
-        Text(
-          title,
-          style: TextStyle(
-            color: isDark ? AppColors.grey300 : const Color(0xFF1E293B),
-            fontWeight: FontWeight.w700,
-            fontSize: 12,
-            letterSpacing: 0.8,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildCountryCardGroup({
-    required List<CountryData> countries,
-    required Color cardBgColor,
-    required Color borderColor,
-    required Color textPrimary,
-    required bool isDark,
-  }) {
-    return Container(
-      decoration: BoxDecoration(
-        color: cardBgColor,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: borderColor, width: 1),
-      ),
-      child: Column(
-        children: List.generate(countries.length, (index) {
-          final country = countries[index];
-          final isLast = index == countries.length - 1;
-
-          return Column(
-            children: [
-              InkWell(
-                onTap: () => _onCountrySelected(country),
-                borderRadius: BorderRadius.vertical(
-                  top: index == 0 ? const Radius.circular(16) : Radius.zero,
-                  bottom: isLast ? const Radius.circular(16) : Radius.zero,
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                  child: Row(
-                    children: [
-                      if (country.flag == '🌐')
-                        Container(
-                          width: 28,
-                          height: 28,
-                          decoration: BoxDecoration(
-                            color: isDark
-                                ? const Color(0xFF1E3547)
-                                : const Color(0xFFEAF4FF),
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(
-                            Icons.language,
-                            size: 18,
-                            color: Color(0xFF006FC9),
-                          ),
-                        )
-                      else
-                        Text(
-                          country.flag,
-                          style: const TextStyle(fontSize: 22),
-                        ),
-                      const SizedBox(width: 14),
-                      Expanded(
-                        child: Text(
-                          country.name,
-                          style: TextStyle(
-                            color: textPrimary,
-                            fontSize: 15,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                      Icon(
-                        Icons.chevron_right,
-                        color: isDark ? AppColors.grey400 : AppColors.grey500,
-                        size: 20,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              if (!isLast)
-                Divider(
-                  height: 1,
-                  thickness: 1,
-                  color: isDark ? AppColors.grey800 : const Color(0xFFF3F4F6),
-                  indent: 16,
-                  endIndent: 16,
-                ),
-            ],
-          );
-        }),
-      ),
     );
   }
 }

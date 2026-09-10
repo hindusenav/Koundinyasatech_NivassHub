@@ -1,124 +1,164 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_nivasshub/routes/app_routes.dart';
 
 class KycVerificationScreen extends StatefulWidget {
   const KycVerificationScreen({super.key});
 
   @override
-  State<KycVerificationScreen> createState() =>
-      _KycVerificationScreenState();
+  State<KycVerificationScreen> createState() => _KycVerificationScreenState();
 }
 
-class _KycVerificationScreenState
-    extends State<KycVerificationScreen> {
+class _KycVerificationScreenState extends State<KycVerificationScreen> {
   bool aadhaarUploaded = false;
   bool panUploaded = false;
   bool propertyUploaded = false;
+  bool _submitting = false;
+
+  // ===========================================================================
+  // ONLY KYC ASSETS
+  // ===========================================================================
+
+  static const String aadhaarIcon = 'assets/icons/aadaarcardimg.png';
+  static const String panIcon = 'assets/icons/pancardimg.png';
+  static const String propertyIcon = 'assets/icons/propertyimg.png';
+  static const String uploadIcon = 'assets/icons/uploadimg.png';
+  static const String verificationIcon = 'assets/icons/verificationimg.png';
+
+  // ===========================================================================
+  // COLORS
+  // ===========================================================================
+
+  static const Color backgroundColor = Color(0xFFF4F8FC);
+  static const Color headerColor = Color(0xFFC7E1F8);
+  static const Color bottomNavColor = Color(0xFFC7E3FF);
+  static const Color primaryBlue = Color(0xFF006FCB);
+  static const Color darkText = Color(0xFF27364A);
+  static const Color greyText = Color(0xFF7A8795);
+  static const Color lightGreyText = Color(0xFFA2ACB7);
+  static const Color borderColor = Color(0xFFD8E1EA);
+  static const Color uploadBackground = Color(0xFFF8FBFE);
+  static const Color pendingBackground = Color(0xFFFFF4D9);
+  static const Color pendingText = Color(0xFFE5A000);
+
+  // ===========================================================================
+  // SUBMIT
+  // ===========================================================================
+
+  Future<void> _handleSubmit() async {
+    if (!aadhaarUploaded || !panUploaded || !propertyUploaded || _submitting) {
+      return;
+    }
+
+    setState(() {
+      _submitting = true;
+    });
+
+    await Future.delayed(const Duration(milliseconds: 1200));
+
+    if (!mounted) return;
+
+    Navigator.pushNamed(context, AppRoutes.kycStatus);
+  }
+
+  // ===========================================================================
+  // BUILD
+  // ===========================================================================
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF3F7FC),
+      backgroundColor: backgroundColor,
       body: SafeArea(
         bottom: false,
         child: Column(
           children: [
             _buildHeader(),
             Expanded(
-              child: Column(
-                children: [
-                  Expanded(
-                    child: SingleChildScrollView(
-                      physics: const BouncingScrollPhysics(),
-                      child: _buildContent(),
-                    ),
-                  ),
-                  _buildBottomNavigation(),
-                ],
+              child: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
+                child: Column(
+                  children: [
+                    _buildContent(),
+                  ],
+                ),
               ),
             ),
+            _buildBottomNavigation(),
           ],
         ),
       ),
     );
   }
 
-  // ---------------------------------------------------------------------------
+  // ===========================================================================
   // HEADER
-  // ---------------------------------------------------------------------------
+  // ===========================================================================
 
   Widget _buildHeader() {
     return Container(
       width: double.infinity,
-      height: 50,
-      decoration: const BoxDecoration(
-        color: Color(0xFFC7E1F8),
-      ),
-      child: Row(
+      height: 56,
+      color: headerColor,
+      child: Stack(
+        alignment: Alignment.center,
         children: [
-          const SizedBox(width: 12),
-
-          GestureDetector(
-            onTap: () => Navigator.pop(context),
-            child: const SizedBox(
-              width: 35,
-              height: 40,
-              child: Icon(
-                Icons.arrow_back,
-                size: 16,
-                color: Color(0xFF17202A),
-              ),
-            ),
-          ),
-
-          const Expanded(
-            child: Center(
-              child: Text(
-                'KYC Verification',
-                style: TextStyle(
-                  fontSize: 10,
-                  fontWeight: FontWeight.w700,
-                  color: Color(0xFF111827),
+          Positioned(
+            left: 4,
+            top: 0,
+            bottom: 0,
+            child: InkWell(
+              onTap: () {
+                Navigator.pop(context);
+              },
+              borderRadius: BorderRadius.circular(30),
+              child: const SizedBox(
+                width: 48,
+                height: 56,
+                child: Center(
+                  child: Icon(
+                    Icons.arrow_back,
+                    size: 22,
+                    color: Color(0xFF17202A),
+                  ),
                 ),
               ),
             ),
           ),
-
-          const SizedBox(width: 47),
+          const Center(
+            child: Text(
+              'KYC Verification',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                color: Color(0xFF111827),
+                letterSpacing: 0.15,
+              ),
+            ),
+          ),
         ],
       ),
     );
   }
 
-  // ---------------------------------------------------------------------------
+  // ===========================================================================
   // CONTENT
-  // ---------------------------------------------------------------------------
+  // ===========================================================================
 
   Widget _buildContent() {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(9, 17, 9, 12),
+      padding: const EdgeInsets.fromLTRB(20, 24, 20, 16),
       child: Column(
         children: [
-          _buildKycIcon(),
+          _buildVerificationHeader(),
+          const SizedBox(height: 24),
 
-          const SizedBox(height: 10),
-
-          const Text(
-            'Upload your documents for verification',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 7,
-              color: Color(0xFF6B7280),
-            ),
-          ),
-
-          const SizedBox(height: 17),
-
+          // AADHAAR CARD
           _buildDocumentCard(
             title: 'AADHAAR CARD',
             subtitle: 'Government issued National ID',
-            icon: Icons.description_outlined,
-            pending: !aadhaarUploaded,
+            iconPath: aadhaarIcon,
             uploadText: 'Upload Front & Back',
+            uploaded: aadhaarUploaded,
             onUpload: () {
               setState(() {
                 aadhaarUploaded = true;
@@ -126,14 +166,15 @@ class _KycVerificationScreenState
             },
           ),
 
-          const SizedBox(height: 8),
+          const SizedBox(height: 16),
 
+          // PAN CARD
           _buildDocumentCard(
             title: 'PAN CARD',
             subtitle: 'Permanent Account Number',
-            icon: Icons.article_outlined,
-            pending: !panUploaded,
+            iconPath: panIcon,
             uploadText: 'Tap to upload PAN Front',
+            uploaded: panUploaded,
             onUpload: () {
               setState(() {
                 panUploaded = true;
@@ -141,14 +182,15 @@ class _KycVerificationScreenState
             },
           ),
 
-          const SizedBox(height: 8),
+          const SizedBox(height: 16),
 
+          // PROPERTY DOCUMENT
           _buildDocumentCard(
             title: 'PROPERTY DOCUMENT',
-            subtitle: 'Proof of ownership or residence',
-            icon: Icons.crop_square,
-            pending: !propertyUploaded,
+            subtitle: 'Proof of ownership or rental lease',
+            iconPath: propertyIcon,
             uploadText: 'Upload ownership proof',
+            uploaded: propertyUploaded,
             onUpload: () {
               setState(() {
                 propertyUploaded = true;
@@ -156,193 +198,240 @@ class _KycVerificationScreenState
             },
           ),
 
-          const SizedBox(height: 18),
+          const SizedBox(height: 32),
 
           _buildSubmitButton(),
+          const SizedBox(height: 20),
         ],
       ),
     );
   }
 
-  // ---------------------------------------------------------------------------
-  // KYC ICON
-  // ---------------------------------------------------------------------------
+  // ===========================================================================
+  // VERIFICATION ICON
+  // ===========================================================================
 
-  Widget _buildKycIcon() {
+  Widget _buildVerificationHeader() {
+    return Column(
+      children: [
+        Container(
+          width: 72,
+          height: 72,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            shape: BoxShape.circle,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.08),
+                blurRadius: 16,
+                spreadRadius: 0,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          padding: const EdgeInsets.all(16),
+          child: Image.asset(
+            verificationIcon,
+            fit: BoxFit.contain,
+            errorBuilder: (context, error, stackTrace) {
+              return const Icon(
+                Icons.verified_outlined,
+                size: 40,
+                color: primaryBlue,
+              );
+            },
+          ),
+        ),
+        const SizedBox(height: 12),
+        const Text(
+          'Upload your documents for verification',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w500,
+            color: greyText,
+            letterSpacing: 0.1,
+          ),
+        ),
+      ],
+    );
+  }
+
+  // ===========================================================================
+  // DOCUMENT CARD
+  // ===========================================================================
+
+  Widget _buildDocumentCard({
+    required String title,
+    required String subtitle,
+    required String iconPath,
+    required String uploadText,
+    required bool uploaded,
+    required VoidCallback onUpload,
+  }) {
     return Container(
-      width: 40,
-      height: 40,
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(14, 14, 14, 14),
       decoration: BoxDecoration(
         color: Colors.white,
-        shape: BoxShape.circle,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: borderColor,
+          width: 1.2,
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
         ],
       ),
-      child: const Center(
-        child: Icon(
-          Icons.shield_outlined,
-          size: 21,
-          color: Color(0xFF1677D2),
-        ),
-      ),
-    );
-  }
-
-  // ---------------------------------------------------------------------------
-  // DOCUMENT CARD
-  // ---------------------------------------------------------------------------
-
-  Widget _buildDocumentCard({
-    required String title,
-    required String subtitle,
-    required IconData icon,
-    required bool pending,
-    required String uploadText,
-    required VoidCallback onUpload,
-  }) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(7, 7, 7, 7),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(7),
-        border: Border.all(
-          color: const Color(0xFFD5DDE7),
-          width: 0.8,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Title row
+          // ===================================================================
+          // DOCUMENT HEADER
+          // ===================================================================
+
           Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+              // DOCUMENT ICON
               Container(
-                width: 20,
-                height: 20,
+                width: 40,
+                height: 40,
                 decoration: BoxDecoration(
                   color: const Color(0xFFEAF4FF),
-                  borderRadius: BorderRadius.circular(3),
+                  borderRadius: BorderRadius.circular(8),
                 ),
-                child: Icon(
-                  icon,
-                  size: 12,
-                  color: const Color(0xFF1478D4),
+                padding: const EdgeInsets.all(8),
+                child: Image.asset(
+                  iconPath,
+                  fit: BoxFit.contain,
+                  errorBuilder: (context, error, stackTrace) {
+                    return const Icon(
+                      Icons.description_outlined,
+                      size: 24,
+                      color: primaryBlue,
+                    );
+                  },
                 ),
               ),
 
-              const SizedBox(width: 6),
+              const SizedBox(width: 12),
 
+              // TITLE + SUBTITLE
               Expanded(
                 child: Column(
-                  crossAxisAlignment:
-                      CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
-                        fontSize: 7,
+                        fontSize: 13,
                         fontWeight: FontWeight.w800,
-                        color: Color(0xFF374151),
+                        color: darkText,
+                        letterSpacing: 0.2,
                       ),
                     ),
-                    const SizedBox(height: 1),
+                    const SizedBox(height: 3),
                     Text(
                       subtitle,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
-                        fontSize: 5.5,
-                        color: Color(0xFF8A95A3),
+                        fontSize: 10,
+                        fontWeight: FontWeight.w400,
+                        color: lightGreyText,
                       ),
                     ),
                   ],
                 ),
               ),
 
-              if (pending)
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 5,
-                    vertical: 2,
-                  ),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFFFF5DD),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: const Text(
-                    'Pending',
-                    style: TextStyle(
-                      fontSize: 5.5,
-                      color: Color(0xFFE8A300),
-                      fontWeight: FontWeight.w700,
-                    ),
+              const SizedBox(width: 8),
+
+              // PENDING / UPLOADED
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
+                decoration: BoxDecoration(
+                  color: uploaded ? const Color(0xFFE7F8ED) : pendingBackground,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  uploaded ? 'Uploaded' : 'Pending',
+                  style: TextStyle(
+                    fontSize: 9,
+                    fontWeight: FontWeight.w700,
+                    color: uploaded ? const Color(0xFF159447) : pendingText,
+                    letterSpacing: 0.2,
                   ),
                 ),
+              ),
             ],
           ),
 
-          const SizedBox(height: 6),
+          const SizedBox(height: 12),
 
-          // Upload area
+          // ===================================================================
+          // UPLOAD BOX with dashed border
+          // ===================================================================
+
           GestureDetector(
             onTap: onUpload,
             child: Container(
               width: double.infinity,
-              height: 43,
+              height: 76,
               decoration: BoxDecoration(
-                color: const Color(0xFFF8FBFE),
-                borderRadius: BorderRadius.circular(5),
+                color: uploadBackground,
+                borderRadius: BorderRadius.circular(8),
                 border: Border.all(
-                  color: const Color(0xFFB9C8D7),
-                  width: 0.8,
+                  color: const Color(0xFFB7C7D8),
+                  width: 1.2,
+                  style: BorderStyle.solid,
                 ),
               ),
               child: Column(
-                mainAxisAlignment:
-                    MainAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
-                    pending
-                        ? Icons.upload_file_outlined
-                        : Icons.check_circle_outline,
-                    size: 13,
-                    color: pending
-                        ? const Color(0xFF0876D1)
-                        : Colors.green,
+                  Image.asset(
+                    uploadIcon,
+                    width: 22,
+                    height: 22,
+                    fit: BoxFit.contain,
+                    errorBuilder: (context, error, stackTrace) {
+                      return const Icon(
+                        Icons.cloud_upload_outlined,
+                        size: 22,
+                        color: primaryBlue,
+                      );
+                    },
                   ),
-
-                  const SizedBox(height: 2),
-
+                  const SizedBox(height: 6),
                   Text(
-                    pending
-                        ? '+ $uploadText'
-                        : 'Document uploaded',
+                    uploaded ? 'Document uploaded' : '+ $uploadText',
+                    textAlign: TextAlign.center,
                     style: TextStyle(
-                      fontSize: 6.5,
+                      fontSize: 11,
                       fontWeight: FontWeight.w700,
-                      color: pending
-                          ? const Color(0xFF0876D1)
-                          : Colors.green,
+                      color: uploaded ? const Color(0xFF159447) : primaryBlue,
+                      letterSpacing: 0.1,
                     ),
                   ),
-
-                  const SizedBox(height: 1),
-
-                  Text(
+                  const SizedBox(height: 2),
+                  const Text(
                     'PDF, JPG, JPEG up to 5MB',
+                    textAlign: TextAlign.center,
                     style: TextStyle(
-                      fontSize: 5,
-                      color: Colors.grey.shade500,
+                      fontSize: 8.5,
+                      fontWeight: FontWeight.w400,
+                      color: lightGreyText,
                     ),
                   ),
                 ],
@@ -354,94 +443,91 @@ class _KycVerificationScreenState
     );
   }
 
-  // ---------------------------------------------------------------------------
+  // ===========================================================================
   // SUBMIT BUTTON
-  // ---------------------------------------------------------------------------
+  // ===========================================================================
 
   Widget _buildSubmitButton() {
     final bool canSubmit =
-        aadhaarUploaded &&
-        panUploaded &&
-        propertyUploaded;
+        aadhaarUploaded && panUploaded && propertyUploaded && !_submitting;
 
     return SizedBox(
       width: double.infinity,
-      height: 29,
+      height: 52,
       child: ElevatedButton(
-        onPressed: canSubmit
-            ? () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text(
-                      'KYC documents submitted successfully',
-                    ),
-                  ),
-                );
-              }
-            : null,
+        onPressed: canSubmit ? _handleSubmit : null,
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFF006FCB),
-          disabledBackgroundColor:
-              const Color(0xFF006FCB),
+          backgroundColor: primaryBlue,
+          disabledBackgroundColor: primaryBlue.withValues(alpha: 0.5),
           foregroundColor: Colors.white,
+          disabledForegroundColor: Colors.white.withValues(alpha: 0.7),
           elevation: 2,
+          shadowColor: Colors.black.withValues(alpha: 0.12),
           padding: EdgeInsets.zero,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(5),
+            borderRadius: BorderRadius.circular(10),
           ),
         ),
-        child: Text(
-          'Submit Documents',
-          style: TextStyle(
-            fontSize: 8,
-            fontWeight: FontWeight.w700,
-            color: Colors.white.withOpacity(
-              canSubmit ? 1 : 0.85,
-            ),
-          ),
-        ),
+        child: _submitting
+            ? const SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2.5,
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    Colors.white,
+                  ),
+                ),
+              )
+            : const Text(
+                'Submit Documents',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.white,
+                  letterSpacing: 0.2,
+                ),
+              ),
       ),
     );
   }
 
-  // ---------------------------------------------------------------------------
-  // BOTTOM NAVIGATION
-  // ---------------------------------------------------------------------------
+  // ===========================================================================
+  // BOTTOM NAVIGATION (Fixed at bottom)
+  // ===========================================================================
 
   Widget _buildBottomNavigation() {
     return Container(
-      height: 53,
       width: double.infinity,
+      height: 76,
       decoration: const BoxDecoration(
-        color: Color(0xFFC7E1F8),
+        color: bottomNavColor,
         borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(13),
-          topRight: Radius.circular(13),
+          topLeft: Radius.circular(24),
+          topRight: Radius.circular(24),
         ),
       ),
       child: Row(
-        mainAxisAlignment:
-            MainAxisAlignment.spaceAround,
         children: [
-          _navItem(
-            icon: Icons.home,
+          _buildBottomItem(
+            iconPath: verificationIcon,
             label: 'Home',
             selected: true,
           ),
-          _navItem(
-            icon: Icons.person_outline,
+          _buildBottomItem(
+            iconPath: aadhaarIcon,
             label: 'Visitors',
           ),
-          _navItem(
-            icon: Icons.apartment_outlined,
+          _buildBottomItem(
+            iconPath: propertyIcon,
             label: 'Community',
           ),
-          _navItem(
-            icon: Icons.account_balance_wallet_outlined,
+          _buildBottomItem(
+            iconPath: panIcon,
             label: 'Payments',
           ),
-          _navItem(
-            icon: Icons.menu,
+          _buildBottomItem(
+            iconPath: uploadIcon,
             label: 'More',
           ),
         ],
@@ -449,47 +535,56 @@ class _KycVerificationScreenState
     );
   }
 
-  Widget _navItem({
-    required IconData icon,
+  Widget _buildBottomItem({
+    required String iconPath,
     required String label,
     bool selected = false,
   }) {
-    return SizedBox(
-      width: 43,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            width: 19,
-            height: 19,
-            decoration: selected
-                ? const BoxDecoration(
-                    color: Color(0xFF0876D1),
-                    shape: BoxShape.circle,
-                  )
-                : null,
-            child: Icon(
-              icon,
-              size: 11,
-              color: selected
-                  ? Colors.white
-                  : const Color(0xFF526170),
-            ),
+    return Expanded(
+      child: InkWell(
+        onTap: () {
+          // Navigation logic here
+        },
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 6),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                width: 38,
+                height: 38,
+                decoration: selected
+                    ? const BoxDecoration(
+                        color: Color(0xFF0068C9),
+                        shape: BoxShape.circle,
+                      )
+                    : null,
+                padding: const EdgeInsets.all(8),
+                child: Image.asset(
+                  iconPath,
+                  fit: BoxFit.contain,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Icon(
+                      Icons.circle_outlined,
+                      size: 22,
+                      color: selected ? Colors.white : const Color(0xFF475569),
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(height: 3),
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 10,
+                  fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+                  color: selected ? const Color(0xFF0068C9) : const Color(0xFF475569),
+                  letterSpacing: 0.1,
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 3),
-          Text(
-            label,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              fontSize: 5.5,
-              color: selected
-                  ? const Color(0xFF0876D1)
-                  : const Color(0xFF526170),
-              fontWeight:
-                  selected ? FontWeight.w700 : FontWeight.w400,
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }

@@ -11,6 +11,7 @@ class StorageKeys {
   static const String refreshToken = 'refresh_token';
   static const String isLoggedIn = 'is_logged_in';
   static const String hasLoggedOut = 'has_logged_out';
+  static const String kycApproved = 'kyc_approved';
 
   // ---------------------------------------------------------------------
   // Local storage (preferences, flags, cached JSON)
