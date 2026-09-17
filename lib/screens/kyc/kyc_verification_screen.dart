@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_nivasshub/routes/app_routes.dart';
 
 class KycVerificationScreen extends StatefulWidget {
@@ -66,11 +67,20 @@ class _KycVerificationScreenState extends State<KycVerificationScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: backgroundColor,
-      body: SafeArea(
-        bottom: false,
-        child: Column(
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: isDark ? Brightness.light : Brightness.dark,
+        statusBarBrightness: isDark ? Brightness.dark : Brightness.light,
+        systemNavigationBarColor: bottomNavColor,
+        systemNavigationBarIconBrightness:
+            isDark ? Brightness.light : Brightness.dark,
+      ),
+      child: Scaffold(
+        backgroundColor: backgroundColor,
+        body: Column(
           children: [
             _buildHeader(),
             Expanded(
@@ -95,47 +105,51 @@ class _KycVerificationScreenState extends State<KycVerificationScreen> {
   // ===========================================================================
 
   Widget _buildHeader() {
+    final double topPadding = MediaQuery.of(context).padding.top;
     return Container(
       width: double.infinity,
-      height: 56,
       color: headerColor,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          Positioned(
-            left: 4,
-            top: 0,
-            bottom: 0,
-            child: InkWell(
-              onTap: () {
-                Navigator.pop(context);
-              },
-              borderRadius: BorderRadius.circular(30),
-              child: const SizedBox(
-                width: 48,
-                height: 56,
-                child: Center(
-                  child: Icon(
-                    Icons.arrow_back,
-                    size: 22,
-                    color: Color(0xFF17202A),
+      padding: EdgeInsets.only(top: topPadding),
+      child: SizedBox(
+        height: 56,
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            Positioned(
+              left: 4,
+              top: 0,
+              bottom: 0,
+              child: InkWell(
+                onTap: () {
+                  Navigator.pop(context);
+                },
+                borderRadius: BorderRadius.circular(30),
+                child: const SizedBox(
+                  width: 48,
+                  height: 56,
+                  child: Center(
+                    child: Icon(
+                      Icons.arrow_back,
+                      size: 22,
+                      color: Color(0xFF17202A),
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-          const Center(
-            child: Text(
-              'KYC Verification',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w700,
-                color: Color(0xFF111827),
-                letterSpacing: 0.15,
+            const Center(
+              child: Text(
+                'KYC Verification',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: Color(0xFF111827),
+                  letterSpacing: 0.15,
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -497,9 +511,10 @@ class _KycVerificationScreenState extends State<KycVerificationScreen> {
   // ===========================================================================
 
   Widget _buildBottomNavigation() {
+    final double bottomPadding = MediaQuery.of(context).padding.bottom;
     return Container(
       width: double.infinity,
-      height: 76,
+      padding: EdgeInsets.only(bottom: bottomPadding),
       decoration: const BoxDecoration(
         color: bottomNavColor,
         borderRadius: BorderRadius.only(
@@ -507,30 +522,33 @@ class _KycVerificationScreenState extends State<KycVerificationScreen> {
           topRight: Radius.circular(24),
         ),
       ),
-      child: Row(
-        children: [
-          _buildBottomItem(
-            iconPath: verificationIcon,
-            label: 'Home',
-            selected: true,
-          ),
-          _buildBottomItem(
-            iconPath: aadhaarIcon,
-            label: 'Visitors',
-          ),
-          _buildBottomItem(
-            iconPath: propertyIcon,
-            label: 'Community',
-          ),
-          _buildBottomItem(
-            iconPath: panIcon,
-            label: 'Payments',
-          ),
-          _buildBottomItem(
-            iconPath: uploadIcon,
-            label: 'More',
-          ),
-        ],
+      child: SizedBox(
+        height: 72,
+        child: Row(
+          children: [
+            _buildBottomItem(
+              iconPath: verificationIcon,
+              label: 'Home',
+              selected: true,
+            ),
+            _buildBottomItem(
+              iconPath: aadhaarIcon,
+              label: 'Visitors',
+            ),
+            _buildBottomItem(
+              iconPath: propertyIcon,
+              label: 'Community',
+            ),
+            _buildBottomItem(
+              iconPath: panIcon,
+              label: 'Payments',
+            ),
+            _buildBottomItem(
+              iconPath: uploadIcon,
+              label: 'More',
+            ),
+          ],
+        ),
       ),
     );
   }
