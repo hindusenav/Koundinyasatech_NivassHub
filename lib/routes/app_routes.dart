@@ -19,6 +19,15 @@ class AppRoutes {
   // ---------------------------------------------------------------------
   // Auth
   // ---------------------------------------------------------------------
+  /// The app's front door: one identifier (mobile or email) is checked,
+  /// then the user branches to [enterPassword] or [userDetails].
+  ///
+  /// Supersedes [login]/[register] and the OTP chain below, which remain
+  /// registered so the previous screens still resolve if reached.
+  static const String authEntry = '/auth/entry';
+  static const String enterPassword = '/auth/password';
+  static const String userDetails = '/auth/user-details';
+
   static const String login = '/auth/login';
   static const String register = '/auth/register';
   static const String otpVerification = '/auth/otp-verification';
@@ -27,7 +36,8 @@ class AppRoutes {
   static const String forgotPassword = '/auth/forgot-password';
   static const String forgotPasswordMobile = '/auth/forgot-password/mobile';
   static const String forgotPasswordEmail = '/auth/forgot-password/email';
-  static const String forgotPasswordVerifyOtp = '/auth/forgot-password/verify-otp';
+  static const String forgotPasswordVerifyOtp =
+      '/auth/forgot-password/verify-otp';
   static const String updatePassword = '/auth/forgot-password/update-password';
 
   // ---------------------------------------------------------------------
@@ -117,4 +127,22 @@ class AppRoutes {
   static const String societyRegistrationNumber =
       '/kyc/society-registration-number';
   static const String kycReview = '/kyc/review';
+
+  // ---------------------------------------------------------------------
+  // KYC — role-based documents
+  //
+  // These gate the Dashboard rather than following it, so unlike the
+  // geography-based routes above they are registered in `AuthRouter`.
+  // ---------------------------------------------------------------------
+  static const String kycDocuments = '/kyc/documents';
+  static const String kycVerificationStatus = '/kyc/verification-status';
+
+  // ---------------------------------------------------------------------
+  // Mock notification inbox
+  //
+  // Stands in for the unconnected email service. Reachable from the KYC
+  // screens (pre-auth) and from Settings (post-auth), so it is registered
+  // in `AuthRouter`, which is tried first.
+  // ---------------------------------------------------------------------
+  static const String mockNotificationLog = '/mock/notifications';
 }

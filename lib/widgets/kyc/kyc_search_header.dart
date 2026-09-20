@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_nivasshub/constants/app_colors.dart';
-import 'package:flutter_nivasshub/constants/app_text_styles.dart';
 
 /// Shared sky-blue header used across the KYC location-selection flow
 /// (Select Country / Select State / Select City): back button + title on a
@@ -26,7 +25,6 @@ class KycSearchHeader extends StatelessWidget {
     final headerBgColor = isDark
         ? AppColors.dashboardHeaderDark
         : const Color(0xFFC7E3FF);
-    final cardBgColor = isDark ? AppColors.surfaceDark : AppColors.white;
     final textPrimary = isDark ? AppColors.textPrimaryDark : const Color(0xFF1F2937);
 
     return Container(

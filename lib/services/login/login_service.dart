@@ -303,7 +303,7 @@
 //   String toString() => 'ApiException($statusCode): $message';
 // }
 
-//////////////////////////////////////////
+// ---------------------------------------------------------------------
 
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';

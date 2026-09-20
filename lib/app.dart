@@ -58,6 +58,20 @@ import 'package:flutter_nivasshub/providers/settings/settings_provider.dart';
 import 'package:flutter_nivasshub/repositories/settings/settings_repository.dart';
 
 // ============================================================
+// AUTH ENTRY / KYC
+// ============================================================
+
+import 'package:flutter_nivasshub/providers/auth/auth_state_provider.dart';
+import 'package:flutter_nivasshub/providers/kyc/kyc_provider.dart';
+import 'package:flutter_nivasshub/providers/notifications/mock_notification_provider.dart';
+import 'package:flutter_nivasshub/services/auth/auth_entry_service_base.dart';
+import 'package:flutter_nivasshub/services/file/file_picker_service_base.dart';
+import 'package:flutter_nivasshub/services/kyc/document_service_base.dart';
+import 'package:flutter_nivasshub/services/kyc/kyc_service_base.dart';
+import 'package:flutter_nivasshub/services/location/location_service_base.dart';
+import 'package:flutter_nivasshub/services/notifications/notification_service_base.dart';
+
+// ============================================================
 // APP
 // ============================================================
 
@@ -82,6 +96,13 @@ class NivasHubApp extends StatelessWidget {
     required this.searchService,
     required this.settingsRepository,
     required this.profileRepository,
+    required this.authStateProvider,
+    required this.authEntryService,
+    required this.locationService,
+    required this.documentService,
+    required this.kycService,
+    required this.filePickerService,
+    required this.notificationService,
   });
 
   final LocalStorageService localStorageService;
@@ -101,6 +122,17 @@ class NivasHubApp extends StatelessWidget {
   final SettingsRepository settingsRepository;
 
   final ProfileRepository profileRepository;
+
+  /// Built in `main.dart` rather than here, because `MockKycService`
+  /// closes over it to address its notifications.
+  final AuthStateProvider authStateProvider;
+
+  final AuthEntryServiceBase authEntryService;
+  final LocationServiceBase locationService;
+  final DocumentServiceBase documentService;
+  final KycServiceBase kycService;
+  final FilePickerServiceBase filePickerService;
+  final NotificationServiceBase notificationService;
 
   @override
   Widget build(BuildContext context) {
@@ -181,6 +213,46 @@ class NivasHubApp extends StatelessWidget {
         // ========================================================
         ChangeNotifierProvider<ProfileProvider>(
           create: (_) => ProfileProvider(repository: profileRepository),
+        ),
+
+        // ========================================================
+        // AUTH ENTRY / KYC
+        //
+        // The screen-scoped providers for these features (auth entry,
+        // password, user details, location cascade, KYC status) are
+        // created per-route in `AuthRouter`; only the three that must
+        // outlive a single route are global.
+        // ========================================================
+        Provider<AuthEntryServiceBase>.value(value: authEntryService),
+
+        Provider<LocationServiceBase>.value(value: locationService),
+
+        Provider<DocumentServiceBase>.value(value: documentService),
+
+        Provider<KycServiceBase>.value(value: kycService),
+
+        Provider<FilePickerServiceBase>.value(value: filePickerService),
+
+        Provider<NotificationServiceBase>.value(value: notificationService),
+
+        ChangeNotifierProvider<AuthStateProvider>.value(
+          value: authStateProvider,
+        ),
+
+        // Lazy (provider's default): never constructed for a user who is
+        // already authenticated and never touches KYC.
+        ChangeNotifierProvider<KycProvider>(
+          create: (_) => KycProvider(
+            documentService: documentService,
+            kycService: kycService,
+            filePickerService: filePickerService,
+            localStorage: localStorageService,
+            authState: authStateProvider,
+          ),
+        ),
+
+        ChangeNotifierProvider<MockNotificationProvider>(
+          create: (_) => MockNotificationProvider(notificationService),
         ),
 
         // ========================================================

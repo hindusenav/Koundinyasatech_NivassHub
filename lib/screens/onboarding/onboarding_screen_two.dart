@@ -190,7 +190,7 @@ class _OnboardingScreenTwoState extends State<OnboardingScreenTwo>
                                 child: CreateAccountButton(
                                   onPressed: () => Navigator.pushNamed(
                                     context,
-                                    AppRoutes.register,
+                                    AppRoutes.authEntry,
                                   ),
                                 ),
                               ),
@@ -200,7 +200,7 @@ class _OnboardingScreenTwoState extends State<OnboardingScreenTwo>
                                 child: OnboardingLoginButton(
                                   onPressed: () => Navigator.pushNamed(
                                     context,
-                                    AppRoutes.login,
+                                    AppRoutes.authEntry,
                                   ),
                                 ),
                               ),

@@ -38,6 +38,29 @@ import 'package:flutter_nivasshub/repositories/settings/settings_repository.dart
 
 import 'package:flutter_nivasshub/repositories/profile/profile_repository.dart';
 
+// ============================================================
+// AUTH ENTRY / KYC
+// ============================================================
+
+import 'package:flutter_nivasshub/constants/kyc/kyc_config.dart';
+import 'package:flutter_nivasshub/providers/auth/auth_state_provider.dart';
+import 'package:flutter_nivasshub/services/auth/auth_entry_service.dart';
+import 'package:flutter_nivasshub/services/auth/auth_entry_service_base.dart';
+import 'package:flutter_nivasshub/services/auth/mock_auth_entry_service.dart';
+import 'package:flutter_nivasshub/services/file/file_picker_service.dart';
+import 'package:flutter_nivasshub/services/file/file_picker_service_base.dart';
+import 'package:flutter_nivasshub/services/kyc/document_service.dart';
+import 'package:flutter_nivasshub/services/kyc/document_service_base.dart';
+import 'package:flutter_nivasshub/services/kyc/kyc_service.dart';
+import 'package:flutter_nivasshub/services/kyc/kyc_service_base.dart';
+import 'package:flutter_nivasshub/services/kyc/mock_document_service.dart';
+import 'package:flutter_nivasshub/services/kyc/mock_kyc_service.dart';
+import 'package:flutter_nivasshub/services/location/location_service.dart';
+import 'package:flutter_nivasshub/services/location/location_service_base.dart';
+import 'package:flutter_nivasshub/services/location/mock_location_service.dart';
+import 'package:flutter_nivasshub/services/notifications/mock_notification_service.dart';
+import 'package:flutter_nivasshub/services/notifications/notification_service_base.dart';
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   debugPrint('[App] Startup begin');
@@ -139,6 +162,64 @@ Future<void> main() async {
   final profileRepository = ProfileRepository();
 
   // ============================================================
+  // AUTH FLOW STATE
+  //
+  // Built here rather than in `app.dart` because `MockKycService` needs
+  // to read the registered user's name and email when it sends a KYC
+  // notification, and that state lives here.
+  // ============================================================
+
+  final authStateProvider = AuthStateProvider(
+    localStorage: localStorageService,
+    secureStorage: secureStorageService,
+  );
+
+  // ============================================================
+  // AUTH ENTRY / LOCATION
+  // ============================================================
+
+  final AuthEntryServiceBase authEntryService = useMockApi
+      ? MockAuthEntryService()
+      : AuthEntryService(apiClient);
+
+  final LocationServiceBase locationService = KycConfig.useMockKycApi
+      ? MockLocationService()
+      : LocationService(apiClient);
+
+  // ============================================================
+  // NOTIFICATIONS
+  //
+  // No mail transport is wired up, so this always logs to the console
+  // and to the in-app inbox regardless of the mock flags.
+  // ============================================================
+
+  final NotificationServiceBase notificationService = MockNotificationService(
+    localStorageService,
+  );
+
+  // ============================================================
+  // KYC
+  // ============================================================
+
+  final DocumentServiceBase documentService = KycConfig.useMockKycApi
+      ? MockDocumentService()
+      : DocumentService(apiClient);
+
+  final KycServiceBase kycService = KycConfig.useMockKycApi
+      ? MockKycService(
+          storage: localStorageService,
+          notificationService: notificationService,
+          // Resolved lazily: the service is built at startup, long before
+          // the user has registered and these values exist.
+          recipientResolver: () =>
+              authStateProvider.context.notificationRecipient,
+          nameResolver: () => authStateProvider.context.displayName,
+        )
+      : KycService(apiClient);
+
+  final FilePickerServiceBase filePickerService = FilePickerService();
+
+  // ============================================================
   // RUN APP
   // ============================================================
 
@@ -166,6 +247,21 @@ Future<void> main() async {
 
       // Profile repository
       profileRepository: profileRepository,
+
+      // Auth entry / KYC
+      authStateProvider: authStateProvider,
+
+      authEntryService: authEntryService,
+
+      locationService: locationService,
+
+      documentService: documentService,
+
+      kycService: kycService,
+
+      filePickerService: filePickerService,
+
+      notificationService: notificationService,
     ),
   );
 }

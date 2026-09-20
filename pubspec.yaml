@@ -19,6 +19,13 @@ dependencies:
   image_picker: ^1.1.2
   share_plus: ^13.3.0
 
+  # `image_picker` can only return photos/videos — it physically cannot
+  # surface a PDF, which KYC document upload requires. Both plugins are
+  # hidden behind `FilePickerServiceBase` so no provider imports either.
+  # ^13 (not ^8) is required: file_picker 8.x pins win32 ^5.x while
+  # share_plus ^13.3.0 pins win32 ^6.0.1, and the two cannot co-resolve.
+  file_picker: ^13.1.0
+
   # ---------------------------------------------------------------------------
   # State Management
   # ---------------------------------------------------------------------------
@@ -78,6 +85,7 @@ flutter:
     - assets/icons/quick_actions/
     - assets/icons/quick_actions/homequick_actions/
     - assets/json/notices/
+    - assets/json/location/
     - assets/icons/profile/addbio.png
     - assets/icons/profile/address(profile).png
     - assets/icons/profile/area(addaddress).png

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_nivasshub/constants/app_colors.dart';
-import 'package:flutter_nivasshub/constants/app_text_styles.dart';
 
 class CityConfirmationScreen extends StatefulWidget {
   final String cityName;
@@ -72,10 +71,6 @@ class _CityConfirmationScreenState extends State<CityConfirmationScreen> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     final sheetBgColor = isDark ? AppColors.surfaceDark : AppColors.white;
-    final textPrimary = isDark ? AppColors.textPrimaryDark : const Color(0xFF1F2937);
-    final textSecondary = isDark ? AppColors.grey400 : AppColors.grey600;
-    final cardBorderColor = isDark ? AppColors.borderDark : const Color(0xFFE5E7EB);
-    final subCardBorderColor = isDark ? AppColors.grey700 : const Color(0xFFD1D5DB);
 
     return Container(
       decoration: BoxDecoration(

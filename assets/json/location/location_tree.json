@@ -1,0 +1,179 @@
+{
+  "_comment": "Flat, level-keyed lists joined by parentId — the exact shape GET /api/v1/locations?level=&parentId= will return, so LocationNode.fromJson is the same code for mock and real. Two nodes are deliberately special: SOC-EMPTY has no towers (exercises the Empty state) and SOC-ERROR makes the mock service fail (exercises the Error state).",
+
+  "subBranches": [
+    "Residential",
+    "Commercial",
+    "Service Apartment",
+    "Co-living",
+    "Staff Quarters"
+  ],
+
+  "countries": [
+    { "id": "IN", "name": "India", "dialCode": "+91", "flagEmoji": "🇮🇳" },
+    { "id": "AE", "name": "United Arab Emirates", "dialCode": "+971", "flagEmoji": "🇦🇪" },
+    { "id": "SG", "name": "Singapore", "dialCode": "+65", "flagEmoji": "🇸🇬" },
+    { "id": "GB", "name": "United Kingdom", "dialCode": "+44", "flagEmoji": "🇬🇧" },
+    { "id": "US", "name": "United States", "dialCode": "+1", "flagEmoji": "🇺🇸" }
+  ],
+
+  "states": [
+    { "id": "IN-KA", "parentId": "IN", "name": "Karnataka" },
+    { "id": "IN-MH", "parentId": "IN", "name": "Maharashtra" },
+    { "id": "IN-TG", "parentId": "IN", "name": "Telangana" },
+    { "id": "IN-TN", "parentId": "IN", "name": "Tamil Nadu" },
+    { "id": "IN-DL", "parentId": "IN", "name": "Delhi" },
+
+    { "id": "AE-DU", "parentId": "AE", "name": "Dubai" },
+    { "id": "AE-AZ", "parentId": "AE", "name": "Abu Dhabi" },
+
+    { "id": "SG-CR", "parentId": "SG", "name": "Central Region" },
+
+    { "id": "GB-ENG", "parentId": "GB", "name": "England" },
+    { "id": "GB-SCT", "parentId": "GB", "name": "Scotland" },
+
+    { "id": "US-CA", "parentId": "US", "name": "California" },
+    { "id": "US-NY", "parentId": "US", "name": "New York" }
+  ],
+
+  "cities": [
+    { "id": "IN-KA-BLR", "parentId": "IN-KA", "name": "Bengaluru" },
+    { "id": "IN-KA-MYS", "parentId": "IN-KA", "name": "Mysuru" },
+    { "id": "IN-MH-MUM", "parentId": "IN-MH", "name": "Mumbai" },
+    { "id": "IN-MH-PUN", "parentId": "IN-MH", "name": "Pune" },
+    { "id": "IN-TG-HYD", "parentId": "IN-TG", "name": "Hyderabad" },
+    { "id": "IN-TN-MAA", "parentId": "IN-TN", "name": "Chennai" },
+    { "id": "IN-DL-NCR", "parentId": "IN-DL", "name": "Delhi NCR" },
+
+    { "id": "AE-DU-DXB", "parentId": "AE-DU", "name": "Dubai" },
+    { "id": "AE-AZ-AUH", "parentId": "AE-AZ", "name": "Abu Dhabi" },
+
+    { "id": "SG-CR-SIN", "parentId": "SG-CR", "name": "Singapore" },
+
+    { "id": "GB-ENG-LON", "parentId": "GB-ENG", "name": "London" },
+    { "id": "GB-ENG-MAN", "parentId": "GB-ENG", "name": "Manchester" },
+    { "id": "GB-SCT-EDI", "parentId": "GB-SCT", "name": "Edinburgh" },
+
+    { "id": "US-CA-SFO", "parentId": "US-CA", "name": "San Francisco" },
+    { "id": "US-NY-NYC", "parentId": "US-NY", "name": "New York City" }
+  ],
+
+  "societies": [
+    { "id": "SOC-001", "parentId": "IN-KA-BLR", "name": "NivassHub Residency", "registrationNumber": "KA/BLR/2019/4471" },
+    { "id": "SOC-002", "parentId": "IN-KA-BLR", "name": "Golden Residency", "registrationNumber": "KA/BLR/2017/2290" },
+    { "id": "SOC-EMPTY", "parentId": "IN-KA-BLR", "name": "Lakeview Enclave (under construction)", "registrationNumber": "KA/BLR/2024/9912" },
+    { "id": "SOC-ERROR", "parentId": "IN-KA-BLR", "name": "Heritage Gardens (records syncing)", "registrationNumber": "KA/BLR/2021/5533" },
+    { "id": "SOC-003", "parentId": "IN-KA-MYS", "name": "Palace View Apartments", "registrationNumber": "KA/MYS/2018/1180" },
+    { "id": "SOC-004", "parentId": "IN-MH-MUM", "name": "Seabreeze Towers", "registrationNumber": "MH/MUM/2016/7781" },
+    { "id": "SOC-005", "parentId": "IN-MH-PUN", "name": "Hillcrest Society", "registrationNumber": "MH/PUN/2020/3345" },
+    { "id": "SOC-006", "parentId": "IN-TG-HYD", "name": "Cyber Greens", "registrationNumber": "TS/HYD/2019/4471" },
+    { "id": "SOC-007", "parentId": "IN-TN-MAA", "name": "Marina Heights", "registrationNumber": "TN/MAA/2015/6620" },
+    { "id": "SOC-008", "parentId": "IN-DL-NCR", "name": "Capital Greens", "registrationNumber": "DL/NCR/2018/8834" },
+    { "id": "SOC-009", "parentId": "AE-DU-DXB", "name": "Marina Bay Residences", "registrationNumber": "AE/DXB/2020/1042" },
+    { "id": "SOC-010", "parentId": "AE-AZ-AUH", "name": "Corniche Towers", "registrationNumber": "AE/AUH/2019/2251" },
+    { "id": "SOC-011", "parentId": "SG-CR-SIN", "name": "Orchard Grove", "registrationNumber": "SG/CR/2021/0087" },
+    { "id": "SOC-012", "parentId": "GB-ENG-LON", "name": "Thames View Court", "registrationNumber": "GB/LON/2017/4412" },
+    { "id": "SOC-013", "parentId": "GB-ENG-MAN", "name": "Northern Quarter Lofts", "registrationNumber": "GB/MAN/2019/7730" },
+    { "id": "SOC-014", "parentId": "GB-SCT-EDI", "name": "Castle Rock Residences", "registrationNumber": "GB/EDI/2018/5519" },
+    { "id": "SOC-015", "parentId": "US-CA-SFO", "name": "Bayfront Commons", "registrationNumber": "US/SFO/2016/9931" },
+    { "id": "SOC-016", "parentId": "US-NY-NYC", "name": "Hudson Park Towers", "registrationNumber": "US/NYC/2015/2204" }
+  ],
+
+  "towers": [
+    { "id": "SOC-001-TWR-A", "parentId": "SOC-001", "name": "Tower A" },
+    { "id": "SOC-001-TWR-B", "parentId": "SOC-001", "name": "Tower B" },
+    { "id": "SOC-001-TWR-C", "parentId": "SOC-001", "name": "Tower C" },
+    { "id": "SOC-002-TWR-A", "parentId": "SOC-002", "name": "Block A" },
+    { "id": "SOC-002-TWR-B", "parentId": "SOC-002", "name": "Block B" },
+    { "id": "SOC-003-TWR-A", "parentId": "SOC-003", "name": "Tower 1" },
+    { "id": "SOC-004-TWR-A", "parentId": "SOC-004", "name": "North Wing" },
+    { "id": "SOC-004-TWR-B", "parentId": "SOC-004", "name": "South Wing" },
+    { "id": "SOC-005-TWR-A", "parentId": "SOC-005", "name": "Tower A" },
+    { "id": "SOC-006-TWR-A", "parentId": "SOC-006", "name": "Tower A" },
+    { "id": "SOC-006-TWR-B", "parentId": "SOC-006", "name": "Tower B" },
+    { "id": "SOC-007-TWR-A", "parentId": "SOC-007", "name": "Block 1" },
+    { "id": "SOC-008-TWR-A", "parentId": "SOC-008", "name": "Tower East" },
+    { "id": "SOC-009-TWR-A", "parentId": "SOC-009", "name": "Tower 1" },
+    { "id": "SOC-010-TWR-A", "parentId": "SOC-010", "name": "Tower A" },
+    { "id": "SOC-011-TWR-A", "parentId": "SOC-011", "name": "Block A" },
+    { "id": "SOC-012-TWR-A", "parentId": "SOC-012", "name": "Court A" },
+    { "id": "SOC-013-TWR-A", "parentId": "SOC-013", "name": "Loft Block" },
+    { "id": "SOC-014-TWR-A", "parentId": "SOC-014", "name": "Rock Wing" },
+    { "id": "SOC-015-TWR-A", "parentId": "SOC-015", "name": "Bay Tower" },
+    { "id": "SOC-016-TWR-A", "parentId": "SOC-016", "name": "Tower 1" }
+  ],
+
+  "floors": [
+    { "id": "SOC-001-TWR-A-F1", "parentId": "SOC-001-TWR-A", "name": "1" },
+    { "id": "SOC-001-TWR-A-F2", "parentId": "SOC-001-TWR-A", "name": "2" },
+    { "id": "SOC-001-TWR-A-F3", "parentId": "SOC-001-TWR-A", "name": "3" },
+    { "id": "SOC-001-TWR-A-F4", "parentId": "SOC-001-TWR-A", "name": "4" },
+    { "id": "SOC-001-TWR-A-F5", "parentId": "SOC-001-TWR-A", "name": "5" },
+    { "id": "SOC-001-TWR-B-F1", "parentId": "SOC-001-TWR-B", "name": "1" },
+    { "id": "SOC-001-TWR-B-F2", "parentId": "SOC-001-TWR-B", "name": "2" },
+    { "id": "SOC-001-TWR-C-F1", "parentId": "SOC-001-TWR-C", "name": "1" },
+    { "id": "SOC-002-TWR-A-F1", "parentId": "SOC-002-TWR-A", "name": "1" },
+    { "id": "SOC-002-TWR-A-F2", "parentId": "SOC-002-TWR-A", "name": "2" },
+    { "id": "SOC-002-TWR-A-F4", "parentId": "SOC-002-TWR-A", "name": "4" },
+    { "id": "SOC-002-TWR-B-F1", "parentId": "SOC-002-TWR-B", "name": "1" },
+    { "id": "SOC-003-TWR-A-F1", "parentId": "SOC-003-TWR-A", "name": "1" },
+    { "id": "SOC-003-TWR-A-F2", "parentId": "SOC-003-TWR-A", "name": "2" },
+    { "id": "SOC-004-TWR-A-F1", "parentId": "SOC-004-TWR-A", "name": "1" },
+    { "id": "SOC-004-TWR-A-F2", "parentId": "SOC-004-TWR-A", "name": "2" },
+    { "id": "SOC-004-TWR-B-F1", "parentId": "SOC-004-TWR-B", "name": "1" },
+    { "id": "SOC-005-TWR-A-F1", "parentId": "SOC-005-TWR-A", "name": "1" },
+    { "id": "SOC-005-TWR-A-F2", "parentId": "SOC-005-TWR-A", "name": "2" },
+    { "id": "SOC-006-TWR-A-F1", "parentId": "SOC-006-TWR-A", "name": "1" },
+    { "id": "SOC-006-TWR-A-F2", "parentId": "SOC-006-TWR-A", "name": "2" },
+    { "id": "SOC-006-TWR-B-F1", "parentId": "SOC-006-TWR-B", "name": "1" },
+    { "id": "SOC-007-TWR-A-F1", "parentId": "SOC-007-TWR-A", "name": "1" },
+    { "id": "SOC-008-TWR-A-F1", "parentId": "SOC-008-TWR-A", "name": "1" },
+    { "id": "SOC-009-TWR-A-F1", "parentId": "SOC-009-TWR-A", "name": "1" },
+    { "id": "SOC-010-TWR-A-F1", "parentId": "SOC-010-TWR-A", "name": "1" },
+    { "id": "SOC-011-TWR-A-F1", "parentId": "SOC-011-TWR-A", "name": "1" },
+    { "id": "SOC-012-TWR-A-F1", "parentId": "SOC-012-TWR-A", "name": "1" },
+    { "id": "SOC-013-TWR-A-F1", "parentId": "SOC-013-TWR-A", "name": "1" },
+    { "id": "SOC-014-TWR-A-F1", "parentId": "SOC-014-TWR-A", "name": "1" },
+    { "id": "SOC-015-TWR-A-F1", "parentId": "SOC-015-TWR-A", "name": "1" },
+    { "id": "SOC-016-TWR-A-F1", "parentId": "SOC-016-TWR-A", "name": "1" }
+  ],
+
+  "flats": [
+    { "id": "SOC-001-TWR-A-F5-502", "parentId": "SOC-001-TWR-A-F5", "name": "A-502" },
+    { "id": "SOC-001-TWR-A-F5-503", "parentId": "SOC-001-TWR-A-F5", "name": "A-503" },
+    { "id": "SOC-001-TWR-A-F5-504", "parentId": "SOC-001-TWR-A-F5", "name": "A-504" },
+    { "id": "SOC-001-TWR-A-F1-101", "parentId": "SOC-001-TWR-A-F1", "name": "A-101" },
+    { "id": "SOC-001-TWR-A-F1-102", "parentId": "SOC-001-TWR-A-F1", "name": "A-102" },
+    { "id": "SOC-001-TWR-A-F2-201", "parentId": "SOC-001-TWR-A-F2", "name": "A-201" },
+    { "id": "SOC-001-TWR-A-F2-202", "parentId": "SOC-001-TWR-A-F2", "name": "A-202" },
+    { "id": "SOC-001-TWR-A-F3-301", "parentId": "SOC-001-TWR-A-F3", "name": "A-301" },
+    { "id": "SOC-001-TWR-A-F4-401", "parentId": "SOC-001-TWR-A-F4", "name": "A-401" },
+    { "id": "SOC-001-TWR-B-F1-101", "parentId": "SOC-001-TWR-B-F1", "name": "B-101" },
+    { "id": "SOC-001-TWR-B-F2-201", "parentId": "SOC-001-TWR-B-F2", "name": "B-201" },
+    { "id": "SOC-001-TWR-C-F1-101", "parentId": "SOC-001-TWR-C-F1", "name": "C-101" },
+    { "id": "SOC-002-TWR-A-F1-101", "parentId": "SOC-002-TWR-A-F1", "name": "A-101" },
+    { "id": "SOC-002-TWR-A-F2-201", "parentId": "SOC-002-TWR-A-F2", "name": "A-201" },
+    { "id": "SOC-002-TWR-A-F4-402", "parentId": "SOC-002-TWR-A-F4", "name": "B-402" },
+    { "id": "SOC-002-TWR-B-F1-101", "parentId": "SOC-002-TWR-B-F1", "name": "B-101" },
+    { "id": "SOC-003-TWR-A-F1-101", "parentId": "SOC-003-TWR-A-F1", "name": "101" },
+    { "id": "SOC-003-TWR-A-F2-201", "parentId": "SOC-003-TWR-A-F2", "name": "201" },
+    { "id": "SOC-004-TWR-A-F1-101", "parentId": "SOC-004-TWR-A-F1", "name": "N-101" },
+    { "id": "SOC-004-TWR-A-F2-201", "parentId": "SOC-004-TWR-A-F2", "name": "N-201" },
+    { "id": "SOC-004-TWR-B-F1-101", "parentId": "SOC-004-TWR-B-F1", "name": "S-101" },
+    { "id": "SOC-005-TWR-A-F1-101", "parentId": "SOC-005-TWR-A-F1", "name": "A-101" },
+    { "id": "SOC-005-TWR-A-F2-201", "parentId": "SOC-005-TWR-A-F2", "name": "A-201" },
+    { "id": "SOC-006-TWR-A-F1-101", "parentId": "SOC-006-TWR-A-F1", "name": "A-101" },
+    { "id": "SOC-006-TWR-A-F2-201", "parentId": "SOC-006-TWR-A-F2", "name": "A-201" },
+    { "id": "SOC-006-TWR-B-F1-101", "parentId": "SOC-006-TWR-B-F1", "name": "B-101" },
+    { "id": "SOC-007-TWR-A-F1-101", "parentId": "SOC-007-TWR-A-F1", "name": "101" },
+    { "id": "SOC-008-TWR-A-F1-101", "parentId": "SOC-008-TWR-A-F1", "name": "E-101" },
+    { "id": "SOC-009-TWR-A-F1-101", "parentId": "SOC-009-TWR-A-F1", "name": "101" },
+    { "id": "SOC-010-TWR-A-F1-101", "parentId": "SOC-010-TWR-A-F1", "name": "A-101" },
+    { "id": "SOC-011-TWR-A-F1-101", "parentId": "SOC-011-TWR-A-F1", "name": "A-01-01" },
+    { "id": "SOC-012-TWR-A-F1-101", "parentId": "SOC-012-TWR-A-F1", "name": "Flat 1A" },
+    { "id": "SOC-013-TWR-A-F1-101", "parentId": "SOC-013-TWR-A-F1", "name": "Loft 1" },
+    { "id": "SOC-014-TWR-A-F1-101", "parentId": "SOC-014-TWR-A-F1", "name": "1/1" },
+    { "id": "SOC-015-TWR-A-F1-101", "parentId": "SOC-015-TWR-A-F1", "name": "101" },
+    { "id": "SOC-016-TWR-A-F1-101", "parentId": "SOC-016-TWR-A-F1", "name": "1A" }
+  ]
+}

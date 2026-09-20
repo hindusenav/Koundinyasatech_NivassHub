@@ -7,7 +7,9 @@ import 'package:flutter_nivasshub/providers/dashboard/dashboard_provider.dart';
 import 'package:flutter_nivasshub/providers/theme/theme_mode_provider.dart';
 import 'package:flutter_nivasshub/routes/app_routes.dart';
 import 'package:flutter_nivasshub/routes/navigation_service.dart';
-import 'package:flutter_nivasshub/storage/secure_storage_service.dart';
+import 'package:flutter_nivasshub/providers/auth/auth_state_provider.dart';
+import 'package:flutter_nivasshub/providers/kyc/kyc_provider.dart';
+import 'package:flutter_nivasshub/providers/notifications/mock_notification_provider.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -17,6 +19,19 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // The KYC flow writes to the mock notification log without anyone
+    // having read it, so load it here — otherwise the unread badge below
+    // stays at zero until the log screen is opened, which is exactly when
+    // the badge stops being useful.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      context.read<MockNotificationProvider>().load();
+    });
+  }
+
   // ============================================================
   // THEME
   // ============================================================
@@ -95,6 +110,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   void _openHelpSupport() {
     Navigator.pushNamed(context, AppRoutes.helpSupport);
+  }
+
+  // ============================================================
+  // MOCK NOTIFICATION LOG
+  // ============================================================
+
+  /// The KYC status emails from spec §16 are not actually sent — the mail
+  /// service is not connected — so they are logged to the console and
+  /// listed here instead.
+  void _openNotificationLog() {
+    Navigator.pushNamed(context, AppRoutes.mockNotificationLog);
   }
 
   // ============================================================
@@ -594,19 +620,26 @@ class _SettingsScreenState extends State<SettingsScreen> {
               onPressed: () async {
                 // Read providers before the first `await` — avoids using
                 // `context` across an async gap.
-                final storage = context.read<SecureStorageService>();
+                final authState = context.read<AuthStateProvider>();
+                final kyc = context.read<KycProvider>();
                 final auth = context.read<AuthProvider>();
                 final dashboard = context.read<DashboardProvider>();
 
                 Navigator.pop(dialogContext);
                 debugPrint('[Session] Logout initiated by user');
 
-                // Clear the persisted session (tokens + isLoggedIn flag) so
-                // a relaunch/force-restart doesn't auto-navigate back to
-                // Dashboard — this is the fix for that exact bug.
-                await storage.clearSession();
+                // `AuthStateProvider.clear()` rather than
+                // `SecureStorageService.clearSession()` directly: the
+                // latter predates the KYC flow and knows nothing about
+                // the auth-flow state, the kycToken or the uploaded
+                // documents, so a second user on this device would
+                // otherwise inherit the first user's half-finished
+                // application and land mid-flow. `clear()` calls
+                // `clearSession()` itself and drops the rest with it.
+                await authState.clear();
+                await kyc.reset();
                 debugPrint(
-                  '[Session] Storage cleared (tokens + isLoggedIn removed)',
+                  '[Session] Storage cleared (tokens, session and KYC state)',
                 );
 
                 if (!mounted) return;
@@ -895,6 +928,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
               title: 'Account Information',
               subtitle: 'Manage your personal details',
               onTap: _openProfile,
+            ),
+            Consumer<MockNotificationProvider>(
+              builder: (context, notifications, _) {
+                return _settingCard(
+                  icon: Icons.mark_email_unread_outlined,
+                  title: 'Notification Log (Mock)',
+                  subtitle: 'KYC emails that would have been sent',
+                  badge: notifications.unreadCount > 0
+                      ? '${notifications.unreadCount}'
+                      : null,
+                  onTap: _openNotificationLog,
+                );
+              },
             ),
             Consumer<ThemeModeProvider>(
               builder: (context, themeModeProvider, _) {

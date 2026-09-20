@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_nivasshub/routes/app_routes.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 /// Enables navigation from outside the widget tree — e.g. an [Interceptor]
 /// reacting to a 401 by returning to the login screen — via a global
@@ -48,31 +47,15 @@ class NavigationService {
     }
   }
 
-  /// Convenience for `AuthInterceptor`'s `onUnauthorized` callback — clears
-  /// the navigation stack and returns to the login screen.
+  /// Convenience for `AuthInterceptor`'s `onUnauthorized` callback, and
+  /// for manual logout — clears the navigation stack and returns to the
+  /// authentication entry screen.
+  ///
+  /// Targets [AppRoutes.authEntry] rather than [AppRoutes.login]: the
+  /// identifier-first entry replaced the OTP login as the app's front
+  /// door, so a 401 sent here would otherwise land on a screen nothing
+  /// else routes to.
   static Future<void> logoutAndRedirectToLogin() {
-    return pushNamedAndRemoveUntil(AppRoutes.login);
-  }
-
-  /// ✅ NEW: Check if user has valid token
-  static Future<bool> hasValidToken() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString('auth_token');
-      return token != null && token.isNotEmpty;
-    } catch (e) {
-      debugPrint('[Navigation] Error checking token: $e');
-      return false;
-    }
-  }
-
-  /// ✅ NEW: Check authentication and redirect to appropriate screen
-  static Future<void> checkAuthenticationAndRedirect() async {
-    final hasToken = await hasValidToken();
-    if (hasToken) {
-      await pushReplacementNamed(AppRoutes.dashboard);
-    } else {
-      await pushReplacementNamed(AppRoutes.login);
-    }
+    return pushNamedAndRemoveUntil(AppRoutes.authEntry);
   }
 }

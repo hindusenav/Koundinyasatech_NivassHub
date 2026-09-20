@@ -14,6 +14,34 @@ class ApiEndpoints {
   static const String resendOtp = '/api/v1/auth/login';
 
   // ---------------------------------------------------------------------
+  // 1b. Identifier-first authentication entry (mobile OR email)
+  //
+  // Replaces the OTP entry above as the app's front door: one identifier
+  // is checked, then the user is routed to password login or registration.
+  // ---------------------------------------------------------------------
+  static const String checkUserExists = '/api/v1/auth/check-user';
+  static const String loginUser = '/api/v1/auth/login-password';
+  static const String createUser = '/api/v1/auth/users';
+  static const String accessToken = '/api/v1/auth/access-token';
+
+  // ---------------------------------------------------------------------
+  // 2. Cascading property location master data
+  //
+  // One endpoint for all seven levels — `?level=city&parentId=IN-KA`.
+  // See `LocationServiceBase` for why this is not seven endpoints.
+  // ---------------------------------------------------------------------
+  static const String locations = '/api/v1/locations';
+
+  // ---------------------------------------------------------------------
+  // 2b. KYC (role-based documents)
+  // ---------------------------------------------------------------------
+  static const String kycUpload = '/api/v1/kyc/documents';
+  static const String kycSubmit = '/api/v1/kyc/submit';
+  static String kycStatus(String kycId) => '/api/v1/kyc/$kycId/status';
+  static String kycDocumentById(String documentId) =>
+      '/api/v1/kyc/documents/$documentId';
+
+  // ---------------------------------------------------------------------
   // 3. Society Management (Admin) Screens
   // ---------------------------------------------------------------------
   static const String societies = '/api/v1/societies';
@@ -75,7 +103,8 @@ class ApiEndpoints {
   /// Approve/reject a visitor from the Home screen's gate-arrival banner
   /// (NivasHub API Contract §6.3 — `POST /api/v1/visitors/{visitorId}/action`).
   /// Still mock-only — see `MockVisitorNotificationService`.
-  static String visitorAction(String visitorId) => '/api/v1/visitors/$visitorId/action';
+  static String visitorAction(String visitorId) =>
+      '/api/v1/visitors/$visitorId/action';
 
   /// Activities screen's gate/delivery log (NivasHub API Contract §6.2).
   /// Still mock-only — see `MockVisitorActivityService`.
@@ -127,8 +156,10 @@ class ApiEndpoints {
   // `ApiClient`'s configured `baseUrl`.
   // ---------------------------------------------------------------------
   static const String forgotPassword = '/auth/forgot-password';
-  static const String forgotPasswordVerifyOtp = '/auth/forgot-password/verify-otp';
-  static const String forgotPasswordUpdatePassword = '/auth/forgot-password/update-password';
+  static const String forgotPasswordVerifyOtp =
+      '/auth/forgot-password/verify-otp';
+  static const String forgotPasswordUpdatePassword =
+      '/auth/forgot-password/update-password';
 
   // ---------------------------------------------------------------------
   // Shared

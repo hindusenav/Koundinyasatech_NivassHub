@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_nivasshub/constants/app_colors.dart';
-import 'package:flutter_nivasshub/constants/app_text_styles.dart';
 import 'package:flutter_nivasshub/routes/app_routes.dart';
 import 'package:flutter_nivasshub/screens/kyc/city_confirmation_screen.dart';
 import 'package:flutter_nivasshub/widgets/dashboard/navigation/dashboard_bottom_navigation.dart';
