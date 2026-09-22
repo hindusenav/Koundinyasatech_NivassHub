@@ -166,6 +166,7 @@ class _AuthEntryScreenState extends State<AuthEntryScreen> {
                   isLoadingCountries: provider.isLoadingDialCodes,
                   enabled: !provider.isChecking,
                   onCountrySelected: provider.setCountry,
+                  onRetryCountries: provider.loadCountryCodes,
                   onChanged: (_) => provider.clearError(),
                   onSubmitted: (_) => _handleContinue(),
                   validator: _validateIdentifier,

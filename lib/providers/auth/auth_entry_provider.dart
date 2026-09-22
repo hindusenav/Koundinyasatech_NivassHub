@@ -4,7 +4,7 @@ import 'package:flutter_nivasshub/models/auth/auth_identifier.dart';
 import 'package:flutter_nivasshub/models/auth/check_user_exists_request.dart';
 import 'package:flutter_nivasshub/models/location/location_node.dart';
 import 'package:flutter_nivasshub/services/auth/auth_entry_service_base.dart';
-import 'package:flutter_nivasshub/services/location/location_service_base.dart';
+import 'package:flutter_nivasshub/services/country/country_service_base.dart';
 
 enum AuthEntryStatus { idle, checking, existingUser, newUser, error }
 
@@ -18,14 +18,14 @@ enum AuthEntryStatus { idle, checking, existingUser, newUser, error }
 class AuthEntryProvider extends ChangeNotifier {
   AuthEntryProvider({
     required AuthEntryServiceBase authService,
-    required LocationServiceBase locationService,
+    required CountryServiceBase countryService,
     AuthChannel initialChannel = AuthChannel.mobile,
   }) : _authService = authService,
-       _locationService = locationService,
+       _countryService = countryService,
        _channel = initialChannel;
 
   final AuthEntryServiceBase _authService;
-  final LocationServiceBase _locationService;
+  final CountryServiceBase _countryService;
 
   AuthEntryStatus _status = AuthEntryStatus.idle;
 
@@ -39,6 +39,7 @@ class AuthEntryProvider extends ChangeNotifier {
   List<LocationNode> _dialCodes = const [];
   LocationNode? _selectedCountry;
   bool _isLoadingDialCodes = false;
+  String? _dialCodesError;
 
   AuthEntryStatus get status => _status;
   AuthChannel get channel => _channel;
@@ -52,6 +53,13 @@ class AuthEntryProvider extends ChangeNotifier {
   LocationNode? get selectedCountry => _selectedCountry;
   bool get isLoadingDialCodes => _isLoadingDialCodes;
 
+  /// Set when the last [loadCountryCodes] call came back with no usable
+  /// countries — either a real request failure, or a request that
+  /// succeeded but yielded zero parsed rows (a field-name mismatch
+  /// between the backend and this contract). Lets the picker offer Retry
+  /// instead of sitting permanently disabled with no explanation.
+  String? get dialCodesError => _dialCodesError;
+
   /// `null` until the country list arrives, which is what the "country
   /// code is required" validation keys off.
   String? get countryCode => _selectedCountry?.dialCode;
@@ -60,14 +68,20 @@ class AuthEntryProvider extends ChangeNotifier {
   /// screens' `+91` default.
   Future<void> loadCountryCodes() async {
     _isLoadingDialCodes = true;
+    _dialCodesError = null;
     notifyListeners();
 
-    final response = await _locationService.getCountryDialCodes();
+    final response = await _countryService.getCountries();
     if (response.isSuccess && response.data != null) {
       _dialCodes = response.data!
           .where((c) => (c.dialCode ?? '').isNotEmpty)
           .toList(growable: false);
       _selectedCountry ??= _defaultCountry(_dialCodes);
+      if (_dialCodes.isEmpty) {
+        _dialCodesError = 'Could not load country codes. Tap to retry.';
+      }
+    } else {
+      _dialCodesError = response.message ?? 'Could not load country codes. Tap to retry.';
     }
 
     _isLoadingDialCodes = false;

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'package:flutter_nivasshub/constants/app_colors.dart';
-import 'package:flutter_nivasshub/providers/auth/auth_provider.dart';
 import 'package:flutter_nivasshub/providers/dashboard/dashboard_provider.dart';
 import 'package:flutter_nivasshub/providers/theme/theme_mode_provider.dart';
 import 'package:flutter_nivasshub/routes/app_routes.dart';
@@ -622,7 +621,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 // `context` across an async gap.
                 final authState = context.read<AuthStateProvider>();
                 final kyc = context.read<KycProvider>();
-                final auth = context.read<AuthProvider>();
                 final dashboard = context.read<DashboardProvider>();
 
                 Navigator.pop(dialogContext);
@@ -645,8 +643,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 if (!mounted) return;
 
                 // Reset in-memory state so a subsequent login doesn't
-                // inherit stale auth/dashboard data from this session.
-                auth.logout();
+                // inherit stale dashboard data from this session.
                 dashboard.reset();
 
                 debugPrint(

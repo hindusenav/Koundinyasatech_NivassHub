@@ -2,33 +2,64 @@
 class ApiEndpoints {
   ApiEndpoints._();
 
-  static const String baseUrl = 'http://localhost:3001';
-
-  // ---------------------------------------------------------------------
-  // 1. Authentication Screens
-  // ---------------------------------------------------------------------
-  static const String login = '/api/v1/auth/login';
-  static const String register = '/api/v1/auth/register';
-  static const String verifyOtp = '/api/v1/auth/verify-otp';
-  static const String sendOtp = '/api/v1/auth/login';
-  static const String resendOtp = '/api/v1/auth/login';
+  static const String baseUrl = 'http://10.10.10.18:3001';
 
   // ---------------------------------------------------------------------
   // 1b. Identifier-first authentication entry (mobile OR email)
   //
   // Replaces the OTP entry above as the app's front door: one identifier
   // is checked, then the user is routed to password login or registration.
+  //
+  // `checkUserExists`/`loginUser` match the documented NivaasHub contract
+  // exactly (`POST /country-codes/registration-check`, `POST /auth/login`
+  // — neither uses the `/api/v1` prefix). `createUser`/`accessToken` do
+  // NOT correspond to any documented endpoint — MISSING API CONTRACT.
+  // `AuthEntryService` must never call them; `MockAuthEntryService`
+  // continues to back those two methods even once the others go real.
+  // See `PartialRealAuthEntryService`.
   // ---------------------------------------------------------------------
-  static const String checkUserExists = '/api/v1/auth/check-user';
-  static const String loginUser = '/api/v1/auth/login-password';
-  static const String createUser = '/api/v1/auth/users';
-  static const String accessToken = '/api/v1/auth/access-token';
+  static const String checkUserExists = '/country-codes/registration-check';
+  static const String loginUser = '/auth/login';
+  static const String createUser = '/api/v1/auth/users'; // MISSING API CONTRACT
+  static const String accessToken =
+      '/api/v1/auth/access-token'; // MISSING API CONTRACT
+
+  // ---------------------------------------------------------------------
+  // 1c. Country list / registration master data (documented)
+  // ---------------------------------------------------------------------
+  static const String countryCodes = '/country-codes';
+
+  /// `GET` returns registration master data — countries (with each
+  /// country's states nested inside), societies, and roles, all in one
+  /// response (`ActiveCountries`/`Societies`/`Roles`; confirmed against a
+  /// live response, not just the doc). `POST` submits the registration.
+  /// See `RegistrationService`.
+  static const String userRegistration = '/country-codes/user-registration';
+
+  /// `GET ?socid=<id>` returns one society's full Tower→Floor→Unit tree.
+  /// See `SocietyService`.
+  static const String societyDetails = '/society/details';
+
+  /// `POST` verifies the OTP sent after registration (`userId`, `otp`,
+  /// `identifier` = `"M"`/`"E"`, `otpType` = `"UR"`). See
+  /// `OtpVerificationService`.
+  static const String userRegistrationVerifyOtp =
+      '/country-codes/user-registration/verify-otp';
+
+  /// `POST` resends a registration OTP for an existing encrypted `uid`.
+  /// See `OtpVerificationService`.
+  static const String otpResend = '/otp/resend';
 
   // ---------------------------------------------------------------------
   // 2. Cascading property location master data
   //
   // One endpoint for all seven levels — `?level=city&parentId=IN-KA`.
   // See `LocationServiceBase` for why this is not seven endpoints.
+  //
+  // MISSING API CONTRACT for every level except `country` (served for real
+  // via `countryCodes`/`CountryService` instead) — state/city/society/
+  // tower/floor/flat have no documented endpoint, so `LocationService`
+  // stays mocked for those levels regardless of `KycConfig.useMockKycApi`.
   // ---------------------------------------------------------------------
   static const String locations = '/api/v1/locations';
 
@@ -145,15 +176,10 @@ class ApiEndpoints {
   // ---------------------------------------------------------------------
   // Forgot Password
   //
-  // NOTE: per the published Forgot Password API contract these live on a
-  // base URL of `http://localhost:3000` with no `/api/v1` prefix, unlike
-  // every other endpoint above (currently `baseUrl` is
-  // `http://localhost:3001`). Deliberately NOT changing the shared
-  // `baseUrl` for this alone since every other endpoint depends on it.
-  // TODO(backend): confirm the real shared host before `useMockApi` is
-  // flipped to false for this feature — `ForgotPasswordService` may need
-  // an absolute URL override on these three calls instead of relying on
-  // `ApiClient`'s configured `baseUrl`.
+  // No `/api/v1` prefix on these three, matching the documented contract.
+  // The doc's sample requests show `localhost:3000` purely as an example
+  // dev host for these calls, same as every other documented endpoint —
+  // not a second production host, so no `baseUrl` override is needed.
   // ---------------------------------------------------------------------
   static const String forgotPassword = '/auth/forgot-password';
   static const String forgotPasswordVerifyOtp =

@@ -63,10 +63,14 @@ class EnterPasswordProvider extends ChangeNotifier {
         return false;
       }
 
+      // The real `/auth/login` contract returns no user id or display
+      // name (MISSING API CONTRACT for a login-time profile fetch) — only
+      // merge them in when a service actually supplied one, so an empty
+      // string never overwrites context set during registration.
       await _authState.updateContext(
         identifier: identifier,
-        userId: data.userId,
-        fullName: data.fullName,
+        userId: data.userId.isNotEmpty ? data.userId : null,
+        fullName: data.fullName.isNotEmpty ? data.fullName : null,
       );
       await _authState.markAuthenticated(
         accessToken: data.accessToken,

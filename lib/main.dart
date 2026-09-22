@@ -10,9 +10,6 @@ import 'package:flutter_nivasshub/storage/local_storage_service.dart';
 import 'package:flutter_nivasshub/storage/secure_storage_service.dart';
 
 import 'package:flutter_nivasshub/constants/auth/auth_config.dart';
-import 'package:flutter_nivasshub/services/auth/auth_service.dart';
-import 'package:flutter_nivasshub/services/auth/auth_service_base.dart';
-import 'package:flutter_nivasshub/services/auth/mock_auth_service.dart';
 import 'package:flutter_nivasshub/services/auth/forgot_password_service.dart';
 import 'package:flutter_nivasshub/services/auth/forgot_password_service_base.dart';
 import 'package:flutter_nivasshub/services/auth/mock_forgot_password_service.dart';
@@ -47,6 +44,9 @@ import 'package:flutter_nivasshub/providers/auth/auth_state_provider.dart';
 import 'package:flutter_nivasshub/services/auth/auth_entry_service.dart';
 import 'package:flutter_nivasshub/services/auth/auth_entry_service_base.dart';
 import 'package:flutter_nivasshub/services/auth/mock_auth_entry_service.dart';
+import 'package:flutter_nivasshub/services/auth/partial_real_auth_entry_service.dart';
+import 'package:flutter_nivasshub/services/country/country_service.dart';
+import 'package:flutter_nivasshub/services/country/country_service_base.dart';
 import 'package:flutter_nivasshub/services/file/file_picker_service.dart';
 import 'package:flutter_nivasshub/services/file/file_picker_service_base.dart';
 import 'package:flutter_nivasshub/services/kyc/document_service.dart';
@@ -58,8 +58,14 @@ import 'package:flutter_nivasshub/services/kyc/mock_kyc_service.dart';
 import 'package:flutter_nivasshub/services/location/location_service.dart';
 import 'package:flutter_nivasshub/services/location/location_service_base.dart';
 import 'package:flutter_nivasshub/services/location/mock_location_service.dart';
+import 'package:flutter_nivasshub/services/auth/otp_verification_service.dart';
+import 'package:flutter_nivasshub/services/auth/otp_verification_service_base.dart';
 import 'package:flutter_nivasshub/services/notifications/mock_notification_service.dart';
 import 'package:flutter_nivasshub/services/notifications/notification_service_base.dart';
+import 'package:flutter_nivasshub/services/registration/registration_service.dart';
+import 'package:flutter_nivasshub/services/registration/registration_service_base.dart';
+import 'package:flutter_nivasshub/services/society/society_service.dart';
+import 'package:flutter_nivasshub/services/society/society_service_base.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -101,14 +107,6 @@ Future<void> main() async {
       await NavigationService.logoutAndRedirectToLogin();
     },
   );
-
-  // ============================================================
-  // AUTH SERVICE
-  // ============================================================
-
-  final AuthServiceBase authService = useMockApi
-      ? MockAuthService()
-      : AuthService(apiClient);
 
   // ============================================================
   // FORGOT PASSWORD SERVICE
@@ -175,16 +173,53 @@ Future<void> main() async {
   );
 
   // ============================================================
-  // AUTH ENTRY / LOCATION
+  // AUTH ENTRY / COUNTRY / LOCATION
+  //
+  // `checkUserExists`/`loginUser` have a documented backend contract
+  // (`POST /country-codes/registration-check`, `POST /auth/login`) and go
+  // through the real `AuthEntryService` once `useMockApi` is false.
+  // `createUser`/`generateAccessToken` do not — MISSING API CONTRACT —
+  // and stay on `MockAuthEntryService` regardless of the flag, via
+  // `PartialRealAuthEntryService`. See that class for details.
   // ============================================================
 
-  final AuthEntryServiceBase authEntryService = useMockApi
-      ? MockAuthEntryService()
-      : AuthEntryService(apiClient);
+  final mockAuthEntryService = MockAuthEntryService();
 
+  final AuthEntryServiceBase authEntryService = useMockApi
+      ? mockAuthEntryService
+      : PartialRealAuthEntryService(
+          real: AuthEntryService(apiClient),
+          mock: mockAuthEntryService,
+        );
+
+  // `GET /country-codes` is fully documented — always real, no mock twin.
+  final CountryServiceBase countryService = CountryService(apiClient);
+
+  // State/city/society/tower/floor/flat have no documented endpoint, so
+  // this stays mocked regardless of `useMockApi`/`KycConfig.useMockKycApi`
+  // beyond the country level, which `LocationProvider` sources from
+  // `countryService` instead (see `LocationProvider`'s constructor).
   final LocationServiceBase locationService = KycConfig.useMockKycApi
       ? MockLocationService()
       : LocationService(apiClient);
+
+  // `GET`/`POST /country-codes/user-registration` and
+  // `GET /society/details` are both documented and confirmed against live
+  // responses — always real, no mock twin. `RegistrationService` also
+  // backs the User Details screen's Country picker (it implements
+  // `CountryServiceBase`), sourcing from the registration master-data
+  // response instead of the dial-code-only `/country-codes`.
+  final RegistrationServiceBase registrationService = RegistrationService(
+    apiClient,
+  );
+  final SocietyServiceBase societyService = SocietyService(apiClient);
+
+  // `POST /country-codes/user-registration/verify-otp` and
+  // `POST /otp/resend` — both documented and always real, same as the two
+  // services above.
+  final OtpVerificationServiceBase otpVerificationService = OtpVerificationService(
+    apiClient,
+  );
 
   // ============================================================
   // NOTIFICATIONS
@@ -233,8 +268,6 @@ Future<void> main() async {
 
       apiClient: apiClient,
 
-      authService: authService,
-
       forgotPasswordService: forgotPasswordService,
 
       dashboardRepository: dashboardRepository,
@@ -253,7 +286,15 @@ Future<void> main() async {
 
       authEntryService: authEntryService,
 
+      countryService: countryService,
+
       locationService: locationService,
+
+      registrationService: registrationService,
+
+      societyService: societyService,
+
+      otpVerificationService: otpVerificationService,
 
       documentService: documentService,
 

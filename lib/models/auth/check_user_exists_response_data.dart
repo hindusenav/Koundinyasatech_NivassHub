@@ -1,16 +1,20 @@
 import 'package:flutter_nivasshub/models/auth/auth_identifier.dart';
 
-/// `data` payload of `POST /auth/check-user`.
+/// Outcome of `POST /country-codes/registration-check`.
 ///
-/// ```json
-/// { "success": true, "userExists": false, "identifier": "9876543210" }
-/// ```
+/// This endpoint signals its result via HTTP status rather than a body
+/// flag: HTTP 200 means the identifier is free to register
+/// ([userExists] `false`); HTTP 409 with `code: "USER_ALREADY_REGISTERED"`
+/// means it's already registered ([userExists] `true`). `AuthEntryService`
+/// constructs this directly from that status instead of parsing it from a
+/// JSON field — there is no `fromJson` here on purpose.
 class CheckUserExistsResponseData {
   const CheckUserExistsResponseData({
     required this.userExists,
     required this.identifier,
     this.maskedIdentifier,
     this.registeredChannel,
+    this.statusMessage,
   });
 
   final bool userExists;
@@ -19,21 +23,16 @@ class CheckUserExistsResponseData {
   final String identifier;
 
   /// Partially hidden form for the password screen's "logging in as…" line.
-  /// Falls back to a client-side mask when the server omits it.
+  /// Not returned by the real backend — always a client-side mask.
   final String? maskedIdentifier;
 
-  /// Which channel the account was originally registered with — may differ
-  /// from the one just used, e.g. registered by email, now entering mobile.
+  /// Which channel the account was originally registered with. Not
+  /// returned by the real backend today.
   final AuthChannel? registeredChannel;
 
-  factory CheckUserExistsResponseData.fromJson(Map<String, dynamic> json) {
-    return CheckUserExistsResponseData(
-      userExists: json['userExists'] as bool? ?? false,
-      identifier: json['identifier'] as String? ?? '',
-      maskedIdentifier: json['maskedIdentifier'] as String?,
-      registeredChannel: json['registeredChannel'] == null
-          ? null
-          : AuthChannel.fromJson(json['registeredChannel']),
-    );
-  }
+  /// The backend's exact message when [userExists] is `true` — the 409
+  /// response's `message` field (e.g. "User is already registered with
+  /// Skyline Meadows, Kondapur, Hyderabad."). Shown verbatim rather than a
+  /// hardcoded string, per the documented contract.
+  final String? statusMessage;
 }

@@ -23,6 +23,7 @@ class CountryCodeSelector extends StatelessWidget {
     required this.onSelected,
     this.isLoading = false,
     this.enabled = true,
+    this.onRetry,
   });
 
   final List<LocationNode> countries;
@@ -30,6 +31,11 @@ class CountryCodeSelector extends StatelessWidget {
   final ValueChanged<LocationNode> onSelected;
   final bool isLoading;
   final bool enabled;
+
+  /// Called instead of opening the (empty) picker when [countries] is
+  /// empty and this is non-null — lets the chip recover from a failed
+  /// load without the screen needing its own retry button.
+  final VoidCallback? onRetry;
 
   @override
   Widget build(BuildContext context) {
@@ -42,10 +48,13 @@ class CountryCodeSelector extends StatelessWidget {
         ? AppColors.textDisabledDark
         : AppColors.textDisabledLight;
 
-    final isInteractive = enabled && !isLoading && countries.isNotEmpty;
+    final canRetry = enabled && !isLoading && countries.isEmpty && onRetry != null;
+    final isInteractive = enabled && !isLoading && (countries.isNotEmpty || canRetry);
 
     return InkWell(
-      onTap: isInteractive ? () => _openPicker(context) : null,
+      onTap: isInteractive
+          ? (canRetry ? onRetry : () => _openPicker(context))
+          : null,
       borderRadius: AppRadius.radiusSm,
       child: Container(
         height: AppDimensions.inputHeight,
@@ -77,7 +86,7 @@ class CountryCodeSelector extends StatelessWidget {
               )
             else
               Icon(
-                AppIcons.chevronDown,
+                canRetry ? AppIcons.refresh : AppIcons.chevronDown,
                 size: AppDimensions.iconXs,
                 color: isInteractive ? textPrimary : textDisabled,
               ),

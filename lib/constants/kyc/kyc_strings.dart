@@ -49,12 +49,50 @@ class KycStrings {
   static const String roleOwner = 'Owner';
   static const String roleTenant = 'Tenant';
   static const String roleRequired = 'Please select your role';
-  static const String subBranchLabel = 'Sub-Branch';
-  static const String subBranchHint = 'Select your sub-branch';
+  static const String subBranchLabel = 'Unit Sub-Branch';
+  // Auto-filled from the selected unit's BHK type — not a free choice.
+  static const String subBranchHint = 'Auto-filled from the selected unit';
+  static const String selectUnitFirst = 'Select unit first';
   static const String subBranchSheetTitle = 'Select Sub-Branch';
   static const String subBranchRequired = 'Please select a sub-branch';
   static const String submitDetails = 'Submit Details';
   static const String selectParentFirst = 'Select the previous field first';
+
+  static const String stateLabel = 'State';
+  static const String stateHint = 'Select state';
+  static const String selectCountryFirst = 'Select country first';
+  static const String cityLabel = 'City';
+  static const String cityHint = 'Select city';
+  static const String cityRequired = 'Please select your city';
+  static const String selectStateFirst = 'Select state first';
+
+  static const String societyLabel = 'Society';
+  static const String societyHint = 'Select society';
+  static const String towerLabel = 'Tower / Block';
+  static const String towerHint = 'Select tower';
+  static const String floorLabel = 'Floor';
+  static const String floorHint = 'Select floor';
+  static const String unitLabel = 'Unit';
+  static const String unitHint = 'Select unit';
+  static const String selectCityFirst = 'Select city first';
+  static const String selectSocietyFirst = 'Select society first';
+  static const String selectTowerFirst = 'Select tower first';
+  static const String selectFloorFirst = 'Select floor first';
+  static const String propertySelectionIncomplete =
+      'Please select your society, tower, floor and unit.';
+
+  // ---------------------------------------------------------------------
+  // OTP verification (mobile + email)
+  // ---------------------------------------------------------------------
+  static const String otpVerificationTitle = 'Verify Your Details';
+  static const String otpVerificationSubtitle =
+      'Enter the codes sent to your mobile number and email address.';
+  static const String otpMobileSectionTitle = 'Mobile Verification';
+  static const String otpEmailSectionTitle = 'Email Verification';
+  static const String otpVerifyLabel = 'Verify';
+  static const String otpVerifiedLabel = 'Verified';
+  static const String otpIncompleteError = 'Enter the 6-digit code';
+  static const String otpVerificationContinue = 'Continue';
 
   // ---------------------------------------------------------------------
   // KYC documents
@@ -80,6 +118,14 @@ class KycStrings {
   static const String uploadSourceCamera = 'Take photo';
   static const String uploadSourceGallery = 'Choose from gallery';
   static const String fileSizeHint = 'PDF, JPG or PNG up to 5 MB';
+
+  /// Emitted by `FilePickerService` when the camera permission has been
+  /// permanently denied. Screens compare an upload error against this
+  /// exact string to decide whether to offer "Open Settings" instead of a
+  /// plain retry.
+  static const String cameraPermanentlyDeniedMessage =
+      'Camera permission is turned off for this app. '
+      'Enable it from Settings to take a photo.';
 
   // Document card copy
   static const String addressProofOneTitle = 'Address Proof — Document 1';

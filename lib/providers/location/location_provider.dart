@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_nivasshub/models/location/location_level.dart';
 import 'package:flutter_nivasshub/models/location/location_node.dart';
 import 'package:flutter_nivasshub/models/location/location_selection.dart';
+import 'package:flutter_nivasshub/services/country/country_service_base.dart';
 import 'package:flutter_nivasshub/services/location/location_service_base.dart';
 
 /// Per-level load state, mirroring `DashboardState`'s shape.
@@ -14,9 +15,17 @@ enum LocationLoadState { initial, loading, success, empty, error }
 /// populated cascade alive for the whole authenticated session and
 /// re-show the previous user's selections after a logout.
 class LocationProvider extends ChangeNotifier {
-  LocationProvider(LocationServiceBase service) : _service = service;
+  LocationProvider(LocationServiceBase service, {CountryServiceBase? countryService})
+    : _service = service,
+      _countryService = countryService;
 
   final LocationServiceBase _service;
+
+  /// `GET /country-codes` is fully documented and real, unlike the rest
+  /// of this cascade (state/city/society/tower/floor/flat have no
+  /// documented endpoint and stay on `_service`'s mock). When supplied,
+  /// [LocationLevel.country] is loaded from here instead of `_service`.
+  final CountryServiceBase? _countryService;
 
   final Map<LocationLevel, List<LocationNode>> _options = {};
   final Map<LocationLevel, LocationNode?> _selected = {};
@@ -67,10 +76,9 @@ class LocationProvider extends ChangeNotifier {
     _errors[level] = null;
     notifyListeners();
 
-    final response = await _service.getLocations(
-      level: level,
-      parentId: parentId,
-    );
+    final response = level == LocationLevel.country && _countryService != null
+        ? await _countryService.getCountries()
+        : await _service.getLocations(level: level, parentId: parentId);
 
     // `ApiResponse.success(null)` is legal — `data` is nullable — so
     // success alone is not enough to dereference it.

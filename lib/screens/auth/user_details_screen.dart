@@ -9,12 +9,16 @@ import 'package:flutter_nivasshub/models/auth/auth_identifier.dart';
 import 'package:flutter_nivasshub/models/auth/user_role.dart';
 import 'package:flutter_nivasshub/models/location/location_level.dart';
 import 'package:flutter_nivasshub/models/location/location_node.dart';
+import 'package:flutter_nivasshub/models/registration/registration_master_data.dart';
+import 'package:flutter_nivasshub/models/society/society_floor.dart';
+import 'package:flutter_nivasshub/models/society/society_tower.dart';
+import 'package:flutter_nivasshub/models/society/society_unit.dart';
 import 'package:flutter_nivasshub/providers/auth/user_details_provider.dart';
-import 'package:flutter_nivasshub/providers/kyc/kyc_provider.dart';
 import 'package:flutter_nivasshub/providers/location/location_provider.dart';
+import 'package:flutter_nivasshub/providers/registration/registration_master_data_provider.dart';
+import 'package:flutter_nivasshub/providers/society/society_details_provider.dart';
 import 'package:flutter_nivasshub/routes/app_routes.dart';
-import 'package:flutter_nivasshub/routes/navigation_service.dart';
-import 'package:flutter_nivasshub/screens/kyc/kyc_documents_screen.dart';
+import 'package:flutter_nivasshub/screens/auth/otp_mobile_email_verification_screen.dart';
 import 'package:flutter_nivasshub/utils/form_validators.dart';
 import 'package:flutter_nivasshub/widgets/shared/app_bar/custom_app_bar.dart';
 import 'package:flutter_nivasshub/widgets/shared/buttons/custom_button.dart';
@@ -33,8 +37,8 @@ class UserDetailsScreenArgs {
   final String? prefillFullName;
 }
 
-/// Registration form for a new user (spec §4 and §5): personal details,
-/// the seven-level property cascade, role, and sub-branch.
+/// Registration form for a new user: personal details, Country → State →
+/// City, Society → Tower → Floor → Unit, role, and unit branch.
 class UserDetailsScreen extends StatefulWidget {
   const UserDetailsScreen({super.key, required this.args});
 
@@ -79,43 +83,69 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
     super.dispose();
   }
 
-  String get _countryCode => widget.args.identifier.countryCode ?? '+91';
+  String get _countryCode =>
+      context.read<LocationProvider>().selectedFor(LocationLevel.country)?.dialCode ??
+      widget.args.identifier.countryCode ??
+      '+91';
 
   Future<void> _handleSubmit() async {
     final details = context.read<UserDetailsProvider>();
     final location = context.read<LocationProvider>();
-    final kyc = context.read<KycProvider>();
+    final master = context.read<RegistrationMasterDataProvider>();
+    final society = context.read<SocietyDetailsProvider>();
 
-    // Turn on the picker-level errors before validating, so the role and
-    // sub-branch messages appear in the same pass as the field ones.
+    // Turn on the picker-level errors before validating, so the role
+    // message appears in the same pass as the field ones.
     details.markValidationVisible();
 
     final isFormValid = _formKey.currentState?.validate() ?? false;
     if (!isFormValid) return;
 
-    if (details.role == null || (details.subBranch?.isEmpty ?? true)) return;
+    if (details.role == null) return;
 
-    if (!location.isComplete) {
-      final missing = location.selection.firstMissingLevel;
+    final country = location.selectedFor(LocationLevel.country);
+    final state = master.selectedState;
+    final city = master.selectedCity;
+    if (country == null || state == null || city == null) {
       CustomSnackbar.warning(
         context,
-        'Please select ${missing?.label.toLowerCase() ?? 'your property'}.',
+        'Please select your country, state and city.',
       );
       return;
     }
 
-    final success = await details.createUser(
-      identifier: widget.args.identifier,
+    if (society.selectedTower == null ||
+        society.selectedFloor == null ||
+        society.selectedUnit == null) {
+      CustomSnackbar.warning(context, KycStrings.propertySelectionIncomplete);
+      return;
+    }
+
+    final roleId = master.roleIdFor(details.role!);
+    if (roleId == null) {
+      CustomSnackbar.error(context, KycStrings.genericError);
+      return;
+    }
+
+    final result = await details.submit(
       fullName: _nameController.text.trim(),
       mobileNumber: _mobileController.text.trim(),
-      countryCode: _countryCode,
+      mobileCountryCode: _countryCode,
       email: _emailController.text.trim(),
-      location: location.selection,
+      country: country.id,
+      state: state.provinceId,
+      city: city,
+      socId: master.selectedSociety?.socId ?? '',
+      towerId: society.selectedTower!.towerId,
+      floorId: society.selectedFloor!.floorId,
+      unitId: society.selectedUnit!.unitId,
+      roleId: roleId,
+      unitBranch: society.selectedUnitBranch,
     );
 
     if (!mounted) return;
 
-    if (!success) {
+    if (result == null) {
       CustomSnackbar.error(
         context,
         details.errorMessage ?? KycStrings.genericError,
@@ -123,23 +153,18 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
       return;
     }
 
-    final result = details.result!;
     final role = details.role!;
 
-    await kyc.initialise(
-      userId: result.userId,
-      kycToken: result.kycToken,
-      role: role,
-    );
-
-    // `pushNamedAndRemoveUntil` rather than `pushNamed`: the account now
-    // exists, so backing into a completed registration form would let the
-    // user submit it a second time.
-    NavigationService.pushNamedAndRemoveUntil(
-      AppRoutes.kycDocuments,
-      arguments: KycDocumentsScreenArgs(
+    // `pushReplacement` so a resubmit loop does not grow the stack by two
+    // routes per attempt.
+    Navigator.of(context).pushReplacementNamed(
+      AppRoutes.otpMobileEmailVerification,
+      arguments: OtpMobileEmailVerificationScreenArgs(
         userId: result.userId,
-        kycToken: result.kycToken,
+        email: result.email.isNotEmpty ? result.email : _emailController.text.trim(),
+        mobileNumber: result.mobileNumber.isNotEmpty
+            ? result.mobileNumber
+            : _mobileController.text.trim(),
         role: role,
       ),
     );
@@ -214,15 +239,24 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
 
                 const SectionTitle(title: KycStrings.sectionLocationDetails),
                 AppSpacing.gapSm,
-                // Country/State/City then Society→Flat: one loop over the
-                // enum drives all seven, so the screen holds no per-level
-                // logic at all.
-                ..._buildCascade(LocationLevel.values.take(3)),
+                const _CountryField(),
+                AppSpacing.gapMd,
+                const _StateField(),
+                AppSpacing.gapMd,
+                const _CityField(),
                 AppSpacing.gapLg,
 
                 const SectionTitle(title: KycStrings.sectionPropertyDetails),
                 AppSpacing.gapSm,
-                ..._buildCascade(LocationLevel.values.skip(3)),
+                const _SocietyField(),
+                AppSpacing.gapMd,
+                const _TowerField(),
+                AppSpacing.gapMd,
+                const _FloorField(),
+                AppSpacing.gapMd,
+                const _UnitField(),
+                AppSpacing.gapMd,
+                const _UnitBranchField(),
                 AppSpacing.gapLg,
 
                 const SectionTitle(title: KycStrings.sectionRole),
@@ -232,8 +266,6 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
                   errorText: details.roleError,
                   onSelected: details.setRole,
                 ),
-                AppSpacing.gapMd,
-                _SubBranchField(errorText: details.subBranchError),
                 AppSpacing.gapXl,
 
                 PrimaryButton(
@@ -250,69 +282,313 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
       ),
     );
   }
-
-  List<Widget> _buildCascade(Iterable<LocationLevel> levels) {
-    return [
-      for (final level in levels) ...[
-        _CascadeField(level: level),
-        AppSpacing.gapMd,
-      ],
-    ];
-  }
 }
 
-/// One level of the cascade. Enabled only once its parent is chosen, and
-/// cleared automatically whenever an ancestor changes.
-class _CascadeField extends StatelessWidget {
-  const _CascadeField({required this.level});
-
-  final LocationLevel level;
+/// Country picker — the only field still driven by `LocationProvider`
+/// (its `getCountries()` now points at the registration master-data
+/// endpoint via `RegistrationServiceBase`). Selecting a country also syncs
+/// `RegistrationMasterDataProvider` so the State picker can read that
+/// country's nested states.
+class _CountryField extends StatelessWidget {
+  const _CountryField();
 
   @override
   Widget build(BuildContext context) {
     final location = context.watch<LocationProvider>();
-    final isEnabled = location.isEnabled(level);
-    final selected = location.selectedFor(level);
+    final selected = location.selectedFor(LocationLevel.country);
 
     return SelectionField(
-      label: level.label,
+      label: LocationLevel.country.label,
       value: selected?.name,
-      hint: isEnabled ? level.hint : KycStrings.selectParentFirst,
-      isLoading: location.isLoading(level),
-      onTap: isEnabled ? () => _openPicker(context, location) : null,
+      hint: LocationLevel.country.hint,
+      isLoading: location.isLoading(LocationLevel.country),
+      onTap: () => _openPicker(context, location),
     );
   }
 
-  Future<void> _openPicker(
-    BuildContext context,
-    LocationProvider location,
-  ) async {
-    // Options are fetched when the parent is chosen, so an untouched level
-    // may never have loaded — e.g. Country on first open.
-    if (location.stateFor(level) == LocationLoadState.initial) {
-      await location.load(level);
+  Future<void> _openPicker(BuildContext context, LocationProvider location) async {
+    if (location.stateFor(LocationLevel.country) == LocationLoadState.initial) {
+      await location.load(LocationLevel.country);
       if (!context.mounted) return;
     }
 
     final choice = await SelectionBottomSheet.show<LocationNode>(
       context,
-      title: level.sheetTitle,
-      items: location.optionsFor(level),
-      selected: location.selectedFor(level),
+      title: LocationLevel.country.sheetTitle,
+      items: location.optionsFor(LocationLevel.country),
+      selected: location.selectedFor(LocationLevel.country),
       labelOf: (node) => node.name,
-      subtitleOf: (node) => node.subtitle,
-      leadingOf: (node) => node.leadingText == null
-          ? null
-          : Text(node.leadingText!, style: AppTextStyles.titleMedium),
-      searchHint: 'Search ${level.label.toLowerCase()}',
-      isLoading: location.isLoading(level),
-      errorMessage: location.errorFor(level),
+      searchHint: 'Search country',
+      isLoading: location.isLoading(LocationLevel.country),
+      errorMessage: location.errorFor(LocationLevel.country),
       emptyTitle: KycStrings.noOptionsAvailable,
       emptyMessage: KycStrings.noOptionsMessage,
-      onRetry: () => location.retry(level),
+      onRetry: () => location.retry(LocationLevel.country),
     );
 
-    if (choice != null) await location.select(level, choice);
+    if (choice == null || !context.mounted) return;
+    await location.select(LocationLevel.country, choice);
+    if (!context.mounted) return;
+    context.read<RegistrationMasterDataProvider>().selectCountry(choice.id);
+    context.read<SocietyDetailsProvider>().reset();
+  }
+}
+
+/// State picker — sourced synchronously from the selected country's
+/// states already cached by `RegistrationMasterDataProvider`; no network
+/// call happens here.
+class _StateField extends StatelessWidget {
+  const _StateField();
+
+  @override
+  Widget build(BuildContext context) {
+    final location = context.watch<LocationProvider>();
+    final master = context.watch<RegistrationMasterDataProvider>();
+    final countrySelected =
+        location.selectedFor(LocationLevel.country) != null;
+
+    return SelectionField(
+      label: KycStrings.stateLabel,
+      value: master.selectedState?.provinceName,
+      hint: countrySelected ? KycStrings.stateHint : KycStrings.selectCountryFirst,
+      onTap: countrySelected ? () => _openPicker(context, master) : null,
+    );
+  }
+
+  Future<void> _openPicker(
+    BuildContext context,
+    RegistrationMasterDataProvider master,
+  ) async {
+    final choice = await SelectionBottomSheet.show<RegistrationState>(
+      context,
+      title: 'Select ${KycStrings.stateLabel}',
+      items: master.statesForSelectedCountry,
+      selected: master.selectedState,
+      labelOf: (state) => state.provinceName,
+      searchHint: 'Search state',
+      emptyTitle: KycStrings.noOptionsAvailable,
+      emptyMessage: KycStrings.noOptionsMessage,
+    );
+    if (choice == null || !context.mounted) return;
+    master.selectState(choice);
+    context.read<SocietyDetailsProvider>().reset();
+  }
+}
+
+/// City picker — sourced from the distinct `city` values of the societies
+/// in the selected state (`Societies[].city`; there is no dedicated city
+/// list endpoint). Selecting a city narrows the Society picker below to
+/// that city.
+class _CityField extends StatelessWidget {
+  const _CityField();
+
+  @override
+  Widget build(BuildContext context) {
+    final master = context.watch<RegistrationMasterDataProvider>();
+    final stateSelected = master.selectedState != null;
+
+    return SelectionField(
+      label: KycStrings.cityLabel,
+      value: master.selectedCity,
+      hint: stateSelected ? KycStrings.cityHint : KycStrings.selectStateFirst,
+      onTap: stateSelected ? () => _openPicker(context, master) : null,
+    );
+  }
+
+  Future<void> _openPicker(
+    BuildContext context,
+    RegistrationMasterDataProvider master,
+  ) async {
+    final choice = await SelectionBottomSheet.show<String>(
+      context,
+      title: 'Select ${KycStrings.cityLabel}',
+      items: master.citiesForSelectedState,
+      selected: master.selectedCity,
+      labelOf: (city) => city,
+      searchHint: 'Search city',
+      emptyTitle: KycStrings.noOptionsAvailable,
+      emptyMessage: KycStrings.noOptionsMessage,
+    );
+    if (choice == null || !context.mounted) return;
+    master.selectCity(choice);
+    context.read<SocietyDetailsProvider>().reset();
+  }
+}
+
+/// Society picker — sourced from the same cached master-data response,
+/// filtered to the selected city. Selecting a society kicks off
+/// `GET /society/details?socid=` to load the Tower→Floor→Unit tree.
+class _SocietyField extends StatelessWidget {
+  const _SocietyField();
+
+  @override
+  Widget build(BuildContext context) {
+    final master = context.watch<RegistrationMasterDataProvider>();
+    final citySelected = master.selectedCity != null;
+
+    return SelectionField(
+      label: KycStrings.societyLabel,
+      value: master.selectedSociety?.societyName,
+      hint: citySelected ? KycStrings.societyHint : KycStrings.selectCityFirst,
+      isLoading: master.isLoading,
+      onTap: citySelected ? () => _openPicker(context, master) : null,
+    );
+  }
+
+  Future<void> _openPicker(
+    BuildContext context,
+    RegistrationMasterDataProvider master,
+  ) async {
+    final choice = await SelectionBottomSheet.show<RegistrationSociety>(
+      context,
+      title: 'Select ${KycStrings.societyLabel}',
+      items: master.societies,
+      selected: master.selectedSociety,
+      labelOf: (society) => society.societyName,
+      subtitleOf: (society) => society.subtitle,
+      searchHint: 'Search society',
+      isLoading: master.isLoading,
+      errorMessage: master.errorMessage,
+      emptyTitle: KycStrings.noOptionsAvailable,
+      emptyMessage: KycStrings.noOptionsMessage,
+      onRetry: master.retry,
+    );
+    if (choice == null || !context.mounted) return;
+    master.selectSociety(choice);
+    await context.read<SocietyDetailsProvider>().fetchSociety(choice.socId);
+  }
+}
+
+class _TowerField extends StatelessWidget {
+  const _TowerField();
+
+  @override
+  Widget build(BuildContext context) {
+    final society = context.watch<SocietyDetailsProvider>();
+
+    return SelectionField(
+      label: KycStrings.towerLabel,
+      value: society.selectedTower?.towerName,
+      hint: society.isTowerEnabled
+          ? KycStrings.towerHint
+          : KycStrings.selectSocietyFirst,
+      isLoading: society.isLoading,
+      onTap: society.isTowerEnabled ? () => _openPicker(context, society) : null,
+    );
+  }
+
+  Future<void> _openPicker(
+    BuildContext context,
+    SocietyDetailsProvider society,
+  ) async {
+    final choice = await SelectionBottomSheet.show<SocietyTower>(
+      context,
+      title: 'Select ${KycStrings.towerLabel}',
+      items: society.towers,
+      selected: society.selectedTower,
+      labelOf: (tower) => tower.towerName,
+      subtitleOf: (tower) => tower.towerCode,
+      searchHint: 'Search tower',
+      isLoading: society.isLoading,
+      errorMessage: society.errorMessage,
+      emptyTitle: KycStrings.noOptionsAvailable,
+      emptyMessage: KycStrings.noOptionsMessage,
+      onRetry: society.retry,
+    );
+    if (choice != null) society.selectTower(choice);
+  }
+}
+
+class _FloorField extends StatelessWidget {
+  const _FloorField();
+
+  @override
+  Widget build(BuildContext context) {
+    final society = context.watch<SocietyDetailsProvider>();
+
+    return SelectionField(
+      label: KycStrings.floorLabel,
+      value: society.selectedFloor?.floorName,
+      hint: society.isFloorEnabled
+          ? KycStrings.floorHint
+          : KycStrings.selectTowerFirst,
+      onTap: society.isFloorEnabled ? () => _openPicker(context, society) : null,
+    );
+  }
+
+  Future<void> _openPicker(
+    BuildContext context,
+    SocietyDetailsProvider society,
+  ) async {
+    final choice = await SelectionBottomSheet.show<SocietyFloor>(
+      context,
+      title: 'Select ${KycStrings.floorLabel}',
+      items: society.floors,
+      selected: society.selectedFloor,
+      labelOf: (floor) => floor.floorName,
+      searchHint: 'Search floor',
+      emptyTitle: KycStrings.noOptionsAvailable,
+      emptyMessage: KycStrings.noOptionsMessage,
+    );
+    if (choice != null) society.selectFloor(choice);
+  }
+}
+
+class _UnitField extends StatelessWidget {
+  const _UnitField();
+
+  @override
+  Widget build(BuildContext context) {
+    final society = context.watch<SocietyDetailsProvider>();
+
+    return SelectionField(
+      label: KycStrings.unitLabel,
+      value: society.selectedUnit?.unitNumber,
+      hint: society.isUnitEnabled
+          ? KycStrings.unitHint
+          : KycStrings.selectFloorFirst,
+      onTap: society.isUnitEnabled ? () => _openPicker(context, society) : null,
+    );
+  }
+
+  Future<void> _openPicker(
+    BuildContext context,
+    SocietyDetailsProvider society,
+  ) async {
+    final choice = await SelectionBottomSheet.show<SocietyUnit>(
+      context,
+      title: 'Select ${KycStrings.unitLabel}',
+      items: society.units,
+      selected: society.selectedUnit,
+      labelOf: (unit) => unit.unitNumber,
+      subtitleOf: (unit) => unit.unitTypeBhk,
+      searchHint: 'Search unit',
+      // A floor with no units yet is a genuine empty state, not an error.
+      emptyTitle: KycStrings.noOptionsAvailable,
+      emptyMessage: KycStrings.noOptionsMessage,
+    );
+    if (choice != null) society.selectUnit(choice);
+  }
+}
+
+/// Unit Sub-Branch — not an independent choice, there is no API for it.
+/// It mirrors the selected unit's `unitTypeBhk` (e.g. `"5bhk"`), so it's
+/// read-only and stays disabled until a Unit is picked.
+class _UnitBranchField extends StatelessWidget {
+  const _UnitBranchField();
+
+  @override
+  Widget build(BuildContext context) {
+    final society = context.watch<SocietyDetailsProvider>();
+
+    return SelectionField(
+      label: KycStrings.subBranchLabel,
+      value: society.selectedUnitBranch,
+      hint: society.selectedUnit != null
+          ? KycStrings.subBranchHint
+          : KycStrings.selectUnitFirst,
+      onTap: null,
+    );
   }
 }
 
@@ -418,53 +694,5 @@ class _RoleCard extends StatelessWidget {
         ),
       ),
     );
-  }
-}
-
-/// Sub-branch is a flat list, not part of the cascade — it qualifies the
-/// resident rather than the property.
-///
-/// Stateless on purpose. Kicking the fetch off from a `State.initState`
-/// made `LocationProvider` notify synchronously, and the seven cascade
-/// fields above already watch it in the same frame — so they were marked
-/// dirty mid-build, tripping the framework's `!_dirty` assertion. The
-/// fetch now starts where the provider is created (see `AuthRouter`).
-class _SubBranchField extends StatelessWidget {
-  const _SubBranchField({this.errorText});
-
-  final String? errorText;
-
-  @override
-  Widget build(BuildContext context) {
-    final location = context.watch<LocationProvider>();
-    final details = context.watch<UserDetailsProvider>();
-
-    return SelectionField(
-      label: KycStrings.subBranchLabel,
-      hint: KycStrings.subBranchHint,
-      value: details.subBranch,
-      errorText: errorText,
-      isLoading: location.isLoadingSubBranches,
-      prefixIcon: AppIcons.unit,
-      onTap: () => _openPicker(context, location, details),
-    );
-  }
-
-  Future<void> _openPicker(
-    BuildContext context,
-    LocationProvider location,
-    UserDetailsProvider details,
-  ) async {
-    final choice = await SelectionBottomSheet.show<String>(
-      context,
-      title: KycStrings.subBranchSheetTitle,
-      items: location.subBranches,
-      selected: details.subBranch,
-      labelOf: (value) => value,
-      errorMessage: location.subBranchError,
-      onRetry: location.loadSubBranches,
-      emptyTitle: KycStrings.noOptionsAvailable,
-    );
-    if (choice != null) details.setSubBranch(choice);
   }
 }

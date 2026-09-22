@@ -42,4 +42,7 @@ class MockFilePickerService implements FilePickerServiceBase {
       ),
     );
   }
+
+  @override
+  Future<void> openSettings() async {}
 }

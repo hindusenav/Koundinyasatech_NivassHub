@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart' show PlatformException;
 import 'package:flutter_nivasshub/constants/kyc/kyc_config.dart';
 import 'package:flutter_nivasshub/constants/kyc/kyc_strings.dart';
 import 'package:flutter_nivasshub/core/api/api_exception.dart';
@@ -11,6 +12,7 @@ import 'package:flutter_nivasshub/services/file/file_picker_service_base.dart';
 // The image_picker package exports a deprecated PickedFile of its own; hide
 // it so the name unambiguously means this app plugin-agnostic model.
 import 'package:image_picker/image_picker.dart' hide PickedFile;
+import 'package:permission_handler/permission_handler.dart' as ph;
 
 /// Real picker, wrapping two plugins behind one contract.
 ///
@@ -32,6 +34,11 @@ class FilePickerService implements FilePickerServiceBase {
     int maxSizeBytes = KycConfig.maxKycFileSizeBytes,
   }) async {
     try {
+      if (source == FilePickSource.camera) {
+        final permissionError = await _ensureCameraPermission();
+        if (permissionError != null) return ApiResponse.failure(permissionError);
+      }
+
       final picked = switch (source) {
         FilePickSource.files => await _pickFromFiles(allowedExtensions),
         FilePickSource.camera => await _pickImage(ImageSource.camera),
@@ -42,6 +49,17 @@ class FilePickerService implements FilePickerServiceBase {
       if (picked == null) return ApiResponse.success(null);
 
       return _validate(picked, allowedExtensions, maxSizeBytes);
+    } on PlatformException catch (e, stack) {
+      debugPrint('[FilePicker] pick($source) platform failure: $e\n$stack');
+      return ApiResponse.failure(
+        ApiException(
+          message: source == FilePickSource.camera
+              ? 'The camera is unavailable on this device right now. '
+                    'Please try again or choose a different option.'
+              : KycStrings.genericError,
+          type: ApiExceptionType.unknown,
+        ),
+      );
     } catch (e, stack) {
       // `ApiService.handleRequest` is not in play here (this is not a
       // network call), so log before flattening or the real cause is lost.
@@ -54,6 +72,35 @@ class FilePickerService implements FilePickerServiceBase {
       );
     }
   }
+
+  /// Requests the camera permission if needed, returning `null` when it is
+  /// granted (or already was) and an explanatory [ApiException] otherwise.
+  /// A permanently-denied permission gets a distinct message pointing the
+  /// user at Settings, since re-requesting it would just silently no-op.
+  Future<ApiException?> _ensureCameraPermission() async {
+    var status = await ph.Permission.camera.status;
+    if (status.isGranted) return null;
+
+    if (!status.isPermanentlyDenied) {
+      status = await ph.Permission.camera.request();
+      if (status.isGranted) return null;
+    }
+
+    if (status.isPermanentlyDenied) {
+      return const ApiException(
+        message: KycStrings.cameraPermanentlyDeniedMessage,
+        type: ApiExceptionType.forbidden,
+      );
+    }
+
+    return const ApiException(
+      message: 'Camera permission is required to take a photo.',
+      type: ApiExceptionType.forbidden,
+    );
+  }
+
+  @override
+  Future<void> openSettings() => ph.openAppSettings();
 
   Future<PickedFile?> _pickFromFiles(List<String> allowedExtensions) async {
     final file = await FilePicker.pickFile(
@@ -81,6 +128,11 @@ class FilePickerService implements FilePickerServiceBase {
     final image = await _imagePicker.pickImage(
       source: source,
       imageQuality: 85,
+      // Bounds a full-resolution camera photo so it doesn't turn a
+      // successful capture into a doomed upload against
+      // KycConfig.maxKycFileSizeBytes.
+      maxWidth: 1920,
+      maxHeight: 1920,
     );
     if (image == null) return null;
 

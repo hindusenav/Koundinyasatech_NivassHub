@@ -22,24 +22,35 @@ class EmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final iconColor = isDark
+        ? AppColors.textDisabledDark
+        : AppColors.textDisabledLight;
+    final titleColor = isDark
+        ? AppColors.textPrimaryDark
+        : AppColors.textPrimaryLight;
+    final messageColor = isDark
+        ? AppColors.textSecondaryDark
+        : AppColors.textSecondaryLight;
+
     return Center(
       child: Padding(
         padding: AppSpacing.screenPadding,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, size: AppDimensions.iconXl, color: AppColors.grey400),
+            Icon(icon, size: AppDimensions.iconXl, color: iconColor),
             AppSpacing.gapMd,
             Text(
               title,
-              style: AppTextStyles.titleMedium.copyWith(color: AppColors.grey600),
+              style: AppTextStyles.titleMedium.copyWith(color: titleColor),
               textAlign: TextAlign.center,
             ),
             if (message != null) ...[
               AppSpacing.gapSm,
               Text(
                 message!,
-                style: AppTextStyles.bodyMedium.copyWith(color: AppColors.grey500),
+                style: AppTextStyles.bodyMedium.copyWith(color: messageColor),
                 textAlign: TextAlign.center,
               ),
             ],

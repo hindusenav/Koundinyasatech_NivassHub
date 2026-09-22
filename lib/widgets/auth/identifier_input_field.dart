@@ -27,6 +27,7 @@ class IdentifierInputField extends StatelessWidget {
     this.onSubmitted,
     this.isLoadingCountries = false,
     this.enabled = true,
+    this.onRetryCountries,
   });
 
   final TextEditingController controller;
@@ -39,6 +40,7 @@ class IdentifierInputField extends StatelessWidget {
   final ValueChanged<String>? onSubmitted;
   final bool isLoadingCountries;
   final bool enabled;
+  final VoidCallback? onRetryCountries;
 
   bool get _isMobile => channel == AuthChannel.mobile;
 
@@ -82,6 +84,7 @@ class IdentifierInputField extends StatelessWidget {
             onSelected: onCountrySelected,
             isLoading: isLoadingCountries,
             enabled: enabled,
+            onRetry: onRetryCountries,
           ),
         ),
         AppSpacing.gapWSm,

@@ -10,7 +10,7 @@ import 'package:flutter_nivasshub/widgets/dashboard/otp/generate_otp_banner.dart
 import 'package:flutter_nivasshub/widgets/dashboard/panic/panic_sos_banner.dart';
 import 'package:flutter_nivasshub/widgets/dashboard/quick_actions/quick_actions_grid.dart';
 import 'package:flutter_nivasshub/widgets/dashboard/add_property/add_proper_section.dart';
-import 'package:flutter_nivasshub/routes/app_routes.dart';
+import 'package:flutter_nivasshub/widgets/shared/feedback/custom_snackbar.dart';
 
 // KYC Update Card
 import 'package:flutter_nivasshub/widgets/dashboard/kyc_update_card/kyc_update_card_section.dart';
@@ -62,7 +62,11 @@ class _DashboardBodyState extends State<DashboardBody> {
   // ============================================================
 
   void _openKycFlow(BuildContext context) {
-    Navigator.pushNamed(context, AppRoutes.selectCountry);
+    // MISSING API CONTRACT: updating/adding property KYC for an
+    // already-authenticated account has no documented backend flow (the
+    // geography screens this used to reuse were dummy UI with no service
+    // layer, and have been removed). Re-wire once that contract exists.
+    CustomSnackbar.info(context, 'KYC update is coming soon.');
   }
 
   @override

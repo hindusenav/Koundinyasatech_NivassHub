@@ -11,19 +11,49 @@ import 'package:flutter_nivasshub/models/auth/login_user_request.dart';
 import 'package:flutter_nivasshub/models/auth/login_user_response_data.dart';
 import 'package:flutter_nivasshub/services/auth/auth_entry_service_base.dart';
 
-/// Dio-backed implementation. Not wired up while
-/// `AuthConfig`'s `useMockApi` is true — see `MockAuthEntryService`.
+/// Dio-backed implementation of the two [AuthEntryServiceBase] methods
+/// that have a documented backend contract.
+///
+/// `checkUserExists` calls `POST /country-codes/registration-check`;
+/// `loginUser` calls `POST /auth/login`. Neither uses the shared
+/// `{success, data}` envelope the rest of the API does — each has its own
+/// documented shape, handled directly below.
+///
+/// `createUser` and `generateAccessToken` deliberately throw
+/// [UnimplementedError] here: no documented endpoint exists for either
+/// (registration submit / the KYC-approval access token) — MISSING API
+/// CONTRACT. This class is never used on its own; `main.dart` wires
+/// `PartialRealAuthEntryService`, which delegates those two methods to
+/// `MockAuthEntryService` instead of calling them here.
 class AuthEntryService extends ApiService implements AuthEntryServiceBase {
   const AuthEntryService(super.client);
 
   @override
   Future<ApiResponse<CheckUserExistsResponseData>> checkUserExists(
     CheckUserExistsRequest request,
-  ) {
-    return handleRequest(
-      () => client.post(ApiEndpoints.checkUserExists, data: request.toJson()),
-      (json) => CheckUserExistsResponseData.fromJson(_unwrap(json)),
-    );
+  ) async {
+    final identifier = request.identifier.normalized;
+    try {
+      await client.post(ApiEndpoints.checkUserExists, data: request.toJson());
+      // HTTP 200: the stored procedure allows registration to proceed —
+      // the identifier is not yet registered.
+      return ApiResponse.success(
+        CheckUserExistsResponseData(userExists: false, identifier: identifier),
+      );
+    } on ApiException catch (e) {
+      if (e.type == ApiExceptionType.conflict) {
+        // HTTP 409 USER_ALREADY_REGISTERED — an existing account, not a
+        // request failure. Surface the backend's own message verbatim.
+        return ApiResponse.success(
+          CheckUserExistsResponseData(
+            userExists: true,
+            identifier: identifier,
+            statusMessage: e.message,
+          ),
+        );
+      }
+      return ApiResponse.failure(e);
+    }
   }
 
   @override
@@ -32,7 +62,7 @@ class AuthEntryService extends ApiService implements AuthEntryServiceBase {
   ) {
     return handleRequest(
       () => client.post(ApiEndpoints.loginUser, data: request.toJson()),
-      (json) => LoginUserResponseData.fromJson(_unwrap(json)),
+      (json) => LoginUserResponseData.fromJson(json as Map<String, dynamic>),
     );
   }
 
@@ -40,9 +70,11 @@ class AuthEntryService extends ApiService implements AuthEntryServiceBase {
   Future<ApiResponse<CreateUserResponseData>> createUser(
     CreateUserRequest request,
   ) {
-    return handleRequest(
-      () => client.post(ApiEndpoints.createUser, data: request.toJson()),
-      (json) => CreateUserResponseData.fromJson(_unwrap(json)),
+    throw UnimplementedError(
+      'MISSING API CONTRACT: no documented endpoint for registration '
+      'submit. Do not call AuthEntryService.createUser directly — use '
+      'PartialRealAuthEntryService, which delegates this to '
+      'MockAuthEntryService.',
     );
   }
 
@@ -51,34 +83,11 @@ class AuthEntryService extends ApiService implements AuthEntryServiceBase {
     required String userId,
     required String kycId,
   }) {
-    return handleRequest(
-      () => client.post(
-        ApiEndpoints.accessToken,
-        data: {'userId': userId, 'kycId': kycId},
-      ),
-      (json) => AccessTokenResponseData.fromJson(_unwrap(json)),
+    throw UnimplementedError(
+      'MISSING API CONTRACT: no documented endpoint for the KYC-approval '
+      'access token. Do not call AuthEntryService.generateAccessToken '
+      'directly — use PartialRealAuthEntryService, which delegates this '
+      'to MockAuthEntryService.',
     );
-  }
-
-  /// These endpoints return their fields at the top level alongside
-  /// `success` (`{success, userExists, identifier}`) rather than inside a
-  /// `data` envelope like the OTP endpoints do — so the whole map is
-  /// handed to `fromJson`, unwrapping `data` only if a future contract
-  /// revision adds one.
-  ///
-  /// A `success: false` arriving with an HTTP 200 (which `ApiClient` would
-  /// not turn into a `DioException`) is raised here; `handleRequest`'s
-  /// existing catch converts it to `ApiResponse.failure`.
-  static Map<String, dynamic> _unwrap(dynamic json) {
-    final map = json as Map<String, dynamic>;
-    if (map['success'] == false) {
-      throw ApiException(
-        message:
-            map['message'] as String? ?? 'Request failed. Please try again.',
-        type: ApiExceptionType.badRequest,
-      );
-    }
-    final data = map['data'];
-    return data is Map<String, dynamic> ? data : map;
   }
 }

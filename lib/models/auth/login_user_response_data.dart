@@ -1,17 +1,19 @@
-/// `data` payload of a successful password login.
+/// Outcome of `POST /auth/login`.
 ///
-/// ```json
-/// {
-///   "success": true, "userExists": true, "authenticated": true,
-///   "token": "mock_access_token_12345",
-///   "user": { "id": "USR001", "name": "Test User", "role": "Owner" }
-/// }
-/// ```
+/// The documented contract is exactly `{ ErrorCode, ErrorMsg, RefreshToken
+/// }` — no user id, display name or role. [userId]/[fullName]/[role] are
+/// always blank after a real login: MISSING API CONTRACT for returning
+/// the account's profile at login time; nothing downstream currently
+/// requires them for an *existing* user (KYC only runs for new
+/// registrations). [accessToken] and [refreshToken] both carry the same
+/// `RefreshToken` value — the contract has exactly one token, used both
+/// as the bearer token for authenticated requests and for session
+/// persistence.
 class LoginUserResponseData {
   const LoginUserResponseData({
     required this.authenticated,
-    required this.userId,
-    required this.fullName,
+    this.userId = '',
+    this.fullName = '',
     required this.accessToken,
     this.refreshToken,
     this.role,
@@ -24,28 +26,34 @@ class LoginUserResponseData {
   final String accessToken;
   final String? refreshToken;
 
-  /// Free-text on the wire (`"Owner"`), not the `UserRole` enum — an
-  /// existing account's role is display-only here and never drives the KYC
-  /// document set, which only matters during registration.
+  /// Free-text on the wire (`"Owner"`), not the `UserRole` enum. Not
+  /// returned by the real backend today.
   final String? role;
 
   /// Lets an account that logged in but never finished KYC be routed back
-  /// into the flow instead of straight to the Dashboard.
+  /// into the flow instead of straight to the Dashboard. Not returned by
+  /// the real backend today — defaults to `true` since login only
+  /// succeeds for an active, existing account.
   final bool kycApproved;
 
+  /// The documented contract is `{ErrorCode, ErrorMsg, RefreshToken}`, but
+  /// the live backend actually returns `{success, statusCode, message,
+  /// Login_Tokens}` — confirmed against a real 200 response. Both shapes
+  /// are accepted so a backend fix (in either direction) doesn't silently
+  /// break this again.
   factory LoginUserResponseData.fromJson(Map<String, dynamic> json) {
-    final user = json['user'];
-    final userMap = user is Map ? Map<String, dynamic>.from(user) : const {};
+    final errorCode = json['ErrorCode'] as int? ?? json['statusCode'] as int?;
+    final success = json['success'] as bool?;
+    final token = (json['RefreshToken'] ?? json['Login_Tokens']) as String?;
+    final authenticated =
+        (errorCode == 200 || success == true) &&
+        token != null &&
+        token.isNotEmpty;
 
     return LoginUserResponseData(
-      authenticated: json['authenticated'] as bool? ?? false,
-      userId: userMap['id'] as String? ?? '',
-      fullName: userMap['name'] as String? ?? '',
-      accessToken:
-          json['token'] as String? ?? json['accessToken'] as String? ?? '',
-      refreshToken: json['refreshToken'] as String?,
-      role: userMap['role'] as String?,
-      kycApproved: json['kycApproved'] as bool? ?? true,
+      authenticated: authenticated,
+      accessToken: token ?? '',
+      refreshToken: token,
     );
   }
 }

@@ -16,9 +16,7 @@ import 'package:flutter_nivasshub/widgets/shared/connectivity/no_internet_overla
 // AUTH
 // ============================================================
 
-import 'package:flutter_nivasshub/providers/auth/auth_provider.dart';
 import 'package:flutter_nivasshub/providers/auth/forgot_password_provider.dart';
-import 'package:flutter_nivasshub/services/auth/auth_service_base.dart';
 import 'package:flutter_nivasshub/services/auth/forgot_password_service_base.dart';
 
 // ============================================================
@@ -65,11 +63,15 @@ import 'package:flutter_nivasshub/providers/auth/auth_state_provider.dart';
 import 'package:flutter_nivasshub/providers/kyc/kyc_provider.dart';
 import 'package:flutter_nivasshub/providers/notifications/mock_notification_provider.dart';
 import 'package:flutter_nivasshub/services/auth/auth_entry_service_base.dart';
+import 'package:flutter_nivasshub/services/auth/otp_verification_service_base.dart';
+import 'package:flutter_nivasshub/services/country/country_service_base.dart';
 import 'package:flutter_nivasshub/services/file/file_picker_service_base.dart';
 import 'package:flutter_nivasshub/services/kyc/document_service_base.dart';
 import 'package:flutter_nivasshub/services/kyc/kyc_service_base.dart';
 import 'package:flutter_nivasshub/services/location/location_service_base.dart';
 import 'package:flutter_nivasshub/services/notifications/notification_service_base.dart';
+import 'package:flutter_nivasshub/services/registration/registration_service_base.dart';
+import 'package:flutter_nivasshub/services/society/society_service_base.dart';
 
 // ============================================================
 // APP
@@ -89,7 +91,6 @@ class NivasHubApp extends StatelessWidget {
     required this.secureStorageService,
     required this.connectivityService,
     required this.apiClient,
-    required this.authService,
     required this.forgotPasswordService,
     required this.dashboardRepository,
     required this.quickActionsRepository,
@@ -98,7 +99,11 @@ class NivasHubApp extends StatelessWidget {
     required this.profileRepository,
     required this.authStateProvider,
     required this.authEntryService,
+    required this.countryService,
     required this.locationService,
+    required this.registrationService,
+    required this.societyService,
+    required this.otpVerificationService,
     required this.documentService,
     required this.kycService,
     required this.filePickerService,
@@ -110,7 +115,6 @@ class NivasHubApp extends StatelessWidget {
   final ConnectivityService connectivityService;
   final ApiClient apiClient;
 
-  final AuthServiceBase authService;
   final ForgotPasswordServiceBase forgotPasswordService;
 
   final DashboardRepository dashboardRepository;
@@ -128,7 +132,11 @@ class NivasHubApp extends StatelessWidget {
   final AuthStateProvider authStateProvider;
 
   final AuthEntryServiceBase authEntryService;
+  final CountryServiceBase countryService;
   final LocationServiceBase locationService;
+  final RegistrationServiceBase registrationService;
+  final SocietyServiceBase societyService;
+  final OtpVerificationServiceBase otpVerificationService;
   final DocumentServiceBase documentService;
   final KycServiceBase kycService;
   final FilePickerServiceBase filePickerService;
@@ -154,24 +162,15 @@ class NivasHubApp extends StatelessWidget {
 
         Provider<ApiClient>.value(value: apiClient),
 
-        Provider<AuthServiceBase>.value(value: authService),
-
         Provider<ForgotPasswordServiceBase>.value(value: forgotPasswordService),
 
         // ========================================================
         // AUTH
         // ========================================================
-        ChangeNotifierProvider<AuthProvider>(
-          create: (_) => AuthProvider(authService: authService),
-        ),
-
-        // ChangeNotifierProvider<ForgotPasswordProvider>(
-        //   create: (_) => ForgotPasswordProvider(
-        //     forgotPasswordService: forgotPasswordService,
-        //   ),
-        // ),
         ChangeNotifierProvider<ForgotPasswordProvider>(
-          create: (_) => ForgotPasswordProvider(), // ✅ No parameters needed
+          create: (_) => ForgotPasswordProvider(
+            forgotPasswordService: forgotPasswordService,
+          ),
         ),
 
         // ========================================================
@@ -225,7 +224,15 @@ class NivasHubApp extends StatelessWidget {
         // ========================================================
         Provider<AuthEntryServiceBase>.value(value: authEntryService),
 
+        Provider<CountryServiceBase>.value(value: countryService),
+
         Provider<LocationServiceBase>.value(value: locationService),
+
+        Provider<RegistrationServiceBase>.value(value: registrationService),
+
+        Provider<SocietyServiceBase>.value(value: societyService),
+
+        Provider<OtpVerificationServiceBase>.value(value: otpVerificationService),
 
         Provider<DocumentServiceBase>.value(value: documentService),
 

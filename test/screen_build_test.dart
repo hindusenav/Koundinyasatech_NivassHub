@@ -7,10 +7,14 @@ import 'package:flutter_nivasshub/routes/app_routes.dart';
 import 'package:flutter_nivasshub/routes/auth_router.dart';
 import 'package:flutter_nivasshub/screens/auth/auth_entry_screen.dart';
 import 'package:flutter_nivasshub/screens/auth/enter_password_screen.dart';
+import 'package:flutter_nivasshub/screens/auth/otp_mobile_email_verification_screen.dart';
 import 'package:flutter_nivasshub/screens/auth/user_details_screen.dart';
 import 'package:flutter_nivasshub/screens/kyc/kyc_documents_screen.dart';
 import 'package:flutter_nivasshub/services/auth/auth_entry_service_base.dart';
 import 'package:flutter_nivasshub/services/auth/mock_auth_entry_service.dart';
+import 'package:flutter_nivasshub/services/auth/otp_verification_service_base.dart';
+import 'package:flutter_nivasshub/services/country/country_service_base.dart';
+import 'package:flutter_nivasshub/services/country/mock_country_service.dart';
 import 'package:flutter_nivasshub/services/file/file_picker_service_base.dart';
 import 'package:flutter_nivasshub/services/file/mock_file_picker_service.dart';
 import 'package:flutter_nivasshub/services/kyc/document_service_base.dart';
@@ -20,12 +24,17 @@ import 'package:flutter_nivasshub/services/kyc/mock_kyc_service.dart';
 import 'package:flutter_nivasshub/services/location/location_service_base.dart';
 import 'package:flutter_nivasshub/services/location/mock_location_service.dart';
 import 'package:flutter_nivasshub/services/notifications/mock_notification_service.dart';
+import 'package:flutter_nivasshub/services/registration/registration_service_base.dart';
+import 'package:flutter_nivasshub/services/society/society_service_base.dart';
 import 'package:flutter_nivasshub/storage/local_storage_service.dart';
 import 'package:flutter_nivasshub/storage/secure_storage_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'support/fake_otp_verification_service.dart';
+import 'support/fake_registration_service.dart';
+import 'support/fake_society_service.dart';
 import 'support/in_memory_secure_storage.dart';
 
 /// Builds each new screen through the real router.
@@ -76,7 +85,15 @@ void main() {
           Provider<LocalStorageService>.value(value: localStorage),
           Provider<SecureStorageService>.value(value: secureStorage),
           Provider<AuthEntryServiceBase>.value(value: MockAuthEntryService()),
+          Provider<CountryServiceBase>.value(value: const MockCountryService()),
           Provider<LocationServiceBase>.value(value: MockLocationService()),
+          Provider<RegistrationServiceBase>.value(
+            value: const FakeRegistrationService(),
+          ),
+          Provider<SocietyServiceBase>.value(value: const FakeSocietyService()),
+          Provider<OtpVerificationServiceBase>.value(
+            value: const FakeOtpVerificationService(),
+          ),
           Provider<DocumentServiceBase>.value(value: MockDocumentService()),
           Provider<KycServiceBase>.value(value: kycService),
           Provider<FilePickerServiceBase>.value(
@@ -162,14 +179,57 @@ void main() {
       arguments: const UserDetailsScreenArgs(identifier: identifier),
     );
 
-    // This is the regression: seven cascade fields watch LocationProvider
-    // in the same frame the sub-branch field used to kick a fetch off
-    // from `initState`, which marked them dirty mid-build.
+    // This is the regression: the cascade fields watch LocationProvider,
+    // RegistrationMasterDataProvider and SocietyDetailsProvider in the
+    // same frame, which previously notified during `initState` (illegal
+    // once siblings are already watching it) and marked them dirty
+    // mid-build.
     expectSettled(tester);
     expect(find.byType(UserDetailsScreen), findsOneWidget);
     expect(find.text('Country'), findsOneWidget);
-    expect(find.text('Flat Number'), findsOneWidget);
-    expect(find.text('Sub-Branch'), findsOneWidget);
+    expect(find.text('Tower / Block'), findsOneWidget);
+    expect(find.text('Unit Sub-Branch'), findsOneWidget);
+  });
+
+  testWidgets(
+      'the OTP verification screen builds both cards without overflow on a narrow phone',
+      (tester) async {
+    // The regression this guards: 6 OTP boxes at a fixed 56px + 16px gap
+    // (416px total) overflowed on any device narrower than ~448px once the
+    // 16px screen padding is subtracted — `OtpInputBoxes` now scales the
+    // box/gap down to fit, so this must render cleanly at a small phone
+    // width instead of the test harness's generous default surface size.
+    final originalSize = tester.view.physicalSize;
+    final originalDpr = tester.view.devicePixelRatio;
+    tester.view.physicalSize = const Size(360, 800);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(() {
+      tester.view.physicalSize = originalSize;
+      tester.view.devicePixelRatio = originalDpr;
+    });
+
+    await pumpRoute(
+      tester,
+      AppRoutes.otpMobileEmailVerification,
+      arguments: const OtpMobileEmailVerificationScreenArgs(
+        userId: 'encrypted-user-id',
+        email: 'charan@example.com',
+        mobileNumber: '9876543212',
+        role: UserRole.owner,
+      ),
+    );
+
+    expectSettled(tester);
+    expect(find.byType(OtpMobileEmailVerificationScreen), findsOneWidget);
+    expect(find.text('Mobile Verification'), findsOneWidget);
+    expect(find.text('Email Verification'), findsOneWidget);
+    expect(find.text('9876543212'), findsOneWidget);
+    expect(find.text('charan@example.com'), findsOneWidget);
+
+    // The screen runs a `Timer.periodic` resend-cooldown ticker, cancelled
+    // only in `dispose()` — unmount before the test ends so it doesn't
+    // leak into the next test as a "Timer is still pending" failure.
+    await tester.pumpWidget(const SizedBox.shrink());
   });
 
   testWidgets('the KYC documents screen builds the owner document set',

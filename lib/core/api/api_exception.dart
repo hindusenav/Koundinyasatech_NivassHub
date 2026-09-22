@@ -142,7 +142,15 @@ class ApiException implements Exception {
 
   static String? _extractMessage(dynamic body) {
     if (body is Map<String, dynamic>) {
-      final message = body['message'] ?? body['error'];
+      // Legacy SQL-stored-procedure endpoints (`/auth/login`,
+      // `/country-codes/*`) return PascalCase error fields instead of the
+      // generic `message`/`error` most of the API uses.
+      final message =
+          body['message'] ??
+          body['error'] ??
+          body['ErrorMsg'] ??
+          body['StatusMessage'] ??
+          body['Message'];
       if (message is String) return message;
     }
     return null;

@@ -192,7 +192,7 @@ class _ForgotPasswordOptionsScreenState extends State<ForgotPasswordOptionsScree
                               child: GestureDetector(
                                 onTap: () => Navigator.pushNamedAndRemoveUntil(
                                   context,
-                                  AppRoutes.login,
+                                  AppRoutes.authEntry,
                                   (route) => false,
                                 ),
                                 child: Row(

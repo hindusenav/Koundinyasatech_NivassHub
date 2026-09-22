@@ -25,4 +25,8 @@ abstract class FilePickerServiceBase {
     List<String> allowedExtensions = KycConfig.allowedKycExtensions,
     int maxSizeBytes = KycConfig.maxKycFileSizeBytes,
   });
+
+  /// Opens this device's app-settings screen — the only recovery path
+  /// once a permission (e.g. camera) has been permanently denied.
+  Future<void> openSettings();
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:flutter_nivasshub/routes/app_routes.dart';
+import 'package:flutter_nivasshub/widgets/shared/feedback/custom_snackbar.dart';
 
 class AddPropertySection extends StatelessWidget {
   const AddPropertySection({
@@ -97,12 +97,15 @@ class AddPropertySection extends StatelessWidget {
               height: 42,
               child: InkWell(
                 onTap: () {
-                  // Reuse the existing KYC flow to add a new
-                  // Flat/Villa/Office (Select Country -> Select City ->
-                  // City Confirmation -> Add Home -> KYC Verification ->
-                  // KYC Status), same entry point as the Home KYC Update
-                  // card.
-                  Navigator.pushNamed(context, AppRoutes.selectCountry);
+                  // MISSING API CONTRACT: adding a second property to an
+                  // already-authenticated account has no documented
+                  // backend flow (the geography screens this used to
+                  // reuse were dummy UI with no service layer, and have
+                  // been removed). Re-wire once that contract exists.
+                  CustomSnackbar.info(
+                    context,
+                    'Adding another property is coming soon.',
+                  );
                 },
                 borderRadius: BorderRadius.circular(24),
                 child: Row(

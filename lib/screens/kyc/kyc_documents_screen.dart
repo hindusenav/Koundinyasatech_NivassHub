@@ -10,6 +10,7 @@ import 'package:flutter_nivasshub/models/kyc/kyc_status.dart';
 import 'package:flutter_nivasshub/providers/kyc/kyc_provider.dart';
 import 'package:flutter_nivasshub/routes/app_routes.dart';
 import 'package:flutter_nivasshub/screens/kyc/kyc_verification_status_screen.dart';
+import 'package:flutter_nivasshub/services/file/file_picker_service_base.dart';
 import 'package:flutter_nivasshub/widgets/kyc/kyc_document_card.dart';
 import 'package:flutter_nivasshub/widgets/kyc/kyc_upload_source_sheet.dart';
 import 'package:flutter_nivasshub/widgets/kyc/kyc_verdict_panel.dart';
@@ -82,6 +83,23 @@ class _KycDocumentsScreenState extends State<KycDocumentsScreen> {
     final source = await KycUploadSourceSheet.show(context);
     if (source == null) return;
     await provider.pickAndUpload(type, source);
+    if (!mounted) return;
+
+    final error = provider.slotFor(type).errorMessage;
+    if (error == KycStrings.cameraPermanentlyDeniedMessage) {
+      final filePicker = context.read<FilePickerServiceBase>();
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(
+            content: Text(error!),
+            action: SnackBarAction(
+              label: 'Open Settings',
+              onPressed: filePicker.openSettings,
+            ),
+          ),
+        );
+    }
   }
 
   Future<void> _handleSubmit() async {

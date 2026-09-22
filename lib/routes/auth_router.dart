@@ -6,29 +6,32 @@ import 'package:flutter_nivasshub/models/location/location_level.dart';
 import 'package:flutter_nivasshub/providers/auth/auth_entry_provider.dart';
 import 'package:flutter_nivasshub/providers/auth/auth_state_provider.dart';
 import 'package:flutter_nivasshub/providers/auth/enter_password_provider.dart';
+import 'package:flutter_nivasshub/providers/auth/otp_mobile_email_verification_provider.dart';
 import 'package:flutter_nivasshub/providers/auth/user_details_provider.dart';
 import 'package:flutter_nivasshub/providers/kyc/kyc_status_provider.dart';
 import 'package:flutter_nivasshub/providers/location/location_provider.dart';
+import 'package:flutter_nivasshub/providers/registration/registration_master_data_provider.dart';
+import 'package:flutter_nivasshub/providers/society/society_details_provider.dart';
 import 'package:flutter_nivasshub/screens/auth/auth_entry_screen.dart';
 import 'package:flutter_nivasshub/screens/auth/enter_password_screen.dart';
+import 'package:flutter_nivasshub/screens/auth/otp_mobile_email_verification_screen.dart';
 import 'package:flutter_nivasshub/screens/auth/user_details_screen.dart';
 import 'package:flutter_nivasshub/screens/kyc/kyc_documents_screen.dart';
 import 'package:flutter_nivasshub/screens/kyc/kyc_verification_status_screen.dart';
 import 'package:flutter_nivasshub/screens/notifications/mock_notification_log_screen.dart';
 import 'package:flutter_nivasshub/services/auth/auth_entry_service_base.dart';
+import 'package:flutter_nivasshub/services/auth/otp_verification_service_base.dart';
+import 'package:flutter_nivasshub/services/country/country_service_base.dart';
 import 'package:flutter_nivasshub/services/kyc/kyc_service_base.dart';
 import 'package:flutter_nivasshub/services/location/location_service_base.dart';
+import 'package:flutter_nivasshub/services/registration/registration_service_base.dart';
+import 'package:flutter_nivasshub/services/society/society_service_base.dart';
 import 'package:flutter_nivasshub/storage/secure_storage_service.dart';
 
-import 'package:flutter_nivasshub/screens/auth/create_profile_screen.dart';
 import 'package:flutter_nivasshub/screens/auth/forgot_password_email_screen.dart';
 import 'package:flutter_nivasshub/screens/auth/forgot_password_mobile_screen.dart';
 import 'package:flutter_nivasshub/screens/auth/forgot_password_options_screen.dart';
 import 'package:flutter_nivasshub/screens/auth/forgot_password_verify_otp_screen.dart';
-import 'package:flutter_nivasshub/screens/auth/login_screen.dart';
-import 'package:flutter_nivasshub/screens/auth/otp_verification_screen.dart';
-import 'package:flutter_nivasshub/screens/auth/otp_verification_success_screen.dart';
-import 'package:flutter_nivasshub/screens/auth/register_screen.dart';
 import 'package:flutter_nivasshub/screens/auth/update_password_screen.dart';
 import 'package:flutter_nivasshub/screens/onboarding/onboarding_screen_two.dart';
 import 'package:flutter_nivasshub/screens/splash/splash_screen.dart';
@@ -100,7 +103,7 @@ class AuthRouter {
               // listeners yet, so nothing can be marked dirty mid-build.
               create: (_) => AuthEntryProvider(
                 authService: context.read<AuthEntryServiceBase>(),
-                locationService: context.read<LocationServiceBase>(),
+                countryService: context.read<CountryServiceBase>(),
                 initialChannel: entryArgs.prefillChannel ?? AuthChannel.mobile,
               )..loadCountryCodes(),
               child: AuthEntryScreen(args: entryArgs),
@@ -148,22 +151,56 @@ class AuthRouter {
           builder: (context) => MultiProvider(
             providers: [
               ChangeNotifierProvider(
-                // Both fetches start at creation, before anything is
-                // listening — starting them from a descendant's
-                // `initState` instead notified listeners mid-build.
+                // Fetch starts at creation, before anything is listening —
+                // starting it from a descendant's `initState` instead
+                // notified listeners mid-build. Country now sources from
+                // the registration master-data endpoint, not the
+                // dial-code-only `/country-codes`.
+                create: (_) => LocationProvider(
+                  context.read<LocationServiceBase>(),
+                  countryService: context.read<RegistrationServiceBase>(),
+                )..load(LocationLevel.country),
+              ),
+              ChangeNotifierProvider(
+                create: (_) => RegistrationMasterDataProvider(
+                  context.read<RegistrationServiceBase>(),
+                )..load(),
+              ),
+              ChangeNotifierProvider(
                 create: (_) =>
-                    LocationProvider(context.read<LocationServiceBase>())
-                      ..load(LocationLevel.country)
-                      ..loadSubBranches(),
+                    SocietyDetailsProvider(context.read<SocietyServiceBase>()),
               ),
               ChangeNotifierProvider(
                 create: (_) => UserDetailsProvider(
-                  authService: context.read<AuthEntryServiceBase>(),
-                  authState: context.read<AuthStateProvider>(),
+                  registrationService: context.read<RegistrationServiceBase>(),
                 ),
               ),
             ],
             child: UserDetailsScreen(args: args),
+          ),
+        );
+
+      // ========================================================
+      // OTP VERIFICATION (mobile + email, post-registration)
+      // ========================================================
+
+      case AppRoutes.otpMobileEmailVerification:
+        final args = settings.arguments;
+
+        if (args is! OtpMobileEmailVerificationScreenArgs) {
+          return _unknownRoute(settings);
+        }
+
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (context) => ChangeNotifierProvider(
+            create: (_) => OtpMobileEmailVerificationProvider(
+              service: context.read<OtpVerificationServiceBase>(),
+              userId: args.userId,
+              mobileNumber: args.mobileNumber,
+              email: args.email,
+            ),
+            child: OtpMobileEmailVerificationScreen(args: args),
           ),
         );
 
@@ -221,85 +258,6 @@ class AuthRouter {
         return MaterialPageRoute(
           settings: settings,
           builder: (_) => const MockNotificationLogScreen(),
-        );
-
-      // ========================================================
-      // LOGIN
-      // ========================================================
-
-      case AppRoutes.login:
-        return MaterialPageRoute(
-          settings: settings,
-          builder: (_) => const LoginScreen(),
-        );
-
-      // ========================================================
-      // REGISTER
-      // ========================================================
-
-      case AppRoutes.register:
-        return MaterialPageRoute(
-          settings: settings,
-          builder: (_) => const RegisterScreen(),
-        );
-
-      // ========================================================
-      // OTP VERIFICATION
-      // ========================================================
-
-      case AppRoutes.otpVerification:
-        final args = settings.arguments;
-
-        if (args is! OtpVerificationScreenArgs) {
-          return _unknownRoute(settings);
-        }
-
-        return MaterialPageRoute(
-          settings: settings,
-          builder: (_) => OtpVerificationScreen(
-            mobileNumber: args.mobileNumber,
-            otpExpirySeconds: args.otpExpirySeconds,
-            isRegistrationFlow: args.isRegistrationFlow,
-          ),
-        );
-
-      // ========================================================
-      // OTP SUCCESS
-      // ========================================================
-
-      case AppRoutes.otpVerificationSuccess:
-        final args = settings.arguments;
-
-        if (args is! OtpVerificationSuccessScreenArgs) {
-          return _unknownRoute(settings);
-        }
-
-        return MaterialPageRoute(
-          settings: settings,
-          builder: (_) => OtpVerificationSuccessScreen(
-            userExists: args.userExists,
-            registrationToken: args.registrationToken,
-            isRegistrationFlow: args.isRegistrationFlow,
-            mobileNumber: args.mobileNumber,
-            otpExpirySeconds: args.otpExpirySeconds,
-          ),
-        );
-
-      // ========================================================
-      // CREATE PROFILE - AUTH
-      // ========================================================
-
-      case AppRoutes.createProfile:
-        final args = settings.arguments;
-
-        if (args is! CreateProfileScreenArgs) {
-          return _unknownRoute(settings);
-        }
-
-        return MaterialPageRoute(
-          settings: settings,
-          builder: (_) =>
-              CreateProfileScreen(registrationToken: args.registrationToken),
         );
 
       // ========================================================

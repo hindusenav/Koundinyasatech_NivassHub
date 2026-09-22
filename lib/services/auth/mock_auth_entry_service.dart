@@ -115,13 +115,15 @@ class MockAuthEntryService implements AuthEntryServiceBase {
     }
 
     return ApiResponse.success(
-      LoginUserResponseData.fromJson({
-        'authenticated': true,
-        'token': 'mock_access_token_12345',
-        'refreshToken': 'mock_refresh_token_12345',
-        'kycApproved': true,
-        'user': {'id': user.id, 'name': user.name, 'role': user.role},
-      }),
+      LoginUserResponseData(
+        authenticated: true,
+        userId: user.id,
+        fullName: user.name,
+        accessToken: 'mock_access_token_12345',
+        refreshToken: 'mock_refresh_token_12345',
+        role: user.role,
+        kycApproved: true,
+      ),
     );
   }
 

@@ -1,6 +1,9 @@
 import 'package:flutter_nivasshub/models/auth/auth_identifier.dart';
 
-/// Body of `POST /auth/login-password` — the existing-user branch.
+/// Body of `POST /auth/login` — the existing-user branch.
+///
+/// `{ "umail": "...", "pwd": "...", "cont_code": "+91" | null }` — email
+/// login sends `cont_code: null`; mobile login sends the dial code.
 class LoginUserRequest {
   const LoginUserRequest({required this.identifier, required this.password});
 
@@ -8,9 +11,12 @@ class LoginUserRequest {
   final String password;
 
   Map<String, dynamic> toJson() => {
-    'identifier': identifier.normalized,
-    'channel': identifier.channel.wireValue,
-    if (identifier.countryCode != null) 'countryCode': identifier.countryCode,
-    'password': password,
+    'umail': identifier.channel == AuthChannel.mobile
+        ? identifier.nationalNumber
+        : identifier.normalized,
+    'pwd': password,
+    'cont_code': identifier.channel == AuthChannel.mobile
+        ? identifier.countryCode
+        : null,
   };
 }

@@ -1,8 +1,10 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show PlatformException;
 import 'package:flutter_nivasshub/providers/profile/profile_provider.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:permission_handler/permission_handler.dart' as ph;
 import 'package:provider/provider.dart';
 import 'package:flutter_nivasshub/screens/profile/add_address_details_screen.dart';
 class ProfileScreen extends StatefulWidget {
@@ -41,32 +43,100 @@ class _ProfileScreenState extends State<ProfileScreen> {
   // IMAGE PICKER
   // ============================================================
 
+  /// Checks (and, if needed, requests) the camera permission before a
+  /// capture. Returns `true` when it's safe to proceed; on denial it shows
+  /// feedback itself (a plain message, or an "Open Settings" action if the
+  /// permission was permanently denied) and returns `false`.
+  Future<bool> _ensureCameraPermission() async {
+    var status = await ph.Permission.camera.status;
+    if (status.isGranted) return true;
+
+    if (!status.isPermanentlyDenied) {
+      status = await ph.Permission.camera.request();
+      if (status.isGranted) return true;
+    }
+
+    if (!mounted) return false;
+
+    if (status.isPermanentlyDenied) {
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(
+            content: const Text(
+              'Camera permission is turned off for this app. '
+              'Enable it from Settings to take a photo.',
+            ),
+            action: SnackBarAction(
+              label: 'Open Settings',
+              onPressed: ph.openAppSettings,
+            ),
+          ),
+        );
+    } else {
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          const SnackBar(
+            content: Text('Camera permission is required to take a photo.'),
+          ),
+        );
+    }
+    return false;
+  }
+
   Future<void> _pickProfileImage(ImageSource source) async {
-    final XFile? pickedFile = await _picker.pickImage(
-      source: source,
-      imageQuality: 85,
-      maxWidth: 1200,
-    );
+    if (source == ImageSource.camera && !await _ensureCameraPermission()) {
+      return;
+    }
 
-    if (pickedFile == null) return;
+    try {
+      final XFile? pickedFile = await _picker.pickImage(
+        source: source,
+        imageQuality: 85,
+        maxWidth: 1200,
+      );
 
-    setState(() {
-      _profileImage = File(pickedFile.path);
-    });
+      if (pickedFile == null || !mounted) return;
+
+      setState(() {
+        _profileImage = File(pickedFile.path);
+      });
+    } on PlatformException {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          const SnackBar(content: Text('Could not open the camera. Please try again.')),
+        );
+    }
   }
 
   Future<void> _pickCoverImage(ImageSource source) async {
-    final XFile? pickedFile = await _picker.pickImage(
-      source: source,
-      imageQuality: 85,
-      maxWidth: 1600,
-    );
+    if (source == ImageSource.camera && !await _ensureCameraPermission()) {
+      return;
+    }
 
-    if (pickedFile == null) return;
+    try {
+      final XFile? pickedFile = await _picker.pickImage(
+        source: source,
+        imageQuality: 85,
+        maxWidth: 1600,
+      );
 
-    setState(() {
-      _coverImage = File(pickedFile.path);
-    });
+      if (pickedFile == null || !mounted) return;
+
+      setState(() {
+        _coverImage = File(pickedFile.path);
+      });
+    } on PlatformException {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          const SnackBar(content: Text('Could not open the camera. Please try again.')),
+        );
+    }
   }
 
   // ============================================================
