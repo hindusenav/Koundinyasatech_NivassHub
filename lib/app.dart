@@ -5,23 +5,25 @@ import 'package:provider/provider.dart';
 // CORE
 // ============================================================
 
-import 'package:flutter_nivasshub/services/core/api_client.dart';
-import 'package:flutter_nivasshub/services/core/connectivity_service.dart';
-import 'package:flutter_nivasshub/services/core/local_storage_service.dart';
-import 'package:flutter_nivasshub/services/core/secure_storage_service.dart';
+import 'package:flutter_nivasshub/core/api/base_api.dart';
+import 'package:flutter_nivasshub/services/connectivity/connectivity_service.dart';
+import 'package:flutter_nivasshub/storage/local_storage_service.dart';
+import 'package:flutter_nivasshub/storage/secure_storage_service.dart';
+import 'package:flutter_nivasshub/providers/connectivity/connectivity_provider.dart';
+import 'package:flutter_nivasshub/widgets/shared/connectivity/no_internet_overlay.dart';
 
 // ============================================================
 // AUTH
 // ============================================================
 
-import 'package:flutter_nivasshub/providers/auth/auth_provider.dart';
-import 'package:flutter_nivasshub/services/auth/auth_service_base.dart';
+import 'package:flutter_nivasshub/providers/auth/forgot_password_provider.dart';
+import 'package:flutter_nivasshub/services/auth/forgot_password_service_base.dart';
 
 // ============================================================
 // DASHBOARD
 // ============================================================
 
-import 'package:flutter_nivasshub/services/dashboard/dashboard_repository.dart';
+import 'package:flutter_nivasshub/repositories/dashboard/dashboard_repository.dart';
 import 'package:flutter_nivasshub/providers/dashboard/dashboard_navigation_provider.dart';
 import 'package:flutter_nivasshub/providers/dashboard/dashboard_provider.dart';
 
@@ -30,14 +32,14 @@ import 'package:flutter_nivasshub/providers/dashboard/dashboard_provider.dart';
 // ============================================================
 
 import 'package:flutter_nivasshub/providers/profile/profile_provider.dart';
-import 'package:flutter_nivasshub/services/profile/profile_repository.dart';
+import 'package:flutter_nivasshub/repositories/profile/profile_repository.dart';
 
 // ============================================================
 // QUICK ACTIONS
 // ============================================================
 
 import 'package:flutter_nivasshub/providers/quick_actions/quick_actions_provider.dart';
-import 'package:flutter_nivasshub/services/quick_actions/quick_actions_repository.dart';
+import 'package:flutter_nivasshub/repositories/quick_actions/quick_actions_repository.dart';
 
 // ============================================================
 // SEARCH
@@ -51,7 +53,25 @@ import 'package:flutter_nivasshub/services/search/search_service_base.dart';
 // ============================================================
 
 import 'package:flutter_nivasshub/providers/settings/settings_provider.dart';
-import 'package:flutter_nivasshub/services/settings/settings_repository.dart';
+import 'package:flutter_nivasshub/repositories/settings/settings_repository.dart';
+
+// ============================================================
+// AUTH ENTRY / KYC
+// ============================================================
+
+import 'package:flutter_nivasshub/providers/auth/auth_state_provider.dart';
+import 'package:flutter_nivasshub/providers/kyc/kyc_provider.dart';
+import 'package:flutter_nivasshub/providers/notifications/mock_notification_provider.dart';
+import 'package:flutter_nivasshub/services/auth/auth_entry_service_base.dart';
+import 'package:flutter_nivasshub/services/auth/otp_verification_service_base.dart';
+import 'package:flutter_nivasshub/services/country/country_service_base.dart';
+import 'package:flutter_nivasshub/services/file/file_picker_service_base.dart';
+import 'package:flutter_nivasshub/services/kyc/document_service_base.dart';
+import 'package:flutter_nivasshub/services/kyc/kyc_service_base.dart';
+import 'package:flutter_nivasshub/services/location/location_service_base.dart';
+import 'package:flutter_nivasshub/services/notifications/notification_service_base.dart';
+import 'package:flutter_nivasshub/services/registration/registration_service_base.dart';
+import 'package:flutter_nivasshub/services/society/society_service_base.dart';
 
 // ============================================================
 // APP
@@ -60,7 +80,8 @@ import 'package:flutter_nivasshub/services/settings/settings_repository.dart';
 import 'package:flutter_nivasshub/routes/app_routes.dart';
 import 'package:flutter_nivasshub/constants/app_theme.dart';
 import 'package:flutter_nivasshub/routes/navigation_service.dart';
-import 'package:flutter_nivasshub/routes/route_generator.dart';
+import 'package:flutter_nivasshub/routes/auth_router.dart';
+import 'package:flutter_nivasshub/routes/app_router.dart';
 import 'package:flutter_nivasshub/providers/theme/theme_mode_provider.dart';
 
 class NivasHubApp extends StatelessWidget {
@@ -70,12 +91,23 @@ class NivasHubApp extends StatelessWidget {
     required this.secureStorageService,
     required this.connectivityService,
     required this.apiClient,
-    required this.authService,
+    required this.forgotPasswordService,
     required this.dashboardRepository,
     required this.quickActionsRepository,
     required this.searchService,
     required this.settingsRepository,
     required this.profileRepository,
+    required this.authStateProvider,
+    required this.authEntryService,
+    required this.countryService,
+    required this.locationService,
+    required this.registrationService,
+    required this.societyService,
+    required this.otpVerificationService,
+    required this.documentService,
+    required this.kycService,
+    required this.filePickerService,
+    required this.notificationService,
   });
 
   final LocalStorageService localStorageService;
@@ -83,7 +115,7 @@ class NivasHubApp extends StatelessWidget {
   final ConnectivityService connectivityService;
   final ApiClient apiClient;
 
-  final AuthServiceBase authService;
+  final ForgotPasswordServiceBase forgotPasswordService;
 
   final DashboardRepository dashboardRepository;
 
@@ -95,6 +127,21 @@ class NivasHubApp extends StatelessWidget {
 
   final ProfileRepository profileRepository;
 
+  /// Built in `main.dart` rather than here, because `MockKycService`
+  /// closes over it to address its notifications.
+  final AuthStateProvider authStateProvider;
+
+  final AuthEntryServiceBase authEntryService;
+  final CountryServiceBase countryService;
+  final LocationServiceBase locationService;
+  final RegistrationServiceBase registrationService;
+  final SocietyServiceBase societyService;
+  final OtpVerificationServiceBase otpVerificationService;
+  final DocumentServiceBase documentService;
+  final KycServiceBase kycService;
+  final FilePickerServiceBase filePickerService;
+  final NotificationServiceBase notificationService;
+
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
@@ -102,45 +149,36 @@ class NivasHubApp extends StatelessWidget {
         // ========================================================
         // CORE SERVICES
         // ========================================================
+        Provider<LocalStorageService>.value(value: localStorageService),
 
-        Provider<LocalStorageService>.value(
-          value: localStorageService,
+        Provider<SecureStorageService>.value(value: secureStorageService),
+
+        Provider<ConnectivityService>.value(value: connectivityService),
+
+        ChangeNotifierProvider<ConnectivityProvider>(
+          create: (_) =>
+              ConnectivityProvider(connectivityService: connectivityService),
         ),
 
-        Provider<SecureStorageService>.value(
-          value: secureStorageService,
-        ),
+        Provider<ApiClient>.value(value: apiClient),
 
-        Provider<ConnectivityService>.value(
-          value: connectivityService,
-        ),
-
-        Provider<ApiClient>.value(
-          value: apiClient,
-        ),
-
-        Provider<AuthServiceBase>.value(
-          value: authService,
-        ),
+        Provider<ForgotPasswordServiceBase>.value(value: forgotPasswordService),
 
         // ========================================================
         // AUTH
         // ========================================================
-
-        ChangeNotifierProvider<AuthProvider>(
-          create: (_) => AuthProvider(
-            authService: authService,
+        ChangeNotifierProvider<ForgotPasswordProvider>(
+          create: (_) => ForgotPasswordProvider(
+            forgotPasswordService: forgotPasswordService,
           ),
         ),
 
         // ========================================================
         // DASHBOARD
         // ========================================================
-
         ChangeNotifierProvider<DashboardProvider>(
-          create: (_) => DashboardProvider(
-            dashboardRepository,
-          )..loadDashboard(),
+          create: (_) =>
+              DashboardProvider(dashboardRepository)..loadDashboard(),
         ),
 
         ChangeNotifierProvider<DashboardNavigationProvider>(
@@ -150,59 +188,93 @@ class NivasHubApp extends StatelessWidget {
         // ========================================================
         // QUICK ACTIONS
         // ========================================================
-
         ChangeNotifierProvider<QuickActionsProvider>(
-          create: (_) => QuickActionsProvider(
-            quickActionsRepository,
-          ),
+          create: (_) => QuickActionsProvider(quickActionsRepository),
         ),
 
         // ========================================================
         // SEARCH
         // ========================================================
-
         ChangeNotifierProvider<SearchProvider>(
-          create: (_) => SearchProvider(
-            searchService,
-          ),
+          create: (_) => SearchProvider(searchService),
         ),
 
         // ========================================================
         // SETTINGS
         // ========================================================
-ChangeNotifierProvider<SettingsProvider>(
-  create: (_) => SettingsProvider(
-    settingsRepository: settingsRepository,
-  ),
-),
+        ChangeNotifierProvider<SettingsProvider>(
+          create: (_) =>
+              SettingsProvider(settingsRepository: settingsRepository),
+        ),
 
         // ========================================================
         // PROFILE
         // ========================================================
-ChangeNotifierProvider<ProfileProvider>(
-  create: (_) => ProfileProvider(
-    repository: profileRepository,
-  ),
-),
+        ChangeNotifierProvider<ProfileProvider>(
+          create: (_) => ProfileProvider(repository: profileRepository),
+        ),
+
+        // ========================================================
+        // AUTH ENTRY / KYC
+        //
+        // The screen-scoped providers for these features (auth entry,
+        // password, user details, location cascade, KYC status) are
+        // created per-route in `AuthRouter`; only the three that must
+        // outlive a single route are global.
+        // ========================================================
+        Provider<AuthEntryServiceBase>.value(value: authEntryService),
+
+        Provider<CountryServiceBase>.value(value: countryService),
+
+        Provider<LocationServiceBase>.value(value: locationService),
+
+        Provider<RegistrationServiceBase>.value(value: registrationService),
+
+        Provider<SocietyServiceBase>.value(value: societyService),
+
+        Provider<OtpVerificationServiceBase>.value(value: otpVerificationService),
+
+        Provider<DocumentServiceBase>.value(value: documentService),
+
+        Provider<KycServiceBase>.value(value: kycService),
+
+        Provider<FilePickerServiceBase>.value(value: filePickerService),
+
+        Provider<NotificationServiceBase>.value(value: notificationService),
+
+        ChangeNotifierProvider<AuthStateProvider>.value(
+          value: authStateProvider,
+        ),
+
+        // Lazy (provider's default): never constructed for a user who is
+        // already authenticated and never touches KYC.
+        ChangeNotifierProvider<KycProvider>(
+          create: (_) => KycProvider(
+            documentService: documentService,
+            kycService: kycService,
+            filePickerService: filePickerService,
+            localStorage: localStorageService,
+            authState: authStateProvider,
+          ),
+        ),
+
+        ChangeNotifierProvider<MockNotificationProvider>(
+          create: (_) => MockNotificationProvider(notificationService),
+        ),
 
         // ========================================================
         // THEME
         // ========================================================
-
         ChangeNotifierProvider<ThemeModeProvider>(
-          create: (_) => ThemeModeProvider(
-            localStorageService,
-          )..init(),
+          create: (_) => ThemeModeProvider(localStorageService)..init(),
         ),
       ],
 
       // ==========================================================
       // MATERIAL APP
       // ==========================================================
-
       builder: (context, child) {
-        final themeModeProvider =
-            context.watch<ThemeModeProvider>();
+        final themeModeProvider = context.watch<ThemeModeProvider>();
 
         return MaterialApp(
           title: 'NivasHub',
@@ -212,9 +284,8 @@ ChangeNotifierProvider<ProfileProvider>(
           navigatorKey: NavigationService.navigatorKey,
 
           navigatorObservers: [
-            DashboardNavObserver(
-              context.read<DashboardNavigationProvider>(),
-            ),
+            DashboardNavObserver(context.read<DashboardNavigationProvider>()),
+            ConnectivityRouteObserver(context.read<ConnectivityProvider>()),
           ],
 
           theme: AppTheme.light,
@@ -225,8 +296,11 @@ ChangeNotifierProvider<ProfileProvider>(
 
           initialRoute: AppRoutes.splash,
 
-          onGenerateRoute:
-              RouteGenerator.generateRoute,
+          onGenerateRoute: (settings) =>
+              AuthRouter.generateRoute(settings) ??
+              AppRouter.generateRoute(settings),
+
+          builder: (context, child) => NoInternetOverlay(child: child),
         );
       },
     );

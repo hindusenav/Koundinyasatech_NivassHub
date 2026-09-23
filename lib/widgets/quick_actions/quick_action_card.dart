@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter_nivasshub/constants/app_dimensions.dart';
 import 'package:flutter_nivasshub/constants/app_radius.dart';
@@ -29,11 +28,18 @@ class QuickActionCard extends StatelessWidget {
     required this.item,
     required this.onTap,
     this.iconSize = AppDimensions.iconLg,
+    this.verticalPadding = AppSpacing.sm,
   });
 
   final AppFeatureModel item;
   final VoidCallback onTap;
   final double iconSize;
+
+  /// Internal top/bottom padding. Defaults to the compact value used by
+  /// Marketplace's grid tiles; the top shortcuts row (Manage Devices/Nivaas
+  /// Hub Locks) passes a larger value since it sits in a plain `Row`, not a
+  /// height-constrained grid, so it can afford more breathing room.
+  final double verticalPadding;
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +49,7 @@ class QuickActionCard extends StatelessWidget {
         onTap: onTap,
         borderRadius: AppRadius.radiusMd,
         child: Ink(
-          padding: AppSpacing.symmetric(horizontal: AppSpacing.sm, vertical: AppSpacing.md),
+          padding: AppSpacing.symmetric(horizontal: AppSpacing.sm, vertical: verticalPadding),
           decoration: BoxDecoration(
             color: AppColors.surfaceLight,
             borderRadius: AppRadius.radiusMd,
@@ -52,7 +58,7 @@ class QuickActionCard extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(AppFeatureIcons.icon(item.iconKey), size: iconSize, color: AppColors.primary),
+              AppFeatureIcons.iconWidget(item.iconKey, size: iconSize, color: AppColors.primary),
               AppSpacing.gapSm,
               Text(
                 item.title,

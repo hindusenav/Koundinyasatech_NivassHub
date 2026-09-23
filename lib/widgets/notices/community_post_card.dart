@@ -28,6 +28,7 @@ class CommunityPostCard extends StatelessWidget {
     final dividerColor = isDark ? AppColors.noticesDividerDark : AppColors.noticesDividerLight;
 
     return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
         color: isEvent
             ? (isDark ? AppColors.noticesBlueTintBgDark : AppColors.noticesBlueTintBgLight)

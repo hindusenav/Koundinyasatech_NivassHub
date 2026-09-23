@@ -27,9 +27,9 @@ import 'package:flutter_nivasshub/models/notifications/visitor_details_model.dar
 import 'package:flutter_nivasshub/providers/notifications/visitor_details_provider.dart';
 import 'package:flutter_nivasshub/providers/notifications/visitor_notification_provider.dart';
 import 'package:flutter_nivasshub/services/notifications/mock_visitor_details_service.dart';
-import 'package:flutter_nivasshub/services/notifications/visitor_details_repository.dart';
+import 'package:flutter_nivasshub/repositories/notifications/visitor_details_repository.dart';
 
-/// Arguments for `AppRoutes.visitorDetail` — see `RouteGenerator`. Carries
+/// Arguments for `AppRoutes.visitorDetail` — see `AppRouter`. Carries
 /// the SAME data `DeliveryDetailsSheet.show(...)` used to take: the visitor
 /// id to fetch, the Home screen's already-loaded `VisitorNotificationProvider`
 /// (reused, not recreated, so Approve/Reject here go through the exact same

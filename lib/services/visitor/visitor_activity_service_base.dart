@@ -1,4 +1,4 @@
-import 'package:flutter_nivasshub/services/core/api_response.dart';
+import 'package:flutter_nivasshub/core/api/api_response.dart';
 import 'package:flutter_nivasshub/models/visitor/approval_activity_model.dart';
 
 /// The swappable data-source seam for the Activities screen. Implemented by

@@ -5,111 +5,160 @@ import 'package:provider/provider.dart';
 import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter_nivasshub/providers/dashboard/dashboard_provider.dart';
 import 'package:flutter_nivasshub/providers/dashboard/dashboard_state.dart';
+import 'package:flutter_nivasshub/storage/secure_storage_service.dart';
 import 'package:flutter_nivasshub/widgets/dashboard/dashboard_body.dart';
 import 'package:flutter_nivasshub/widgets/dashboard/loading/dashboard_loading_widget.dart';
 import 'package:flutter_nivasshub/widgets/dashboard/error/dashboard_error_widget.dart';
 import 'package:flutter_nivasshub/widgets/dashboard/empty/dashboard_empty_widget.dart';
 import 'package:flutter_nivasshub/widgets/dashboard/navigation/dashboard_bottom_navigation.dart';
 
-class HomeDashboardScreen extends StatelessWidget {
+class HomeDashboardScreen extends StatefulWidget {
   const HomeDashboardScreen({
     super.key,
   });
+
+  @override
+  State<HomeDashboardScreen> createState() =>
+      _HomeDashboardScreenState();
+}
+
+class _HomeDashboardScreenState
+    extends State<HomeDashboardScreen> {
+  // ============================================================
+  // KYC STATUS
+  // ============================================================
+
+  bool _kycStatusLoaded = false;
+  bool _kycApproved = false;
 
   // ============================================================
   // COLORS
   // ============================================================
 
-  static const Color _headerBlueLight = AppColors.dashboardHeaderLight;
-  static const Color _headerBlueDark = AppColors.dashboardHeaderDark;
-  static const Color _backgroundColorLight = AppColors.dashboardBackgroundLight;
-  static const Color _backgroundColorDark = AppColors.dashboardBackgroundDark;
+  static const Color _headerBlueLight =
+      AppColors.dashboardHeaderLight;
+
+  static const Color _headerBlueDark =
+      AppColors.dashboardHeaderDark;
+
+  static const Color _backgroundColorLight =
+      AppColors.dashboardBackgroundLight;
+
+  static const Color _backgroundColorDark =
+      AppColors.dashboardBackgroundDark;
+
+  // ============================================================
+  // INIT
+  // ============================================================
+
+  @override
+  void initState() {
+    super.initState();
+    _loadKycStatus();
+  }
+
+  // ============================================================
+  // LOAD KYC STATUS
+  // ============================================================
+
+  Future<void> _loadKycStatus() async {
+    final approved =
+        await context.read<SecureStorageService>().isKycApproved();
+
+    if (!mounted) return;
+
+    setState(() {
+      _kycApproved = approved;
+      _kycStatusLoaded = true;
+    });
+  }
+
+  // ============================================================
+  // BUILD
+  // ============================================================
 
   @override
   Widget build(BuildContext context) {
     return Consumer<DashboardProvider>(
       builder: (context, provider, child) {
-        final isDark = Theme.of(context).brightness == Brightness.dark;
-        final headerBlue = isDark ? _headerBlueDark : _headerBlueLight;
-        final backgroundColor =
-            isDark ? _backgroundColorDark : _backgroundColorLight;
+        final isDark =
+            Theme.of(context).brightness ==
+                Brightness.dark;
 
-        // ========================================================
-        // SYSTEM UI
-        // ========================================================
+        final headerBlue =
+            isDark
+                ? _headerBlueDark
+                : _headerBlueLight;
+
+        final backgroundColor =
+            isDark
+                ? _backgroundColorDark
+                : _backgroundColorLight;
 
         SystemChrome.setSystemUIOverlayStyle(
           SystemUiOverlayStyle(
             statusBarColor: headerBlue,
             statusBarIconBrightness:
-                isDark ? Brightness.light : Brightness.dark,
-            statusBarBrightness: isDark ? Brightness.dark : Brightness.light,
-
-            systemNavigationBarColor: backgroundColor,
+                isDark
+                    ? Brightness.light
+                    : Brightness.dark,
+            statusBarBrightness:
+                isDark
+                    ? Brightness.dark
+                    : Brightness.light,
+            systemNavigationBarColor:
+                backgroundColor,
             systemNavigationBarIconBrightness:
-                isDark ? Brightness.light : Brightness.dark,
+                isDark
+                    ? Brightness.light
+                    : Brightness.dark,
           ),
         );
 
         return Scaffold(
           backgroundColor: backgroundColor,
 
-          // ======================================================
-          // MAIN BODY
-          // ======================================================
-
           body: Container(
             width: double.infinity,
             color: headerBlue,
 
             child: SafeArea(
-              // ==================================================
-              // IMPORTANT
-              //
-              // TOP SafeArea = YES
-              // LEFT SafeArea = NO
-              // RIGHT SafeArea = NO
-              // BOTTOM SafeArea = NO
-              //
-              // This removes the white/cream gaps on both sides.
-              // ==================================================
-
               top: true,
               left: false,
               right: false,
               bottom: false,
 
-              child: RefreshIndicator(
-                color: isDark ? AppColors.primaryLight : const Color(0xFF1976D2),
-                backgroundColor: isDark ? AppColors.surfaceDark : Colors.white,
-                onRefresh: provider.refresh,
-                child: _buildBody(provider),
-              ),
+              child: _buildBody(provider),
             ),
           ),
 
-          // ======================================================
-          // BOTTOM NAVIGATION
-          // ======================================================
-
-          bottomNavigationBar: const DashboardBottomNavigation(),
+          bottomNavigationBar:
+              const DashboardBottomNavigation(),
         );
       },
     );
   }
 
-  // ==============================================================
+  // ============================================================
   // DASHBOARD STATE
-  // ==============================================================
+  // ============================================================
 
-  Widget _buildBody(DashboardProvider provider) {
+  Widget _buildBody(
+    DashboardProvider provider,
+  ) {
     switch (provider.state) {
       case DashboardState.loading:
         return const DashboardLoadingWidget();
 
       case DashboardState.success:
-        return const DashboardBody();
+        // Wait until KYC status is known.
+        // This prevents the KYC card from appearing briefly
+        // while SharedPreferences is being loaded.
+        if (!_kycStatusLoaded) {
+          return const DashboardLoadingWidget();
+        }
 
+return DashboardBody(showKycCard: !_kycApproved);
       case DashboardState.empty:
         return const DashboardEmptyWidget();
 

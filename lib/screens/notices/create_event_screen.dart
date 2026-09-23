@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter_nivasshub/providers/notices/notices_provider.dart';
+import 'package:flutter_nivasshub/widgets/dashboard/navigation/dashboard_bottom_navigation.dart';
 
 /// Screen matching Figma "Community - New Event"
 class CreateEventScreen extends StatefulWidget {
@@ -96,22 +97,23 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final headingColor =
-        isDark ? AppColors.noticesHeadingDark : AppColors.noticesHeadingLight;
+    final headerColor =
+        isDark ? AppColors.dashboardHeaderDark : const Color(0xFFC7E3FF);
+    final titleColor =
+        isDark ? AppColors.noticesHeadingDark : const Color(0xFF05234D);
     final mutedColor = isDark ? AppColors.noticesMutedDark : AppColors.noticesMutedLight;
     final accentBlue =
-        isDark ? AppColors.noticesAccentBlueDark : AppColors.noticesAccentBlueLight;
+        isDark ? AppColors.noticesAccentBlueDark : const Color(0xFF0060BD);
 
     return Scaffold(
       backgroundColor: isDark ? AppColors.surfaceDark : AppColors.surfaceLight,
       appBar: AppBar(
-        backgroundColor:
-            isDark ? AppColors.noticesAppBarDark : AppColors.noticesAppBarLight,
+        backgroundColor: headerColor,
         elevation: 0,
         automaticallyImplyLeading: false,
         titleSpacing: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: headingColor),
+          icon: Icon(Icons.arrow_back, color: titleColor),
           onPressed: () {
             if (Navigator.of(context).canPop()) {
               Navigator.of(context).pop();
@@ -121,7 +123,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
         title: Text(
           'New Event',
           style: TextStyle(
-            color: headingColor,
+            color: titleColor,
             fontWeight: FontWeight.bold,
             fontSize: 18,
           ),
@@ -131,10 +133,10 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
           Container(
             margin: const EdgeInsets.only(right: 12),
             decoration: BoxDecoration(
-              color: isDark ? AppColors.noticesBlueTintBgDark : AppColors.noticesBlueTintBgLight,
+              color: isDark ? AppColors.noticesBlueTintBgDark : const Color(0xFFFFFFFF),
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
-                color: isDark ? AppColors.noticesBlueBorderDark : AppColors.noticesBlueBorderLight,
+                color: isDark ? AppColors.noticesBlueBorderDark : const Color(0xFFCCDFF2),
               ),
             ),
             child: Material(
@@ -166,113 +168,152 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
         ],
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              children: [
-                CircleAvatar(
-                  radius: 20,
-                  backgroundColor:
-                      isDark ? AppColors.noticesAccentAmberDark : AppColors.noticesAccentAmberLight,
-                  child: const Text(
-                    'A',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
                     children: [
-                      Text(
-                        'User Name',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
-                          color: headingColor,
+                      CircleAvatar(
+                        radius: 20,
+                        backgroundColor:
+                            isDark ? AppColors.noticesAccentAmberDark : const Color(0xFFEC9211),
+                        child: const Text(
+                          'A',
+                          style: TextStyle(
+                            fontFamily: 'Inter',
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 16,
+                            height: 1.0,
+                            letterSpacing: 0,
+                          ),
                         ),
                       ),
-                      Text(
-                        'Apartment B 402',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: isDark ? AppColors.textSecondaryDark : Colors.grey.shade600,
-                        ),
+                      const SizedBox(width: 12),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'User Name',
+                            style: TextStyle(
+                              fontFamily: 'DM Sans',
+                              fontWeight: FontWeight.w600,
+                              fontSize: 15,
+                              height: 1.0,
+                              letterSpacing: 0,
+                              color: isDark ? AppColors.noticesHeadingDark : const Color(0xFF0F172A),
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            'Apartment B 402',
+                            style: TextStyle(
+                              fontFamily: 'DM Sans',
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                              height: 1.0,
+                              letterSpacing: 0,
+                              color: isDark ? AppColors.textSecondaryDark : const Color(0xFF05234D),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: isDark ? AppColors.noticesBorderDark : AppColors.noticesBorderLight,
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
                     ),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        _selectedVisibility,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: headingColor,
-                          fontWeight: FontWeight.w500,
+                    decoration: BoxDecoration(
+                      color: isDark ? AppColors.surfaceDark : const Color(0xFFFFFFFF),
+                      border: Border.all(
+                        color: isDark ? AppColors.noticesBorderDark : const Color(0xFFE2E8F0),
+                      ),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          _selectedVisibility,
+                          style: TextStyle(
+                            fontFamily: 'DM Sans',
+                            fontSize: 13,
+                            fontWeight: FontWeight.w500,
+                            height: 1.0,
+                            letterSpacing: 0,
+                            color: isDark ? titleColor : const Color(0xFF475569),
+                          ),
                         ),
-                      ),
-                      const SizedBox(width: 4),
-                      Icon(
-                        Icons.keyboard_arrow_down,
-                        size: 16,
-                        color: headingColor,
-                      ),
-                    ],
+                        const SizedBox(width: 6),
+                        Icon(
+                          Icons.keyboard_arrow_down,
+                          size: 16,
+                          color: isDark ? titleColor : const Color(0xFF475569),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: _detailsController,
-              decoration: InputDecoration(
-                hintText: 'Add details about your event...',
-                hintStyle: TextStyle(color: mutedColor, fontSize: 14),
-                border: InputBorder.none,
-                focusedBorder: InputBorder.none,
-                enabledBorder: InputBorder.none,
+                ],
               ),
             ),
-            const SizedBox(height: 16),
-            _EventConfigTile(
-              icon: Icons.calendar_today_outlined,
-              title: 'Add Date & Time',
-              subtitle: _selectedDateTime,
-              onTap: () async {
-                final date = await showDatePicker(
-                  context: context,
-                  initialDate: DateTime.now(),
-                  firstDate: DateTime.now(),
-                  lastDate: DateTime.now().add(const Duration(days: 365)),
-                );
-                if (date != null) {
-                  setState(() {
-                    _selectedDateTime =
-                        '${date.day}/${date.month}/${date.year} at 7:00 PM';
-                  });
-                }
-              },
-            ),
-            const SizedBox(height: 12),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  TextField(
+                    controller: _detailsController,
+                    style: TextStyle(
+                      fontFamily: 'DM Sans',
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                      height: 1.0,
+                      letterSpacing: 0,
+                      color: titleColor,
+                    ),
+                    decoration: InputDecoration(
+                      hintText: 'Add details about your event...',
+                      hintStyle: TextStyle(
+                        fontFamily: 'DM Sans',
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
+                        height: 1.0,
+                        letterSpacing: 0,
+                        color: isDark ? mutedColor : const Color(0xFF3E3E3E),
+                      ),
+                      border: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  _EventConfigTile(
+                    icon: Icons.calendar_today_outlined,
+                    title: 'Add Date & Time',
+                    subtitle: _selectedDateTime,
+                    onTap: () async {
+                      final date = await showDatePicker(
+                        context: context,
+                        initialDate: DateTime.now(),
+                        firstDate: DateTime.now(),
+                        lastDate: DateTime.now().add(const Duration(days: 365)),
+                      );
+                      if (date != null) {
+                        setState(() {
+                          _selectedDateTime =
+                              '${date.day}/${date.month}/${date.year} at 7:00 PM';
+                        });
+                      }
+                    },
+                  ),
+                  const SizedBox(height: 20),
             _EventConfigTile(
               icon: Icons.location_on_outlined,
               title: 'Add Venue',
@@ -286,61 +327,72 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
           ],
         ),
       ),
-      bottomNavigationBar: SafeArea(
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          decoration: BoxDecoration(
-            color: isDark ? AppColors.surfaceDark : AppColors.surfaceLight,
-            border: Border(
-              top: BorderSide(
-                color: isDark ? AppColors.noticesCardBorderDark : AppColors.noticesCardBorderLight,
-              ),
-            ),
-          ),
-          child: Row(
-            children: [
-              _MediaIconButton(icon: Icons.image_outlined, onTap: () {}),
-              const SizedBox(width: 8),
-              _MediaIconButton(icon: Icons.camera_alt_outlined, onTap: () {}),
-              const SizedBox(width: 8),
-              _MediaIconButton(icon: Icons.videocam_outlined, onTap: () {}),
-              const SizedBox(width: 8),
-              _MediaIconButton(icon: Icons.mic_none_outlined, onTap: () {}),
-              const Spacer(),
-              Material(
-                color: accentBlue,
-                borderRadius: BorderRadius.circular(8),
-                child: InkWell(
-                  onTap: _isSubmitting ? null : _submitEvent,
-                  borderRadius: BorderRadius.circular(8),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 10,
-                    ),
-                    child: _isSubmitting
-                        ? const SizedBox(
-                            width: 16,
-                            height: 16,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: Colors.white,
-                            ),
-                          )
-                        : const Text(
-                            'Publish Event',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14,
-                            ),
-                          ),
+    ],
+  ),
+),
+      bottomNavigationBar: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          SafeArea(
+            top: false,
+            bottom: false,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              decoration: BoxDecoration(
+                color: isDark ? AppColors.surfaceDark : AppColors.surfaceLight,
+                border: Border(
+                  top: BorderSide(
+                    color: isDark ? AppColors.noticesCardBorderDark : AppColors.noticesCardBorderLight,
                   ),
                 ),
               ),
-            ],
+              child: Row(
+                children: [
+                  _MediaIconButton(icon: Icons.image_outlined, onTap: () {}),
+                  const SizedBox(width: 8),
+                  _MediaIconButton(icon: Icons.camera_alt_outlined, onTap: () {}),
+                  const SizedBox(width: 8),
+                  _MediaIconButton(icon: Icons.videocam_outlined, onTap: () {}),
+                  const SizedBox(width: 8),
+                  _MediaIconButton(icon: Icons.mic_none_outlined, onTap: () {}),
+                  const Spacer(),
+                  Material(
+                    color: accentBlue,
+                    borderRadius: BorderRadius.circular(8),
+                    child: InkWell(
+                      onTap: _isSubmitting ? null : _submitEvent,
+                      borderRadius: BorderRadius.circular(8),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 10,
+                        ),
+                        child: _isSubmitting
+                            ? const SizedBox(
+                                width: 16,
+                                height: 16,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.white,
+                                ),
+                              )
+                            : const Text(
+                                'Publish Event',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
+                                ),
+                              ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
-        ),
+          const DashboardBottomNavigation(selectedIndex: 2),
+        ],
       ),
     );
   }
@@ -404,17 +456,18 @@ class _EventConfigTile extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(12),
       child: Container(
-        padding: const EdgeInsets.all(14),
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: isDark ? AppColors.surfaceDark : AppColors.surfaceLight,
+          color: isDark ? AppColors.surfaceDark : const Color(0xFFF8FAFC),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: isDark ? AppColors.noticesCardBorderDark : AppColors.noticesCardBorderLight,
+            color: isDark ? AppColors.noticesCardBorderDark : const Color(0xFFE2E8F0),
+            width: 1.0,
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: isDark ? .25 : .02),
-              blurRadius: 6,
+              color: Colors.black.withValues(alpha: isDark ? .25 : .0314),
+              blurRadius: 4,
               offset: const Offset(0, 2),
             ),
           ],
@@ -424,15 +477,19 @@ class _EventConfigTile extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: isDark ? AppColors.noticesBlueTintBgDark : AppColors.noticesBlueTintBgLight,
+                color: isDark ? AppColors.noticesBlueTintBgDark : const Color(0xFFF0F7FF),
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(
                   color: isDark
                       ? AppColors.noticesBlueLightBorderDark
-                      : AppColors.noticesBlueLightBorderLight,
+                      : const Color(0xFFE0F2FE),
                 ),
               ),
-              child: Icon(icon, color: isDark ? AppColors.noticesAccentBlueDark : AppColors.noticesAccentBlueLight, size: 20),
+              child: Icon(
+                icon,
+                color: isDark ? AppColors.noticesAccentBlueDark : const Color(0xFF0060BD),
+                size: 18,
+              ),
             ),
             const SizedBox(width: 14),
             Expanded(
@@ -442,17 +499,24 @@ class _EventConfigTile extends StatelessWidget {
                   Text(
                     title,
                     style: TextStyle(
-                      fontWeight: FontWeight.bold,
+                      fontFamily: 'DM Sans',
+                      fontWeight: FontWeight.w600,
                       fontSize: 14,
-                      color: isDark ? AppColors.noticesHeadingDark : AppColors.noticesHeadingLight,
+                      height: 1.0,
+                      letterSpacing: 0,
+                      color: isDark ? AppColors.noticesHeadingDark : const Color(0xFF05234D),
                     ),
                   ),
                   const SizedBox(height: 2),
                   Text(
                     subtitle,
                     style: TextStyle(
+                      fontFamily: 'DM Sans',
                       fontSize: 12,
-                      color: isDark ? AppColors.textSecondaryDark : Colors.grey.shade600,
+                      fontWeight: FontWeight.w400,
+                      height: 1.0,
+                      letterSpacing: 0,
+                      color: isDark ? AppColors.textSecondaryDark : const Color(0xFF3E3E3E),
                     ),
                   ),
                 ],
@@ -460,8 +524,8 @@ class _EventConfigTile extends StatelessWidget {
             ),
             Icon(
               Icons.chevron_right,
-              color: isDark ? AppColors.noticesSecondaryTextDark : AppColors.noticesSecondaryTextLight,
-              size: 20,
+              color: isDark ? AppColors.noticesSecondaryTextDark : const Color(0xFF64748B),
+              size: 16,
             ),
           ],
         ),

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter_nivasshub/models/dashboard/quick_action_model.dart';
 
 class QuickActionCard extends StatelessWidget {

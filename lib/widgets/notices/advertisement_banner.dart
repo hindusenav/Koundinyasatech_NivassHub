@@ -19,6 +19,9 @@ class AdvertisementBanner extends StatelessWidget {
       redirectUrl: advertisement.redirectUrl,
     );
 
-    return BannerCard(banner: bannerModel);
+    return BannerCard(
+      banner: bannerModel,
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+    );
   }
 }

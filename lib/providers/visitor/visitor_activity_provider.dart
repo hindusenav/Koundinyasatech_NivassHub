@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 
 import 'package:flutter_nivasshub/models/visitor/approval_activity_model.dart';
-import 'package:flutter_nivasshub/services/visitor/visitor_activity_repository.dart';
+import 'package:flutter_nivasshub/repositories/visitor/visitor_activity_repository.dart';
 
 enum VisitorActivityState { initial, loading, success, empty, error }
 

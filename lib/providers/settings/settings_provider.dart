@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_nivasshub/models/settings/settings_model.dart';
-import 'package:flutter_nivasshub/services/settings/settings_repository.dart';
+import 'package:flutter_nivasshub/repositories/settings/settings_repository.dart';
 
 class SettingsProvider extends ChangeNotifier {
   final SettingsRepository _settingsRepository;

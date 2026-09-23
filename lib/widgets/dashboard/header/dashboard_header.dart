@@ -10,7 +10,16 @@ import 'package:flutter_nivasshub/providers/dashboard/dashboard_provider.dart';
 class DashboardHeader extends StatelessWidget {
   const DashboardHeader({
     super.key,
+    required this.isPropertyPanelExpanded,
+    required this.onTogglePropertyPanel,
   });
+
+  /// Whether the "Add Property" panel (the "B - 402 Golden Residency" +
+  /// "Add Flat/Villa/Office" section) is currently shown below the header.
+  final bool isPropertyPanelExpanded;
+
+  /// Called when the "B-402 ▾" row is tapped, to show/hide that panel.
+  final VoidCallback onTogglePropertyPanel;
 
   // ============================================================
   // COLORS
@@ -34,12 +43,14 @@ class DashboardHeader extends StatelessWidget {
     // FLAT NUMBER
     // ============================================================
 
-    final flatLabel = addresses.isNotEmpty
+    final defaultAddress = addresses.isNotEmpty
         ? addresses.firstWhere(
             (e) => e.isDefault,
             orElse: () => addresses.first,
-          ).flatNumber
-        : (user?.flatNumber ?? 'B - 402');
+          )
+        : null;
+
+    final flatLabel = defaultAddress?.flatNumber ?? (user?.flatNumber ?? 'B - 402');
 
     // ============================================================
     // HEADER
@@ -53,42 +64,15 @@ class DashboardHeader extends StatelessWidget {
       ),
 
       child: Container(
-        // ========================================================
-        // FULL AVAILABLE WIDTH
-        // ========================================================
-
         width: double.infinity,
-
-        // ========================================================
-        // HEADER HEIGHT
-        //
-        // No fixed height here — the header sizes itself from its
-        // content (SafeArea inset + padding + the two-line greeting
-        // block). A hard-coded height risked the content overflowing
-        // past this box on devices with a taller status bar, and
-        // since Container defaults to Clip.none, that overflow would
-        // paint straight through into the section below instead of
-        // being cropped.
-        // ========================================================
-
         clipBehavior: Clip.antiAlias,
 
         decoration: BoxDecoration(
           color: headerBlue,
-
-          // ======================================================
-          // FIGMA BOTTOM ROUNDED CORNERS
-          // ======================================================
-
           borderRadius: const BorderRadius.only(
             bottomLeft: Radius.circular(20),
             bottomRight: Radius.circular(20),
           ),
-
-          // ======================================================
-          // HEADER SHADOW
-          // ======================================================
-
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: isDark ? 0.32 : 0.12),
@@ -99,10 +83,6 @@ class DashboardHeader extends StatelessWidget {
           ],
         ),
 
-        // ========================================================
-        // SAFE AREA
-        // ========================================================
-
         child: SafeArea(
           top: true,
           left: false,
@@ -111,14 +91,14 @@ class DashboardHeader extends StatelessWidget {
 
           child: Padding(
             padding: const EdgeInsets.only(
-              left: 18,
-              right: 14,
-              top: 12,
-              bottom: 11,
+              left: 20,
+              right: 16,
+              top: 20,
+              bottom: 18,
             ),
 
             child: Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 // ==================================================
                 // USER INFORMATION
@@ -126,12 +106,12 @@ class DashboardHeader extends StatelessWidget {
 
                 Expanded(
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.end,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       // =============================================
-                      // HELLO USER
+                      // HELLO USER WITH WAVE EMOJI
                       // =============================================
 
                       Text(
@@ -139,15 +119,15 @@ class DashboardHeader extends StatelessWidget {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
-                          fontSize: 13.5,
+                          fontSize: 16,
                           fontWeight: FontWeight.w800,
                           color: headerTextColor,
-                          height: 1.15,
-                          letterSpacing: 0.05,
+                          height: 1.2,
+                          letterSpacing: 0.1,
                         ),
                       ),
 
-                      const SizedBox(height: 5),
+                      const SizedBox(height: 8),
 
                       // =============================================
                       // FLAT NUMBER
@@ -160,9 +140,6 @@ class DashboardHeader extends StatelessWidget {
                           // -----------------------------------------
                           // CHAT IMAGE
                           // -----------------------------------------
-                          // Changed ONLY this image:
-                          // profile.png -> chat.png
-                          // -----------------------------------------
 
                           GestureDetector(
                             behavior: HitTestBehavior.opaque,
@@ -174,13 +151,13 @@ class DashboardHeader extends StatelessWidget {
                             },
 
                             child: SizedBox(
-                              width: 20,
-                              height: 20,
+                              width: 24,
+                              height: 24,
 
                               child: Image.asset(
                                 'assets/icons/chat.png',
-                                width: 20,
-                                height: 20,
+                                width: 24,
+                                height: 24,
                                 fit: BoxFit.contain,
 
                                 errorBuilder: (
@@ -190,7 +167,7 @@ class DashboardHeader extends StatelessWidget {
                                 ) {
                                   return Icon(
                                     Icons.chat_bubble_outline_rounded,
-                                    size: 18,
+                                    size: 20,
                                     color: headerTextColor,
                                   );
                                 },
@@ -198,31 +175,45 @@ class DashboardHeader extends StatelessWidget {
                             ),
                           ),
 
-                          const SizedBox(width: 7),
+                          const SizedBox(width: 10),
 
                           // -----------------------------------------
-                          // FLAT NUMBER
+                          // FLAT NUMBER — tap to show/hide the
+                          // "Add Property" panel below the header.
                           // -----------------------------------------
 
-                          Text(
-                            flatLabel.isNotEmpty
-                                ? flatLabel
-                                : 'B - 402',
+                          GestureDetector(
+                            behavior: HitTestBehavior.opaque,
+                            onTap: onTogglePropertyPanel,
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Text(
+                                  flatLabel.isNotEmpty
+                                      ? flatLabel
+                                      : 'B - 402',
 
-                            style: TextStyle(
-                              fontSize: 11,
-                              fontWeight: FontWeight.w700,
-                              color: headerTextColor,
-                              height: 1.1,
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w700,
+                                    color: headerTextColor,
+                                    height: 1.2,
+                                    letterSpacing: 0.3,
+                                  ),
+                                ),
+
+                                const SizedBox(width: 4),
+
+                                Icon(
+                                  isPropertyPanelExpanded
+                                      ? Icons.keyboard_arrow_up_rounded
+                                      : Icons.keyboard_arrow_down_rounded,
+                                  size: 18,
+                                  color: headerTextColor,
+                                ),
+                              ],
                             ),
-                          ),
-
-                          const SizedBox(width: 2),
-
-                          Icon(
-                            Icons.keyboard_arrow_down_rounded,
-                            size: 14,
-                            color: headerTextColor,
                           ),
                         ],
                       ),
@@ -231,7 +222,7 @@ class DashboardHeader extends StatelessWidget {
                 ),
 
                 // ==================================================
-                // RIGHT SIDE ICONS
+                // RIGHT SIDE ICONS - ALL EQUAL GAPS
                 // ==================================================
 
                 Row(
@@ -253,21 +244,18 @@ class DashboardHeader extends StatelessWidget {
                       },
 
                       child: SizedBox(
-                        width: 30,
-                        height: 30,
+                        width: 34,
+                        height: 34,
 
                         child: Center(
                           child: Image.asset(
                             'assets/icons/search.png',
 
-                            width: 19,
-                            height: 19,
+                            width: 22,
+                            height: 22,
 
                             fit: BoxFit.contain,
 
-                            // Dark line-art PNG with a transparent
-                            // background — invisible on a dark header
-                            // unless tinted.
                             color: isDark ? headerTextColor : null,
 
                             errorBuilder: (
@@ -277,7 +265,7 @@ class DashboardHeader extends StatelessWidget {
                             ) {
                               return Icon(
                                 Icons.search_rounded,
-                                size: 19,
+                                size: 22,
                                 color: headerTextColor,
                               );
                             },
@@ -286,7 +274,7 @@ class DashboardHeader extends StatelessWidget {
                       ),
                     ),
 
-                    const SizedBox(width: 2),
+                    const SizedBox(width: 8), // Gap 1
 
                     // ==============================================
                     // NOTIFICATION
@@ -303,21 +291,18 @@ class DashboardHeader extends StatelessWidget {
                       },
 
                       child: SizedBox(
-                        width: 30,
-                        height: 30,
+                        width: 34,
+                        height: 34,
 
                         child: Center(
                           child: Image.asset(
                             'assets/icons/notification.png',
 
-                            width: 20,
-                            height: 20,
+                            width: 22,
+                            height: 22,
 
                             fit: BoxFit.contain,
 
-                            // Dark line-art PNG with a transparent
-                            // background — invisible on a dark header
-                            // unless tinted.
                             color: isDark ? headerTextColor : null,
 
                             errorBuilder: (
@@ -326,8 +311,8 @@ class DashboardHeader extends StatelessWidget {
                               stackTrace,
                             ) {
                               return Icon(
-                                Icons.chat_bubble_outline_rounded,
-                                size: 19,
+                                Icons.notifications_none_rounded,
+                                size: 22,
                                 color: headerTextColor,
                               );
                             },
@@ -336,11 +321,10 @@ class DashboardHeader extends StatelessWidget {
                       ),
                     ),
 
-                    const SizedBox(width: 4),
+                    const SizedBox(width: 8), // Gap 2 - SAME GAP as between search and notification
 
                     // ==============================================
                     // RIGHT SIDE ORANGE PROFILE A
-                    // KEEPING THIS UNCHANGED
                     // ==============================================
 
                     GestureDetector(
@@ -354,8 +338,8 @@ class DashboardHeader extends StatelessWidget {
                       },
 
                       child: Container(
-                        width: 22,
-                        height: 22,
+                        width: 28,
+                        height: 28,
 
                         alignment: Alignment.center,
 
@@ -368,7 +352,7 @@ class DashboardHeader extends StatelessWidget {
                           'A',
 
                           style: TextStyle(
-                            fontSize: 11,
+                            fontSize: 14,
                             fontWeight: FontWeight.w800,
                             color: Color.fromARGB(255, 5, 5, 5),
                             height: 1,

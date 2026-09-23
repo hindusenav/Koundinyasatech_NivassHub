@@ -15,7 +15,7 @@ import 'package:flutter_nivasshub/widgets/shared/loaders/loader.dart';
 import 'package:flutter_nivasshub/widgets/shared/states/custom_error_widget.dart';
 import 'package:flutter_nivasshub/models/visitor/activity_type_filter_option.dart';
 import 'package:flutter_nivasshub/providers/visitor/activity_type_filter_provider.dart';
-import 'package:flutter_nivasshub/services/visitor/activity_type_filter_repository.dart';
+import 'package:flutter_nivasshub/repositories/visitor/activity_type_filter_repository.dart';
 import 'package:flutter_nivasshub/services/visitor/mock_activity_type_filter_service.dart';
 
 /// The "Filter Activity by Type" modal bottom sheet opened from the

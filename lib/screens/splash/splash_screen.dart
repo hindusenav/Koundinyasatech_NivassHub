@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_nivasshub/routes/app_routes.dart';
 import 'package:flutter_nivasshub/routes/navigation_service.dart';
-import 'package:flutter_nivasshub/services/core/secure_storage_service.dart';
+import 'package:flutter_nivasshub/providers/auth/auth_state_provider.dart';
 import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter_nivasshub/constants/asset_constants.dart';
 import 'package:flutter_nivasshub/utils/extensions/context_extensions.dart';
@@ -47,27 +47,28 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
       await _exitController.forward();
       if (!mounted) return;
 
-      // Auto-login: a persisted session means the user already
-      // authenticated in a previous app run, so skip Welcome/Login
-      // entirely and land straight on the Dashboard.
-      final storage = context.read<SecureStorageService>();
-      final hasSession = await storage.hasValidSession();
+      // One call now decides where to go. `AuthStateProvider` resolves
+      // the full sign-up → KYC → access state machine (spec §21), so a
+      // half-finished registration resumes on the screen it stopped at
+      // instead of being dumped back at the entry form. It still falls
+      // back to Welcome on a first-ever launch.
+      final destination =
+          await context.read<AuthStateProvider>().resolveStartDestination();
       if (!mounted) return;
-      if (hasSession) {
-        NavigationService.pushNamedAndRemoveUntil(AppRoutes.dashboard);
+
+      debugPrint('[Nav] Splash -> ${destination.routeName}');
+
+      if (destination.routeName == AppRoutes.welcome) {
+        // Welcome keeps its bespoke fade transition rather than the
+        // default push.
+        _goToWelcome();
         return;
       }
 
-      // This device has logged out before — go straight to the Login
-      // screen (not Onboarding/Welcome) so the existing Login → OTP
-      // Verification flow continues from there.
-      final hasLoggedOut = await storage.hasLoggedOutBefore();
-      if (!mounted) return;
-      if (hasLoggedOut) {
-        NavigationService.pushNamedAndRemoveUntil(AppRoutes.login);
-      } else {
-        _goToWelcome();
-      }
+      NavigationService.pushNamedAndRemoveUntil(
+        destination.routeName,
+        arguments: destination.arguments,
+      );
     });
   }
 

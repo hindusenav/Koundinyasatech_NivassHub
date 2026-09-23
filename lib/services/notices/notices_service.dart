@@ -1,5 +1,5 @@
-import 'package:flutter_nivasshub/services/core/api_exception.dart';
-import 'package:flutter_nivasshub/services/core/api_response.dart';
+import 'package:flutter_nivasshub/core/api/api_exception.dart';
+import 'package:flutter_nivasshub/core/api/api_response.dart';
 
 import 'package:flutter_nivasshub/models/notices/advertisement_model.dart';
 import 'package:flutter_nivasshub/models/notices/community_post_model.dart';

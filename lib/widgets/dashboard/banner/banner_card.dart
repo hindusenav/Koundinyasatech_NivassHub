@@ -9,9 +9,11 @@ class BannerCard extends StatelessWidget {
   const BannerCard({
     super.key,
     required this.banner,
+    this.margin,
   });
 
   final BannerModel banner;
+  final EdgeInsetsGeometry? margin;
 
   @override
   Widget build(BuildContext context) {
@@ -29,6 +31,7 @@ class BannerCard extends StatelessWidget {
         : 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=600&q=80';
 
     return Container(
+      margin: margin,
       decoration: BoxDecoration(
         color: isDark ? AppColors.surfaceDark : Colors.white,
         borderRadius: BorderRadius.circular(16),

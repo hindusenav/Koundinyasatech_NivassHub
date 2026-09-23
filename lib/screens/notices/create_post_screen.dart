@@ -80,20 +80,21 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final headingColor =
-        isDark ? AppColors.noticesHeadingDark : AppColors.noticesHeadingLight;
+    final headerColor =
+        isDark ? AppColors.dashboardHeaderDark : const Color(0xFFC7E3FF);
+    final titleColor =
+        isDark ? AppColors.noticesHeadingDark : const Color(0xFF05234D);
     final mutedColor = isDark ? AppColors.noticesMutedDark : AppColors.noticesMutedLight;
 
     return Scaffold(
       backgroundColor: isDark ? AppColors.surfaceDark : AppColors.surfaceLight,
       appBar: AppBar(
-        backgroundColor:
-            isDark ? AppColors.noticesAppBarDark : AppColors.noticesAppBarLight,
+        backgroundColor: headerColor,
         elevation: 0,
         automaticallyImplyLeading: false,
         titleSpacing: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: headingColor),
+          icon: Icon(Icons.arrow_back, color: titleColor),
           onPressed: () {
             if (Navigator.of(context).canPop()) {
               Navigator.of(context).pop();
@@ -103,7 +104,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
         title: Text(
           'New Post',
           style: TextStyle(
-            color: headingColor,
+            color: titleColor,
             fontWeight: FontWeight.bold,
             fontSize: 18,
           ),
@@ -113,10 +114,10 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
           Container(
             margin: const EdgeInsets.only(right: 12),
             decoration: BoxDecoration(
-              color: isDark ? AppColors.noticesBlueTintBgDark : AppColors.noticesBlueTintBgLight,
+              color: isDark ? AppColors.noticesBlueTintBgDark : const Color(0xFFFFFFFF),
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
-                color: isDark ? AppColors.noticesBlueBorderDark : AppColors.noticesBlueBorderLight,
+                color: isDark ? AppColors.noticesBlueBorderDark : const Color(0xFFCCDFF2),
               ),
             ),
             child: Material(
@@ -134,7 +135,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                         size: 14,
                         color: isDark
                             ? AppColors.noticesAccentBlueDark
-                            : AppColors.noticesAccentBlueLight,
+                            : const Color(0xFF0060BD),
                       ),
                       const SizedBox(width: 4),
                       Text(
@@ -142,7 +143,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                         style: TextStyle(
                           color: isDark
                               ? AppColors.noticesAccentBlueDark
-                              : AppColors.noticesAccentBlueLight,
+                              : const Color(0xFF0060BD),
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
                         ),
@@ -156,92 +157,128 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
         ],
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              children: [
-                CircleAvatar(
-                  radius: 20,
-                  backgroundColor:
-                      isDark ? AppColors.noticesAccentAmberDark : AppColors.noticesAccentAmberLight,
-                  child: const Text(
-                    'A',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
                     children: [
-                      Text(
-                        'User Name',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
-                          color: headingColor,
+                      CircleAvatar(
+                        radius: 20,
+                        backgroundColor:
+                            isDark ? AppColors.noticesAccentAmberDark : const Color(0xFFEC9211),
+                        child: const Text(
+                          'A',
+                          style: TextStyle(
+                            fontFamily: 'Inter',
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 16,
+                            height: 1.0,
+                            letterSpacing: 0,
+                          ),
                         ),
                       ),
-                      Text(
-                        'Apartment B 402',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: isDark ? AppColors.textSecondaryDark : Colors.grey.shade600,
-                        ),
+                      const SizedBox(width: 12),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'User Name',
+                            style: TextStyle(
+                              fontFamily: 'DM Sans',
+                              fontWeight: FontWeight.w600,
+                              fontSize: 15,
+                              height: 1.0,
+                              letterSpacing: 0,
+                              color: isDark ? AppColors.noticesHeadingDark : const Color(0xFF0F172A),
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            'Apartment B 402',
+                            style: TextStyle(
+                              fontFamily: 'DM Sans',
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                              height: 1.0,
+                              letterSpacing: 0,
+                              color: isDark ? AppColors.textSecondaryDark : const Color(0xFF05234D),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: isDark ? AppColors.noticesBorderDark : AppColors.noticesBorderLight,
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
                     ),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        _selectedVisibility,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: headingColor,
-                          fontWeight: FontWeight.w500,
+                    decoration: BoxDecoration(
+                      color: isDark ? AppColors.surfaceDark : const Color(0xFFFFFFFF),
+                      border: Border.all(
+                        color: isDark ? AppColors.noticesBorderDark : const Color(0xFFE2E8F0),
+                      ),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          _selectedVisibility,
+                          style: TextStyle(
+                            fontFamily: 'DM Sans',
+                            fontSize: 13,
+                            fontWeight: FontWeight.w500,
+                            height: 1.0,
+                            letterSpacing: 0,
+                            color: isDark ? titleColor : const Color(0xFF475569),
+                          ),
                         ),
-                      ),
-                      const SizedBox(width: 4),
-                      Icon(
-                        Icons.keyboard_arrow_down,
-                        size: 16,
-                        color: headingColor,
-                      ),
-                    ],
+                        const SizedBox(width: 6),
+                        Icon(
+                          Icons.keyboard_arrow_down,
+                          size: 16,
+                          color: isDark ? titleColor : const Color(0xFF475569),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-            const SizedBox(height: 20),
-            TextField(
-              controller: _contentController,
-              maxLines: 8,
-              style: TextStyle(fontSize: 15, color: headingColor),
-              decoration: InputDecoration(
-                hintText: 'What do you want to talk about?',
-                hintStyle: TextStyle(color: mutedColor, fontSize: 15),
-                border: InputBorder.none,
-                focusedBorder: InputBorder.none,
-                enabledBorder: InputBorder.none,
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 8, 20, 8),
+              child: TextField(
+                controller: _contentController,
+                maxLines: 8,
+                style: TextStyle(
+                  fontFamily: 'DM Sans',
+                  fontSize: 16,
+                  fontWeight: FontWeight.w400,
+                  height: 1.0,
+                  letterSpacing: 0,
+                  color: titleColor,
+                ),
+                decoration: InputDecoration(
+                  hintText: 'What do you want to talk about?',
+                  hintStyle: TextStyle(
+                    fontFamily: 'DM Sans',
+                    fontSize: 16,
+                    fontWeight: FontWeight.w400,
+                    height: 1.0,
+                    letterSpacing: 0,
+                    color: isDark ? mutedColor : const Color(0xFF3E3E3E),
+                  ),
+                  border: InputBorder.none,
+                  focusedBorder: InputBorder.none,
+                  enabledBorder: InputBorder.none,
+                ),
               ),
             ),
           ],

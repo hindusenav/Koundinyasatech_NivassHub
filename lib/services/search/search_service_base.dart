@@ -1,4 +1,4 @@
-import 'package:flutter_nivasshub/services/core/api_response.dart';
+import 'package:flutter_nivasshub/core/api/api_response.dart';
 import 'package:flutter_nivasshub/models/shared/app_feature_model.dart';
 
 /// Contract for the Search screen's data needs. No real search endpoint

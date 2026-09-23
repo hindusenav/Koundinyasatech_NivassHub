@@ -6,7 +6,7 @@ import 'package:flutter_nivasshub/widgets/shared/feedback/custom_snackbar.dart';
 import 'package:flutter_nivasshub/providers/dashboard/dashboard_provider.dart';
 import 'package:flutter_nivasshub/providers/notifications/visitor_notification_provider.dart';
 import 'package:flutter_nivasshub/services/notifications/mock_visitor_notification_service.dart';
-import 'package:flutter_nivasshub/services/notifications/visitor_notification_repository.dart';
+import 'package:flutter_nivasshub/repositories/notifications/visitor_notification_repository.dart';
 import 'package:flutter_nivasshub/screens/notifications/delivery_details_screen.dart';
 import 'package:flutter_nivasshub/widgets/notifications/visitor_notification_banner.dart';
 

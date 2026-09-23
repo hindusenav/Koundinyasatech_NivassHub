@@ -1,4 +1,4 @@
-import 'package:flutter_nivasshub/services/core/api_response.dart';
+import 'package:flutter_nivasshub/core/api/api_response.dart';
 import 'package:flutter_nivasshub/models/notifications/visitor_details_model.dart';
 
 /// The swappable data-source seam for the "Delivery Details" screen.

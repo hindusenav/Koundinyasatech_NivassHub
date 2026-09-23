@@ -1,8 +1,20 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-feature android:name="android.hardware.camera" android:required="false"/>
     <application
         android:label="flutter_nivasshub"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        android:usesCleartextTraffic="true">
+        <!-- The backend (ApiEndpoints.baseUrl) is plain http:// on a LAN
+             test host, not https://. Android blocks all cleartext (non-TLS)
+             traffic by default for apps targeting API 28+, regardless of
+             debug/release build type — without this flag every request
+             fails before it leaves the device (a DioException wrapping
+             "CLEARTEXT communication ... not permitted"), which the error
+             interceptor surfaces only as a generic failure message. Remove
+             this once the backend serves https://. -->
         <activity
             android:name=".MainActivity"
             android:exported="true"

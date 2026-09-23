@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 
-import 'package:flutter_nivasshub/services/core/api_client.dart';
-import 'package:flutter_nivasshub/services/core/api_endpoints.dart';
+import 'package:flutter_nivasshub/core/api/base_api.dart';
+import 'package:flutter_nivasshub/core/api/endpoints.dart';
 import 'package:flutter_nivasshub/services/notices/notices_api_service_base.dart';
 
 class NoticesApiService implements NoticesApiServiceBase {

@@ -47,9 +47,15 @@ class NavigationService {
     }
   }
 
-  /// Convenience for `AuthInterceptor`'s `onUnauthorized` callback — clears
-  /// the navigation stack and returns to the login screen.
+  /// Convenience for `AuthInterceptor`'s `onUnauthorized` callback, and
+  /// for manual logout — clears the navigation stack and returns to the
+  /// authentication entry screen.
+  ///
+  /// Targets [AppRoutes.authEntry] rather than [AppRoutes.login]: the
+  /// identifier-first entry replaced the OTP login as the app's front
+  /// door, so a 401 sent here would otherwise land on a screen nothing
+  /// else routes to.
   static Future<void> logoutAndRedirectToLogin() {
-    return pushNamedAndRemoveUntil(AppRoutes.login);
+    return pushNamedAndRemoveUntil(AppRoutes.authEntry);
   }
 }

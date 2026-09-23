@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'package:flutter_nivasshub/constants/app_colors.dart';
-import 'package:flutter_nivasshub/services/core/api_client.dart';
+import 'package:flutter_nivasshub/core/api/base_api.dart';
 import 'package:flutter_nivasshub/screens/notices/community_posts_selection_screen.dart';
 import 'package:flutter_nivasshub/screens/notices/notice_details_screen.dart';
 import 'package:flutter_nivasshub/screens/notices/notices_screen.dart';
@@ -45,9 +45,12 @@ class CommunityPostsSection extends StatelessWidget {
             Text(
               'Community Posts',
               style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: isDark ? AppColors.textPrimaryDark : const Color(0xFF0F172A),
+                fontFamily: 'DM Sans',
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                height: 1.0,
+                letterSpacing: 0,
+                color: isDark ? AppColors.textPrimaryDark : const Color(0xFF000000),
               ),
             ),
             InkWell(

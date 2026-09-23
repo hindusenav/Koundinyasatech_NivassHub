@@ -8,7 +8,7 @@ import 'package:flutter_nivasshub/models/dashboard/guard_contact_model.dart';
 import 'package:flutter_nivasshub/models/dashboard/home_response_model.dart';
 import 'package:flutter_nivasshub/models/dashboard/notice_model.dart';
 import 'package:flutter_nivasshub/models/dashboard/visitor_model.dart';
-import 'package:flutter_nivasshub/services/dashboard/dashboard_repository.dart';
+import 'package:flutter_nivasshub/repositories/dashboard/dashboard_repository.dart';
 import 'package:flutter_nivasshub/providers/dashboard/dashboard_state.dart';
 
 class DashboardProvider extends ChangeNotifier {
@@ -73,6 +73,7 @@ class DashboardProvider extends ChangeNotifier {
   bool get isEmpty => _state == DashboardState.empty;
 
   Future<void> loadDashboard() async {
+    debugPrint('[Dashboard] loadDashboard() start');
     _state = DashboardState.loading;
     _errorMessage = '';
     notifyListeners();
@@ -113,11 +114,32 @@ class DashboardProvider extends ChangeNotifier {
       _state = DashboardState.error;
     }
 
+    debugPrint('[Dashboard] loadDashboard() complete, state=$_state');
     notifyListeners();
   }
 
   Future<void> refresh() async {
     await loadDashboard();
+  }
+
+  /// Clears all cached dashboard data and returns state to
+  /// [DashboardState.initial]. Called on logout so no stale data from the
+  /// previous session can ever be shown; a fresh [loadDashboard]/[refresh]
+  /// is triggered explicitly once a new session is established (see
+  /// `OtpVerificationSuccessScreen`/`CreateProfileScreen`), not from here.
+  void reset() {
+    _home = null;
+    _addresses = [];
+    _visitors = [];
+    _announcement = null;
+    _guard = null;
+    _banners = [];
+    _communityMeeting = null;
+    _notices = [];
+    _errorMessage = '';
+    _state = DashboardState.initial;
+    debugPrint('[Dashboard] reset() - cache cleared, state=initial');
+    notifyListeners();
   }
 
   Future<void> triggerSos({

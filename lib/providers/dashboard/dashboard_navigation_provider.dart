@@ -31,8 +31,21 @@ class DashboardNavObserver extends NavigatorObserver {
       case AppRoutes.dashboard:
         _navigationProvider.changeIndex(0);
         break;
+      case AppRoutes.activities:
+      case AppRoutes.visitorList:
+        _navigationProvider.changeIndex(1);
+        break;
       case AppRoutes.noticeList:
         _navigationProvider.changeIndex(2);
+        break;
+      case AppRoutes.settings:
+      case AppRoutes.profile:
+      case AppRoutes.editProfile:
+      case AppRoutes.helpSupport:
+        _navigationProvider.changeIndex(4);
+        break;
+      default:
+        // Don't change for other routes (like auth, onboarding, etc.)
         break;
     }
   }

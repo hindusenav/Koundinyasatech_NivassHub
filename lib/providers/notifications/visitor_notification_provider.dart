@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 
 import 'package:flutter_nivasshub/models/notifications/visitor_notification_model.dart';
-import 'package:flutter_nivasshub/services/notifications/visitor_notification_repository.dart';
+import 'package:flutter_nivasshub/repositories/notifications/visitor_notification_repository.dart';
 import 'package:flutter_nivasshub/services/notifications/visitor_notification_service_base.dart';
 
 enum VisitorNotificationState { initial, loading, success, empty, error }
@@ -37,8 +37,11 @@ class VisitorNotificationProvider extends ChangeNotifier {
 
   /// Whether the banner should currently be on-screen — the overlay widget
   /// drives its slide-in/out animation off this.
+
   bool get isVisible =>
-      _state == VisitorNotificationState.success && _notification != null && !_dismissed;
+      _state == VisitorNotificationState.success &&
+      _notification != null &&
+      !_dismissed;
 
   Future<void> loadPendingNotification() async {
     _state = VisitorNotificationState.loading;
@@ -49,9 +52,13 @@ class VisitorNotificationProvider extends ChangeNotifier {
     if (response.isSuccess) {
       _notification = response.data;
       _dismissed = false;
-      _state = _notification == null ? VisitorNotificationState.empty : VisitorNotificationState.success;
+      _state = _notification == null
+          ? VisitorNotificationState.empty
+          : VisitorNotificationState.success;
     } else {
-      _errorMessage = response.message ?? 'Unable to load the visitor notification right now.';
+      _errorMessage =
+          response.message ??
+          'Unable to load the visitor notification right now.';
       _state = VisitorNotificationState.error;
     }
 
@@ -84,7 +91,8 @@ class VisitorNotificationProvider extends ChangeNotifier {
 
     final succeeded = response.isSuccess;
     if (!succeeded) {
-      _errorMessage = response.message ?? 'Something went wrong. Please try again.';
+      _errorMessage =
+          response.message ?? 'Something went wrong. Please try again.';
     }
 
     // Always dismiss once the call settles — approved, rejected, or

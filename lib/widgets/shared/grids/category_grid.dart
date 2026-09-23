@@ -15,6 +15,7 @@ class CategoryGrid<T> extends StatelessWidget {
     this.columns = 4,
     this.spacing = AppSpacing.md,
     this.childAspectRatio = 0.82,
+    this.mainAxisExtent,
   });
 
   final List<T> items;
@@ -22,6 +23,14 @@ class CategoryGrid<T> extends StatelessWidget {
   final int columns;
   final double spacing;
   final double childAspectRatio;
+
+  /// Fixed cell height, overriding [childAspectRatio] when set. Use this
+  /// instead of the aspect ratio for tiles with a fixed-px content height
+  /// (padding + icon + multi-line label) that shouldn't shrink just because
+  /// the column got narrower on a smaller screen. `null` (default)
+  /// preserves the existing aspect-ratio-based sizing for every other
+  /// caller of this shared grid.
+  final double? mainAxisExtent;
 
   @override
   Widget build(BuildContext context) {
@@ -34,6 +43,7 @@ class CategoryGrid<T> extends StatelessWidget {
         mainAxisSpacing: spacing,
         crossAxisSpacing: spacing,
         childAspectRatio: childAspectRatio,
+        mainAxisExtent: mainAxisExtent,
       ),
       itemBuilder: (context, index) => itemBuilder(items[index]),
     );

@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 
 import 'package:flutter_nivasshub/models/notifications/visitor_details_model.dart';
-import 'package:flutter_nivasshub/services/notifications/visitor_details_repository.dart';
+import 'package:flutter_nivasshub/repositories/notifications/visitor_details_repository.dart';
 
 enum VisitorDetailsState { initial, loading, success, error }
 

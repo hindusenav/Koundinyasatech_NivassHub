@@ -3,9 +3,9 @@
   "message": "Profile fetched successfully",
   "data": {
     "id": 1,
-    "name": "Sireesha",
+    "name": "Hindu",
     "mobile": "9876543210",
-    "email": "sireesha@gmail.com",
+    "email": "hindu@gmail.com",
     "profile_image": "",
     "username": "siri_user"
   }
