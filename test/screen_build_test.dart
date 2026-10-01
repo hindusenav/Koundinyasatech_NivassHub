@@ -19,7 +19,6 @@ import 'package:flutter_nivasshub/services/file/file_picker_service_base.dart';
 import 'package:flutter_nivasshub/services/file/mock_file_picker_service.dart';
 import 'package:flutter_nivasshub/services/kyc/document_service_base.dart';
 import 'package:flutter_nivasshub/services/kyc/kyc_service_base.dart';
-import 'package:flutter_nivasshub/services/kyc/mock_document_service.dart';
 import 'package:flutter_nivasshub/services/kyc/mock_kyc_service.dart';
 import 'package:flutter_nivasshub/services/location/location_service_base.dart';
 import 'package:flutter_nivasshub/services/location/mock_location_service.dart';
@@ -32,6 +31,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'support/fake_document_service.dart';
 import 'support/fake_otp_verification_service.dart';
 import 'support/fake_registration_service.dart';
 import 'support/fake_society_service.dart';
@@ -94,7 +94,7 @@ void main() {
           Provider<OtpVerificationServiceBase>.value(
             value: const FakeOtpVerificationService(),
           ),
-          Provider<DocumentServiceBase>.value(value: MockDocumentService()),
+          Provider<DocumentServiceBase>.value(value: FakeDocumentService()),
           Provider<KycServiceBase>.value(value: kycService),
           Provider<FilePickerServiceBase>.value(
             value: MockFilePickerService(),
@@ -232,7 +232,8 @@ void main() {
     await tester.pumpWidget(const SizedBox.shrink());
   });
 
-  testWidgets('the KYC documents screen builds the owner document set',
+  testWidgets(
+      'the KYC documents screen renders whatever GET /kyc/documents returns',
       (tester) async {
     await pumpRoute(
       tester,
@@ -246,25 +247,10 @@ void main() {
 
     expectSettled(tester);
     expect(find.byType(KycDocumentsScreen), findsOneWidget);
-    expect(find.text('Address Proof — Document 1'), findsOneWidget);
-    expect(find.text('Registration Proof'), findsOneWidget);
-    expect(find.text('Rental Agreement'), findsNothing);
-  });
-
-  testWidgets('the KYC documents screen builds the tenant document set',
-      (tester) async {
-    await pumpRoute(
-      tester,
-      AppRoutes.kycDocuments,
-      arguments: const KycDocumentsScreenArgs(
-        userId: 'USR1001',
-        kycToken: 'mock_kyc_token',
-        role: UserRole.tenant,
-      ),
-    );
-
-    expectSettled(tester);
-    expect(find.text('Rental Agreement'), findsOneWidget);
-    expect(find.text('Registration Proof'), findsNothing);
+    // Card titles come straight from the fake document service's
+    // `getApplicableDocuments` response — the screen never hardcodes them.
+    expect(find.text('Address Proof 1'), findsOneWidget);
+    expect(find.text('Address Proof 2'), findsOneWidget);
+    expect(find.text('Ownership Proof'), findsOneWidget);
   });
 }

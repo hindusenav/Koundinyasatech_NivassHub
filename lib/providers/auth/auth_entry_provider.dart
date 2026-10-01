@@ -2,11 +2,25 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_nivasshub/constants/kyc/kyc_strings.dart';
 import 'package:flutter_nivasshub/models/auth/auth_identifier.dart';
 import 'package:flutter_nivasshub/models/auth/check_user_exists_request.dart';
+import 'package:flutter_nivasshub/models/auth/check_user_exists_response_data.dart';
 import 'package:flutter_nivasshub/models/location/location_node.dart';
 import 'package:flutter_nivasshub/services/auth/auth_entry_service_base.dart';
 import 'package:flutter_nivasshub/services/country/country_service_base.dart';
 
-enum AuthEntryStatus { idle, checking, existingUser, newUser, error }
+enum AuthEntryStatus {
+  idle,
+  checking,
+  existingUser,
+  newUser,
+  kycPending,
+
+  /// 403 / 428 / 412 — registered but OTP verification unfinished.
+  resumeOtp,
+
+  /// 423 — KYC under review; the user is blocked.
+  kycInProgress,
+  error,
+}
 
 /// Backs the authentication entry screen: pick a channel, type an
 /// identifier, find out whether the account exists.
@@ -28,6 +42,7 @@ class AuthEntryProvider extends ChangeNotifier {
   final CountryServiceBase _countryService;
 
   AuthEntryStatus _status = AuthEntryStatus.idle;
+  String? _pendingKycUserId;
 
   /// Seeded through the constructor rather than by calling [setChannel]
   /// from the screen's `initState`: that notifies listeners synchronously,
@@ -45,6 +60,21 @@ class AuthEntryProvider extends ChangeNotifier {
   AuthChannel get channel => _channel;
   String? get errorMessage => _errorMessage;
   String? get maskedIdentifier => _maskedIdentifier;
+
+  /// The encrypted user identifier to pass straight to `GET
+  /// /kyc/documents` — only set when [status] is
+  /// [AuthEntryStatus.kycPending].
+  String? get pendingKycUserId => _pendingKycUserId;
+
+  RegistrationCheckOutcome? _outcome;
+  String? _registrationToken;
+
+  /// Detail behind [status] when it is [AuthEntryStatus.resumeOtp] — says
+  /// which channel(s) still need verifying.
+  RegistrationCheckOutcome? get outcome => _outcome;
+
+  /// Token returned for the resume states, used as the OTP `userId`.
+  String? get registrationToken => _registrationToken;
 
   bool get isChecking => _status == AuthEntryStatus.checking;
   bool get isMobileMode => _channel == AuthChannel.mobile;
@@ -143,9 +173,20 @@ class AuthEntryProvider extends ChangeNotifier {
     if (response.isSuccess && response.data != null) {
       final data = response.data!;
       _maskedIdentifier = data.maskedIdentifier ?? identifier.masked;
-      _status = data.userExists
-          ? AuthEntryStatus.existingUser
-          : AuthEntryStatus.newUser;
+      _pendingKycUserId = data.kycPending ? data.userId : null;
+      _registrationToken = data.registrationToken;
+      _outcome = data.resolvedOutcome;
+      _status = switch (data.resolvedOutcome) {
+        RegistrationCheckOutcome.notRegistered => AuthEntryStatus.newUser,
+        RegistrationCheckOutcome.alreadyRegistered =>
+          AuthEntryStatus.existingUser,
+        RegistrationCheckOutcome.verifiedGoToKyc => AuthEntryStatus.kycPending,
+        RegistrationCheckOutcome.kycInProgress => AuthEntryStatus.kycInProgress,
+        RegistrationCheckOutcome.mobileNotVerified ||
+        RegistrationCheckOutcome.emailNotVerified ||
+        RegistrationCheckOutcome.mobileEmailNotVerified =>
+          AuthEntryStatus.resumeOtp,
+      };
       notifyListeners();
       return identifier;
     }

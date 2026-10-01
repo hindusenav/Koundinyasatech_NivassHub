@@ -20,6 +20,18 @@ dependencies:
   share_plus: ^13.3.0
   permission_handler: ^11.3.1
 
+  # In-app KYC camera capture: manual front/back switch plus an in-app
+  # preview/retake step, instead of delegating to the OS camera app.
+  #
+  # Pinned below 0.11 deliberately: `camera` 0.11.x defaults Android to
+  # `camera_android_camerax`, whose bundled camera-core 1.5.3 fails to
+  # compile against this project's Gradle/AGP toolchain ("class file for
+  # androidx.concurrent.futures.CallbackToFutureAdapter not found" in
+  # SurfaceRequest, verified independent of app-module dependencies). 0.10.x
+  # uses the older Camera2-based `camera_android`, which builds cleanly and
+  # exposes the exact same Dart API this screen uses.
+  camera: ^0.10.6
+
   # `image_picker` can only return photos/videos — it physically cannot
   # surface a PDF, which KYC document upload requires. Both plugins are
   # hidden behind `FilePickerServiceBase` so no provider imports either.

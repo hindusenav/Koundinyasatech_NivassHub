@@ -7,6 +7,7 @@ import 'package:flutter_nivasshub/core/api/api_service.dart';
 import 'package:flutter_nivasshub/core/api/endpoints.dart';
 import 'package:flutter_nivasshub/models/location/location_level.dart';
 import 'package:flutter_nivasshub/models/location/location_node.dart';
+import 'package:flutter_nivasshub/utils/flag_emoji.dart';
 import 'package:flutter_nivasshub/models/registration/registration_master_data.dart';
 import 'package:flutter_nivasshub/models/registration/user_registration_request.dart';
 import 'package:flutter_nivasshub/models/registration/user_registration_response_data.dart';
@@ -60,6 +61,7 @@ class RegistrationService extends ApiService implements RegistrationServiceBase 
             name: c.name,
             level: LocationLevel.country,
             dialCode: c.callingCode,
+            flagEmoji: flagEmojiFromIso(c.countryCode),
           ),
         )
         .where((n) => n.id.isNotEmpty && n.name.isNotEmpty)

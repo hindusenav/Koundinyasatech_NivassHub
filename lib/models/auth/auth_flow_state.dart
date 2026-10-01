@@ -19,6 +19,10 @@ enum AuthFlowState {
   /// Identifier verified as new; User Details not yet submitted.
   registration,
 
+  /// Registration submitted (or resumed); a registration token is held in
+  /// secure storage and OTP verification is unfinished.
+  otpPending,
+
   /// `createUser` done and a `kycToken` is held; documents not yet sent.
   kycPending,
 

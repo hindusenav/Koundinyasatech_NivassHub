@@ -49,6 +49,7 @@ class AppIcons {
   static const IconData download = Icons.download_rounded;
   static const IconData attach = Icons.attach_file_rounded;
   static const IconData camera = Icons.camera_alt_rounded;
+  static const IconData switchCamera = Icons.cameraswitch_rounded;
   static const IconData share = Icons.share_rounded;
   static const IconData logout = Icons.logout_rounded;
   static const IconData check = Icons.check_rounded;

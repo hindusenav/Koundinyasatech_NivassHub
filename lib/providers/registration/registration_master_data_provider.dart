@@ -68,18 +68,10 @@ class RegistrationMasterDataProvider extends ChangeNotifier {
     return cities;
   }
 
-  /// The `Roles[]` entry matching [role]'s wire value ("R" for
-  /// [UserRole.owner]/Resident, "T" for [UserRole.tenant]) — `null` until
-  /// master data has loaded, or if the backend ever stops sending that
-  /// role. Looked up dynamically each call rather than cached by id, so a
-  /// backend renumbering of `role_id` is picked up automatically.
-  String? roleIdFor(UserRole role) {
-    final wireName = role == UserRole.owner ? 'R' : 'T';
-    for (final r in _data.roles) {
-      if (r.name.toUpperCase() == wireName) return r.roleId;
-    }
-    return null;
-  }
+  /// The `user_role` id the registration API expects: fixed by contract
+  /// rather than looked up from `Roles[]` — Owner is always `'6'`, Tenant
+  /// is always `'7'`.
+  String? roleIdFor(UserRole role) => role == UserRole.owner ? '6' : '7';
 
   Future<void> load() async {
     _state = RegistrationDataState.loading;

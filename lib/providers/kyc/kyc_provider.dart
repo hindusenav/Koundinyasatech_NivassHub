@@ -6,20 +6,26 @@ import 'package:flutter_nivasshub/constants/storage_keys.dart';
 import 'package:flutter_nivasshub/models/auth/auth_flow_state.dart';
 import 'package:flutter_nivasshub/models/auth/user_role.dart';
 import 'package:flutter_nivasshub/models/kyc/document_upload_request.dart';
+import 'package:flutter_nivasshub/models/kyc/kyc_applicable_document.dart';
 import 'package:flutter_nivasshub/models/kyc/kyc_document_issue.dart';
 import 'package:flutter_nivasshub/models/kyc/kyc_document_slot.dart';
-import 'package:flutter_nivasshub/models/kyc/kyc_document_type.dart';
 import 'package:flutter_nivasshub/models/kyc/kyc_submit_request.dart';
+import 'package:flutter_nivasshub/models/kyc/picked_file.dart';
 import 'package:flutter_nivasshub/providers/auth/auth_state_provider.dart';
 import 'package:flutter_nivasshub/services/file/file_picker_service_base.dart';
 import 'package:flutter_nivasshub/services/kyc/document_service_base.dart';
 import 'package:flutter_nivasshub/services/kyc/kyc_service_base.dart';
 import 'package:flutter_nivasshub/storage/local_storage_service.dart';
 
-enum KycProviderState { initial, ready, submitting, submitted, error }
+enum KycProviderState { initial, loading, ready, submitting, submitted, error }
 
-/// Owns the three document cards: picking, uploading, removing,
-/// submitting, and rehydrating them for a correction.
+/// Owns the document cards: fetching which ones the backend requires,
+/// picking, uploading, removing, submitting, and rehydrating them for a
+/// correction.
+///
+/// The card list itself is never hardcoded — [initialise] always asks
+/// `GET /kyc/documents` (via [DocumentServiceBase.getApplicableDocuments])
+/// and renders exactly what comes back.
 ///
 /// Global (and lazy) rather than route-scoped because the slot map has to
 /// survive `/kyc/documents` → `/kyc/verification-status` → *back to*
@@ -47,7 +53,7 @@ class KycProvider extends ChangeNotifier {
   final AuthStateProvider _authState;
 
   KycProviderState _state = KycProviderState.initial;
-  UserRole _role = UserRole.owner;
+  UserRole? _role;
   String _kycToken = '';
   String _userId = '';
   String? _previousKycId;
@@ -56,10 +62,11 @@ class KycProvider extends ChangeNotifier {
   String? _errorMessage;
   String? _submittedKycId;
 
-  final Map<KycDocumentType, KycDocumentSlot> _slots = {};
+  final Map<int, KycDocumentSlot> _slots = {};
+  final List<int> _order = [];
 
   KycProviderState get state => _state;
-  UserRole get role => _role;
+  UserRole? get role => _role;
   int get attemptNumber => _attemptNumber;
   String? get errorMessage => _errorMessage;
   String? get rejectionReason => _rejectionReason;
@@ -67,30 +74,25 @@ class KycProvider extends ChangeNotifier {
   bool get isSubmitting => _state == KycProviderState.submitting;
   bool get isResubmission => _previousKycId != null;
 
-  /// The three cards in display order, driven entirely by the role — the
-  /// screen never branches on it itself.
-  ///
-  /// Derived from the populated slot map rather than from the catalog, so
-  /// it is genuinely empty before [initialise] and after [reset]. Deriving
-  /// it from the catalog instead would hand back three phantom cards
-  /// carrying whatever role was last used.
-  List<KycDocumentSlot> get slots => KycDocumentCatalog.typesForRole(_role)
-      .map((type) => _slots[type])
-      .whereType<KycDocumentSlot>()
-      .toList(growable: false);
+  /// The cards in the order `GET /kyc/documents` returned them.
+  List<KycDocumentSlot> get slots =>
+      _order.map((id) => _slots[id]).whereType<KycDocumentSlot>().toList(
+        growable: false,
+      );
 
-  KycDocumentSlot slotFor(KycDocumentType type) =>
-      _slots[type] ?? KycDocumentSlot(type: type);
+  KycDocumentSlot? slotFor(int documentId) => _slots[documentId];
 
-  /// Submit is enabled only when all three carry a `documentId` — freshly
-  /// uploaded or preserved from a previous attempt, which are equivalent
-  /// as far as the manifest is concerned.
+  /// Submit is enabled only when every card carries a `documentId` —
+  /// freshly uploaded or preserved from a previous attempt, which are
+  /// equivalent as far as the manifest is concerned.
   ///
   /// `every` on an empty list is vacuously true, so the emptiness check is
   /// load-bearing: without it an uninitialised provider would report that
   /// it is ready to submit nothing.
   bool get canSubmit =>
-      !isSubmitting && slots.isNotEmpty && slots.every((s) => s.isSatisfied);
+      !isSubmitting &&
+      slots.isNotEmpty &&
+      slots.every((s) => !s.document.isMandatory || s.isSatisfied);
 
   // -------------------------------------------------------------------
   // Setup
@@ -98,12 +100,16 @@ class KycProvider extends ChangeNotifier {
 
   /// Prepares the provider for a first submission or a correction.
   ///
+  /// Fetches the applicable document list for [userId]/[kycToken] from the
+  /// backend (`GET /kyc/documents`) — the set and order of cards shown is
+  /// whatever that call returns, never a client-side list.
+  ///
   /// [invalidDocuments] and [rejectionReason] come from the verdict, and
   /// are what turn this into a resubmission.
   Future<void> initialise({
     required String userId,
     required String kycToken,
-    required UserRole role,
+    UserRole? role,
     String? resubmitKycId,
     List<KycDocumentIssue> invalidDocuments = const [],
     String? rejectionReason,
@@ -116,23 +122,42 @@ class KycProvider extends ChangeNotifier {
     _errorMessage = null;
     _submittedKycId = null;
 
+    _state = KycProviderState.loading;
+    notifyListeners();
+
+    final response = await _documentService.getApplicableDocuments(
+      userToken: userId,
+    );
+
+    if (!response.isSuccess) {
+      _errorMessage = response.message ?? KycStrings.genericError;
+      _state = KycProviderState.error;
+      notifyListeners();
+      return;
+    }
+
+    final documents = response.data ?? const <KycApplicableDocument>[];
     final stored = _readStoredDocuments();
-    final isSameApplication = stored != null && stored.role == role;
+    final isSameApplication = stored != null;
 
     _attemptNumber = resubmitKycId == null
         ? 1
         : (isSameApplication ? stored.attemptNumber + 1 : 1);
 
+    _order
+      ..clear()
+      ..addAll(documents.map((d) => d.documentId));
+
     _slots
       ..clear()
       ..addEntries(
-        KycDocumentCatalog.typesForRole(role).map(
-          (type) => MapEntry(
-            type,
+        documents.map(
+          (document) => MapEntry(
+            document.documentId,
             _hydrateSlot(
-              type: type,
-              stored: isSameApplication ? stored.slots[type] : null,
-              issue: _issueFor(invalidDocuments, type),
+              document: document,
+              stored: isSameApplication ? stored.slots[document.documentId] : null,
+              issue: _issueFor(invalidDocuments, document.documentId),
             ),
           ),
         ),
@@ -145,37 +170,36 @@ class KycProvider extends ChangeNotifier {
   /// A flagged document is cleared so it must be replaced; anything else
   /// that previously uploaded is carried forward untouched.
   ///
-  /// If the cache is missing or belongs to a different role the slot comes
-  /// back empty — a wiped cache must not brick the loop, it just means the
-  /// user re-uploads.
+  /// If the cache is missing, the slot comes back empty — a wiped cache
+  /// must not brick the loop, it just means the user re-uploads.
   KycDocumentSlot _hydrateSlot({
-    required KycDocumentType type,
+    required KycApplicableDocument document,
     required KycDocumentSlot? stored,
     required KycDocumentIssue? issue,
   }) {
     if (issue != null) {
       return KycDocumentSlot(
-        type: type,
+        document: document,
         status: KycUploadStatus.empty,
         issueReason: issue.reason,
       );
     }
     if (stored != null && stored.uploaded != null) {
       return KycDocumentSlot(
-        type: type,
+        document: document,
         status: KycUploadStatus.preserved,
         uploaded: stored.uploaded,
       );
     }
-    return KycDocumentSlot(type: type);
+    return KycDocumentSlot(document: document);
   }
 
   static KycDocumentIssue? _issueFor(
     List<KycDocumentIssue> issues,
-    KycDocumentType type,
+    int documentId,
   ) {
     for (final issue in issues) {
-      if (issue.documentType == type) return issue;
+      if (issue.documentId == documentId) return issue;
     }
     return null;
   }
@@ -184,16 +208,16 @@ class KycProvider extends ChangeNotifier {
   // Upload
   // -------------------------------------------------------------------
 
-  /// Picks a file for [type] and uploads it. A cancelled pick restores the
-  /// card to whatever it showed before, without an error.
-  Future<void> pickAndUpload(
-    KycDocumentType type,
-    FilePickSource source,
-  ) async {
-    final previous = slotFor(type);
+  /// Picks a file for [documentId] and uploads it as `multipart/form-data`
+  /// to `POST /kyc/upload` (`user_id`, `doc_id`, plus the file). A
+  /// cancelled pick restores the card to whatever it showed before,
+  /// without an error.
+  Future<void> pickAndUpload(int documentId, FilePickSource source) async {
+    final previous = slotFor(documentId);
+    if (previous == null) return;
 
     _update(
-      type,
+      documentId,
       previous.copyWith(status: KycUploadStatus.picking, clearError: true),
     );
 
@@ -201,7 +225,7 @@ class KycProvider extends ChangeNotifier {
 
     if (picked.isFailure) {
       _update(
-        type,
+        documentId,
         previous.copyWith(
           status: previous.isSatisfied
               ? previous.status
@@ -215,28 +239,44 @@ class KycProvider extends ChangeNotifier {
     final file = picked.data;
     if (file == null) {
       // Cancelled — put the card back exactly as it was.
-      _update(type, previous);
+      _update(documentId, previous);
       return;
     }
 
+    await uploadPicked(documentId, file);
+  }
+
+  /// Uploads an already-picked [file] for [documentId] — the shared second
+  /// half of [pickAndUpload], also used directly once a screen has shown
+  /// its own preview/confirmation step (in-app camera capture, or a
+  /// local-file preview sheet) ahead of calling this.
+  Future<void> uploadPicked(int documentId, PickedFile file) async {
+    final previous = slotFor(documentId);
+    if (previous == null) return;
+
     _update(
-      type,
+      documentId,
       previous.copyWith(status: KycUploadStatus.uploading, clearError: true),
     );
 
     final response = await _documentService.uploadDocument(
       DocumentUploadRequest(
-        kycToken: _kycToken,
-        documentType: type,
+        userId: _userId,
+        documentId: documentId,
+        documentName: previous.document.documentName,
         file: file,
       ),
     );
 
     if (response.isSuccess && response.data != null) {
+      // Token rotation: each successful upload returns a fresh token that
+      // replaces the current one for every later call.
+      final rotated = response.data!.sessionToken;
+      if (rotated != null && rotated.isNotEmpty) _userId = rotated;
       _update(
-        type,
+        documentId,
         KycDocumentSlot(
-          type: type,
+          document: previous.document,
           status: KycUploadStatus.uploaded,
           uploaded: response.data,
         ),
@@ -246,7 +286,7 @@ class KycProvider extends ChangeNotifier {
     }
 
     _update(
-      type,
+      documentId,
       previous.copyWith(
         status: KycUploadStatus.failed,
         errorMessage: response.message ?? KycStrings.uploadFailed,
@@ -258,25 +298,23 @@ class KycProvider extends ChangeNotifier {
   /// Clears a card. The server-side delete is fire-and-forget: the user
   /// has already been told it is gone, and a failed cleanup must not
   /// block them from choosing a replacement.
-  Future<void> remove(KycDocumentType type) async {
-    final slot = slotFor(type);
-    final documentId = slot.uploaded?.documentId;
+  Future<void> remove(int documentId) async {
+    final slot = slotFor(documentId);
+    if (slot == null) return;
 
-    _update(type, KycDocumentSlot(type: type, issueReason: slot.issueReason));
+    _update(
+      documentId,
+      KycDocumentSlot(document: slot.document, issueReason: slot.issueReason),
+    );
     await _persistDocuments();
 
-    if (documentId != null) {
-      unawaited(
-        _documentService.deleteDocument(
-          kycToken: _kycToken,
-          documentId: documentId,
-        ),
-      );
-    }
+    unawaited(
+      _documentService.deleteDocument(userId: _userId, documentId: documentId),
+    );
   }
 
-  void _update(KycDocumentType type, KycDocumentSlot slot) {
-    _slots[type] = slot;
+  void _update(int documentId, KycDocumentSlot slot) {
+    _slots[documentId] = slot;
     notifyListeners();
   }
 
@@ -295,7 +333,11 @@ class KycProvider extends ChangeNotifier {
       KycSubmitRequest.fromSlots(
         kycToken: _kycToken,
         userId: _userId,
-        role: _role,
+        // Falls back when the role wasn't known at `initialise` (arriving
+        // here from the "KYC pending" login case) — `/kyc/submit` itself
+        // is still mocked, with no documented contract to say what it
+        // does with this field.
+        role: _role ?? UserRole.owner,
         slots: slots,
         attemptNumber: _attemptNumber,
         previousKycId: _previousKycId,
@@ -331,6 +373,7 @@ class KycProvider extends ChangeNotifier {
   /// once an approval has been exchanged for an access token.
   Future<void> reset() async {
     _slots.clear();
+    _order.clear();
     _state = KycProviderState.initial;
     _kycToken = '';
     _userId = '';
@@ -351,7 +394,6 @@ class KycProvider extends ChangeNotifier {
 
   Future<void> _persistDocuments() {
     return _localStorage.setJson(StorageKeys.kycUploadedDocuments, {
-      'role': _role.wireValue,
       'attemptNumber': _attemptNumber,
       'slots': _slots.values.map((slot) => slot.toJson()).toList(),
     });
@@ -363,22 +405,18 @@ class KycProvider extends ChangeNotifier {
       if (raw is! Map) return null;
       final map = Map<String, dynamic>.from(raw);
 
-      final role = UserRole.tryFromJson(map['role']);
-      if (role == null) return null;
-
       final rawSlots = map['slots'];
-      final slots = <KycDocumentType, KycDocumentSlot>{};
+      final slots = <int, KycDocumentSlot>{};
       if (rawSlots is List) {
         for (final entry in rawSlots.whereType<Map>()) {
           final slot = KycDocumentSlot.tryFromJson(
             Map<String, dynamic>.from(entry),
           );
-          if (slot != null) slots[slot.type] = slot;
+          if (slot != null) slots[slot.document.documentId] = slot;
         }
       }
 
       return _StoredDocuments(
-        role: role,
         attemptNumber: map['attemptNumber'] as int? ?? 1,
         slots: slots,
       );
@@ -392,13 +430,8 @@ class KycProvider extends ChangeNotifier {
 }
 
 class _StoredDocuments {
-  const _StoredDocuments({
-    required this.role,
-    required this.attemptNumber,
-    required this.slots,
-  });
+  const _StoredDocuments({required this.attemptNumber, required this.slots});
 
-  final UserRole role;
   final int attemptNumber;
-  final Map<KycDocumentType, KycDocumentSlot> slots;
+  final Map<int, KycDocumentSlot> slots;
 }

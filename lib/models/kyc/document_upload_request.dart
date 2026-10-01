@@ -1,28 +1,22 @@
-import 'package:flutter_nivasshub/models/kyc/kyc_document_type.dart';
 import 'package:flutter_nivasshub/models/kyc/picked_file.dart';
 
-/// Body of `POST /kyc/documents` — one document at a time, so a single
-/// failure never invalidates the others.
+/// Body of `POST /kyc/upload` — one document at a time, so a single
+/// failure never invalidates the others. Sent as JSON: the file travels
+/// Base64-encoded in `doc_url`, with [userId] (the current session token)
+/// and [documentId] as given by `GET /kyc/documents` for this card.
 class DocumentUploadRequest {
   const DocumentUploadRequest({
-    required this.kycToken,
-    required this.documentType,
+    required this.userId,
+    required this.documentId,
+    required this.documentName,
     required this.file,
   });
 
-  final String kycToken;
-  final KycDocumentType documentType;
-  final PickedFile file;
+  /// The encrypted user identifier issued during registration/OTP
+  /// verification — never a plain id, never decrypted or regenerated here.
+  final String userId;
 
-  /// The real service sends this as multipart with the bytes attached;
-  /// `localPath` is what it streams from and is not itself transmitted.
-  Map<String, dynamic> toJson() => {
-    'kycToken': kycToken,
-    'documentType': documentType.wireValue,
-    'fileName': file.fileName,
-    'fileType': file.extension,
-    'mimeType': file.mimeType,
-    'sizeBytes': file.sizeBytes,
-    'localPath': file.path,
-  };
+  final int documentId;
+  final String documentName;
+  final PickedFile file;
 }

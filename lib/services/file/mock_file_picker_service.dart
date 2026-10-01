@@ -1,4 +1,5 @@
 import 'package:flutter_nivasshub/constants/kyc/kyc_config.dart';
+import 'package:flutter_nivasshub/core/api/api_exception.dart';
 import 'package:flutter_nivasshub/core/api/api_response.dart';
 import 'package:flutter_nivasshub/models/kyc/picked_file.dart';
 import 'package:flutter_nivasshub/services/file/file_picker_service_base.dart';
@@ -45,4 +46,7 @@ class MockFilePickerService implements FilePickerServiceBase {
 
   @override
   Future<void> openSettings() async {}
+
+  @override
+  Future<ApiException?> ensureCameraPermission() async => null;
 }

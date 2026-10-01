@@ -5,7 +5,6 @@ import 'package:flutter_nivasshub/models/auth/auth_identifier.dart';
 import 'package:flutter_nivasshub/models/auth/user_role.dart';
 import 'package:flutter_nivasshub/models/location/location_selection.dart';
 import 'package:flutter_nivasshub/routes/app_routes.dart';
-import 'package:flutter_nivasshub/screens/auth/user_details_screen.dart';
 import 'package:flutter_nivasshub/screens/kyc/kyc_documents_screen.dart';
 import 'package:flutter_nivasshub/screens/kyc/kyc_verification_status_screen.dart';
 import 'package:flutter_nivasshub/storage/local_storage_service.dart';
@@ -112,6 +111,8 @@ class AuthStateProvider extends ChangeNotifier {
     }
     await _secureStorage.saveSession();
     await _secureStorage.delete(StorageKeys.kycToken);
+    await _secureStorage.delete(StorageKeys.registrationToken);
+    await _localStorage.remove(StorageKeys.registrationDraft);
     await _localStorage.remove(StorageKeys.kycUploadedDocuments);
     await _localStorage.remove(StorageKeys.kycMockLedger);
     await moveTo(AuthFlowState.authenticated);
@@ -122,6 +123,15 @@ class AuthStateProvider extends ChangeNotifier {
 
   Future<String?> readKycToken() => _secureStorage.read(StorageKeys.kycToken);
 
+  Future<void> saveRegistrationToken(String token) =>
+      _secureStorage.write(StorageKeys.registrationToken, token);
+
+  Future<String?> readRegistrationToken() =>
+      _secureStorage.read(StorageKeys.registrationToken);
+
+  Future<void> clearRegistrationToken() =>
+      _secureStorage.delete(StorageKeys.registrationToken);
+
   /// Wipes everything this feature owns — both storages.
   ///
   /// `SecureStorageService.clearSession()` predates this flow and knows
@@ -131,6 +141,8 @@ class AuthStateProvider extends ChangeNotifier {
   Future<void> clear() async {
     await _secureStorage.clearSession();
     await _secureStorage.delete(StorageKeys.kycToken);
+    await _secureStorage.delete(StorageKeys.registrationToken);
+    await _localStorage.remove(StorageKeys.registrationDraft);
     await _localStorage.remove(StorageKeys.authFlowState);
     await _localStorage.remove(StorageKeys.authFlowContext);
     await _localStorage.remove(StorageKeys.kycUploadedDocuments);
@@ -167,18 +179,14 @@ class AuthStateProvider extends ChangeNotifier {
           hasLoggedOut ? AppRoutes.authEntry : AppRoutes.welcome,
         );
 
+      // A half-finished registration or OTP step is not resumed from local
+      // storage: start at the entry screen, where registration-check
+      // decides (OTP resume, KYC, password) from the backend state.
       case AuthFlowState.registration:
-        final identifier = _context.identifier;
-        if (identifier == null) {
-          return _corrupt('registration without an identifier');
-        }
-        return AuthStartDestination(
-          AppRoutes.userDetails,
-          UserDetailsScreenArgs(
-            identifier: identifier,
-            prefillFullName: _context.fullName,
-          ),
-        );
+      case AuthFlowState.otpPending:
+        await clearRegistrationToken();
+        await _localStorage.remove(StorageKeys.registrationDraft);
+        return const AuthStartDestination(AppRoutes.authEntry);
 
       case AuthFlowState.kycPending:
         final kycToken = await readKycToken();

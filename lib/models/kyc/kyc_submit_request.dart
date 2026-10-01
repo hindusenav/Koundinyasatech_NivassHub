@@ -1,26 +1,26 @@
 import 'package:flutter_nivasshub/models/auth/user_role.dart';
 import 'package:flutter_nivasshub/models/kyc/kyc_document_slot.dart';
-import 'package:flutter_nivasshub/models/kyc/kyc_document_type.dart';
 
 /// One entry in a submission's document manifest.
 ///
 /// Carries only the id and display name — never the bytes, which were
 /// already uploaded. This is why a preserved document costs nothing to
-/// resubmit.
+/// resubmit. `documentId` is whatever `GET /kyc/documents` returned for
+/// this card, never a client-generated value.
 class KycSubmitDocument {
   const KycSubmitDocument({
-    required this.documentType,
     required this.documentId,
+    required this.documentName,
     required this.fileName,
   });
 
-  final KycDocumentType documentType;
-  final String documentId;
+  final int documentId;
+  final String documentName;
   final String fileName;
 
   Map<String, dynamic> toJson() => {
-    'documentType': documentType.wireValue,
     'documentId': documentId,
+    'documentName': documentName,
     'fileName': fileName,
   };
 }
@@ -68,8 +68,8 @@ class KycSubmitRequest {
           .where((slot) => slot.uploaded != null)
           .map(
             (slot) => KycSubmitDocument(
-              documentType: slot.type,
-              documentId: slot.uploaded!.documentId,
+              documentId: slot.document.documentId,
+              documentName: slot.document.documentName,
               fileName: slot.uploaded!.fileName,
             ),
           )

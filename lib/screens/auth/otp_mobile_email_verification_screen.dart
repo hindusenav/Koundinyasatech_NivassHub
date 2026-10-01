@@ -8,6 +8,9 @@ import 'package:flutter_nivasshub/constants/app_spacing.dart';
 import 'package:flutter_nivasshub/constants/app_text_styles.dart';
 import 'package:flutter_nivasshub/constants/kyc/kyc_strings.dart';
 import 'package:flutter_nivasshub/models/auth/user_role.dart';
+import 'package:flutter_nivasshub/models/auth/auth_flow_state.dart';
+import 'package:flutter_nivasshub/models/auth/auth_identifier.dart';
+import 'package:flutter_nivasshub/providers/auth/auth_state_provider.dart';
 import 'package:flutter_nivasshub/providers/auth/otp_mobile_email_verification_provider.dart';
 import 'package:flutter_nivasshub/routes/app_routes.dart';
 import 'package:flutter_nivasshub/screens/kyc/kyc_documents_screen.dart';
@@ -21,15 +24,29 @@ import 'package:provider/provider.dart';
 class OtpMobileEmailVerificationScreenArgs {
   const OtpMobileEmailVerificationScreenArgs({
     required this.userId,
-    required this.email,
-    required this.mobileNumber,
-    required this.role,
+    this.email,
+    this.mobileNumber,
+    this.role,
+    this.pendingChannels = const {OtpChannel.mobile, OtpChannel.email},
+    this.otpJustSent = true,
+    this.resendIdentifier,
   });
 
   final String userId;
-  final String email;
-  final String mobileNumber;
-  final UserRole role;
+  /// Unknown when resuming from a registration-check result.
+  final String? email;
+  final String? mobileNumber;
+  final UserRole? role;
+
+  /// Channels still needing verification; the others are shown as done.
+  final Set<OtpChannel> pendingChannels;
+
+  /// `false` when resuming from registration-check: no OTP has just been
+  /// sent, so resend must be available immediately.
+  final bool otpJustSent;
+
+  /// Identifier re-submitted to registration-check to resend the OTPs.
+  final AuthIdentifier? resendIdentifier;
 }
 
 /// Verifies the mobile and email OTPs sent after registration via
@@ -75,7 +92,7 @@ class _OtpMobileEmailVerificationScreenState
     final success = await provider.verifyOtp(channel, otp);
     if (!mounted) return;
 
-    if (success && provider.isFullyVerified) {
+    if (success && provider.canContinueToKyc) {
       _continueToKyc();
     } else if (!success) {
       CustomSnackbar.error(
@@ -100,23 +117,42 @@ class _OtpMobileEmailVerificationScreenState
     }
   }
 
-  void _continueToKyc() {
+  Future<void> _continueToKyc() async {
     final args = widget.args;
+    // The rotated token from verify-otp is what GET /kyc/documents and
+    // /kyc/upload expect; the registration token is only a fallback.
+    final sessionToken =
+        context.read<OtpMobileEmailVerificationProvider>().sessionToken ??
+        args.userId;
+
+    // OTP is done: the registration token is spent. Record where a restart
+    // should resume. Without a known role (a resume from registration-check)
+    // there is nothing to restore KYC with, so fall back to the entry
+    // screen, where registration-check routes straight to KYC again.
+    final authState = context.read<AuthStateProvider>();
+    await authState.clearRegistrationToken();
+    final role = args.role;
+    if (role != null) {
+      await authState.saveKycToken(sessionToken);
+      await authState.moveTo(
+        AuthFlowState.kycPending,
+        context: authState.context.copyWith(userId: sessionToken, role: role),
+      );
+    } else {
+      await authState.moveTo(AuthFlowState.unauthenticated);
+    }
+    if (!mounted) return;
+
     Navigator.of(context).pushReplacementNamed(
       AppRoutes.kycDocuments,
-      arguments: KycDocumentsScreenArgs(
-        userId: args.userId,
-        // MISSING API CONTRACT — verify-otp's response is `{verified:
-        // true}` only, no kyc token; left empty until that's documented.
-        kycToken: '',
-        role: args.role,
-      ),
+      arguments: KycDocumentsScreenArgs(userId: sessionToken, role: role),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<OtpMobileEmailVerificationProvider>();
+    final pending = widget.args.pendingChannels;
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final textSecondary = isDark
         ? AppColors.textSecondaryDark
@@ -146,12 +182,13 @@ class _OtpMobileEmailVerificationScreenState
                         color: textSecondary,
                       ),
                     ),
+                    if (pending.contains(OtpChannel.mobile)) ...[
                     AppSpacing.gapLg,
                     _OtpCard(
                       channel: OtpChannel.mobile,
                       icon: AppIcons.phone,
                       title: KycStrings.otpMobileSectionTitle,
-                      subtitle: widget.args.mobileNumber,
+                      subtitle: widget.args.mobileNumber ?? '',
                       state: provider.stateFor(OtpChannel.mobile),
                       cooldownSeconds:
                           provider.remainingCooldownSeconds(OtpChannel.mobile),
@@ -160,12 +197,14 @@ class _OtpMobileEmailVerificationScreenState
                       onResend: () => _resend(OtpChannel.mobile),
                       canVerify: _mobileOtp.length == 6,
                     ),
+                    ],
+                    if (pending.contains(OtpChannel.email)) ...[
                     AppSpacing.gapLg,
                     _OtpCard(
                       channel: OtpChannel.email,
                       icon: AppIcons.email,
                       title: KycStrings.otpEmailSectionTitle,
-                      subtitle: widget.args.email,
+                      subtitle: widget.args.email ?? '',
                       state: provider.stateFor(OtpChannel.email),
                       cooldownSeconds:
                           provider.remainingCooldownSeconds(OtpChannel.email),
@@ -174,6 +213,7 @@ class _OtpMobileEmailVerificationScreenState
                       onResend: () => _resend(OtpChannel.email),
                       canVerify: _emailOtp.length == 6,
                     ),
+                    ],
                   ],
                 ),
               ),

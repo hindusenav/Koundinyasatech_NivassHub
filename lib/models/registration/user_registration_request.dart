@@ -56,7 +56,7 @@ class UserRegistrationRequest {
     'towerid': int.tryParse(towerId) ?? towerId,
     'floorid': int.tryParse(floorId) ?? floorId,
     'unitnumber': int.tryParse(unitId) ?? unitId,
-    'user_role': roleId,
+    'user_role': int.tryParse(roleId) ?? roleId,
     if (unitBranch != null && unitBranch!.isNotEmpty) 'unit_branch': unitBranch,
   };
 }

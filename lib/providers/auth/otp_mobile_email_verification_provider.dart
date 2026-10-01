@@ -1,5 +1,9 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter_nivasshub/models/auth/otp_resend_request.dart';
+import 'package:flutter_nivasshub/core/api/api_exception.dart';
+import 'package:flutter_nivasshub/models/auth/auth_identifier.dart';
+import 'package:flutter_nivasshub/models/auth/check_user_exists_request.dart';
+import 'package:flutter_nivasshub/models/auth/check_user_exists_response_data.dart';
+import 'package:flutter_nivasshub/services/auth/auth_entry_service_base.dart';
 import 'package:flutter_nivasshub/models/auth/user_registration_verify_otp_request.dart';
 import 'package:flutter_nivasshub/services/auth/otp_verification_service_base.dart';
 
@@ -71,18 +75,33 @@ class OtpChannelState {
 class OtpMobileEmailVerificationProvider extends ChangeNotifier {
   OtpMobileEmailVerificationProvider({
     required OtpVerificationServiceBase service,
+    required AuthEntryServiceBase authService,
+    AuthIdentifier? resendIdentifier,
     required String userId,
-    required String mobileNumber,
-    required String email,
+    Set<OtpChannel> pendingChannels = const {OtpChannel.mobile, OtpChannel.email},
+    bool otpJustSent = true,
   }) : _service = service,
-       _userId = userId,
-       _mobileNumber = mobileNumber,
-       _email = email;
+       _authService = authService,
+       _resendIdentifier = resendIdentifier,
+       _userId = userId {
+    // A channel that is not pending is already verified (resume flows).
+    if (!pendingChannels.contains(OtpChannel.mobile)) {
+      _mobileState = const OtpChannelState(isVerified: true);
+    } else if (otpJustSent) {
+      // Registration just sent the OTP: start the resend cooldown now.
+      _mobileState = OtpChannelState(lastResendAt: DateTime.now());
+    }
+    if (!pendingChannels.contains(OtpChannel.email)) {
+      _emailState = const OtpChannelState(isVerified: true);
+    } else if (otpJustSent) {
+      _emailState = OtpChannelState(lastResendAt: DateTime.now());
+    }
+  }
 
   final OtpVerificationServiceBase _service;
-  final String _userId;
-  final String _mobileNumber;
-  final String _email;
+  final AuthEntryServiceBase _authService;
+  final AuthIdentifier? _resendIdentifier;
+  String _userId;
 
   static const _resendCooldown = Duration(seconds: 30);
   static const _maxResends = 5;
@@ -93,10 +112,20 @@ class OtpMobileEmailVerificationProvider extends ChangeNotifier {
   OtpChannelState stateFor(OtpChannel channel) =>
       channel == OtpChannel.mobile ? _mobileState : _emailState;
 
-  String identifierFor(OtpChannel channel) =>
-      channel == OtpChannel.mobile ? _mobileNumber : _email;
-
   bool get isFullyVerified => _mobileState.isVerified && _emailState.isVerified;
+
+  String? _sessionToken;
+  String? _nextStep;
+
+  /// Latest token from verify-otp (`null` until one succeeds); hand this to
+  /// the KYC screens. Rotates on every successful verify.
+  String? get sessionToken => _sessionToken;
+
+  /// `UVO` (verify the other channel) or `UKYC` (continue to KYC).
+  String? get nextStep => _nextStep;
+
+  /// Ready for KYC: the backend said so, or every pending channel is done.
+  bool get canContinueToKyc => _nextStep == 'UKYC' || isFullyVerified;
 
   void _update(OtpChannel channel, OtpChannelState Function(OtpChannelState) update) {
     if (channel == OtpChannel.mobile) {
@@ -121,17 +150,101 @@ class OtpMobileEmailVerificationProvider extends ChangeNotifier {
       ),
     );
 
-    final verified = response.isSuccess && (response.data?.verified ?? false);
+    final data = response.data;
+    final verified = response.isSuccess && (data?.verified ?? false);
+
+    if (verified) {
+      // Token rotation: every successful verify issues a fresh token that
+      // replaces the previous one.
+      final rotated = data!.sessionToken;
+      if (rotated != null && rotated.isNotEmpty) _sessionToken = rotated;
+      _nextStep = data.nextStep ?? _nextStep;
+      _update(
+        channel,
+        (s) => s.copyWith(
+          isVerifying: false,
+          isVerified: true,
+          clearVerifyError: true,
+        ),
+      );
+      return true;
+    }
+
+    final error = response.error;
+    if (error != null) {
+      debugPrint(
+        '[Otp] verify failed status=${error.statusCode} code=${error.code} '
+        'correlationId=${error.correlationId}',
+      );
+    }
     _update(
       channel,
       (s) => s.copyWith(
         isVerifying: false,
-        isVerified: verified,
-        verifyError: verified ? null : (response.message ?? 'Invalid OTP. Please try again.'),
-        clearVerifyError: verified,
+        isVerified: false,
+        verifyError: _verifyMessage(error, response.message),
       ),
     );
-    return verified;
+
+    // Expired / missing / used / locked-out codes can only be fixed with a
+    // new one, so request it right away (bypassing the cooldown).
+    if (_needsNewOtp(error)) {
+      await resendOtp(channel, force: true);
+    }
+    return false;
+  }
+
+  /// OTP 404 / 409 / 410 / 429 — the current code is unusable.
+  static bool _needsNewOtp(ApiException? e) {
+    switch (e?.code) {
+      case 'OTP_NOT_FOUND':
+      case 'OTP_ALREADY_USED':
+      case 'OTP_EXPIRED':
+      case 'MAX_ATTEMPTS_EXCEEDED':
+        return true;
+    }
+    return const {404, 409, 410, 429}.contains(e?.statusCode);
+  }
+
+  /// User-facing message for each documented verify-otp failure.
+  static String _verifyMessage(ApiException? e, String? fallback) {
+    if (e == null) return fallback ?? 'Invalid OTP. Please try again.';
+    final body = e.data;
+    final inner = body?['data'];
+    final remaining =
+        (inner is Map ? inner['attemptsRemaining'] : null) ??
+        body?['attemptsRemaining'];
+
+    switch (e.code) {
+      case 'OTP_MISMATCH':
+        return remaining == null
+            ? 'Incorrect OTP. Please try again.'
+            : 'Incorrect OTP. $remaining attempt(s) remaining.';
+      case 'OTP_NOT_FOUND':
+        return 'No active OTP found. We sent you a new one.';
+      case 'OTP_ALREADY_USED':
+        return 'That OTP was already used. We sent you a new one.';
+      case 'OTP_EXPIRED':
+        return 'That OTP has expired. We sent you a new one.';
+      case 'MAX_ATTEMPTS_EXCEEDED':
+        return 'Too many incorrect attempts. We sent you a new OTP.';
+      case 'VALIDATION_ERROR':
+      case 'INVALID_USER':
+        return 'Something is wrong with this request. Please go back and try again.';
+      case 'INTERNAL_ERROR':
+        return 'Server error. Please try again in a moment.';
+    }
+    return switch (e.statusCode ?? 0) {
+      401 => remaining == null
+          ? 'Incorrect OTP. Please try again.'
+          : 'Incorrect OTP. $remaining attempt(s) remaining.',
+      404 => 'No active OTP found. We sent you a new one.',
+      409 => 'That OTP was already used. We sent you a new one.',
+      410 => 'That OTP has expired. We sent you a new one.',
+      429 => 'Too many incorrect attempts. We sent you a new OTP.',
+      >= 500 => 'Server error. Please try again in a moment.',
+      _ => fallback ?? 'Invalid OTP. Please try again.',
+    };
   }
 
   bool canResend(OtpChannel channel) {
@@ -150,8 +263,8 @@ class OtpMobileEmailVerificationProvider extends ChangeNotifier {
     return remaining > 0 ? remaining : 0;
   }
 
-  Future<bool> resendOtp(OtpChannel channel) async {
-    if (!canResend(channel)) {
+  Future<bool> resendOtp(OtpChannel channel, {bool force = false}) async {
+    if (!force && !canResend(channel)) {
       _update(
         channel,
         (s) => s.copyWith(
@@ -167,16 +280,38 @@ class OtpMobileEmailVerificationProvider extends ChangeNotifier {
       (s) => s.copyWith(isResending: true, clearResendError: true),
     );
 
-    final response = await _service.resendOtp(
-      OtpResendRequest(uid: _userId, identifier: identifierFor(channel)),
-    );
+    // The backend has no resend endpoint: repeating registration-check for
+    // the same identifier re-issues the OTPs and returns a fresh token.
+    final identifier = _resendIdentifier;
+    String? failure;
+    var succeeded = false;
+    if (identifier == null) {
+      failure = 'Could not resend the OTP. Please go back and try again.';
+    } else {
+      final response = await _authService.checkUserExists(
+        CheckUserExistsRequest(identifier: identifier),
+      );
+      final data = response.data;
+      final token = data?.registrationToken;
+      final resumable = data != null &&
+          const {
+            RegistrationCheckOutcome.mobileNotVerified,
+            RegistrationCheckOutcome.emailNotVerified,
+            RegistrationCheckOutcome.mobileEmailNotVerified,
+          }.contains(data.resolvedOutcome);
+      if (response.isSuccess && resumable && token != null && token.isNotEmpty) {
+        _userId = token;
+        succeeded = true;
+      } else {
+        failure = response.message ?? 'Failed to resend OTP. Please try again.';
+      }
+    }
 
-    final succeeded = response.isSuccess;
     _update(
       channel,
       (s) => s.copyWith(
         isResending: false,
-        resendError: succeeded ? null : (response.message ?? 'Failed to resend OTP. Please try again.'),
+        resendError: succeeded ? null : failure,
         clearResendError: succeeded,
         lastResendAt: succeeded ? DateTime.now() : s.lastResendAt,
         resendCount: succeeded ? s.resendCount + 1 : s.resendCount,

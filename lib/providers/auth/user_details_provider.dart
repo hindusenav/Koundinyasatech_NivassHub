@@ -85,6 +85,10 @@ class UserDetailsProvider extends ChangeNotifier {
       return null;
     }
 
+    // Fires exactly once per submission: a double-tap or a rebuild while the
+    // request is in flight must not send a second POST.
+    if (_status == UserDetailsStatus.submitting) return null;
+
     _status = UserDetailsStatus.submitting;
     _errorMessage = null;
     notifyListeners();

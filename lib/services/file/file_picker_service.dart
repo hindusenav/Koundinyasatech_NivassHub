@@ -35,7 +35,7 @@ class FilePickerService implements FilePickerServiceBase {
   }) async {
     try {
       if (source == FilePickSource.camera) {
-        final permissionError = await _ensureCameraPermission();
+        final permissionError = await ensureCameraPermission();
         if (permissionError != null) return ApiResponse.failure(permissionError);
       }
 
@@ -77,7 +77,8 @@ class FilePickerService implements FilePickerServiceBase {
   /// granted (or already was) and an explanatory [ApiException] otherwise.
   /// A permanently-denied permission gets a distinct message pointing the
   /// user at Settings, since re-requesting it would just silently no-op.
-  Future<ApiException?> _ensureCameraPermission() async {
+  @override
+  Future<ApiException?> ensureCameraPermission() async {
     var status = await ph.Permission.camera.status;
     if (status.isGranted) return null;
 

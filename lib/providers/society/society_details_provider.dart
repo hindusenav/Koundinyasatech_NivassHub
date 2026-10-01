@@ -47,7 +47,28 @@ class SocietyDetailsProvider extends ChangeNotifier {
   bool get isFloorEnabled => _selectedTower != null;
   bool get isUnitEnabled => _selectedFloor != null;
 
-  Future<void> fetchSociety(String socId) async {
+  /// Successful responses by `socid`, so reopening the same society never
+  /// hits the network again. [retry] bypasses it.
+  final Map<String, SocietyDetailsResponseData> _cache = {};
+
+  /// Fetches once per `socid`: cached and in-flight requests for the same
+  /// society are reused.
+  Future<void> fetchSociety(String socId, {bool force = false}) async {
+    if (!force) {
+      if (_state == SocietyDetailsState.loading && _lastSocId == socId) return;
+      final cached = _cache[socId];
+      if (cached != null) {
+        _lastSocId = socId;
+        _data = cached;
+        _errorMessage = null;
+        _state = SocietyDetailsState.success;
+        _selectedTower = null;
+        _selectedFloor = null;
+        _selectedUnit = null;
+        notifyListeners();
+        return;
+      }
+    }
     _lastSocId = socId;
     _state = SocietyDetailsState.loading;
     _errorMessage = null;
@@ -60,6 +81,7 @@ class SocietyDetailsProvider extends ChangeNotifier {
     final response = await _service.getSocietyDetails(socId);
     if (response.isSuccess && response.data != null) {
       _data = response.data!;
+      _cache[socId] = response.data!;
       _state = SocietyDetailsState.success;
     } else {
       _data = null;
@@ -72,7 +94,7 @@ class SocietyDetailsProvider extends ChangeNotifier {
   Future<void> retry() {
     final socId = _lastSocId;
     if (socId == null) return Future.value();
-    return fetchSociety(socId);
+    return fetchSociety(socId, force: true);
   }
 
   /// Called whenever an ancestor of Society (Country/State/City) changes,

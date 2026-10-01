@@ -7,7 +7,6 @@ import 'package:flutter_nivasshub/constants/app_spacing.dart';
 import 'package:flutter_nivasshub/constants/app_text_styles.dart';
 import 'package:flutter_nivasshub/constants/kyc/kyc_strings.dart';
 import 'package:flutter_nivasshub/models/kyc/kyc_document_issue.dart';
-import 'package:flutter_nivasshub/models/kyc/kyc_document_type.dart';
 import 'package:flutter_nivasshub/models/kyc/kyc_status.dart';
 
 /// The outcome banner: approved, rejected, or correction required, with
@@ -114,8 +113,7 @@ class KycVerdictPanel extends StatelessWidget {
                             ),
                             children: [
                               TextSpan(
-                                text:
-                                    '${KycDocumentCatalog.specFor(issue.documentType).title}: ',
+                                text: '${issue.documentName}: ',
                                 style: AppTextStyles.bodySmall.copyWith(
                                   color: textPrimary,
                                   fontWeight: FontWeight.w600,

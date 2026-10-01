@@ -5,6 +5,8 @@ import 'package:flutter_nivasshub/constants/app_icons.dart';
 import 'package:flutter_nivasshub/constants/app_spacing.dart';
 import 'package:flutter_nivasshub/constants/app_text_styles.dart';
 import 'package:flutter_nivasshub/constants/kyc/kyc_strings.dart';
+import 'package:flutter_nivasshub/models/auth/auth_flow_state.dart';
+import 'package:flutter_nivasshub/providers/auth/auth_state_provider.dart';
 import 'package:flutter_nivasshub/models/auth/auth_identifier.dart';
 import 'package:flutter_nivasshub/models/auth/user_role.dart';
 import 'package:flutter_nivasshub/models/location/location_level.dart';
@@ -73,6 +75,7 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
     _emailController = TextEditingController(
       text: identifier.channel == AuthChannel.email ? identifier.raw : '',
     );
+
   }
 
   @override
@@ -155,6 +158,20 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
 
     final role = details.role!;
 
+    // Persist the hand-off so a restart resumes on the OTP screen, and drop
+    // the form draft now that the account exists.
+    final authState = context.read<AuthStateProvider>();
+    await authState.saveRegistrationToken(result.userId);
+    await authState.moveTo(
+      AuthFlowState.otpPending,
+      context: authState.context.copyWith(
+        fullName: _nameController.text.trim(),
+        email: _emailController.text.trim(),
+        role: role,
+      ),
+    );
+    if (!mounted) return;
+
     // `pushReplacement` so a resubmit loop does not grow the stack by two
     // routes per attempt.
     Navigator.of(context).pushReplacementNamed(
@@ -166,6 +183,16 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
             ? result.mobileNumber
             : _mobileController.text.trim(),
         role: role,
+        resendIdentifier: widget.args.identifier.channel == AuthChannel.mobile
+            ? AuthIdentifier(
+                raw: _mobileController.text.trim(),
+                channel: AuthChannel.mobile,
+                countryCode: _countryCode,
+              )
+            : AuthIdentifier(
+                raw: _emailController.text.trim(),
+                channel: AuthChannel.email,
+              ),
       ),
     );
   }
@@ -264,7 +291,9 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
                 _RoleSelector(
                   selected: details.role,
                   errorText: details.roleError,
-                  onSelected: details.setRole,
+                  onSelected: (role) {
+                    details.setRole(role);
+                  },
                 ),
                 AppSpacing.gapXl,
 
@@ -299,7 +328,9 @@ class _CountryField extends StatelessWidget {
 
     return SelectionField(
       label: LocationLevel.country.label,
-      value: selected?.name,
+      value: selected == null
+          ? null
+          : [selected.flagEmoji, selected.name].whereType<String>().join(' '),
       hint: LocationLevel.country.hint,
       isLoading: location.isLoading(LocationLevel.country),
       onTap: () => _openPicker(context, location),
@@ -318,6 +349,9 @@ class _CountryField extends StatelessWidget {
       items: location.optionsFor(LocationLevel.country),
       selected: location.selectedFor(LocationLevel.country),
       labelOf: (node) => node.name,
+      leadingOf: (node) => node.flagEmoji == null
+          ? null
+          : Text(node.flagEmoji!, style: AppTextStyles.titleMedium),
       searchHint: 'Search country',
       isLoading: location.isLoading(LocationLevel.country),
       errorMessage: location.errorFor(LocationLevel.country),

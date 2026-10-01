@@ -1,27 +1,24 @@
 /// Body of `POST /country-codes/user-registration/verify-otp`.
+///
+/// Exactly `{userId, otp, identifier}` — the backend rejects any other
+/// property.
 class UserRegistrationVerifyOtpRequest {
   const UserRegistrationVerifyOtpRequest({
     required this.userId,
     required this.otp,
     required this.identifier,
-    this.otpType = 'UR',
-    this.maxAttempts = 5,
   });
 
-  /// Encrypted user id returned by `POST /country-codes/user-registration`.
+  /// The `registrationToken` from registration / registration-check.
   final String userId;
   final String otp;
 
   /// `"M"` for mobile, `"E"` for email.
   final String identifier;
-  final String otpType;
-  final int maxAttempts;
 
   Map<String, dynamic> toJson() => {
     'userId': userId,
     'otp': otp,
     'identifier': identifier,
-    'otpType': otpType,
-    'maxAttempts': maxAttempts,
   };
 }

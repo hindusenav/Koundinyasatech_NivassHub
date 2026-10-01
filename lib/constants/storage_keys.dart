@@ -18,6 +18,10 @@ class StorageKeys {
   /// rather than with the non-sensitive flow state below.
   static const String kycToken = 'kyc_token';
 
+  /// Token from `POST /country-codes/user-registration` (or registration-check),
+  /// held until OTP verification completes so a restart can resume there.
+  static const String registrationToken = 'registration_token';
+
   // ---------------------------------------------------------------------
   // Local storage (preferences, flags, cached JSON)
   // ---------------------------------------------------------------------
@@ -43,6 +47,9 @@ class StorageKeys {
   static const String authFlowState = 'auth_flow_state';
   static const String authFlowContext = 'auth_flow_context';
   static const String kycUploadedDocuments = 'kyc_uploaded_documents';
+
+  /// Text fields + role of the registration form, so input survives a restart.
+  static const String registrationDraft = 'registration_draft';
 
   /// Named `mock_*` so it is obvious these die with the mock services and
   /// have no counterpart once a real backend is wired up.

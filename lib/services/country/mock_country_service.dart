@@ -15,12 +15,14 @@ class MockCountryService implements CountryServiceBase {
       name: 'India',
       level: LocationLevel.country,
       dialCode: '+91',
+      flagEmoji: '🇮🇳',
     ),
     LocationNode(
       id: 'US',
       name: 'United States',
       level: LocationLevel.country,
       dialCode: '+1',
+      flagEmoji: '🇺🇸',
     ),
   ];
 

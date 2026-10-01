@@ -117,6 +117,7 @@ class AppRoutes {
   // ---------------------------------------------------------------------
   static const String kycDocuments = '/kyc/documents';
   static const String kycVerificationStatus = '/kyc/verification-status';
+  static const String kycInProgress = '/kyc/in-progress';
 
   // ---------------------------------------------------------------------
   // Mock notification inbox

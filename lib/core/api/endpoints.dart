@@ -2,7 +2,7 @@
 class ApiEndpoints {
   ApiEndpoints._();
 
-  static const String baseUrl = 'http://10.10.10.18:3001';
+  static const String baseUrl = 'http://10.10.10.50:3000';
 
   // ---------------------------------------------------------------------
   // 1b. Identifier-first authentication entry (mobile OR email)
@@ -46,10 +46,6 @@ class ApiEndpoints {
   static const String userRegistrationVerifyOtp =
       '/country-codes/user-registration/verify-otp';
 
-  /// `POST` resends a registration OTP for an existing encrypted `uid`.
-  /// See `OtpVerificationService`.
-  static const String otpResend = '/otp/resend';
-
   // ---------------------------------------------------------------------
   // 2. Cascading property location master data
   //
@@ -65,8 +61,17 @@ class ApiEndpoints {
 
   // ---------------------------------------------------------------------
   // 2b. KYC (role-based documents)
+  //
+  // `kycDocuments` (`GET ?user_token=<encrypted-user-token>`) returns the
+  // backend-configured document list for the caller's role — the frontend
+  // never hardcodes which documents to ask for. `kycUpload` is the
+  // per-document multipart upload (`user_id`, `doc_id`, plus the file),
+  // called once per document, same as `kycDocuments` returns them.
+  // Neither carries the `/api/v1` prefix, matching every other documented,
+  // real (non-`/api/v1`) endpoint in this contract.
   // ---------------------------------------------------------------------
-  static const String kycUpload = '/api/v1/kyc/documents';
+  static const String kycDocuments = '/kyc/documents';
+  static const String kycUpload = '/kyc/upload';
   static const String kycSubmit = '/api/v1/kyc/submit';
   static String kycStatus(String kycId) => '/api/v1/kyc/$kycId/status';
   static String kycDocumentById(String documentId) =>

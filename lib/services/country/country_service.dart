@@ -8,6 +8,7 @@ import 'package:flutter_nivasshub/core/api/endpoints.dart';
 import 'package:flutter_nivasshub/models/location/location_level.dart';
 import 'package:flutter_nivasshub/models/location/location_node.dart';
 import 'package:flutter_nivasshub/services/country/country_service_base.dart';
+import 'package:flutter_nivasshub/utils/flag_emoji.dart';
 
 /// Dio-backed implementation of `GET /country-codes` — fully documented,
 /// so unlike the rest of the auth-entry/KYC stack this has no mock twin
@@ -68,7 +69,9 @@ class CountryService extends ApiService implements CountryServiceBase {
 
     final nodes = countries.whereType<Map>().map((raw) {
       final country = _CaseInsensitiveLookup(Map<String, dynamic>.from(raw));
+      final iso = country.string(['country_short_Code', 'shortCode']) ?? '';
       return LocationNode(
+        flagEmoji: flagEmojiFromIso(iso),
         // The documented contract's snake_case keys
         // (`country_short_Code`/`country_name`/`country_calling_Code`)
         // and the live backend's actual camelCase keys

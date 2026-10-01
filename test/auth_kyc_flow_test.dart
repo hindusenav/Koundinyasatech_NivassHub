@@ -1,24 +1,32 @@
 import 'package:flutter_nivasshub/constants/kyc/kyc_strings.dart';
+import 'package:flutter_nivasshub/core/api/api_response.dart';
 import 'package:flutter_nivasshub/models/auth/auth_identifier.dart';
 import 'package:flutter_nivasshub/models/auth/check_user_exists_request.dart';
+import 'package:flutter_nivasshub/models/auth/check_user_exists_response_data.dart';
+import 'package:flutter_nivasshub/services/auth/auth_entry_service_base.dart';
 import 'package:flutter_nivasshub/models/auth/create_user_request.dart';
 import 'package:flutter_nivasshub/models/auth/login_user_request.dart';
+import 'package:flutter_nivasshub/models/auth/user_registration_verify_otp_request.dart';
+import 'package:flutter_nivasshub/models/auth/user_registration_verify_otp_response_data.dart';
 import 'package:flutter_nivasshub/models/auth/user_role.dart';
+import 'package:flutter_nivasshub/models/kyc/kyc_applicable_document.dart';
 import 'package:flutter_nivasshub/models/kyc/kyc_document_slot.dart';
-import 'package:flutter_nivasshub/models/kyc/kyc_document_type.dart';
 import 'package:flutter_nivasshub/models/kyc/kyc_status.dart';
 import 'package:flutter_nivasshub/models/kyc/kyc_submit_request.dart';
+import 'package:flutter_nivasshub/models/kyc/picked_file.dart';
 import 'package:flutter_nivasshub/models/location/location_level.dart';
 import 'package:flutter_nivasshub/models/location/location_node.dart';
 import 'package:flutter_nivasshub/models/location/location_selection.dart';
 import 'package:flutter_nivasshub/providers/auth/auth_state_provider.dart';
+import 'package:flutter_nivasshub/providers/auth/otp_mobile_email_verification_provider.dart';
 import 'package:flutter_nivasshub/providers/kyc/kyc_provider.dart';
 import 'package:flutter_nivasshub/providers/location/location_provider.dart';
+import 'package:flutter_nivasshub/providers/registration/registration_master_data_provider.dart';
 import 'package:flutter_nivasshub/services/auth/mock_auth_entry_service.dart';
+import 'package:flutter_nivasshub/services/auth/otp_verification_service_base.dart';
 import 'package:flutter_nivasshub/services/file/file_picker_service_base.dart';
 import 'package:flutter_nivasshub/services/file/mock_file_picker_service.dart';
 import 'package:flutter_nivasshub/services/kyc/kyc_mock_ledger.dart';
-import 'package:flutter_nivasshub/services/kyc/mock_document_service.dart';
 import 'package:flutter_nivasshub/services/kyc/mock_kyc_service.dart';
 import 'package:flutter_nivasshub/services/location/mock_location_service.dart';
 import 'package:flutter_nivasshub/services/notifications/mock_notification_service.dart';
@@ -27,6 +35,8 @@ import 'package:flutter_nivasshub/storage/secure_storage_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'support/fake_document_service.dart';
+import 'support/fake_registration_service.dart';
 import 'support/in_memory_secure_storage.dart';
 
 /// Covers the parts of the auth-entry → registration → KYC flow whose
@@ -144,6 +154,69 @@ void main() {
   });
 
   // -------------------------------------------------------------------
+  // Registration role id
+  // -------------------------------------------------------------------
+
+  group('RegistrationMasterDataProvider.roleIdFor', () {
+    test('Owner always maps to the fixed id "6"', () {
+      final provider = RegistrationMasterDataProvider(
+        const FakeRegistrationService(),
+      );
+      expect(provider.roleIdFor(UserRole.owner), '6');
+    });
+
+    test('Tenant always maps to the fixed id "7"', () {
+      final provider = RegistrationMasterDataProvider(
+        const FakeRegistrationService(),
+      );
+      expect(provider.roleIdFor(UserRole.tenant), '7');
+    });
+  });
+
+  // -------------------------------------------------------------------
+  // Resend via registration-check
+  // -------------------------------------------------------------------
+
+  group('OtpMobileEmailVerificationProvider.resendOtp', () {
+    test('re-submits the identifier to registration-check and adopts the new token',
+        () async {
+      final auth = _FakeResendAuthService();
+      final provider = OtpMobileEmailVerificationProvider(
+        service: _CapturingOtpVerificationService(),
+        authService: auth,
+        resendIdentifier: const AuthIdentifier(
+          raw: '9391181130',
+          channel: AuthChannel.mobile,
+          countryCode: '+91',
+        ),
+        userId: 'OLD_TOKEN',
+        otpJustSent: false,
+      );
+
+      final ok = await provider.resendOtp(OtpChannel.mobile);
+      await provider.verifyOtp(OtpChannel.mobile, '123456');
+
+      expect(ok, isTrue);
+      expect(auth.requests.single.toJson(), {
+        'umail': '9391181130',
+        'cont_code': '+91',
+      });
+    });
+
+    test('fails cleanly when there is no identifier to resend with', () async {
+      final provider = OtpMobileEmailVerificationProvider(
+        service: _CapturingOtpVerificationService(),
+        authService: _FakeResendAuthService(),
+        userId: 'OLD_TOKEN',
+        otpJustSent: false,
+      );
+
+      expect(await provider.resendOtp(OtpChannel.email), isFalse);
+      expect(provider.stateFor(OtpChannel.email).resendError, isNotNull);
+    });
+  });
+
+  // -------------------------------------------------------------------
   // Cascading property selection
   // -------------------------------------------------------------------
 
@@ -245,24 +318,34 @@ void main() {
   });
 
   // -------------------------------------------------------------------
-  // Role-based document sets
+  // GET /kyc/documents — the applicable document list
   // -------------------------------------------------------------------
 
-  group('KycDocumentCatalog', () {
-    test('an owner is asked for a registration proof', () {
-      expect(KycDocumentCatalog.typesForRole(UserRole.owner), [
-        KycDocumentType.addressProofOne,
-        KycDocumentType.addressProofTwo,
-        KycDocumentType.registrationProof,
+  group('DocumentServiceBase.getApplicableDocuments (fake)', () {
+    test('renders exactly what the backend returns, in order', () async {
+      final service = FakeDocumentService(documents: threeFakeDocuments());
+
+      final response = await service.getApplicableDocuments(
+        userToken: 'USR1',
+      );
+
+      expect(response.isSuccess, isTrue);
+      expect(response.data!.map((d) => d.documentName), [
+        'Address Proof 1',
+        'Address Proof 2',
+        'Ownership Proof',
       ]);
     });
 
-    test('a tenant is asked for a rental agreement', () {
-      expect(KycDocumentCatalog.typesForRole(UserRole.tenant), [
-        KycDocumentType.addressProofOne,
-        KycDocumentType.addressProofTwo,
-        KycDocumentType.rentalAgreement,
-      ]);
+    test('an empty catalog is a valid, non-error response', () async {
+      final service = FakeDocumentService(documents: const []);
+
+      final response = await service.getApplicableDocuments(
+        userToken: 'USR1',
+      );
+
+      expect(response.isSuccess, isTrue);
+      expect(response.data, isEmpty);
     });
   });
 
@@ -343,20 +426,14 @@ void main() {
       final ledger = KycMockLedger.read(localStorage)!;
 
       expect(ledger.issues, hasLength(1));
-      expect(
-        ledger.issues.single.documentType,
-        KycDocumentType.addressProofTwo,
-      );
+      expect(ledger.issues.single.documentId, 2);
     });
 
-    test('a rejection flags the role-specific ownership document', () async {
+    test('a rejection flags the last document in the manifest', () async {
       await submitAndReveal(attempt: 2, role: UserRole.tenant);
       final ledger = KycMockLedger.read(localStorage)!;
 
-      expect(
-        ledger.issues.single.documentType,
-        KycDocumentType.rentalAgreement,
-      );
+      expect(ledger.issues.single.documentId, 3);
     });
 
     test('a filename token overrides the attempt ladder', () async {
@@ -377,20 +454,14 @@ void main() {
       },
     );
 
-    test('a submission missing a document is rejected as invalid', () async {
+    test('a submission with no documents is rejected as invalid', () async {
       final response = await service.submitKyc(
-        KycSubmitRequest(
+        const KycSubmitRequest(
           kycToken: 'token',
           userId: 'USR1',
           role: UserRole.owner,
           attemptNumber: 1,
-          documents: const [
-            KycSubmitDocument(
-              documentType: KycDocumentType.addressProofOne,
-              documentId: 'DOC001',
-              fileName: 'one.pdf',
-            ),
-          ],
+          documents: [],
         ),
       );
 
@@ -446,7 +517,7 @@ void main() {
         nameResolver: () => 'Test Resident',
       );
       provider = KycProvider(
-        documentService: MockDocumentService(),
+        documentService: FakeDocumentService(documents: threeFakeDocuments()),
         kycService: kycService,
         filePickerService: MockFilePickerService(),
         localStorage: localStorage,
@@ -459,9 +530,78 @@ void main() {
 
     Future<void> uploadAll() async {
       for (final slot in provider.slots) {
-        await provider.pickAndUpload(slot.type, FilePickSource.files);
+        await provider.pickAndUpload(
+          slot.document.documentId,
+          FilePickSource.files,
+        );
       }
     }
+
+    test('uploading one document leaves the others untouched, and optional '
+        'documents do not block submit', () async {
+      final documents = FakeDocumentService(
+        documents: const [
+          KycApplicableDocument(documentId: 13, documentName: 'Aadhar'),
+          KycApplicableDocument(
+            documentId: 14,
+            documentName: 'Driving Licence',
+            isMandatory: false,
+          ),
+          KycApplicableDocument(documentId: 19, documentName: 'Lease'),
+        ],
+      );
+      final p = KycProvider(
+        documentService: documents,
+        kycService: kycService,
+        filePickerService: MockFilePickerService(),
+        localStorage: localStorage,
+        authState: AuthStateProvider(
+          localStorage: localStorage,
+          secureStorage: SecureStorageService(storage: InMemorySecureStorage()),
+        ),
+      );
+      await p.initialise(userId: 'T', kycToken: '', role: UserRole.owner);
+
+      await p.pickAndUpload(13, FilePickSource.files);
+
+      expect(documents.uploadRequests.single.documentId, 13);
+      expect(p.slotFor(13)!.isSatisfied, isTrue);
+      expect(p.slotFor(14)!.isSatisfied, isFalse);
+      expect(p.slotFor(19)!.isSatisfied, isFalse);
+      expect(p.canSubmit, isFalse);
+
+      await p.pickAndUpload(19, FilePickSource.files);
+      expect(p.canSubmit, isTrue); // Driving Licence is optional
+    });
+
+    test('each upload uses the token returned by the previous one', () async {
+      final documents = FakeDocumentService(rotateTokens: true);
+      final rotating = KycProvider(
+        documentService: documents,
+        kycService: kycService,
+        filePickerService: MockFilePickerService(),
+        localStorage: localStorage,
+        authState: AuthStateProvider(
+          localStorage: localStorage,
+          secureStorage: SecureStorageService(storage: InMemorySecureStorage()),
+        ),
+      );
+      await rotating.initialise(
+        userId: 'SESSION_0',
+        kycToken: '',
+        role: UserRole.owner,
+      );
+
+      await rotating.pickAndUpload(1, FilePickSource.files);
+      await rotating.pickAndUpload(2, FilePickSource.files);
+      await rotating.pickAndUpload(3, FilePickSource.files);
+
+      expect(documents.uploadRequests.map((r) => r.userId), [
+        'SESSION_0',
+        'ROTATED_1',
+        'ROTATED_2',
+      ]);
+    });
 
     test('submit stays disabled until every document is uploaded', () async {
       await provider.initialise(
@@ -471,22 +611,38 @@ void main() {
       );
       expect(provider.canSubmit, isFalse);
 
-      await provider.pickAndUpload(
-        KycDocumentType.addressProofOne,
-        FilePickSource.files,
-      );
+      await provider.pickAndUpload(1, FilePickSource.files);
       expect(provider.canSubmit, isFalse);
 
-      await provider.pickAndUpload(
-        KycDocumentType.addressProofTwo,
-        FilePickSource.files,
-      );
-      await provider.pickAndUpload(
-        KycDocumentType.registrationProof,
-        FilePickSource.files,
-      );
+      await provider.pickAndUpload(2, FilePickSource.files);
+      await provider.pickAndUpload(3, FilePickSource.files);
       expect(provider.canSubmit, isTrue);
     });
+
+    test(
+      'uploadPicked uploads an already-picked file without opening the picker',
+      () async {
+        await provider.initialise(
+          userId: 'USR1',
+          kycToken: 'token',
+          role: UserRole.owner,
+        );
+
+        await provider.uploadPicked(
+          1,
+          const PickedFile(
+            path: '/mock/documents/preview_confirmed.jpg',
+            fileName: 'preview_confirmed.jpg',
+            extension: 'jpg',
+            sizeBytes: 1024,
+          ),
+        );
+
+        final slot = provider.slotFor(1)!;
+        expect(slot.status, KycUploadStatus.uploaded);
+        expect(slot.uploaded!.fileName, 'preview_confirmed.jpg');
+      },
+    );
 
     test('removing a document disables submit again', () async {
       await provider.initialise(
@@ -497,11 +653,11 @@ void main() {
       await uploadAll();
       expect(provider.canSubmit, isTrue);
 
-      await provider.remove(KycDocumentType.addressProofTwo);
+      await provider.remove(2);
       expect(provider.canSubmit, isFalse);
     });
 
-    test('a tenant is shown the rental agreement card', () async {
+    test('the cards render exactly what GET /kyc/documents returned', () async {
       await provider.initialise(
         userId: 'USR1',
         kycToken: 'token',
@@ -509,8 +665,8 @@ void main() {
       );
 
       expect(
-        provider.slots.map((s) => s.type),
-        contains(KycDocumentType.rentalAgreement),
+        provider.slots.map((s) => s.document.documentName),
+        contains('Ownership Proof'),
       );
     });
 
@@ -535,25 +691,27 @@ void main() {
         rejectionReason: ledger.reason,
       );
 
-      final flagged = provider.slotFor(KycDocumentType.addressProofTwo);
+      final flagged = provider.slotFor(2)!;
       expect(flagged.status, KycUploadStatus.empty);
       expect(flagged.issueReason, isNotNull);
 
-      for (final type in const [
-        KycDocumentType.addressProofOne,
-        KycDocumentType.registrationProof,
-      ]) {
-        final slot = provider.slotFor(type);
-        expect(slot.status, KycUploadStatus.preserved, reason: type.name);
-        expect(slot.uploaded!.documentId, isNotEmpty, reason: type.name);
+      for (final documentId in const [1, 3]) {
+        final slot = provider.slotFor(documentId)!;
+        expect(
+          slot.status,
+          KycUploadStatus.preserved,
+          reason: 'document $documentId',
+        );
+        expect(
+          slot.uploaded!.documentId,
+          documentId,
+          reason: 'document $documentId',
+        );
       }
 
       // Only the flagged card needs replacing before submit re-enables.
       expect(provider.canSubmit, isFalse);
-      await provider.pickAndUpload(
-        KycDocumentType.addressProofTwo,
-        FilePickSource.files,
-      );
+      await provider.pickAndUpload(2, FilePickSource.files);
       expect(provider.canSubmit, isTrue);
       expect(provider.attemptNumber, 2);
     });
@@ -588,10 +746,7 @@ void main() {
           rejectionReason: ledger.reason,
         );
         for (final issue in ledger.issues) {
-          await provider.pickAndUpload(
-            issue.documentType,
-            FilePickSource.files,
-          );
+          await provider.pickAndUpload(issue.documentId, FilePickSource.files);
         }
       }
 
@@ -613,6 +768,46 @@ void main() {
       expect(provider.slots, isEmpty);
     });
   });
+}
+
+/// Records the verify requests it receives, without a live
+/// `POST /country-codes/user-registration/verify-otp` call.
+class _CapturingOtpVerificationService implements OtpVerificationServiceBase {
+  final verifyRequests = <UserRegistrationVerifyOtpRequest>[];
+
+  @override
+  Future<ApiResponse<UserRegistrationVerifyOtpResponseData>> verifyOtp(
+    UserRegistrationVerifyOtpRequest request,
+  ) async {
+    verifyRequests.add(request);
+    return ApiResponse.success(
+      const UserRegistrationVerifyOtpResponseData(verified: true),
+    );
+  }
+}
+
+/// Answers every registration-check with 412 MOBILE_EMAIL_NOT_VERIFIED and
+/// a fresh token, as the real backend does while OTPs are outstanding.
+class _FakeResendAuthService implements AuthEntryServiceBase {
+  final requests = <CheckUserExistsRequest>[];
+
+  @override
+  Future<ApiResponse<CheckUserExistsResponseData>> checkUserExists(
+    CheckUserExistsRequest request,
+  ) async {
+    requests.add(request);
+    return ApiResponse.success(
+      CheckUserExistsResponseData(
+        userExists: true,
+        identifier: request.identifier.normalized,
+        outcome: RegistrationCheckOutcome.mobileEmailNotVerified,
+        registrationToken: 'NEW_TOKEN',
+      ),
+    );
+  }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => throw UnimplementedError();
 }
 
 // ---------------------------------------------------------------------
@@ -639,17 +834,17 @@ KycSubmitRequest _submitRequest({
   UserRole role = UserRole.owner,
   String fileNamePrefix = 'document',
 }) {
-  final types = KycDocumentCatalog.typesForRole(role);
+  final documents = threeFakeDocuments();
   return KycSubmitRequest(
     kycToken: 'mock_kyc_token',
     userId: 'USR1001',
     role: role,
     attemptNumber: attempt,
     documents: [
-      for (var i = 0; i < types.length; i++)
+      for (var i = 0; i < documents.length; i++)
         KycSubmitDocument(
-          documentType: types[i],
-          documentId: 'DOC00$i',
+          documentId: documents[i].documentId,
+          documentName: documents[i].documentName,
           fileName: '$fileNamePrefix$i.pdf',
         ),
     ],

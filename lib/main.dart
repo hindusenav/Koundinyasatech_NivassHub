@@ -53,7 +53,6 @@ import 'package:flutter_nivasshub/services/kyc/document_service.dart';
 import 'package:flutter_nivasshub/services/kyc/document_service_base.dart';
 import 'package:flutter_nivasshub/services/kyc/kyc_service.dart';
 import 'package:flutter_nivasshub/services/kyc/kyc_service_base.dart';
-import 'package:flutter_nivasshub/services/kyc/mock_document_service.dart';
 import 'package:flutter_nivasshub/services/kyc/mock_kyc_service.dart';
 import 'package:flutter_nivasshub/services/location/location_service.dart';
 import 'package:flutter_nivasshub/services/location/location_service_base.dart';
@@ -236,9 +235,10 @@ Future<void> main() async {
   // KYC
   // ============================================================
 
-  final DocumentServiceBase documentService = KycConfig.useMockKycApi
-      ? MockDocumentService()
-      : DocumentService(apiClient);
+  // `GET /kyc/documents` and `POST /kyc/upload` are both documented and
+  // always real — no mock twin, unlike `KycServiceBase`'s submit/status
+  // pair below, which the backend has not documented yet.
+  final DocumentServiceBase documentService = DocumentService(apiClient);
 
   final KycServiceBase kycService = KycConfig.useMockKycApi
       ? MockKycService(

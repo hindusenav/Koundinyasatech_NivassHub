@@ -5,11 +5,15 @@ import 'package:flutter_nivasshub/constants/app_text_styles.dart';
 import 'package:flutter_nivasshub/constants/kyc/kyc_strings.dart';
 import 'package:flutter_nivasshub/models/auth/auth_flow_state.dart';
 import 'package:flutter_nivasshub/models/auth/auth_identifier.dart';
+import 'package:flutter_nivasshub/models/auth/check_user_exists_response_data.dart';
 import 'package:flutter_nivasshub/providers/auth/auth_entry_provider.dart';
+import 'package:flutter_nivasshub/providers/auth/otp_mobile_email_verification_provider.dart';
+import 'package:flutter_nivasshub/screens/auth/otp_mobile_email_verification_screen.dart';
 import 'package:flutter_nivasshub/providers/auth/auth_state_provider.dart';
 import 'package:flutter_nivasshub/routes/app_routes.dart';
 import 'package:flutter_nivasshub/screens/auth/enter_password_screen.dart';
 import 'package:flutter_nivasshub/screens/auth/user_details_screen.dart';
+import 'package:flutter_nivasshub/screens/kyc/kyc_documents_screen.dart';
 import 'package:flutter_nivasshub/utils/form_validators.dart';
 import 'package:flutter_nivasshub/widgets/auth/identifier_input_field.dart';
 import 'package:flutter_nivasshub/widgets/shared/app_bar/custom_app_bar.dart';
@@ -87,6 +91,65 @@ class _AuthEntryScreenState extends State<AuthEntryScreen> {
     if (!mounted || identifier == null) return;
 
     final authState = context.read<AuthStateProvider>();
+
+    if (provider.status == AuthEntryStatus.kycPending) {
+      final userId = provider.pendingKycUserId;
+      if (userId == null || userId.isEmpty) {
+        _showMessage(KycStrings.genericError);
+        return;
+      }
+      // Registered but KYC isn't done — straight to the documents screen,
+      // skipping the password step entirely. No role is known here;
+      // `GET /kyc/documents` resolves it server-side from `userId` alone.
+      await Navigator.of(context).pushNamed(
+        AppRoutes.kycDocuments,
+        arguments: KycDocumentsScreenArgs(userId: userId),
+      );
+      return;
+    }
+
+    if (provider.status == AuthEntryStatus.kycInProgress) {
+      await Navigator.of(context).pushNamed(AppRoutes.kycInProgress);
+      return;
+    }
+
+    if (provider.status == AuthEntryStatus.resumeOtp) {
+      final token = provider.registrationToken;
+      if (token == null || token.isEmpty) {
+        _showMessage(KycStrings.genericError);
+        return;
+      }
+      // Registered but OTP verification is unfinished: skip the profile
+      // form and reuse the OTP screen for just the pending channel(s).
+      final outcome = provider.outcome;
+      final pending = switch (outcome) {
+        RegistrationCheckOutcome.mobileNotVerified => {OtpChannel.mobile},
+        RegistrationCheckOutcome.emailNotVerified => {OtpChannel.email},
+        _ => {OtpChannel.mobile, OtpChannel.email},
+      };
+      await authState.saveRegistrationToken(token);
+      await authState.moveTo(
+        AuthFlowState.otpPending,
+        context: authState.context.copyWith(identifier: identifier),
+      );
+      if (!mounted) return;
+      await Navigator.of(context).pushNamed(
+        AppRoutes.otpMobileEmailVerification,
+        arguments: OtpMobileEmailVerificationScreenArgs(
+          userId: token,
+          mobileNumber: identifier.channel == AuthChannel.mobile
+              ? identifier.masked
+              : null,
+          email: identifier.channel == AuthChannel.email
+              ? identifier.masked
+              : null,
+          pendingChannels: pending,
+          otpJustSent: false,
+          resendIdentifier: identifier,
+        ),
+      );
+      return;
+    }
 
     if (provider.status == AuthEntryStatus.existingUser) {
       await Navigator.of(context).pushNamed(

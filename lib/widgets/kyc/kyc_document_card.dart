@@ -7,7 +7,6 @@ import 'package:flutter_nivasshub/constants/app_spacing.dart';
 import 'package:flutter_nivasshub/constants/app_text_styles.dart';
 import 'package:flutter_nivasshub/constants/kyc/kyc_strings.dart';
 import 'package:flutter_nivasshub/models/kyc/kyc_document_slot.dart';
-import 'package:flutter_nivasshub/models/kyc/kyc_document_type.dart';
 import 'package:flutter_nivasshub/widgets/shared/cards/custom_card.dart';
 import 'package:flutter_nivasshub/widgets/shared/feedback/status_chip.dart';
 
@@ -32,8 +31,6 @@ class KycDocumentCard extends StatelessWidget {
 
   final VoidCallback onRemove;
 
-  KycDocumentSpec get _spec => KycDocumentCatalog.specFor(slot.type);
-
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -53,23 +50,18 @@ class KycDocumentCard extends StatelessWidget {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _IconTile(icon: _spec.icon),
+                const _IconTile(icon: AppIcons.attach),
                 AppSpacing.gapWSm,
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        _spec.title,
+                        // Always the backend's own `documentName` — the
+                        // card never invents or looks up a title locally.
+                        slot.document.documentName,
                         style: AppTextStyles.titleSmall.copyWith(
                           color: textPrimary,
-                        ),
-                      ),
-                      AppSpacing.gapXs,
-                      Text(
-                        _spec.subtitle,
-                        style: AppTextStyles.bodySmall.copyWith(
-                          color: textSecondary,
                         ),
                       ),
                     ],

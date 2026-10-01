@@ -4,7 +4,6 @@ import 'package:flutter_nivasshub/constants/kyc/kyc_strings.dart';
 import 'package:flutter_nivasshub/core/api/api_exception.dart';
 import 'package:flutter_nivasshub/core/api/api_response.dart';
 import 'package:flutter_nivasshub/models/kyc/kyc_document_issue.dart';
-import 'package:flutter_nivasshub/models/kyc/kyc_document_type.dart';
 import 'package:flutter_nivasshub/models/kyc/kyc_status.dart';
 import 'package:flutter_nivasshub/models/kyc/kyc_status_response_data.dart';
 import 'package:flutter_nivasshub/models/kyc/kyc_submit_request.dart';
@@ -64,13 +63,14 @@ class MockKycService implements KycServiceBase {
       return _failure(KycStrings.genericError, ApiExceptionType.unauthorized);
     }
 
-    // Invalid Input: a manifest must carry all three documents. The UI's
-    // submit gate already guarantees this; the server checks anyway.
-    final expected = KycDocumentCatalog.typesForRole(request.role);
-    final submitted = request.documents.map((d) => d.documentType).toSet();
-    if (!expected.every(submitted.contains)) {
+    // Invalid Input: a manifest must carry at least one document. The UI's
+    // submit gate already guarantees every required card is filled; the
+    // server checks anyway. The exact required set is whatever `GET
+    // /kyc/documents` returned for this role — not something this mock
+    // re-derives, since that catalog is entirely backend-configured now.
+    if (request.documents.isEmpty) {
       return _failure(
-        'Please upload all ${expected.length} required documents.',
+        'Please upload all required documents.',
         ApiExceptionType.validation,
       );
     }
@@ -173,17 +173,24 @@ class MockKycService implements KycServiceBase {
     final tokenVerdict = _verdictFromFilenames(request);
     if (tokenVerdict != null) return tokenVerdict;
 
-    final ownershipProof = KycDocumentCatalog.ownershipProofFor(request.role);
+    // Flagged by position rather than a fixed document type, since the
+    // manifest's shape (which ids, how many) is entirely backend-driven
+    // now (`GET /kyc/documents`) — this mock has no catalog of its own to
+    // name a specific document by role.
+    final documents = request.documents;
+    final secondDocument = documents.length > 1 ? documents[1] : documents.first;
+    final lastDocument = documents.last;
 
     return switch (request.attemptNumber) {
       1 => _Verdict(
         status: KycVerificationStatus.correctionRequired,
         reason:
-            'Your second address proof is not legible. '
+            'Your ${secondDocument.documentName} is not legible. '
             'Please upload a clearer copy.',
-        issues: const [
+        issues: [
           KycDocumentIssue(
-            documentType: KycDocumentType.addressProofTwo,
+            documentId: secondDocument.documentId,
+            documentName: secondDocument.documentName,
             reason: 'The document is blurred and could not be read.',
           ),
         ],
@@ -191,11 +198,12 @@ class MockKycService implements KycServiceBase {
       2 => _Verdict(
         status: KycVerificationStatus.rejected,
         reason:
-            'The ownership document could not be matched against '
+            'The ${lastDocument.documentName} could not be matched against '
             'society records.',
         issues: [
           KycDocumentIssue(
-            documentType: ownershipProof,
+            documentId: lastDocument.documentId,
+            documentName: lastDocument.documentName,
             reason:
                 'The name on this document does not match your '
                 'registered details.',
@@ -221,7 +229,6 @@ class MockKycService implements KycServiceBase {
     for (final token in const ['reject', 'correct']) {
       final flagged = request.documents
           .where((d) => matches(token, d.fileName))
-          .map((d) => d.documentType)
           .toList(growable: false);
       if (flagged.isEmpty) continue;
 
@@ -235,8 +242,9 @@ class MockKycService implements KycServiceBase {
             : 'One or more documents need to be re-uploaded.',
         issues: flagged
             .map(
-              (type) => KycDocumentIssue(
-                documentType: type,
+              (document) => KycDocumentIssue(
+                documentId: document.documentId,
+                documentName: document.documentName,
                 reason: isRejection
                     ? 'This document was not accepted.'
                     : 'Please upload a clearer copy of this document.',
