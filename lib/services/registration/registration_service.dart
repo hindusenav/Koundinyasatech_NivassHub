@@ -11,6 +11,7 @@ import 'package:flutter_nivasshub/utils/flag_emoji.dart';
 import 'package:flutter_nivasshub/models/registration/registration_master_data.dart';
 import 'package:flutter_nivasshub/models/registration/user_registration_request.dart';
 import 'package:flutter_nivasshub/models/registration/user_registration_response_data.dart';
+import 'package:flutter_nivasshub/services/notifications/otp_push_notifier.dart';
 import 'package:flutter_nivasshub/services/registration/registration_service_base.dart';
 
 /// Dio-backed implementation of `GET`/`POST
@@ -76,7 +77,12 @@ class RegistrationService extends ApiService implements RegistrationServiceBase 
   ) {
     return handleRequest(
       () => client.post(ApiEndpoints.userRegistration, data: request.toJson()),
-      (json) => UserRegistrationResponseData.fromJson(json as Map<String, dynamic>),
+      (json) {
+        OtpPushNotifier.showFromRegistration(json);
+        return UserRegistrationResponseData.fromJson(
+          json as Map<String, dynamic>,
+        );
+      },
     );
   }
 

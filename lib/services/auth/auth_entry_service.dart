@@ -10,6 +10,7 @@ import 'package:flutter_nivasshub/models/auth/create_user_response_data.dart';
 import 'package:flutter_nivasshub/models/auth/login_user_request.dart';
 import 'package:flutter_nivasshub/models/auth/login_user_response_data.dart';
 import 'package:flutter_nivasshub/services/auth/auth_entry_service_base.dart';
+import 'package:flutter_nivasshub/services/notifications/otp_push_notifier.dart';
 
 /// Dio-backed implementation of the two [AuthEntryServiceBase] methods
 /// that have a documented backend contract.
@@ -43,6 +44,8 @@ class AuthEntryService extends ApiService implements AuthEntryServiceBase {
     } on ApiException catch (e) {
       final resume = _resumeOutcome(e);
       if (resume != null) {
+        final inner = e.data?['data'];
+        if (inner is Map) OtpPushNotifier.showFromOtpList(inner['otps']);
         return ApiResponse.success(
           CheckUserExistsResponseData(
             // Registered, just not finished: not a fresh sign-up.

@@ -19,6 +19,7 @@ class OtpInputBoxes extends StatefulWidget {
     this.onChanged,
     this.enabled = true,
     this.autofocus = true,
+    this.controller,
   });
 
   final int length;
@@ -26,6 +27,11 @@ class OtpInputBoxes extends StatefulWidget {
   final ValueChanged<String>? onChanged;
   final bool enabled;
   final bool autofocus;
+
+  /// Optional external controller so a caller can fill the boxes
+  /// programmatically (e.g. SMS auto-fill). Owned by the caller: not
+  /// disposed here.
+  final TextEditingController? controller;
 
   @override
   State<OtpInputBoxes> createState() => _OtpInputBoxesState();
@@ -38,13 +44,13 @@ class _OtpInputBoxesState extends State<OtpInputBoxes> {
   @override
   void initState() {
     super.initState();
-    _controller = TextEditingController();
+    _controller = widget.controller ?? TextEditingController();
     _focusNode = FocusNode();
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    if (widget.controller == null) _controller.dispose();
     _focusNode.dispose();
     super.dispose();
   }

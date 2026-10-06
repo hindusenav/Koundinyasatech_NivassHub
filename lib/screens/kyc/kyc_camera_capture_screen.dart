@@ -41,7 +41,7 @@ class _KycCameraCaptureScreenState extends State<KycCameraCaptureScreen>
     with WidgetsBindingObserver {
   CameraController? _controller;
   List<CameraDescription> _cameras = const [];
-  int _cameraIndex = 0;
+  CameraDescription? _selected;
   _CameraScreenStatus _status = _CameraScreenStatus.loading;
   String? _errorMessage;
 
@@ -75,9 +75,21 @@ class _KycCameraCaptureScreenState extends State<KycCameraCaptureScreen>
       controller.dispose();
       _controller = null;
     } else if (state == AppLifecycleState.resumed && _captured == null) {
-      _initController(_cameras[_cameraIndex]);
+      final selected = _selected;
+      if (selected != null) _initController(selected);
     }
   }
+
+  CameraDescription? _cameraFor(CameraLensDirection direction) {
+    for (final c in _cameras) {
+      if (c.lensDirection == direction) return c;
+    }
+    return null;
+  }
+
+  bool get _canSwitch =>
+      _cameraFor(CameraLensDirection.front) != null &&
+      _cameraFor(CameraLensDirection.back) != null;
 
   Future<void> _setUpCamera() async {
     try {
@@ -91,14 +103,13 @@ class _KycCameraCaptureScreenState extends State<KycCameraCaptureScreen>
       }
 
       _cameras = cameras;
-      // Back camera is the default; fall back to the first camera reported
-      // if this device has no back lens (e.g. a front-only device).
-      _cameraIndex = cameras.indexWhere(
-        (c) => c.lensDirection == CameraLensDirection.back,
-      );
-      if (_cameraIndex < 0) _cameraIndex = 0;
+      // Back camera is the default; fall back to the front lens, then to
+      // whatever else is reported (e.g. an external camera).
+      final initial = _cameraFor(CameraLensDirection.back) ??
+          _cameraFor(CameraLensDirection.front) ??
+          cameras.first;
 
-      await _initController(cameras[_cameraIndex]);
+      await _initController(initial);
     } catch (_) {
       if (!mounted) return;
       setState(() {
@@ -116,13 +127,18 @@ class _KycCameraCaptureScreenState extends State<KycCameraCaptureScreen>
       imageFormatGroup: ImageFormatGroup.jpeg,
     );
     _controller = controller;
+    _selected = description;
 
     try {
       await controller.initialize();
-      if (!mounted) return;
+      if (!mounted || _controller != controller) {
+        // Screen closed or a newer camera was requested meanwhile.
+        await controller.dispose();
+        return;
+      }
       setState(() => _status = _CameraScreenStatus.ready);
     } catch (_) {
-      if (!mounted) return;
+      if (!mounted || _controller != controller) return;
       setState(() {
         _status = _CameraScreenStatus.error;
         _errorMessage = KycStrings.cameraUnavailableMessage;
@@ -131,12 +147,20 @@ class _KycCameraCaptureScreenState extends State<KycCameraCaptureScreen>
   }
 
   Future<void> _switchCamera() async {
-    if (_cameras.length < 2) return;
-    final controller = _controller;
-    _cameraIndex = (_cameraIndex + 1) % _cameras.length;
+    if (!_canSwitch || _status != _CameraScreenStatus.ready) return;
+    final target = _selected?.lensDirection == CameraLensDirection.front
+        ? _cameraFor(CameraLensDirection.back)
+        : _cameraFor(CameraLensDirection.front);
+    if (target == null) return;
+
+    final old = _controller;
+    // Drop the reference first so nothing can preview/capture from a
+    // controller that is being disposed.
+    _controller = null;
     setState(() => _status = _CameraScreenStatus.loading);
-    await controller?.dispose();
-    await _initController(_cameras[_cameraIndex]);
+    await old?.dispose();
+    if (!mounted) return;
+    await _initController(target);
   }
 
   Future<void> _capture() async {
@@ -202,7 +226,7 @@ class _KycCameraCaptureScreenState extends State<KycCameraCaptureScreen>
             onPressed: () => Navigator.of(context).pop(),
           ),
         ),
-        if (_cameras.length > 1)
+        if (_canSwitch)
           Positioned(
             top: AppSpacing.sm,
             right: AppSpacing.sm,

@@ -14,6 +14,7 @@ import 'package:flutter_nivasshub/providers/auth/auth_state_provider.dart';
 import 'package:flutter_nivasshub/providers/auth/otp_mobile_email_verification_provider.dart';
 import 'package:flutter_nivasshub/routes/app_routes.dart';
 import 'package:flutter_nivasshub/screens/kyc/kyc_documents_screen.dart';
+import 'package:flutter_nivasshub/services/auth/sms_otp_listener.dart';
 import 'package:flutter_nivasshub/widgets/auth/otp_input_boxes.dart';
 import 'package:flutter_nivasshub/widgets/shared/app_bar/custom_app_bar.dart';
 import 'package:flutter_nivasshub/widgets/shared/buttons/custom_button.dart';
@@ -70,9 +71,19 @@ class _OtpMobileEmailVerificationScreenState
 
   Timer? _cooldownTicker;
 
+  // Mobile OTP only; the email OTP is always typed manually.
+  final TextEditingController _mobileOtpController = TextEditingController();
+  late final SmsOtpListener _smsListener = SmsOtpListener(
+    length: 6,
+    onCode: _onSmsCode,
+  );
+
   @override
   void initState() {
     super.initState();
+    if (widget.args.pendingChannels.contains(OtpChannel.mobile)) {
+      _smsListener.start();
+    }
     // Only drives the resend-cooldown countdown text below each card —
     // cheap enough to just tick every second for the screen's lifetime
     // rather than tracking exactly when a cooldown is active.
@@ -84,7 +95,15 @@ class _OtpMobileEmailVerificationScreenState
   @override
   void dispose() {
     _cooldownTicker?.cancel();
+    _smsListener.stop();
+    _mobileOtpController.dispose();
     super.dispose();
+  }
+
+  void _onSmsCode(String code) {
+    if (!mounted) return;
+    _mobileOtpController.text = code;
+    setState(() => _mobileOtp = code);
   }
 
   Future<void> _verify(OtpChannel channel, String otp) async {
@@ -108,6 +127,7 @@ class _OtpMobileEmailVerificationScreenState
     if (!mounted) return;
 
     if (success) {
+      if (channel == OtpChannel.mobile) _smsListener.restart();
       CustomSnackbar.success(context, 'OTP resent successfully.');
     } else {
       CustomSnackbar.error(
@@ -192,6 +212,7 @@ class _OtpMobileEmailVerificationScreenState
                       state: provider.stateFor(OtpChannel.mobile),
                       cooldownSeconds:
                           provider.remainingCooldownSeconds(OtpChannel.mobile),
+                      codeController: _mobileOtpController,
                       onChanged: (value) => setState(() => _mobileOtp = value),
                       onVerify: () => _verify(OtpChannel.mobile, _mobileOtp),
                       onResend: () => _resend(OtpChannel.mobile),
@@ -237,6 +258,7 @@ class _OtpCard extends StatelessWidget {
     required this.state,
     required this.cooldownSeconds,
     required this.onChanged,
+    this.codeController,
     required this.onVerify,
     required this.onResend,
     required this.canVerify,
@@ -249,6 +271,7 @@ class _OtpCard extends StatelessWidget {
   final OtpChannelState state;
   final int cooldownSeconds;
   final ValueChanged<String> onChanged;
+  final TextEditingController? codeController;
   final VoidCallback onVerify;
   final VoidCallback onResend;
   final bool canVerify;
@@ -332,6 +355,7 @@ class _OtpCard extends StatelessWidget {
               child: OtpInputBoxes(
                 length: 6,
                 autofocus: false,
+                controller: codeController,
                 onChanged: onChanged,
                 onCompleted: onChanged,
               ),
