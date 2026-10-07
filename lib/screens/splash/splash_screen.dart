@@ -15,8 +15,8 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  static const String _iconAsset = 'assets/images/nivaashub_logo_mark.png';
-  static const String _fullLogoAsset = 'assets/images/nivaashub_logo.png';
+  static const String _iconAsset = 'assets/images/splash_icon.png';
+  static const String _fullLogoAsset = 'assets/images/splash_full_logo.png';
 
   bool _showIcon = false;
   bool _showFullLogo = false;
@@ -100,7 +100,7 @@ class _SplashScreenState extends State<SplashScreen> {
                 scale: _showIcon ? 1.0 : 0.5,
                 duration: const Duration(milliseconds: 800),
                 curve: Curves.easeOut,
-                child: Image.asset(_iconAsset, width: 96, height: 96),
+                child: Image.asset(_iconAsset, width: 120, height: 120),
               ),
             ),
           ),
@@ -110,7 +110,7 @@ class _SplashScreenState extends State<SplashScreen> {
               opacity: _showFullLogo ? 1.0 : 0.0,
               duration: const Duration(milliseconds: 800),
               curve: Curves.easeOut,
-              child: Image.asset(_fullLogoAsset, width: 240),
+              child: Image.asset(_fullLogoAsset, width: 280),
             ),
           ),
         ],
