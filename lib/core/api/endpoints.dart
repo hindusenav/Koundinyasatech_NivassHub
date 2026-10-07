@@ -2,7 +2,7 @@
 class ApiEndpoints {
   ApiEndpoints._();
 
-  static const String baseUrl = 'http://10.10.10.6:3000';
+  static const String baseUrl = 'http://10.10.10.86:3000';
 
   // ---------------------------------------------------------------------
   // 1b. Identifier-first authentication entry (mobile OR email)

@@ -1,3 +1,5 @@
+import 'package:flutter_nivasshub/models/auth/user_role.dart';
+
 /// One state/province nested inside a [RegistrationCountry].
 class RegistrationState {
   const RegistrationState({required this.provinceId, required this.provinceName});
@@ -79,21 +81,94 @@ class RegistrationSociety {
   String get subtitle => [city, state].where((s) => s.isNotEmpty).join(', ');
 }
 
-/// Parsed and kept for completeness. **Not surfaced in the UI** — the
-/// registration screen keeps its existing Owner/Tenant picker, whose wire
-/// value the KYC document catalog (`KycDocumentCatalog.forRole`) depends
-/// on; this endpoint's `Resident`/`Tenant` labels don't map onto that
-/// cleanly, so nothing currently reads this list.
+List<T> _parseNested<T>(
+  _CaseInsensitiveLookup lookup,
+  List<String> keys,
+  T Function(Map<String, dynamic>) fromJson,
+) {
+  final raw = lookup.raw(keys);
+  if (raw is! List) return const [];
+  return raw
+      .whereType<Map>()
+      .map((e) => fromJson(Map<String, dynamic>.from(e)))
+      .toList(growable: false);
+}
+
+/// One `Categories[]` entry under a [RegistrationSubRole] (owner sub-roles
+/// only), sent as `sub_role_cat`.
+class RegistrationCategory {
+  const RegistrationCategory({
+    required this.categoryId,
+    required this.name,
+    required this.description,
+  });
+
+  final String categoryId;
+  final String name;
+  final String description;
+
+  factory RegistrationCategory.fromJson(Map<String, dynamic> json) {
+    final lookup = _CaseInsensitiveLookup(json);
+    return RegistrationCategory(
+      categoryId: lookup.string(['category_id']) ?? '',
+      name: lookup.string(['name']) ?? '',
+      description: lookup.string(['description']) ?? '',
+    );
+  }
+}
+
+/// One `Sub_Role[]` entry under a [RegistrationRole], sent as `sub_role`.
+/// [categories] is empty for sub-roles that don't need `sub_role_cat`.
+class RegistrationSubRole {
+  const RegistrationSubRole({
+    required this.subRoleId,
+    required this.name,
+    required this.description,
+    required this.categories,
+  });
+
+  final String subRoleId;
+  final String name;
+  final String description;
+  final List<RegistrationCategory> categories;
+
+  factory RegistrationSubRole.fromJson(Map<String, dynamic> json) {
+    final lookup = _CaseInsensitiveLookup(json);
+    return RegistrationSubRole(
+      subRoleId: lookup.string(['sub_role_id']) ?? '',
+      name: lookup.string(['name']) ?? '',
+      description: lookup.string(['description']) ?? '',
+      categories: _parseNested(
+        lookup,
+        ['Categories'],
+        RegistrationCategory.fromJson,
+      ),
+    );
+  }
+}
+
+/// One `Roles[]` entry — `6` is User (owner side), `7` is Tenant. Its
+/// [subRoles] (and their categories) drive the Sub-role/Category pickers.
 class RegistrationRole {
   const RegistrationRole({
     required this.roleId,
     required this.name,
     required this.description,
+    this.subRoles = const [],
   });
 
   final String roleId;
   final String name;
   final String description;
+  final List<RegistrationSubRole> subRoles;
+
+  /// The KYC-facing role this API role maps to: `6` → owner, `7` → tenant
+  /// (`KycDocumentCatalog.forRole` depends on it).
+  UserRole? get userRole => switch (roleId) {
+    '6' => UserRole.owner,
+    '7' => UserRole.tenant,
+    _ => null,
+  };
 
   factory RegistrationRole.fromJson(Map<String, dynamic> json) {
     final lookup = _CaseInsensitiveLookup(json);
@@ -101,6 +176,11 @@ class RegistrationRole {
       roleId: lookup.string(['role_id']) ?? '',
       name: lookup.string(['name']) ?? '',
       description: lookup.string(['description']) ?? '',
+      subRoles: _parseNested(
+        lookup,
+        ['Sub_Role'],
+        RegistrationSubRole.fromJson,
+      ),
     );
   }
 }

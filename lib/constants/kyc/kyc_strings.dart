@@ -49,6 +49,16 @@ class KycStrings {
   static const String roleOwner = 'Owner';
   static const String roleTenant = 'Tenant';
   static const String roleRequired = 'Please select your role';
+  static const String roleLabel = 'Role';
+  static const String roleHint = 'Select role';
+  static const String subRoleLabel = 'Sub-role';
+  static const String subRoleHint = 'Select sub-role';
+  static const String subRoleRequired = 'Please select your sub-role';
+  static const String selectRoleFirst = 'Select role first';
+  static const String categoryLabel = 'Category';
+  static const String categoryHint = 'Select category';
+  static const String categoryRequired = 'Please select a category';
+  static const String selectSubRoleFirst = 'Select sub-role first';
   static const String subBranchLabel = 'Unit Sub-Branch';
   // Auto-filled from the selected unit's BHK type — not a free choice.
   static const String subBranchHint = 'Auto-filled from the selected unit';

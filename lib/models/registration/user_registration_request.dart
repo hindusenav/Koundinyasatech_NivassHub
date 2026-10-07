@@ -13,6 +13,8 @@ class UserRegistrationRequest {
     required this.floorId,
     required this.unitId,
     required this.roleId,
+    required this.subRole,
+    this.subRoleCat,
     this.unitBranch,
   });
 
@@ -41,7 +43,13 @@ class UserRegistrationRequest {
   /// this under the `user_role` key (not `role_id`), as a string.
   final String roleId;
 
-  /// Optional per the documented contract.
+  /// `RegistrationSubRole.subRoleId` — mandatory.
+  final String subRole;
+
+  /// `RegistrationCategory.categoryId` — only for sub-roles that have
+  /// categories.
+  final String? subRoleCat;
+
   final String? unitBranch;
 
   Map<String, dynamic> toJson() => {
@@ -57,6 +65,9 @@ class UserRegistrationRequest {
     'floorid': int.tryParse(floorId) ?? floorId,
     'unitnumber': int.tryParse(unitId) ?? unitId,
     'user_role': int.tryParse(roleId) ?? roleId,
+    'sub_role': int.tryParse(subRole) ?? subRole,
+    if (subRoleCat != null && subRoleCat!.isNotEmpty)
+      'sub_role_cat': int.tryParse(subRoleCat!) ?? subRoleCat,
     if (unitBranch != null && unitBranch!.isNotEmpty) 'unit_branch': unitBranch,
   };
 }

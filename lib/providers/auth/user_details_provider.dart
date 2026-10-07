@@ -78,6 +78,8 @@ class UserDetailsProvider extends ChangeNotifier {
     required String floorId,
     required String unitId,
     required String roleId,
+    required String subRole,
+    String? subRoleCat,
     required String? unitBranch,
   }) async {
     if (_role == null) {
@@ -107,6 +109,8 @@ class UserDetailsProvider extends ChangeNotifier {
         floorId: floorId,
         unitId: unitId,
         roleId: roleId,
+        subRole: subRole,
+        subRoleCat: subRoleCat,
         unitBranch: unitBranch,
       ),
     );

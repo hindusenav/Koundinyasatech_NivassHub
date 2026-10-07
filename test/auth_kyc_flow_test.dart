@@ -17,11 +17,12 @@ import 'package:flutter_nivasshub/models/kyc/picked_file.dart';
 import 'package:flutter_nivasshub/models/location/location_level.dart';
 import 'package:flutter_nivasshub/models/location/location_node.dart';
 import 'package:flutter_nivasshub/models/location/location_selection.dart';
+import 'package:flutter_nivasshub/models/registration/registration_master_data.dart';
+import 'package:flutter_nivasshub/models/registration/user_registration_request.dart';
 import 'package:flutter_nivasshub/providers/auth/auth_state_provider.dart';
 import 'package:flutter_nivasshub/providers/auth/otp_mobile_email_verification_provider.dart';
 import 'package:flutter_nivasshub/providers/kyc/kyc_provider.dart';
 import 'package:flutter_nivasshub/providers/location/location_provider.dart';
-import 'package:flutter_nivasshub/providers/registration/registration_master_data_provider.dart';
 import 'package:flutter_nivasshub/services/auth/mock_auth_entry_service.dart';
 import 'package:flutter_nivasshub/services/auth/otp_verification_service_base.dart';
 import 'package:flutter_nivasshub/services/file/file_picker_service_base.dart';
@@ -36,7 +37,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'support/fake_document_service.dart';
-import 'support/fake_registration_service.dart';
 import 'support/in_memory_secure_storage.dart';
 
 /// Covers the parts of the auth-entry → registration → KYC flow whose
@@ -157,19 +157,63 @@ void main() {
   // Registration role id
   // -------------------------------------------------------------------
 
-  group('RegistrationMasterDataProvider.roleIdFor', () {
-    test('Owner always maps to the fixed id "6"', () {
-      final provider = RegistrationMasterDataProvider(
-        const FakeRegistrationService(),
-      );
-      expect(provider.roleIdFor(UserRole.owner), '6');
+  group('Registration roles / sub-roles / categories', () {
+    final json = {
+      'Roles': [
+        {
+          'role_id': 6,
+          'name': 'U',
+          'description': 'User',
+          'Sub_Role': [
+            {
+              'sub_role_id': 1,
+              'name': 'FO',
+              'description': 'Flat Owner',
+              'Categories': [
+                {'category_id': 1, 'name': 'CR', 'description': 'Resides'},
+              ],
+            },
+          ],
+        },
+        {
+          'role_id': 7,
+          'name': 'T',
+          'description': 'Tenant',
+          'Sub_Role': [
+            {'sub_role_id': 4, 'name': 'PT', 'description': 'Primary Tenant'},
+          ],
+        },
+      ],
+    };
+
+    test('parses nested Sub_Role/Categories and maps role ids to UserRole', () {
+      final data = RegistrationMasterData.fromJson(json);
+      expect(data.roles[0].userRole, UserRole.owner);
+      expect(data.roles[1].userRole, UserRole.tenant);
+      expect(data.roles[0].subRoles.single.categories.single.categoryId, '1');
+      expect(data.roles[1].subRoles.single.categories, isEmpty);
     });
 
-    test('Tenant always maps to the fixed id "7"', () {
-      final provider = RegistrationMasterDataProvider(
-        const FakeRegistrationService(),
+    test('request sends sub_role and only sends sub_role_cat when set', () {
+      UserRegistrationRequest build({String? cat}) => UserRegistrationRequest(
+        fullName: 'A',
+        mobileNumber: '1',
+        mobileCountryCode: '+91',
+        email: 'a@b.c',
+        country: '77',
+        state: '4347',
+        city: 'H',
+        socId: '33',
+        towerId: '7',
+        floorId: '1',
+        unitId: '101',
+        roleId: '6',
+        subRole: '1',
+        subRoleCat: cat,
       );
-      expect(provider.roleIdFor(UserRole.tenant), '7');
+      expect(build(cat: '1').toJson()['sub_role_cat'], 1);
+      expect(build().toJson()['sub_role'], 1);
+      expect(build().toJson().containsKey('sub_role_cat'), isFalse);
     });
   });
 

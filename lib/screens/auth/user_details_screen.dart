@@ -104,7 +104,17 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
     final isFormValid = _formKey.currentState?.validate() ?? false;
     if (!isFormValid) return;
 
-    if (details.role == null) return;
+    final selectedRole = master.selectedRole;
+    final selectedSubRole = master.selectedSubRole;
+    if (selectedRole == null || details.role == null) return;
+    if (selectedSubRole == null) {
+      CustomSnackbar.warning(context, KycStrings.subRoleRequired);
+      return;
+    }
+    if (master.needsCategory && master.selectedCategory == null) {
+      CustomSnackbar.warning(context, KycStrings.categoryRequired);
+      return;
+    }
 
     final country = location.selectedFor(LocationLevel.country);
     final state = master.selectedState;
@@ -124,12 +134,6 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
       return;
     }
 
-    final roleId = master.roleIdFor(details.role!);
-    if (roleId == null) {
-      CustomSnackbar.error(context, KycStrings.genericError);
-      return;
-    }
-
     final result = await details.submit(
       fullName: _nameController.text.trim(),
       mobileNumber: _mobileController.text.trim(),
@@ -142,7 +146,11 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
       towerId: society.selectedTower!.towerId,
       floorId: society.selectedFloor!.floorId,
       unitId: society.selectedUnit!.unitId,
-      roleId: roleId,
+      roleId: selectedRole.roleId,
+      subRole: selectedSubRole.subRoleId,
+      subRoleCat: master.needsCategory
+          ? master.selectedCategory?.categoryId
+          : null,
       unitBranch: society.selectedUnitBranch,
     );
 
@@ -288,13 +296,17 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
 
                 const SectionTitle(title: KycStrings.sectionRole),
                 AppSpacing.gapSm,
-                _RoleSelector(
-                  selected: details.role,
-                  errorText: details.roleError,
-                  onSelected: (role) {
-                    details.setRole(role);
-                  },
-                ),
+                const _RoleField(),
+                if (details.roleError != null) ...[
+                  AppSpacing.gapXs,
+                  Text(details.roleError!, style: AppTextStyles.errorText),
+                ],
+                AppSpacing.gapMd,
+                const _SubRoleField(),
+                if (context.watch<RegistrationMasterDataProvider>().needsCategory) ...[
+                  AppSpacing.gapMd,
+                  const _CategoryField(),
+                ],
                 AppSpacing.gapXl,
 
                 PrimaryButton(
@@ -626,107 +638,115 @@ class _UnitBranchField extends StatelessWidget {
   }
 }
 
-/// Owner / Tenant. A pair of cards rather than a picker, because the
-/// choice changes which documents KYC will ask for and deserves to be
-/// visible rather than hidden behind a tap.
-class _RoleSelector extends StatelessWidget {
-  const _RoleSelector({
-    required this.selected,
-    required this.onSelected,
-    this.errorText,
-  });
-
-  final UserRole? selected;
-  final ValueChanged<UserRole> onSelected;
-  final String? errorText;
+/// Role picker — options come from `Roles[]` in the master-data response
+/// (User / Tenant). The choice also decides which documents KYC asks for,
+/// so it is mapped onto [UserRole] via `RegistrationRole.userRole`.
+class _RoleField extends StatelessWidget {
+  const _RoleField();
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Row(
-          children: [
-            for (final role in UserRole.values) ...[
-              Expanded(
-                child: _RoleCard(
-                  role: role,
-                  isSelected: selected == role,
-                  onTap: () => onSelected(role),
-                ),
-              ),
-              if (role != UserRole.values.last) AppSpacing.gapWSm,
-            ],
-          ],
-        ),
-        if (errorText != null) ...[
-          AppSpacing.gapXs,
-          Text(errorText!, style: AppTextStyles.errorText),
-        ],
-      ],
+    final master = context.watch<RegistrationMasterDataProvider>();
+
+    return SelectionField(
+      label: KycStrings.roleLabel,
+      value: master.selectedRole?.description,
+      hint: KycStrings.roleHint,
+      isLoading: master.isLoading,
+      onTap: () => _openPicker(context, master),
     );
+  }
+
+  Future<void> _openPicker(
+    BuildContext context,
+    RegistrationMasterDataProvider master,
+  ) async {
+    final choice = await SelectionBottomSheet.show<RegistrationRole>(
+      context,
+      title: 'Select ${KycStrings.roleLabel}',
+      items: master.roles,
+      selected: master.selectedRole,
+      labelOf: (role) => role.description,
+      isLoading: master.isLoading,
+      errorMessage: master.errorMessage,
+      emptyTitle: KycStrings.noOptionsAvailable,
+      emptyMessage: KycStrings.noOptionsMessage,
+      onRetry: master.retry,
+    );
+    if (choice == null || !context.mounted) return;
+    master.selectRole(choice);
+    final userRole = choice.userRole;
+    if (userRole != null) context.read<UserDetailsProvider>().setRole(userRole);
   }
 }
 
-class _RoleCard extends StatelessWidget {
-  const _RoleCard({
-    required this.role,
-    required this.isSelected,
-    required this.onTap,
-  });
-
-  final UserRole role;
-  final bool isSelected;
-  final VoidCallback onTap;
+/// Sub-role picker — the selected role's `Sub_Role[]`.
+class _SubRoleField extends StatelessWidget {
+  const _SubRoleField();
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final borderColor = isDark ? AppColors.borderDark : AppColors.borderLight;
-    final textPrimary = isDark
-        ? AppColors.textPrimaryDark
-        : AppColors.textPrimaryLight;
-    final textSecondary = isDark
-        ? AppColors.textSecondaryDark
-        : AppColors.textSecondaryLight;
+    final master = context.watch<RegistrationMasterDataProvider>();
+    final roleSelected = master.selectedRole != null;
 
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
-      child: Container(
-        padding: AppSpacing.cardInsets,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
-          color: isSelected
-              ? AppColors.primary.withValues(alpha: 0.08)
-              : Colors.transparent,
-          border: Border.all(
-            color: isSelected ? AppColors.primary : borderColor,
-            width: isSelected ? 2 : 1,
-          ),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Icon(
-              role == UserRole.owner ? AppIcons.society : AppIcons.resident,
-              color: isSelected ? AppColors.primary : textSecondary,
-            ),
-            AppSpacing.gapSm,
-            Text(
-              role.label,
-              style: AppTextStyles.titleSmall.copyWith(
-                color: isSelected ? AppColors.primary : textPrimary,
-              ),
-            ),
-            AppSpacing.gapXs,
-            Text(
-              role.description,
-              style: AppTextStyles.bodySmall.copyWith(color: textSecondary),
-            ),
-          ],
-        ),
-      ),
+    return SelectionField(
+      label: KycStrings.subRoleLabel,
+      value: master.selectedSubRole?.description,
+      hint: roleSelected ? KycStrings.subRoleHint : KycStrings.selectRoleFirst,
+      onTap: roleSelected ? () => _openPicker(context, master) : null,
     );
+  }
+
+  Future<void> _openPicker(
+    BuildContext context,
+    RegistrationMasterDataProvider master,
+  ) async {
+    final choice = await SelectionBottomSheet.show<RegistrationSubRole>(
+      context,
+      title: 'Select ${KycStrings.subRoleLabel}',
+      items: master.subRolesForSelectedRole,
+      selected: master.selectedSubRole,
+      labelOf: (subRole) => subRole.description,
+      emptyTitle: KycStrings.noOptionsAvailable,
+      emptyMessage: KycStrings.noOptionsMessage,
+    );
+    if (choice != null) master.selectSubRole(choice);
+  }
+}
+
+/// Category picker — shown only when the selected sub-role has
+/// `Categories[]`; sent as `sub_role_cat`.
+class _CategoryField extends StatelessWidget {
+  const _CategoryField();
+
+  @override
+  Widget build(BuildContext context) {
+    final master = context.watch<RegistrationMasterDataProvider>();
+    final subRoleSelected = master.selectedSubRole != null;
+
+    return SelectionField(
+      label: KycStrings.categoryLabel,
+      value: master.selectedCategory?.description,
+      hint: subRoleSelected
+          ? KycStrings.categoryHint
+          : KycStrings.selectSubRoleFirst,
+      onTap: subRoleSelected ? () => _openPicker(context, master) : null,
+    );
+  }
+
+  Future<void> _openPicker(
+    BuildContext context,
+    RegistrationMasterDataProvider master,
+  ) async {
+    final choice = await SelectionBottomSheet.show<RegistrationCategory>(
+      context,
+      title: 'Select ${KycStrings.categoryLabel}',
+      items: master.categoriesForSelectedSubRole,
+      selected: master.selectedCategory,
+      labelOf: (category) => category.description,
+      emptyTitle: KycStrings.noOptionsAvailable,
+      emptyMessage: KycStrings.noOptionsMessage,
+    );
+    if (choice != null) master.selectCategory(choice);
   }
 }
