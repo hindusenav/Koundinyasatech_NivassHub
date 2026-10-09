@@ -310,6 +310,9 @@ class AppColors {
   // ---------------------------------------------------------------------
   // Splash screen (premium animated intro)
   // ---------------------------------------------------------------------
+  /// First frame of the splash flow; mirrored by `splash_background` in
+  /// `android/.../res/values/splash_colors.xml`.
+  static const Color splashBackgroundNavy = Color(0xFF0F2A4A);
   static const Color splashGradientTop = Color(0xFF4F6EDB);
   static const Color splashGradientBottom = Color(0xFF1D3E91);
   static const Color splashPrimaryBlue = Color(0xFF3F62B5);

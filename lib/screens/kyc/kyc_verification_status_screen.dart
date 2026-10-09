@@ -60,6 +60,9 @@ class _KycVerificationStatusScreenState
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       context.read<KycStatusProvider>().startPolling(widget.args.kycId);
+      context.read<KycProvider>().loadStoredDocuments(
+        fallbackToken: widget.args.userId,
+      );
     });
   }
 
@@ -214,6 +217,8 @@ class _KycVerificationStatusScreenState
               ],
             ),
           ),
+          AppSpacing.gapLg,
+          const _SubmittedDocumentsSection(),
           if (provider.isTerminal) ...[
             AppSpacing.gapLg,
             KycVerdictPanel(
@@ -262,4 +267,138 @@ class _KycVerificationStatusScreenState
         KycVerificationStatus.correctionRequired => StatusChipType.rejected,
         _ => StatusChipType.pending,
       };
+}
+
+/// "Submitted documents" list, driven by `GET /kyc/user-documents`.
+class _SubmittedDocumentsSection extends StatelessWidget {
+  const _SubmittedDocumentsSection();
+
+  @override
+  Widget build(BuildContext context) {
+    final kyc = context.watch<KycProvider>();
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textPrimary = isDark
+        ? AppColors.textPrimaryDark
+        : AppColors.textPrimaryLight;
+    final textSecondary = isDark
+        ? AppColors.textSecondaryDark
+        : AppColors.textSecondaryLight;
+
+    final Widget content;
+    if (kyc.storedState == KycProviderState.initial ||
+        kyc.storedState == KycProviderState.loading) {
+      content = const Padding(
+        padding: EdgeInsets.symmetric(vertical: 16),
+        child: Center(child: CircularProgressIndicator()),
+      );
+    } else if (kyc.storedState == KycProviderState.error) {
+      content = Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            kyc.storedError ?? KycStrings.statusFetchFailed,
+            style: AppTextStyles.bodyMedium.copyWith(color: textSecondary),
+          ),
+          TextButton(
+            onPressed: () => context.read<KycProvider>().loadStoredDocuments(
+              fallbackToken: '',
+            ),
+            child: const Text('Retry'),
+          ),
+        ],
+      );
+    } else if (kyc.storedDocuments.isEmpty) {
+      content = Text(
+        'No documents found.',
+        style: AppTextStyles.bodyMedium.copyWith(color: textSecondary),
+      );
+    } else {
+      content = Column(
+        children: [
+          for (final doc in kyc.storedDocuments)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: Row(
+                children: [
+                  GestureDetector(
+                    onTap: doc.bytes == null
+                        ? null
+                        : () => showDialog<void>(
+                            context: context,
+                            builder: (_) => Dialog(
+                              child: InteractiveViewer(
+                                child: Image.memory(doc.bytes!),
+                              ),
+                            ),
+                          ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: Container(
+                        width: 48,
+                        height: 48,
+                        color: AppColors.primary.withValues(alpha: 0.1),
+                        child: doc.bytes == null
+                            ? const Icon(
+                                Icons.description_outlined,
+                                color: AppColors.primary,
+                              )
+                            : Image.memory(
+                                doc.bytes!,
+                                fit: BoxFit.cover,
+                                cacheWidth: 96,
+                                gaplessPlayback: true,
+                                errorBuilder: (_, _, _) => const Icon(
+                                  Icons.description_outlined,
+                                  color: AppColors.primary,
+                                ),
+                              ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          doc.documentName,
+                          style: AppTextStyles.titleSmall.copyWith(
+                            color: textPrimary,
+                          ),
+                        ),
+                        if (doc.userName.isNotEmpty)
+                          Text(
+                            doc.userName,
+                            style: AppTextStyles.bodySmall.copyWith(
+                              color: textSecondary,
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                  const StatusChip(
+                    label: 'Uploaded',
+                    type: StatusChipType.approved,
+                  ),
+                ],
+              ),
+            ),
+        ],
+      );
+    }
+
+    return CustomCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Submitted documents',
+            style: AppTextStyles.titleMedium.copyWith(color: textPrimary),
+          ),
+          AppSpacing.gapMd,
+          content,
+        ],
+      ),
+    );
+  }
 }

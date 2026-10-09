@@ -1,6 +1,6 @@
-import 'dart:convert';
 import 'dart:io';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_nivasshub/core/api/api_exception.dart';
 import 'package:flutter_nivasshub/core/api/api_response.dart';
@@ -9,12 +9,13 @@ import 'package:flutter_nivasshub/core/api/endpoints.dart';
 import 'package:flutter_nivasshub/models/kyc/document_upload_request.dart';
 import 'package:flutter_nivasshub/models/kyc/document_upload_response_data.dart';
 import 'package:flutter_nivasshub/models/kyc/kyc_applicable_document.dart';
+import 'package:flutter_nivasshub/models/kyc/kyc_user_document.dart';
 import 'package:flutter_nivasshub/services/kyc/document_service_base.dart';
 
 /// Dio-backed KYC document list + upload.
 ///
-/// `POST /kyc/upload` takes the file itself as Base64 in `doc_url`, one
-/// document per request. A 200/201 response carries a fresh
+/// `POST /kyc/upload` is `multipart/form-data` (`user_id`, `doc_id`,
+/// `file`), one document per request. A 200/201 response carries a fresh
 /// `data.sessionToken` that replaces the caller's token.
 class DocumentService extends ApiService implements DocumentServiceBase {
   const DocumentService(super.client);
@@ -33,22 +34,37 @@ class DocumentService extends ApiService implements DocumentServiceBase {
   }
 
   @override
+  Future<ApiResponse<KycUserDocumentsResult>> getUserDocuments({
+    required String userToken,
+  }) {
+    return handleRequest(
+      () => client.get(
+        ApiEndpoints.kycUserDocuments,
+        queryParameters: {'user_token': userToken},
+      ),
+      KycUserDocumentsResult.fromJson,
+    );
+  }
+
+  @override
   Future<ApiResponse<DocumentUploadResponseData>> uploadDocument(
     DocumentUploadRequest request,
   ) async {
     try {
-      // The contract takes the file itself, Base64-encoded, in `doc_url`.
-      final bytes = await File(request.file.path).readAsBytes();
-      final encoded = base64Encode(bytes);
+      // multipart/form-data: the backend converts the file to binary itself.
+      final formData = FormData.fromMap({
+        'user_id': request.userId,
+        'doc_id': '${request.documentId}',
+        'file': await MultipartFile.fromFile(
+          request.file.path,
+          filename: request.file.fileName,
+          contentType: DioMediaType.parse(request.file.mimeType),
+        ),
+      });
 
       final response = await client.post(
         ApiEndpoints.kycUpload,
-        data: {
-          'user_id': request.userId,
-          // The API wants a string: document_name_id as text (e.g. "13").
-          'doc_id': '${request.documentId}',
-          'doc_url': encoded,
-        },
+        data: formData,
       );
 
       final data = _unwrapMap(response.data);

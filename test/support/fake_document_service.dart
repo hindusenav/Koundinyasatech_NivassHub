@@ -2,6 +2,7 @@ import 'package:flutter_nivasshub/core/api/api_response.dart';
 import 'package:flutter_nivasshub/models/kyc/document_upload_request.dart';
 import 'package:flutter_nivasshub/models/kyc/document_upload_response_data.dart';
 import 'package:flutter_nivasshub/models/kyc/kyc_applicable_document.dart';
+import 'package:flutter_nivasshub/models/kyc/kyc_user_document.dart';
 import 'package:flutter_nivasshub/services/kyc/document_service_base.dart';
 
 /// A fixed, three-document catalog standing in for `GET /kyc/documents` —
@@ -32,6 +33,13 @@ class FakeDocumentService implements DocumentServiceBase {
     required String userToken,
   }) async {
     return ApiResponse.success(documents);
+  }
+
+  @override
+  Future<ApiResponse<KycUserDocumentsResult>> getUserDocuments({
+    required String userToken,
+  }) async {
+    return ApiResponse.success(const KycUserDocumentsResult(documents: []));
   }
 
   @override

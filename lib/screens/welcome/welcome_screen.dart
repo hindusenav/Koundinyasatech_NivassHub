@@ -5,9 +5,9 @@ import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter_nivasshub/constants/app_dimensions.dart';
 import 'package:flutter_nivasshub/constants/app_spacing.dart';
 import 'package:flutter_nivasshub/constants/app_text_styles.dart';
+import 'package:flutter_nivasshub/constants/onboarding/onboarding_colors.dart';
 import 'package:flutter_nivasshub/utils/extensions/context_extensions.dart';
 import 'package:flutter_nivasshub/widgets/shared/buttons/primary_button.dart';
-import 'package:flutter_nivasshub/widgets/welcome/welcome_background.dart';
 
 /// Landing screen shown after the splash intro: brand mark, greeting, and a
 /// single entry point into the auth flow. Registration and sign-in both live
@@ -15,68 +15,93 @@ import 'package:flutter_nivasshub/widgets/welcome/welcome_background.dart';
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
 
+  static const double _cardRadius = 24;
+
   @override
   Widget build(BuildContext context) {
-    final screenHeight = context.screenHeight;
-    final bottomReserve = screenHeight * 0.14;
-    final logoWidth = context.isDesktop || context.isTablet ? 320.0 : 250.0;
     final contentWidth = context.isDesktop
         ? AppDimensions.maxContentWidth * 0.4
         : (context.isTablet ? AppDimensions.maxContentWidth * 0.6 : double.infinity);
+    final wide = context.isDesktop || context.isTablet;
 
     return Scaffold(
-      body: Stack(
-        children: [
-          const WelcomeBackground(),
-          SafeArea(
-            child: Center(
-              child: ConstrainedBox(
-                constraints: BoxConstraints(maxWidth: contentWidth),
-                child: Padding(
-                  padding: AppSpacing.horizontal(AppSpacing.lg),
-                  child: SingleChildScrollView(
-                    child: ConstrainedBox(
-                      constraints: BoxConstraints(
-                        minHeight: screenHeight - AppSpacing.xxxl,
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
+      backgroundColor: const Color(0xFFD9D9D9),
+      body: SafeArea(
+        child: Center(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(maxWidth: contentWidth),
+            child: Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: AppSpacing.lg,
+                vertical: AppSpacing.md,
+              ),
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  color: OnboardingColors.background,
+                  borderRadius: BorderRadius.circular(_cardRadius),
+                  border: Border.all(
+                    color: OnboardingColors.primaryBlue.withValues(alpha: 0.35),
+                  ),
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(_cardRadius),
+                  child: LayoutBuilder(
+                    builder: (context, box) {
+                      final h = box.maxHeight;
+                      final logoSize = (h * 0.26).clamp(96.0, wide ? 260.0 : 190.0);
+                      return Stack(
                         children: [
-                          Image.asset(AppAssets.logo, width: logoWidth),
-                          SizedBox(height: AppSpacing.xxl),
-                          Text(
-                            'Welcome!',
-                            textAlign: TextAlign.center,
-                            style: AppTextStyles.titleLarge.copyWith(
-                              color: AppColors.primaryDark,
-                              fontWeight: FontWeight.w700,
+                          Positioned.fill(
+                            child: Column(
+                              children: [
+                                SizedBox(height: h * 0.04),
+                                Image.asset(AppAssets.logo, width: logoSize, height: logoSize),
+                                SizedBox(height: h * 0.03),
+                                _title(context, 'Welcome!'),
+                                _title(context, 'To NivaasHub'),
+                                Expanded(
+                                  child: Align(
+                                    alignment: Alignment.bottomCenter,
+                                    child: Image.asset(
+                                      AppAssets.welcomeBackground,
+                                      width: double.infinity,
+                                      fit: BoxFit.fitWidth,
+                                      alignment: Alignment.bottomCenter,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                          Text(
-                            'To NivaasHub',
-                            textAlign: TextAlign.center,
-                            style: AppTextStyles.titleLarge.copyWith(
-                              color: AppColors.primaryDark,
-                              fontWeight: FontWeight.w700,
+                          Positioned(
+                            left: AppSpacing.lg,
+                            right: AppSpacing.lg,
+                            bottom: AppSpacing.lg,
+                            child: PrimaryButton(
+                              label: 'Get Started',
+                              onPressed: () =>
+                                  Navigator.pushNamed(context, AppRoutes.onboardingStepTwo),
                             ),
                           ),
-                          SizedBox(height: AppSpacing.xxl),
-                          PrimaryButton(
-                            label: 'Get Started',
-                            onPressed: () =>
-                                Navigator.pushNamed(context, AppRoutes.onboardingStepTwo),
-                          ),
-                          SizedBox(height: bottomReserve),
                         ],
-                      ),
-                    ),
+                      );
+                    },
                   ),
                 ),
               ),
             ),
           ),
-        ],
+        ),
       ),
     );
   }
+
+  Widget _title(BuildContext context, String text) => Text(
+        text,
+        textAlign: TextAlign.center,
+        style: AppTextStyles.titleLarge.copyWith(
+          color: AppColors.primaryDark,
+          fontWeight: FontWeight.w700,
+        ),
+      );
 }

@@ -10,6 +10,7 @@ import 'package:flutter_nivasshub/models/kyc/kyc_applicable_document.dart';
 import 'package:flutter_nivasshub/models/kyc/kyc_document_issue.dart';
 import 'package:flutter_nivasshub/models/kyc/kyc_document_slot.dart';
 import 'package:flutter_nivasshub/models/kyc/kyc_submit_request.dart';
+import 'package:flutter_nivasshub/models/kyc/kyc_user_document.dart';
 import 'package:flutter_nivasshub/models/kyc/picked_file.dart';
 import 'package:flutter_nivasshub/providers/auth/auth_state_provider.dart';
 import 'package:flutter_nivasshub/services/file/file_picker_service_base.dart';
@@ -64,6 +65,14 @@ class KycProvider extends ChangeNotifier {
 
   final Map<int, KycDocumentSlot> _slots = {};
   final List<int> _order = [];
+
+  KycProviderState _storedState = KycProviderState.initial;
+  List<KycUserDocument> _storedDocuments = const [];
+  String? _storedError;
+
+  KycProviderState get storedState => _storedState;
+  List<KycUserDocument> get storedDocuments => _storedDocuments;
+  String? get storedError => _storedError;
 
   KycProviderState get state => _state;
   UserRole? get role => _role;
@@ -369,6 +378,34 @@ class KycProvider extends ChangeNotifier {
     return false;
   }
 
+  // -------------------------------------------------------------------
+  // Stored documents (`GET /kyc/user-documents`)
+  // -------------------------------------------------------------------
+
+  /// Fetches what the backend has stored for the user, for the KYC status
+  /// screen. [fallbackToken] is used when no upload happened in this
+  /// process (cold start straight onto the status screen). The returned
+  /// `session_Token` replaces the current token.
+  Future<void> loadStoredDocuments({required String fallbackToken}) async {
+    _storedState = KycProviderState.loading;
+    _storedError = null;
+    notifyListeners();
+
+    final token = _userId.isNotEmpty ? _userId : fallbackToken;
+    final response = await _documentService.getUserDocuments(userToken: token);
+
+    if (response.isSuccess && response.data != null) {
+      final rotated = response.data!.sessionToken;
+      _userId = (rotated != null && rotated.isNotEmpty) ? rotated : token;
+      _storedDocuments = response.data!.documents;
+      _storedState = KycProviderState.ready;
+    } else {
+      _storedError = response.message ?? KycStrings.statusFetchFailed;
+      _storedState = KycProviderState.error;
+    }
+    notifyListeners();
+  }
+
   /// Drops every trace of the current application — called on logout and
   /// once an approval has been exchanged for an access token.
   Future<void> reset() async {
@@ -382,6 +419,9 @@ class KycProvider extends ChangeNotifier {
     _submittedKycId = null;
     _attemptNumber = 1;
     _errorMessage = null;
+    _storedDocuments = const [];
+    _storedState = KycProviderState.initial;
+    _storedError = null;
 
     await _localStorage.remove(StorageKeys.kycUploadedDocuments);
     await _kycService.reset();
