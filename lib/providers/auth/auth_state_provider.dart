@@ -172,12 +172,10 @@ class AuthStateProvider extends ChangeNotifier {
 
     switch (_state) {
       case AuthFlowState.unauthenticated:
-        // Preserves the existing first-launch behaviour: only someone who
-        // has logged out before skips the welcome/onboarding screens.
-        final hasLoggedOut = await _secureStorage.hasLoggedOutBefore();
-        return AuthStartDestination(
-          hasLoggedOut ? AppRoutes.authEntry : AppRoutes.welcome,
-        );
+        // Every signed-out launch opens the first onboarding (welcome)
+        // screen after the splash, including users who logged out before;
+        // Get Started leads on to the login/registration flow.
+        return const AuthStartDestination(AppRoutes.welcome);
 
       // A half-finished registration or OTP step is not resumed from local
       // storage: start at the entry screen, where registration-check

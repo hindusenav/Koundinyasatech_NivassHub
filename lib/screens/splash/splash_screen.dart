@@ -175,6 +175,10 @@ class _SplashScreenState extends State<SplashScreen>
 
     debugPrint('[Nav] Splash -> ${destination.routeName}');
 
+    // First-time unauthenticated users: once the splash animation completes
+    // (this runs only once, guarded by `_navigated`), open the first
+    // onboarding screen automatically. Replacing the splash keeps it out of
+    // the back stack so the user can't return to it.
     if (destination.routeName == AppRoutes.welcome) {
       Navigator.of(context).pushReplacement(
         PageRouteBuilder<void>(

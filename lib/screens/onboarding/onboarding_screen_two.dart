@@ -7,6 +7,7 @@ import 'package:flutter_nivasshub/utils/extensions/context_extensions.dart';
 import 'package:flutter_nivasshub/widgets/shared/common/fade_slide_in.dart';
 import 'package:flutter_nivasshub/constants/onboarding/onboarding_colors.dart';
 import 'package:flutter_nivasshub/widgets/onboarding/onboarding_action_buttons.dart';
+import 'package:flutter_nivasshub/widgets/onboarding/animated_light_skyline.dart';
 import 'package:flutter_nivasshub/widgets/onboarding/onboarding_illustration_painter.dart';
 import 'package:flutter_nivasshub/widgets/onboarding/onboarding_logo_card.dart';
 
@@ -106,7 +107,7 @@ class _OnboardingScreenTwoState extends State<OnboardingScreenTwo>
                       end: Alignment.bottomCenter,
                       colors: [
                         isDark ? AppColors.backgroundDark : Colors.white,
-                        background,
+                        isDark ? background : const Color(0xFFEAF1FA),
                       ],
                     ),
                   ),
@@ -116,18 +117,20 @@ class _OnboardingScreenTwoState extends State<OnboardingScreenTwo>
                 left: 0,
                 right: 0,
                 bottom: 0,
-                height: screenHeight * 0.42,
+                height: screenHeight * (isDark ? 0.42 : 0.5),
                 child: IgnorePointer(
                   child: Opacity(
                     opacity: illustrationOpacity,
                     child: Transform.translate(
                       offset: Offset(0, (1 - illustrationOpacity) * 20),
-                      child: CustomPaint(
-                        size: Size.infinite,
-                        painter: OnboardingIllustrationPainter(
-                          progress: illustrationOpacity,
-                        ),
-                      ),
+                      child: isDark
+                          ? CustomPaint(
+                              size: Size.infinite,
+                              painter: OnboardingIllustrationPainter(
+                                progress: illustrationOpacity,
+                              ),
+                            )
+                          : const AnimatedLightSkyline(),
                     ),
                   ),
                 ),

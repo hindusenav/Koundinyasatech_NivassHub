@@ -21,6 +21,12 @@ class OnboardingColors {
   static const Color heading = Color(0xFF0F274B);
   static const Color bodyText = Color(0xFF6B7280);
 
+  // Light-mode accent, mirroring the orange CTA of the navy design.
+  static const Color accentOrange = Color(0xFFF97316);
+  static const Color accentOrangeLight = Color(0xFFFB923C);
+  // Tint applied to the skyline line art on the light background.
+  static const Color skylineLine = Color(0xFF3B6EA8);
+
   // ---------------------------------------------------------------------
   // Dark-theme counterparts (used when Theme.of(context).brightness ==
   // Brightness.dark). Not to be confused with `primaryBlueDark` above.

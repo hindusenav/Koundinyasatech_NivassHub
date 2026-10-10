@@ -1,10 +1,14 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter_nivasshub/constants/asset_constants.dart';
 
-/// Brand logo, placed directly on the background. Layers a subtle continuous
-/// float loop on top of the parent's one-shot [entrance] scale/fade-in (0..1,
-/// driven by the screen's shared entrance controller).
+/// Brand logo (geometric mark + wordmark), placed directly on the background.
+/// Layers a subtle continuous float loop on top of the parent's one-shot
+/// [entrance] scale/fade-in (0..1, driven by the screen's shared entrance
+/// controller). In dark mode the unmodified logo sits on a light chip, since
+/// its navy artwork would otherwise be low-contrast on a dark background.
 class OnboardingLogoCard extends StatefulWidget {
   const OnboardingLogoCard({super.key, required this.entrance, this.size = 140});
 
@@ -36,6 +40,16 @@ class _OnboardingLogoCardState extends State<OnboardingLogoCard>
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final logo = Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        SvgPicture.asset(AppAssets.splashMark, width: 68, height: 68),
+        const SizedBox(height: 10),
+        SvgPicture.asset(AppAssets.splashWordmark, width: 160),
+      ],
+    );
+
     return AnimatedBuilder(
       animation: _floatController,
       builder: (context, _) {
@@ -49,13 +63,21 @@ class _OnboardingLogoCardState extends State<OnboardingLogoCard>
             child: Transform.scale(
               scale: 0.8 + entrance * 0.2,
               child: SizedBox(
-                width: widget.size,
                 height: widget.size,
                 child: Center(
-                  child: SizedBox(
-                    width: 105,
-                    child: Image.asset(AppAssets.logo, fit: BoxFit.contain),
-                  ),
+                  child: isDark
+                      ? DecoratedBox(
+                          decoration: BoxDecoration(
+                            color: AppColors.white,
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 20, vertical: 14),
+                            child: logo,
+                          ),
+                        )
+                      : logo,
                 ),
               ),
             ),
