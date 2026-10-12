@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
-import 'package:flutter_nivasshub/constants/app_colors.dart';
+import 'package:flutter_nivasshub/constants/figma_colors.dart';
 import 'package:flutter_nivasshub/routes/app_routes.dart';
 import 'package:flutter_nivasshub/widgets/shared/feedback/custom_snackbar.dart';
 import 'package:flutter_nivasshub/providers/dashboard/dashboard_provider.dart';
@@ -25,16 +25,14 @@ class DashboardHeader extends StatelessWidget {
   // COLORS
   // ============================================================
 
-  static const Color _headerBlueLight = AppColors.dashboardHeaderLight;
-  static const Color _headerBlueDark = AppColors.dashboardHeaderDark;
+  static const Color _headerBlue = FigmaColors.navy;
 
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<DashboardProvider>();
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final headerBlue = isDark ? _headerBlueDark : _headerBlueLight;
-    final headerTextColor =
-        isDark ? AppColors.textPrimaryDark : const Color(0xFF1F1F1F);
+    const headerBlue = _headerBlue;
+    const headerTextColor = Colors.white;
 
     final user = provider.home?.data.user;
     final addresses = provider.addresses;
@@ -57,10 +55,10 @@ class DashboardHeader extends StatelessWidget {
     // ============================================================
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: SystemUiOverlayStyle(
+      value: const SystemUiOverlayStyle(
         statusBarColor: headerBlue,
-        statusBarIconBrightness: isDark ? Brightness.light : Brightness.dark,
-        statusBarBrightness: isDark ? Brightness.dark : Brightness.light,
+        statusBarIconBrightness: Brightness.light,
+        statusBarBrightness: Brightness.dark,
       ),
 
       child: Container(
@@ -256,7 +254,7 @@ class DashboardHeader extends StatelessWidget {
 
                             fit: BoxFit.contain,
 
-                            color: isDark ? headerTextColor : null,
+                            color: headerTextColor,
 
                             errorBuilder: (
                               context,
@@ -303,7 +301,7 @@ class DashboardHeader extends StatelessWidget {
 
                             fit: BoxFit.contain,
 
-                            color: isDark ? headerTextColor : null,
+                            color: headerTextColor,
 
                             errorBuilder: (
                               context,
@@ -345,7 +343,7 @@ class DashboardHeader extends StatelessWidget {
 
                         decoration: const BoxDecoration(
                           shape: BoxShape.circle,
-                          color: Color(0xFFFFA000),
+                          color: FigmaColors.orange,
                         ),
 
                         child: const Text(
@@ -354,7 +352,7 @@ class DashboardHeader extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w800,
-                            color: Color.fromARGB(255, 5, 5, 5),
+                            color: Colors.white,
                             height: 1,
                           ),
                         ),

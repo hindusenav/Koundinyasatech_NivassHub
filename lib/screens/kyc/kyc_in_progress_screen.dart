@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter_nivasshub/constants/app_spacing.dart';
 import 'package:flutter_nivasshub/constants/app_text_styles.dart';
-import 'package:flutter_nivasshub/widgets/shared/app_bar/custom_app_bar.dart';
-import 'package:flutter_nivasshub/widgets/shared/buttons/primary_button.dart';
+import 'package:flutter_nivasshub/widgets/shared/figma/figma_scaffold.dart';
+import 'package:flutter_nivasshub/widgets/shared/figma/figma_widgets.dart';
 
 /// Shown when `registration-check` answers 423 `KYC_IN_PROGRESS`: the
 /// user's documents are already under review, so there is nothing to do
@@ -24,19 +24,19 @@ class KycInProgressScreen extends StatelessWidget {
         ? AppColors.textSecondaryDark
         : AppColors.textSecondaryLight;
 
-    return Scaffold(
-      backgroundColor: isDark
-          ? AppColors.backgroundDark
-          : AppColors.backgroundLight,
-      appBar: const CustomAppBar(title: 'KYC in progress'),
+    return FigmaHeaderScaffold(
+      title: 'KYC in progress',
       body: SafeArea(
+        top: false,
         child: Padding(
           padding: AppSpacing.screenPadding,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Icon(Icons.hourglass_top_rounded, size: 64, color: textSecondary),
+              const Center(
+                child: FigmaBadge(icon: Icons.hourglass_top_rounded, size: 80),
+              ),
               AppSpacing.gapLg,
               Text(
                 'Your KYC is under review',
@@ -52,7 +52,8 @@ class KycInProgressScreen extends StatelessWidget {
                 style: AppTextStyles.bodyMedium.copyWith(color: textSecondary),
               ),
               AppSpacing.gapLg,
-              PrimaryButton(
+              FigmaButton(
+                navy: true,
                 label: 'Back',
                 onPressed: () => Navigator.of(context).maybePop(),
               ),

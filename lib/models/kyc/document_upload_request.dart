@@ -1,9 +1,9 @@
 import 'package:flutter_nivasshub/models/kyc/picked_file.dart';
 
-/// Body of `POST /kyc/upload` — one document at a time, so a single
-/// failure never invalidates the others. Sent as multipart/form-data: the
-/// file travels as the `file` part, with [userId] (the current session token)
-/// and [documentId] as given by `GET /kyc/documents` for this card.
+/// Body of `POST /kyc/re-upload` — one document at a time, so a single
+/// failure never invalidates the others. The file is first uploaded to
+/// storage; `/kyc/re-upload` then receives [userId] (encrypted), [documentId]
+/// as given by `GET /kyc/documents` for this card, and the stored file's URL.
 class DocumentUploadRequest {
   const DocumentUploadRequest({
     required this.userId,

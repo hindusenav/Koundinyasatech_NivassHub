@@ -15,10 +15,8 @@ import 'package:flutter_nivasshub/routes/navigation_service.dart';
 import 'package:flutter_nivasshub/screens/kyc/kyc_documents_screen.dart';
 import 'package:flutter_nivasshub/widgets/kyc/kyc_stage_indicator.dart';
 import 'package:flutter_nivasshub/widgets/kyc/kyc_verdict_panel.dart';
-import 'package:flutter_nivasshub/widgets/shared/app_bar/custom_app_bar.dart';
-import 'package:flutter_nivasshub/widgets/shared/buttons/custom_button.dart';
-import 'package:flutter_nivasshub/widgets/shared/buttons/primary_button.dart';
-import 'package:flutter_nivasshub/widgets/shared/cards/custom_card.dart';
+import 'package:flutter_nivasshub/widgets/shared/figma/figma_scaffold.dart';
+import 'package:flutter_nivasshub/widgets/shared/figma/figma_widgets.dart';
 import 'package:flutter_nivasshub/widgets/shared/dialogs/confirmation_dialog.dart';
 import 'package:flutter_nivasshub/widgets/shared/feedback/custom_snackbar.dart';
 import 'package:flutter_nivasshub/widgets/shared/feedback/status_chip.dart';
@@ -139,12 +137,10 @@ class _KycVerificationStatusScreenState
         );
         if (shouldExit && context.mounted) Navigator.of(context).maybePop();
       },
-      child: Scaffold(
-        appBar: const CustomAppBar(
-          title: KycStrings.kycTitle,
-          showBackButton: false,
-        ),
-        body: SafeArea(child: _buildBody(context, provider)),
+      child: FigmaHeaderScaffold(
+        title: KycStrings.kycTitle,
+        showBackButton: false,
+        body: SafeArea(top: false, child: _buildBody(context, provider)),
       ),
     );
   }
@@ -170,13 +166,15 @@ class _KycVerificationStatusScreenState
         : AppColors.textSecondaryLight;
 
     return SingleChildScrollView(
-      padding: AppSpacing.screenPadding,
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           AppSpacing.gapMd,
           Text(
-            KycStrings.verificationTitle,
+            provider.isTerminal
+                ? KycStrings.verificationTitle
+                : KycStrings.verificationUnderReviewTitle,
             style: AppTextStyles.headlineSmall.copyWith(color: textPrimary),
           ),
           AppSpacing.gapSm,
@@ -185,7 +183,7 @@ class _KycVerificationStatusScreenState
             style: AppTextStyles.bodyMedium.copyWith(color: textSecondary),
           ),
           AppSpacing.gapLg,
-          CustomCard(
+          FigmaCard(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -228,16 +226,16 @@ class _KycVerificationStatusScreenState
             ),
             AppSpacing.gapLg,
             if (provider.status == KycVerificationStatus.approved)
-              PrimaryButton(
+              FigmaButton(
                 label: KycStrings.goToDashboard,
                 isLoading: provider.isGeneratingToken,
-                size: CustomButtonSize.large,
+                navy: true,
                 onPressed: provider.isGeneratingToken ? null : _handleApproved,
               )
             else if (provider.canResubmit)
-              PrimaryButton(
+              FigmaButton(
                 label: KycStrings.correctAndResubmit,
-                size: CustomButtonSize.large,
+                navy: true,
                 onPressed: _handleResubmit,
               ),
           ] else ...[
@@ -387,7 +385,7 @@ class _SubmittedDocumentsSection extends StatelessWidget {
       );
     }
 
-    return CustomCard(
+    return FigmaCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

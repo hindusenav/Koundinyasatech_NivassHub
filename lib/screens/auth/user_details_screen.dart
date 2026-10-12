@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter_nivasshub/constants/app_icons.dart';
 import 'package:flutter_nivasshub/constants/app_spacing.dart';
 import 'package:flutter_nivasshub/constants/app_text_styles.dart';
@@ -22,10 +21,9 @@ import 'package:flutter_nivasshub/providers/society/society_details_provider.dar
 import 'package:flutter_nivasshub/routes/app_routes.dart';
 import 'package:flutter_nivasshub/screens/auth/otp_mobile_email_verification_screen.dart';
 import 'package:flutter_nivasshub/utils/form_validators.dart';
-import 'package:flutter_nivasshub/widgets/shared/app_bar/custom_app_bar.dart';
-import 'package:flutter_nivasshub/widgets/shared/buttons/custom_button.dart';
-import 'package:flutter_nivasshub/widgets/shared/buttons/primary_button.dart';
-import 'package:flutter_nivasshub/widgets/shared/common/section_title.dart';
+import 'package:flutter_nivasshub/constants/figma_colors.dart';
+import 'package:flutter_nivasshub/widgets/shared/figma/figma_scaffold.dart';
+import 'package:flutter_nivasshub/widgets/shared/figma/figma_widgets.dart';
 import 'package:flutter_nivasshub/widgets/shared/feedback/custom_snackbar.dart';
 import 'package:flutter_nivasshub/widgets/shared/inputs/custom_text_field.dart';
 import 'package:flutter_nivasshub/widgets/shared/inputs/selection_bottom_sheet.dart';
@@ -208,16 +206,14 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     final details = context.watch<UserDetailsProvider>();
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final textSecondary = isDark
-        ? AppColors.textSecondaryDark
-        : AppColors.textSecondaryLight;
+    final t = FigmaColors.of(context);
 
-    return Scaffold(
-      appBar: const CustomAppBar(title: KycStrings.userDetailsTitle),
+    return FigmaHeaderScaffold(
+      title: KycStrings.userDetailsTitle,
       body: SafeArea(
+        top: false,
         child: SingleChildScrollView(
-          padding: AppSpacing.screenPadding,
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
           child: Form(
             key: _formKey,
             child: Column(
@@ -225,97 +221,135 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
               children: [
                 Text(
                   KycStrings.userDetailsSubtitle,
-                  style: AppTextStyles.bodyMedium.copyWith(
-                    color: textSecondary,
+                  style: AppTextStyles.bodyMedium.copyWith(color: t.body),
+                ),
+                const SizedBox(height: 16),
+
+                FigmaCard(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      const FigmaSectionLabel(
+                        KycStrings.sectionPersonalDetails,
+                      ),
+                      AppSpacing.gapMd,
+                      CustomTextField(
+                        controller: _nameController,
+                        label: KycStrings.fullNameLabel,
+                        hint: KycStrings.fullNameHint,
+                        prefixIcon: AppIcons.profile,
+                        textInputAction: TextInputAction.next,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(
+                            RegExp(r'[A-Za-z ]'),
+                          ),
+                        ],
+                        validator: FormValidators.fullName,
+                      ),
+                      AppSpacing.gapMd,
+                      CustomTextField(
+                        controller: _mobileController,
+                        label: '${KycStrings.mobileLabel} ($_countryCode)',
+                        hint: KycStrings.mobileHint,
+                        prefixIcon: AppIcons.phone,
+                        keyboardType: TextInputType.phone,
+                        textInputAction: TextInputAction.next,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                          LengthLimitingTextInputFormatter(15),
+                        ],
+                        validator: FormValidators.mobileNumberForDialCode(
+                          _countryCode,
+                        ),
+                      ),
+                      AppSpacing.gapMd,
+                      CustomTextField(
+                        controller: _emailController,
+                        label: KycStrings.emailLabel,
+                        hint: KycStrings.emailHint,
+                        prefixIcon: AppIcons.email,
+                        keyboardType: TextInputType.emailAddress,
+                        textInputAction: TextInputAction.next,
+                        validator: FormValidators.email,
+                      ),
+                    ],
                   ),
                 ),
-                AppSpacing.gapLg,
+                const SizedBox(height: 16),
 
-                const SectionTitle(title: KycStrings.sectionPersonalDetails),
-                AppSpacing.gapSm,
-                CustomTextField(
-                  controller: _nameController,
-                  label: KycStrings.fullNameLabel,
-                  hint: KycStrings.fullNameHint,
-                  prefixIcon: AppIcons.profile,
-                  textInputAction: TextInputAction.next,
-                  inputFormatters: [
-                    FilteringTextInputFormatter.allow(RegExp(r'[A-Za-z ]')),
-                  ],
-                  validator: FormValidators.fullName,
-                ),
-                AppSpacing.gapMd,
-                CustomTextField(
-                  controller: _mobileController,
-                  label: '${KycStrings.mobileLabel} ($_countryCode)',
-                  hint: KycStrings.mobileHint,
-                  prefixIcon: AppIcons.phone,
-                  keyboardType: TextInputType.phone,
-                  textInputAction: TextInputAction.next,
-                  inputFormatters: [
-                    FilteringTextInputFormatter.digitsOnly,
-                    LengthLimitingTextInputFormatter(15),
-                  ],
-                  validator: FormValidators.mobileNumberForDialCode(
-                    _countryCode,
+                FigmaCard(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      const FigmaSectionLabel(
+                        KycStrings.sectionLocationDetails,
+                      ),
+                      AppSpacing.gapMd,
+                      const _CountryField(),
+                      AppSpacing.gapMd,
+                      const _StateField(),
+                      AppSpacing.gapMd,
+                      const _CityField(),
+                    ],
                   ),
                 ),
-                AppSpacing.gapMd,
-                CustomTextField(
-                  controller: _emailController,
-                  label: KycStrings.emailLabel,
-                  hint: KycStrings.emailHint,
-                  prefixIcon: AppIcons.email,
-                  keyboardType: TextInputType.emailAddress,
-                  textInputAction: TextInputAction.next,
-                  validator: FormValidators.email,
+                const SizedBox(height: 16),
+
+                FigmaCard(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      const FigmaSectionLabel(
+                        KycStrings.sectionPropertyDetails,
+                      ),
+                      AppSpacing.gapMd,
+                      const _SocietyField(),
+                      AppSpacing.gapMd,
+                      const _TowerField(),
+                      AppSpacing.gapMd,
+                      const _FloorField(),
+                      AppSpacing.gapMd,
+                      const _UnitField(),
+                      AppSpacing.gapMd,
+                      const _UnitBranchField(),
+                    ],
+                  ),
                 ),
-                AppSpacing.gapLg,
+                const SizedBox(height: 16),
 
-                const SectionTitle(title: KycStrings.sectionLocationDetails),
-                AppSpacing.gapSm,
-                const _CountryField(),
-                AppSpacing.gapMd,
-                const _StateField(),
-                AppSpacing.gapMd,
-                const _CityField(),
-                AppSpacing.gapLg,
+                FigmaCard(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      const FigmaSectionLabel(KycStrings.sectionRole),
+                      AppSpacing.gapMd,
+                      const _RoleField(),
+                      if (details.roleError != null) ...[
+                        AppSpacing.gapXs,
+                        Text(
+                          details.roleError!,
+                          style: AppTextStyles.errorText,
+                        ),
+                      ],
+                      AppSpacing.gapMd,
+                      const _SubRoleField(),
+                      if (context
+                          .watch<RegistrationMasterDataProvider>()
+                          .needsCategory) ...[
+                        AppSpacing.gapMd,
+                        const _CategoryField(),
+                      ],
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 24),
 
-                const SectionTitle(title: KycStrings.sectionPropertyDetails),
-                AppSpacing.gapSm,
-                const _SocietyField(),
-                AppSpacing.gapMd,
-                const _TowerField(),
-                AppSpacing.gapMd,
-                const _FloorField(),
-                AppSpacing.gapMd,
-                const _UnitField(),
-                AppSpacing.gapMd,
-                const _UnitBranchField(),
-                AppSpacing.gapLg,
-
-                const SectionTitle(title: KycStrings.sectionRole),
-                AppSpacing.gapSm,
-                const _RoleField(),
-                if (details.roleError != null) ...[
-                  AppSpacing.gapXs,
-                  Text(details.roleError!, style: AppTextStyles.errorText),
-                ],
-                AppSpacing.gapMd,
-                const _SubRoleField(),
-                if (context.watch<RegistrationMasterDataProvider>().needsCategory) ...[
-                  AppSpacing.gapMd,
-                  const _CategoryField(),
-                ],
-                AppSpacing.gapXl,
-
-                PrimaryButton(
+                FigmaButton(
                   label: KycStrings.submitDetails,
+                  navy: true,
                   isLoading: details.isSubmitting,
-                  size: CustomButtonSize.large,
                   onPressed: details.isSubmitting ? null : _handleSubmit,
                 ),
-                AppSpacing.gapLg,
               ],
             ),
           ),

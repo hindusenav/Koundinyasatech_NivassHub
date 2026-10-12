@@ -1,3 +1,4 @@
+import 'package:flutter_nivasshub/core/api/api_exception.dart';
 import 'package:flutter_nivasshub/core/api/api_response.dart';
 import 'package:flutter_nivasshub/models/kyc/document_upload_request.dart';
 import 'package:flutter_nivasshub/models/kyc/document_upload_response_data.dart';
@@ -16,7 +17,7 @@ List<KycApplicableDocument> threeFakeDocuments() => const [
 ];
 
 /// A minimal [DocumentServiceBase] for tests — the real `DocumentService`
-/// talks to `GET /kyc/documents` / `POST /kyc/upload` over Dio, which
+/// talks to `GET /kyc/documents` / `POST /kyc/re-upload` over Dio, which
 /// widget and unit tests have no server for.
 class FakeDocumentService implements DocumentServiceBase {
   FakeDocumentService({List<KycApplicableDocument>? documents, this.rotateTokens = false})
@@ -27,6 +28,9 @@ class FakeDocumentService implements DocumentServiceBase {
   /// When true, every upload answers with a fresh `sessionToken`.
   final bool rotateTokens;
   final uploadRequests = <DocumentUploadRequest>[];
+
+  /// When set, uploads fail with a 409 carrying this server message.
+  String? failWith;
 
   @override
   Future<ApiResponse<List<KycApplicableDocument>>> getApplicableDocuments({
@@ -47,10 +51,24 @@ class FakeDocumentService implements DocumentServiceBase {
     DocumentUploadRequest request,
   ) async {
     uploadRequests.add(request);
+    final failure = failWith;
+    if (failure != null) {
+      return ApiResponse.failure(
+        ApiException(
+          message: failure,
+          type: ApiExceptionType.conflict,
+          statusCode: 409,
+        ),
+      );
+    }
+    final uploadedBefore =
+        uploadRequests.where((r) => r.documentId == request.documentId).length > 1;
     return ApiResponse.success(
       DocumentUploadResponseData(
         documentId: request.documentId,
         documentName: request.documentName,
+        version: uploadedBefore ? 2 : 1,
+        actionPerformed: uploadedBefore ? 'updated' : 'inserted',
         fileName: request.file.fileName,
         fileType: request.file.extension,
         sizeBytes: request.file.sizeBytes,

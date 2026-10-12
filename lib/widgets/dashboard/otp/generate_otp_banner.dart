@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:flutter_nivasshub/constants/figma_colors.dart';
+
 class GenerateOtpBanner extends StatelessWidget {
   const GenerateOtpBanner({super.key});
 
@@ -8,9 +10,9 @@ class GenerateOtpBanner extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Material(
       color: Colors.transparent,
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(16),
       child: InkWell(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
         onTap: () {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -26,16 +28,16 @@ class GenerateOtpBanner extends StatelessWidget {
             vertical: 12,
           ),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            // Fixed teal brand gradient — white text/icons on top already
+            borderRadius: BorderRadius.circular(16),
+            // Fixed navy Figma gradient — white text/icons on top already
             // work in both themes, so it's kept as-is (like a colored
             // button surface).
             gradient: const LinearGradient(
               begin: Alignment.centerLeft,
               end: Alignment.centerRight,
               colors: [
-                Color(0xFF26A69A),
-                Color(0xFF0F9D8A),
+                Color(0xFF1D3A6B),
+                FigmaColors.navy,
               ],
             ),
             boxShadow: [

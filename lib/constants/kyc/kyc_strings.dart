@@ -155,6 +155,9 @@ class KycStrings {
   static String uploadFailedTitle(String documentName) =>
       '$documentName Upload Failed';
 
+  static String reuploadSuccess(String documentName, int version) =>
+      '$documentName re-uploaded successfully (version $version).';
+
   // Document card copy
   static const String addressProofOneTitle = 'Address Proof — Document 1';
   static const String addressProofOneSubtitle =
@@ -173,10 +176,12 @@ class KycStrings {
   // Verification status
   // ---------------------------------------------------------------------
   static const String verificationTitle = 'KYC Submitted Successfully';
+  static const String verificationUnderReviewTitle = 'KYC Under Review';
   static const String verificationStatusLabel = 'Status';
   static const String verificationBody =
-      'Your documents have been submitted successfully and are currently '
-      'being reviewed by the administrator.';
+      'Your KYC documents have been submitted successfully. Our admin team '
+      'will review your documents. You will be notified once the '
+      'verification process is complete.';
   static const String stageSubmitted = 'Submitted';
   static const String stageUnderReview = 'Under Review';
   static const String stageAdminReview = 'Admin Review';

@@ -43,16 +43,16 @@ class _PanicSosBannerState extends State<PanicSosBanner> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Material(
       color: Colors.transparent,
-      borderRadius: BorderRadius.circular(14),
+      borderRadius: BorderRadius.circular(16),
       child: InkWell(
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(16),
         onTap: _handleTap,
         child: Container(
           height: 72,
           width: double.infinity,
           padding: const EdgeInsets.symmetric(horizontal: 14),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(16),
             // This banner uses ~4 distinct reds for the gradient stops and
             // the two icon circles below. Each plays a different visual
             // role (gradient depth vs. action-icon circle vs. alert-icon

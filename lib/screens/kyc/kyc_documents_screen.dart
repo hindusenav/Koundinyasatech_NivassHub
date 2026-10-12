@@ -16,8 +16,9 @@ import 'package:flutter_nivasshub/widgets/kyc/kyc_document_card.dart';
 import 'package:flutter_nivasshub/widgets/kyc/kyc_file_preview_sheet.dart';
 import 'package:flutter_nivasshub/widgets/kyc/kyc_upload_source_sheet.dart';
 import 'package:flutter_nivasshub/widgets/kyc/kyc_verdict_panel.dart';
-import 'package:flutter_nivasshub/widgets/shared/app_bar/custom_app_bar.dart';
-import 'package:flutter_nivasshub/widgets/shared/buttons/custom_button.dart';
+import 'package:flutter_nivasshub/constants/figma_colors.dart';
+import 'package:flutter_nivasshub/widgets/shared/figma/figma_scaffold.dart';
+import 'package:flutter_nivasshub/widgets/shared/figma/figma_widgets.dart';
 import 'package:flutter_nivasshub/widgets/shared/buttons/primary_button.dart';
 import 'package:flutter_nivasshub/widgets/shared/dialogs/confirmation_dialog.dart';
 import 'package:flutter_nivasshub/widgets/shared/feedback/custom_snackbar.dart';
@@ -122,8 +123,17 @@ class _KycDocumentsScreenState extends State<KycDocumentsScreen> {
 
     if (!mounted) return;
     final slot = provider.slotFor(documentId);
-    if (slot?.status == KycUploadStatus.failed) {
-      await _showUploadFailedDialog(documentId, slot!);
+    if (slot == null) return;
+    if (slot.errorMessage != null) {
+      await _showUploadFailedDialog(documentId, slot);
+    } else if (slot.uploaded?.isReupload ?? false) {
+      CustomSnackbar.success(
+        context,
+        KycStrings.reuploadSuccess(
+          slot.document.documentName,
+          slot.uploaded!.version,
+        ),
+      );
     }
   }
 
@@ -193,18 +203,13 @@ class _KycDocumentsScreenState extends State<KycDocumentsScreen> {
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<KycProvider>();
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final textSecondary = isDark
-        ? AppColors.textSecondaryDark
-        : AppColors.textSecondaryLight;
+    final t = FigmaColors.of(context);
 
     final args = widget.args;
 
-    return Scaffold(
-      appBar: const CustomAppBar(
-        title: KycStrings.kycTitle,
-        showBackButton: false,
-      ),
+    return FigmaHeaderScaffold(
+      title: KycStrings.kycTitle,
+      showBackButton: false,
       // `initialise` runs in a post-frame callback (it notifies listeners,
       // so it cannot run during build), leaving one frame with no slots.
       // It also fetches `GET /kyc/documents`, which shows the same loader
@@ -225,26 +230,30 @@ class _KycDocumentsScreenState extends State<KycDocumentsScreen> {
               ),
             )
           : SafeArea(
+              top: false,
               child: SingleChildScrollView(
-                padding: AppSpacing.screenPadding,
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
+                    const Center(child: FigmaBadge(size: 52)),
+                    AppSpacing.gapMd,
                     Text(
                       args.isResubmission
                           ? KycStrings.kycResubmitSubtitle
                           : KycStrings.kycSubtitle,
-                      style: AppTextStyles.bodyMedium.copyWith(
-                        color: textSecondary,
-                      ),
+                      textAlign: TextAlign.center,
+                      style: AppTextStyles.bodyMedium.copyWith(color: t.body),
                     ),
                     AppSpacing.gapSm,
                     Text(
                       args.role == null
                           ? '${provider.slots.length} documents required'
                           : '${args.role!.label} · ${provider.slots.length} documents required',
+                      textAlign: TextAlign.center,
                       style: AppTextStyles.labelMedium.copyWith(
-                        color: AppColors.primary,
+                        color: FigmaColors.orange,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                     if (args.isResubmission &&
@@ -262,7 +271,7 @@ class _KycDocumentsScreenState extends State<KycDocumentsScreen> {
                       Text(
                         KycStrings.noOptionsAvailable,
                         style: AppTextStyles.bodyMedium.copyWith(
-                          color: textSecondary,
+                          color: t.body,
                         ),
                       ),
                     for (final slot in provider.slots)
@@ -274,15 +283,14 @@ class _KycDocumentsScreenState extends State<KycDocumentsScreen> {
                         onRemove: () => provider.remove(slot.document.documentId),
                       ),
                     AppSpacing.gapLg,
-                    PrimaryButton(
+                    FigmaButton(
                       label: KycStrings.submitKyc,
+                      navy: true,
                       isLoading: provider.isSubmitting,
-                      size: CustomButtonSize.large,
                       // Enabled only once every card carries a document id —
                       // freshly uploaded or preserved from a prior attempt.
                       onPressed: provider.canSubmit ? _handleSubmit : null,
                     ),
-                    AppSpacing.gapLg,
                   ],
                 ),
               ),

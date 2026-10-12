@@ -16,9 +16,10 @@ import 'package:flutter_nivasshub/routes/app_routes.dart';
 import 'package:flutter_nivasshub/screens/kyc/kyc_documents_screen.dart';
 import 'package:flutter_nivasshub/services/auth/sms_otp_listener.dart';
 import 'package:flutter_nivasshub/widgets/auth/otp_input_boxes.dart';
-import 'package:flutter_nivasshub/widgets/shared/app_bar/custom_app_bar.dart';
+import 'package:flutter_nivasshub/constants/figma_colors.dart';
 import 'package:flutter_nivasshub/widgets/shared/buttons/custom_button.dart';
-import 'package:flutter_nivasshub/widgets/shared/buttons/primary_button.dart';
+import 'package:flutter_nivasshub/widgets/shared/figma/figma_scaffold.dart';
+import 'package:flutter_nivasshub/widgets/shared/figma/figma_widgets.dart';
 import 'package:flutter_nivasshub/widgets/shared/feedback/custom_snackbar.dart';
 import 'package:provider/provider.dart';
 
@@ -140,7 +141,7 @@ class _OtpMobileEmailVerificationScreenState
   Future<void> _continueToKyc() async {
     final args = widget.args;
     // The rotated token from verify-otp is what GET /kyc/documents and
-    // /kyc/upload expect; the registration token is only a fallback.
+    // /kyc/re-upload expect; the registration token is only a fallback.
     final sessionToken =
         context.read<OtpMobileEmailVerificationProvider>().sessionToken ??
         args.userId;
@@ -173,34 +174,22 @@ class _OtpMobileEmailVerificationScreenState
   Widget build(BuildContext context) {
     final provider = context.watch<OtpMobileEmailVerificationProvider>();
     final pending = widget.args.pendingChannels;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final textSecondary = isDark
-        ? AppColors.textSecondaryDark
-        : AppColors.textSecondaryLight;
-
-    return Scaffold(
-      backgroundColor: isDark
-          ? AppColors.backgroundDark
-          : AppColors.backgroundLight,
-      appBar: const CustomAppBar(
-        title: KycStrings.otpVerificationTitle,
-        showBackButton: false,
-      ),
-      body: SafeArea(
-        child: LayoutBuilder(
+    return FigmaLightScaffold(
+      showBackButton: false,
+      body: LayoutBuilder(
           builder: (context, constraints) {
             return SingleChildScrollView(
-              padding: AppSpacing.screenPadding,
+              padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
               child: ConstrainedBox(
                 constraints: BoxConstraints(minHeight: constraints.maxHeight),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Text(
-                      KycStrings.otpVerificationSubtitle,
-                      style: AppTextStyles.bodyMedium.copyWith(
-                        color: textSecondary,
-                      ),
+                    const Center(child: FigmaBadge()),
+                    const SizedBox(height: 20),
+                    const FigmaTitleBlock(
+                      title: KycStrings.otpVerificationTitle,
+                      subtitle: KycStrings.otpVerificationSubtitle,
                     ),
                     if (pending.contains(OtpChannel.mobile)) ...[
                     AppSpacing.gapLg,
@@ -240,7 +229,6 @@ class _OtpMobileEmailVerificationScreenState
               ),
             );
           },
-        ),
       ),
     );
   }
@@ -278,27 +266,19 @@ class _OtpCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final surface = isDark ? AppColors.surfaceDark : AppColors.surfaceLight;
-    final border = isDark ? AppColors.borderDark : AppColors.borderLight;
-    final textSecondary = isDark
-        ? AppColors.textSecondaryDark
-        : AppColors.textSecondaryLight;
+    final t = FigmaColors.of(context);
+    final textSecondary = t.body;
 
     return Container(
       decoration: BoxDecoration(
-        color: surface,
-        borderRadius: AppRadius.radiusLg,
+        color: t.card,
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: state.isVerified ? AppColors.success : border,
+          color: state.isVerified ? AppColors.success : t.cardBorder,
           width: state.isVerified ? 1.5 : 1,
         ),
         boxShadow: [
-          BoxShadow(
-            color: AppColors.black.withValues(alpha: isDark ? 0.24 : 0.05),
-            blurRadius: 16,
-            offset: const Offset(0, 6),
-          ),
+          BoxShadow(color: t.shadow, blurRadius: 18, offset: const Offset(0, 6)),
         ],
       ),
       padding: AppSpacing.all(AppSpacing.lg),
@@ -371,10 +351,9 @@ class _OtpCard extends StatelessWidget {
               ),
             ],
             AppSpacing.gapMd,
-            PrimaryButton(
+            FigmaButton(
               label: KycStrings.otpVerifyLabel,
               isLoading: state.isVerifying,
-              size: CustomButtonSize.large,
               onPressed: canVerify && !state.isVerifying ? onVerify : null,
             ),
             AppSpacing.gapSm,

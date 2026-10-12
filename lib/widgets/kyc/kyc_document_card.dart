@@ -7,7 +7,8 @@ import 'package:flutter_nivasshub/constants/app_spacing.dart';
 import 'package:flutter_nivasshub/constants/app_text_styles.dart';
 import 'package:flutter_nivasshub/constants/kyc/kyc_strings.dart';
 import 'package:flutter_nivasshub/models/kyc/kyc_document_slot.dart';
-import 'package:flutter_nivasshub/widgets/shared/cards/custom_card.dart';
+import 'package:flutter_nivasshub/constants/figma_colors.dart';
+import 'package:flutter_nivasshub/widgets/shared/figma/figma_widgets.dart';
 import 'package:flutter_nivasshub/widgets/shared/feedback/status_chip.dart';
 
 /// One document requirement: what it is, its upload state, the chosen
@@ -43,7 +44,7 @@ class KycDocumentCard extends StatelessWidget {
 
     return Padding(
       padding: AppSpacing.vertical(AppSpacing.sm),
-      child: CustomCard(
+      child: FigmaCard(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -142,15 +143,18 @@ class KycDocumentCard extends StatelessWidget {
               ],
             ),
           ),
-          TextButton(
-            onPressed: onUpload,
-            child: const Text(KycStrings.replaceDocument),
-          ),
-          IconButton(
-            tooltip: KycStrings.removeDocument,
-            icon: const Icon(AppIcons.delete, size: AppDimensions.iconSm),
-            onPressed: onRemove,
-          ),
+          // No "Replace" here: an uploaded or preserved document is never
+          // re-uploaded by the user's own choice. Re-upload is offered only
+          // when the admin rejects it — the resubmit flow then clears that
+          // one card back to the upload target above. Before submission the
+          // user can still remove a just-uploaded file; carried-forward
+          // (preserved) documents have no actions at all.
+          if (slot.status == KycUploadStatus.uploaded)
+            IconButton(
+              tooltip: KycStrings.removeDocument,
+              icon: const Icon(AppIcons.delete, size: AppDimensions.iconSm),
+              onPressed: onRemove,
+            ),
         ],
       );
     }
@@ -223,14 +227,12 @@ class _UploadTarget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final borderColor = isAttention
-        ? AppColors.warning
-        : (isDark ? AppColors.borderDark : AppColors.borderLight);
+    final t = FigmaColors.of(context);
+    final borderColor = isAttention ? AppColors.warning : t.fieldBorder;
 
     return InkWell(
       onTap: onTap,
-      borderRadius: AppRadius.radiusSm,
+      borderRadius: AppRadius.radiusMd,
       child: Container(
         width: double.infinity,
         padding: AppSpacing.symmetric(
@@ -238,7 +240,8 @@ class _UploadTarget extends StatelessWidget {
           vertical: AppSpacing.md,
         ),
         decoration: BoxDecoration(
-          borderRadius: AppRadius.radiusSm,
+          color: t.field,
+          borderRadius: AppRadius.radiusMd,
           border: Border.all(color: borderColor),
         ),
         child: Column(

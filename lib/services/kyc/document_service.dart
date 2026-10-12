@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_nivasshub/core/api/api_exception.dart';
 import 'package:flutter_nivasshub/core/api/api_response.dart';
@@ -14,9 +13,10 @@ import 'package:flutter_nivasshub/services/kyc/document_service_base.dart';
 
 /// Dio-backed KYC document list + upload.
 ///
-/// `POST /kyc/upload` is `multipart/form-data` (`user_id`, `doc_id`,
-/// `file`), one document per request. A 200/201 response carries a fresh
-/// `data.sessionToken` that replaces the caller's token.
+/// Upload is two steps: the file goes to `/upload` (multipart) to get a URL,
+/// then `POST /kyc/re-upload` registers it as JSON (`user_id`, `doc_id`,
+/// `doc_url`). 201 = inserted, 200 = re-uploaded (version incremented). If
+/// the response carries a `data.sessionToken` it replaces the caller's token.
 class DocumentService extends ApiService implements DocumentServiceBase {
   const DocumentService(super.client);
 
@@ -51,20 +51,44 @@ class DocumentService extends ApiService implements DocumentServiceBase {
     DocumentUploadRequest request,
   ) async {
     try {
-      // multipart/form-data: the backend converts the file to binary itself.
-      final formData = FormData.fromMap({
-        'user_id': request.userId,
-        'doc_id': '${request.documentId}',
-        'file': await MultipartFile.fromFile(
-          request.file.path,
-          filename: request.file.fileName,
-          contentType: DioMediaType.parse(request.file.mimeType),
-        ),
-      });
+      // Step 1: push the file to storage and receive its URL/path.
+      final storageResponse = await client.uploadFile(
+        ApiEndpoints.uploadFile,
+        files: {'file': request.file.path},
+      );
+      final docUrl = _extractDocUrl(storageResponse.data);
+      if (kDebugMode) {
+        final body = storageResponse.data;
+        debugPrint(
+          '[KycUpload] step1 /upload status=${storageResponse.statusCode} '
+          'body=$body extractedDocUrl=$docUrl',
+        );
+      }
+      if (docUrl == null) {
+        return ApiResponse.failure(
+          const ApiException(
+            message: 'Could not upload the file. Please try again.',
+            type: ApiExceptionType.unknown,
+          ),
+        );
+      }
 
+      // Step 2: register the stored document. The stored procedure decides
+      // insert vs. re-upload and the version.
+      if (kDebugMode) {
+        debugPrint(
+          '[KycUpload] step2 POST ${ApiEndpoints.kycUpload} '
+          'user_id=${_redact(request.userId)} doc_id=${request.documentId} '
+          'doc_url=$docUrl',
+        );
+      }
       final response = await client.post(
         ApiEndpoints.kycUpload,
-        data: formData,
+        data: {
+          'user_id': request.userId,
+          'doc_id': '${request.documentId}',
+          'doc_url': docUrl,
+        },
       );
 
       final data = _unwrapMap(response.data);
@@ -94,6 +118,12 @@ class DocumentService extends ApiService implements DocumentServiceBase {
         '[KycUpload] failed status=${e.statusCode} code=${e.code} '
         'correlationId=${e.correlationId}',
       );
+      if (kDebugMode) {
+        debugPrint(
+          '[KycUpload] failed doc_id=${request.documentId} '
+          'serverMessage="${e.message}" body=${e.data}',
+        );
+      }
       return ApiResponse.failure(_friendlyUploadError(e));
     } on FileSystemException {
       return ApiResponse.failure(
@@ -112,16 +142,44 @@ class DocumentService extends ApiService implements DocumentServiceBase {
     }
   }
 
+  /// True when the error body carried a message of its own (as opposed to
+  /// the client's generated fallback text).
+  static bool _hasServerMessage(ApiException e) {
+    final body = e.data;
+    if (body == null) return false;
+    final m = body['message'] ?? body['error'];
+    return m is String && m.trim().isNotEmpty;
+  }
+
+  /// Token shown as its last 4 characters only, for debug logs.
+  static String _redact(String value) =>
+      value.length <= 4 ? '****' : '****${value.substring(value.length - 4)}';
+
+  /// Reads the stored file's URL/path from the `/upload` response. The
+  /// field name is not documented, so the common spellings are tried.
+  static String? _extractDocUrl(dynamic json) {
+    if (json is! Map<String, dynamic>) return null;
+    final data = _unwrapMap(json);
+    for (final key in const ['url', 'fileUrl', 'file_url', 'doc_url', 'path']) {
+      final value = data[key];
+      if (value is String && value.isNotEmpty) return value;
+    }
+    return null;
+  }
+
   /// Replaces the raw server text with a user-facing message for each
-  /// documented `POST /kyc/upload` failure.
+  /// documented `POST /kyc/re-upload` failure. A 409 shows the server's own
+  /// business message (pending / rejected).
   static ApiException _friendlyUploadError(ApiException e) {
-    final server = e.message.toLowerCase();
     final message = switch (e.statusCode) {
+      400 when _hasServerMessage(e) => e.message,
       400 => 'This upload could not be processed. Please check the file and try again.',
       403 => 'Your account is not active, so documents cannot be uploaded.',
+      // The server's own 404 text names what it could not find, so it is
+      // shown as-is; the generic wording is only a fallback for an empty body.
+      404 when _hasServerMessage(e) => e.message,
       404 => 'We could not find this document request. Please refresh and try again.',
-      409 when server.contains('reject') =>
-        'This document was rejected. Please upload a new one.',
+      409 when e.message.trim().isNotEmpty => e.message,
       409 =>
         'This document is already pending review. Please wait for the admin.',
       final int s when s >= 500 => 'Server error. Please try again.',

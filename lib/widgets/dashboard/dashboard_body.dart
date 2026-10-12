@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_nivasshub/constants/figma_colors.dart';
 
 import 'package:flutter_nivasshub/widgets/notifications/visitor_notification_section.dart';
 import 'package:flutter_nivasshub/widgets/dashboard/approval_queue/approval_queue_section.dart';
@@ -75,7 +76,7 @@ class _DashboardBodyState extends State<DashboardBody> {
 
     return Container(
       width: double.infinity,
-      color: const Color(0xFFF7F8FC),
+      color: FigmaColors.of(context).page,
 
       child: Stack(
         children: [

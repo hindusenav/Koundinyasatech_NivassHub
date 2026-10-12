@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'package:flutter_nivasshub/constants/app_colors.dart';
+import 'package:flutter_nivasshub/constants/figma_colors.dart';
 import 'package:flutter_nivasshub/providers/dashboard/dashboard_provider.dart';
 
 class MaintenanceCard extends StatelessWidget {
@@ -12,6 +12,7 @@ class MaintenanceCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final t = FigmaColors.of(context);
     final provider = context.watch<DashboardProvider>();
 
     final message = provider.home?.data.maintenanceMessage ??
@@ -28,17 +29,17 @@ class MaintenanceCard extends StatelessWidget {
         vertical: 10,
       ),
       decoration: BoxDecoration(
-        color: isDark ? AppColors.dashboardHeaderDark : const Color(0xFFF0F9FF),
-        borderRadius: BorderRadius.circular(12),
+        color: t.card,
+        borderRadius: BorderRadius.circular(14),
         border: Border.all(
-          color: isDark ? AppColors.borderDark : const Color(0xFFBAE6FD),
+          color: t.cardBorder,
         ),
       ),
       child: Row(
         children: [
           Icon(
             Icons.info_outline_rounded,
-            color: isDark ? AppColors.info : const Color(0xFF0284C7),
+            color: isDark ? t.body : FigmaColors.accentBlue,
             size: 18,
           ),
 
@@ -50,7 +51,7 @@ class MaintenanceCard extends StatelessWidget {
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w600,
-                color: isDark ? AppColors.info : const Color(0xFF0284C7),
+                color: isDark ? t.body : FigmaColors.accentBlue,
               ),
             ),
           ),

@@ -647,6 +647,36 @@ void main() {
       ]);
     });
 
+    test('re-upload reports version 2 / updated, and a 409 on replace keeps '
+        'the existing document with the server message', () async {
+      final documents = FakeDocumentService();
+      final p = KycProvider(
+        documentService: documents,
+        kycService: kycService,
+        filePickerService: MockFilePickerService(),
+        localStorage: localStorage,
+        authState: AuthStateProvider(
+          localStorage: localStorage,
+          secureStorage: SecureStorageService(storage: InMemorySecureStorage()),
+        ),
+      );
+      await p.initialise(userId: 'USR1', kycToken: '', role: UserRole.owner);
+
+      await p.pickAndUpload(1, FilePickSource.files);
+      expect(p.slotFor(1)!.uploaded!.isReupload, isFalse);
+
+      await p.pickAndUpload(1, FilePickSource.files);
+      expect(p.slotFor(1)!.uploaded!.isReupload, isTrue);
+      expect(p.slotFor(1)!.uploaded!.version, 2);
+
+      documents.failWith =
+          'Address Proof 1 is in pending state. Please wait for admin\'s action.';
+      await p.pickAndUpload(1, FilePickSource.files);
+      final slot = p.slotFor(1)!;
+      expect(slot.isSatisfied, isTrue); // server copy still stands
+      expect(slot.errorMessage, contains('pending state'));
+    });
+
     test('submit stays disabled until every document is uploaded', () async {
       await provider.initialise(
         userId: 'USR1',

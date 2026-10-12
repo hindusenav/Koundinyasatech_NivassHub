@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'package:flutter_nivasshub/constants/figma_colors.dart';
+
 import 'package:flutter_nivasshub/routes/app_routes.dart';
 import 'package:flutter_nivasshub/providers/dashboard/dashboard_provider.dart';
 import 'package:flutter_nivasshub/widgets/dashboard/empty/section_empty.dart';
@@ -13,6 +15,7 @@ class QuickActionsGrid extends StatelessWidget {
   Widget build(BuildContext context) {
     final provider = context.watch<DashboardProvider>();
     final actions = provider.home?.data.quickActions ?? [];
+    final t = FigmaColors.of(context);
 
     if (actions.isEmpty) {
       return const SectionEmpty(
@@ -30,11 +33,11 @@ class QuickActionsGrid extends StatelessWidget {
           children: [
             Expanded(
               child: Text(
-                "Quick Actions",
+                "Quick actions",
                 style: TextStyle(
                   fontSize: 16,
-                  fontWeight: FontWeight.w700, // Thicker
-                  color: Color(0xFF0F172A),
+                  fontWeight: FontWeight.w700,
+                  color: t.heading,
                   letterSpacing: 0.3,
                 ),
               ),
@@ -42,7 +45,7 @@ class QuickActionsGrid extends StatelessWidget {
             Icon(
               Icons.settings_outlined,
               size: 14,
-              color: Color(0xFF000000),
+              color: FigmaColors.orange,
               weight: 600, // Thicker icon
             ),
             const SizedBox(width: 4),
@@ -51,7 +54,7 @@ class QuickActionsGrid extends StatelessWidget {
               style: TextStyle(
                 fontSize: 11,
                 fontWeight: FontWeight.w700, // Thicker
-                color: Color(0xFF000000),
+                color: FigmaColors.orange,
                 letterSpacing: 0.3,
               ),
             ),
@@ -64,9 +67,9 @@ class QuickActionsGrid extends StatelessWidget {
           itemCount: actions.length,
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 4,
-            crossAxisSpacing: 2,
+            crossAxisSpacing: 4,
             mainAxisSpacing: 8,
-            mainAxisExtent: 94,
+            mainAxisExtent: 98,
           ),
           itemBuilder: (context, index) {
             return QuickActionCard(

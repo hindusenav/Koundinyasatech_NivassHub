@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
-import 'package:flutter_nivasshub/constants/app_colors.dart';
+import 'package:flutter_nivasshub/constants/figma_colors.dart';
 import 'package:flutter_nivasshub/providers/dashboard/dashboard_provider.dart';
 import 'package:flutter_nivasshub/providers/dashboard/dashboard_state.dart';
 import 'package:flutter_nivasshub/storage/secure_storage_service.dart';
@@ -36,16 +36,16 @@ class _HomeDashboardScreenState
   // ============================================================
 
   static const Color _headerBlueLight =
-      AppColors.dashboardHeaderLight;
+      FigmaColors.navy;
 
   static const Color _headerBlueDark =
-      AppColors.dashboardHeaderDark;
+      FigmaColors.navy;
 
-  static const Color _backgroundColorLight =
-      AppColors.dashboardBackgroundLight;
+  static final Color _backgroundColorLight =
+      FigmaTheme.light.page;
 
-  static const Color _backgroundColorDark =
-      AppColors.dashboardBackgroundDark;
+  static final Color _backgroundColorDark =
+      FigmaTheme.dark.page;
 
   // ============================================================
   // INIT
@@ -98,14 +98,9 @@ class _HomeDashboardScreenState
         SystemChrome.setSystemUIOverlayStyle(
           SystemUiOverlayStyle(
             statusBarColor: headerBlue,
-            statusBarIconBrightness:
-                isDark
-                    ? Brightness.light
-                    : Brightness.dark,
-            statusBarBrightness:
-                isDark
-                    ? Brightness.dark
-                    : Brightness.light,
+            // Navy header in both themes, so status-bar icons stay light.
+            statusBarIconBrightness: Brightness.light,
+            statusBarBrightness: Brightness.dark,
             systemNavigationBarColor:
                 backgroundColor,
             systemNavigationBarIconBrightness:

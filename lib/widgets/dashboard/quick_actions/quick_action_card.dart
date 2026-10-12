@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:flutter_nivasshub/constants/figma_colors.dart';
 import 'package:flutter_nivasshub/models/dashboard/quick_action_model.dart';
 
 class QuickActionCard extends StatelessWidget {
@@ -14,70 +15,55 @@ class QuickActionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = FigmaColors.of(context);
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(18),
+      borderRadius: BorderRadius.circular(16),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Stack(
-            clipBehavior: Clip.none,
-            children: [
-              Container(
-                width: 70,
-                height: 70,
-                decoration: BoxDecoration(
-                  // Amber "View More" tile stays the same saturated color in
-                  // both themes (white icon on top already works in both).
-                  color: _isViewMore ? const Color(0xFFFF8A00) : Colors.white,
-                  borderRadius: BorderRadius.circular(18),
-                  border: Border.all(
-                    color: _isViewMore
-                        ? Colors.transparent
-                        : const Color(0xffECECEC),
-                    width: 1.5, // Thicker border for better quality
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: isDark ? .3 : .06),
-                      blurRadius: 10,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: Center(
-                  child: Image.asset(
-                    action.assetPath,
-                    width: _isViewMore
-                        ? 26
-                        : _isBookNow
-                        ? 42
-                        : 30,
-                    height: _isViewMore
-                        ? 26
-                        : _isBookNow
-                        ? 42
-                        : 30,
-                    fit: BoxFit.contain,
-                    color: _isViewMore ? Colors.white : null,
-                    // Better image quality
-                    filterQuality: FilterQuality.high,
-                    isAntiAlias: true,
-                    errorBuilder: (_, _, _) {
-                      return Icon(
-                        Icons.image_not_supported_outlined,
-                        size: 28,
-                        color: Colors.grey.shade600,
-                        weight: 600, // Thicker fallback icon
-                      );
-                    },
-                  ),
-                ),
+          Container(
+            width: 58,
+            height: 58,
+            decoration: BoxDecoration(
+              // "View More" uses the Figma orange; the rest are soft tinted tiles.
+              color: _isViewMore
+                  ? FigmaColors.orange
+                  : (isDark ? t.card : const Color(0xFFEAF1FF)),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: _isViewMore ? Colors.transparent : t.cardBorder,
               ),
-            ],
+            ),
+            child: Center(
+              child: Image.asset(
+                action.assetPath,
+                width: _isViewMore
+                    ? 24
+                    : _isBookNow
+                    ? 36
+                    : 28,
+                height: _isViewMore
+                    ? 24
+                    : _isBookNow
+                    ? 36
+                    : 28,
+                fit: BoxFit.contain,
+                color: _isViewMore ? Colors.white : null,
+                filterQuality: FilterQuality.high,
+                isAntiAlias: true,
+                errorBuilder: (_, _, _) {
+                  return Icon(
+                    Icons.image_not_supported_outlined,
+                    size: 26,
+                    color: Colors.grey.shade600,
+                  );
+                },
+              ),
+            ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 6),
           SizedBox(
             width: 74,
             child: Text(
@@ -88,9 +74,8 @@ class QuickActionCard extends StatelessWidget {
               style: TextStyle(
                 fontSize: 11,
                 height: 1.25,
-                fontWeight: FontWeight.w600, // Thicker text
-                color: Color(0xff1A1A1A), // Darker black
-                letterSpacing: 0.2, // Better readability
+                fontWeight: FontWeight.w600,
+                color: t.heading,
               ),
             ),
           ),

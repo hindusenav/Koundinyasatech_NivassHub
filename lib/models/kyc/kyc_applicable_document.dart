@@ -6,7 +6,7 @@
 ///   "description": "...", "is_mandatory": "Mandatory" }
 /// ```
 ///
-/// `document_name_id` is the `doc_id` `POST /kyc/upload` expects, as a
+/// `document_name_id` is the `doc_id` `POST /kyc/re-upload` expects, as a
 /// number. Never hardcoded on the client — see `KycProvider.initialise`,
 /// which builds its document cards from exactly this list and nothing else.
 class KycApplicableDocument {

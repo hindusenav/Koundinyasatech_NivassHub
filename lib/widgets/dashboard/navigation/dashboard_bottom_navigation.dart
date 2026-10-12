@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'package:flutter_nivasshub/constants/app_colors.dart';
+import 'package:flutter_nivasshub/constants/figma_colors.dart';
 import 'package:flutter_nivasshub/routes/app_routes.dart';
 import 'package:flutter_nivasshub/providers/dashboard/dashboard_navigation_provider.dart';
 import 'package:flutter_nivasshub/widgets/shared/feedback/custom_snackbar.dart';
@@ -22,7 +22,7 @@ class DashboardBottomNavigation extends StatelessWidget {
       child: Container(
         height: 84,
         decoration: BoxDecoration(
-          color: isDark ? const Color(0xFF1E293B) : const Color(0xFFC7E3FF),
+          color: isDark ? const Color(0xFF0E1A33) : FigmaColors.navy,
           borderRadius: const BorderRadius.only(
             topLeft: Radius.circular(24),
             topRight: Radius.circular(24),
@@ -86,9 +86,7 @@ class DashboardBottomNavigation extends StatelessWidget {
     bool isDark,
   ) {
     final bool selected = activeIndex == index;
-    final activeBlue = isDark
-        ? AppColors.noticesAccentBlueDark
-        : const Color(0xFF0060BD);
+    const activeBlue = FigmaColors.orange;
 
     return Expanded(
       child: InkWell(
@@ -150,14 +148,14 @@ class DashboardBottomNavigation extends StatelessWidget {
                   fit: BoxFit.contain,
                   color: selected
                       ? Colors.white
-                      : (isDark ? Colors.white70 : const Color(0xFF475569)),
+                      : Colors.white70,
                   filterQuality: FilterQuality.high,
                   isAntiAlias: true,
                   errorBuilder: (_, _, _) {
                     return Icon(
                       Icons.circle_outlined,
                       size: 22,
-                      color: selected ? Colors.white : const Color(0xFF475569),
+                      color: selected ? Colors.white : Colors.white70,
                     );
                   },
                 ),
@@ -171,11 +169,7 @@ class DashboardBottomNavigation extends StatelessWidget {
                 fontFamily: 'DM Sans',
                 fontSize: 11,
                 fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
-                color: selected
-                    ? activeBlue
-                    : (isDark
-                          ? AppColors.textSecondaryDark
-                          : const Color(0xFF475569)),
+                color: selected ? activeBlue : Colors.white70,
                 letterSpacing: 0.2,
                 height: 1.1,
               ),

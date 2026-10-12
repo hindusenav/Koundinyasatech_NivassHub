@@ -235,7 +235,7 @@ Future<void> main() async {
   // KYC
   // ============================================================
 
-  // `GET /kyc/documents` and `POST /kyc/upload` are both documented and
+  // `GET /kyc/documents` and `POST /kyc/re-upload` are both documented and
   // always real — no mock twin, unlike `KycServiceBase`'s submit/status
   // pair below, which the backend has not documented yet.
   final DocumentServiceBase documentService = DocumentService(apiClient);

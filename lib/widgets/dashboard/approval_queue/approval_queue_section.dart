@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'package:flutter_nivasshub/constants/app_colors.dart';
+import 'package:flutter_nivasshub/constants/figma_colors.dart';
 import 'package:flutter_nivasshub/routes/app_routes.dart';
 import 'package:flutter_nivasshub/providers/dashboard/dashboard_provider.dart';
 import 'package:flutter_nivasshub/widgets/dashboard/empty/section_empty.dart';
@@ -36,10 +36,10 @@ class ApprovalQueueSection extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: isDark ? AppColors.surfaceDark : Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        color: isDark ? FigmaTheme.dark.card : FigmaColors.navy,
+        borderRadius: BorderRadius.circular(18),
         border: Border.all(
-          color: isDark ? AppColors.borderDark : const Color(0xFFE2E8F0),
+          color: isDark ? FigmaTheme.dark.cardBorder : FigmaColors.navy,
         ),
         boxShadow: [
           BoxShadow(
@@ -59,7 +59,7 @@ class ApprovalQueueSection extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
-                  color: isDark ? AppColors.textPrimaryDark : const Color(0xFF0F172A),
+                  color: Colors.white,
                 ),
               ),
               InkWell(
@@ -68,7 +68,7 @@ class ApprovalQueueSection extends StatelessWidget {
                 child: Text(
                   'View all',
                   style: TextStyle(
-                    color: isDark ? AppColors.info : const Color(0xFF0284C7),
+                    color: FigmaColors.orange,
                     fontWeight: FontWeight.bold,
                     fontSize: 12.5,
                   ),
@@ -114,7 +114,6 @@ class _VisitorAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Column(
       children: [
         if (isImage)
@@ -155,7 +154,7 @@ class _VisitorAvatar extends StatelessWidget {
             style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.bold,
-              color: isDark ? AppColors.textPrimaryDark : const Color(0xFF0F172A),
+              color: Colors.white,
             ),
           ),
         ),
@@ -171,7 +170,7 @@ class _VisitorAvatar extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
               fontSize: 11,
-              color: isDark ? AppColors.textSecondaryDark : const Color(0xFF64748B),
+              color: Colors.white70,
             ),
           ),
         ),

@@ -100,6 +100,7 @@ class KycProvider extends ChangeNotifier {
   /// it is ready to submit nothing.
   bool get canSubmit =>
       !isSubmitting &&
+      _state != KycProviderState.submitted &&
       slots.isNotEmpty &&
       slots.every((s) => !s.document.isMandatory || s.isSatisfied);
 
@@ -218,7 +219,7 @@ class KycProvider extends ChangeNotifier {
   // -------------------------------------------------------------------
 
   /// Picks a file for [documentId] and uploads it as `multipart/form-data`
-  /// to `POST /kyc/upload` (`user_id`, `doc_id`, plus the file). A
+  /// to `POST /kyc/re-upload` (`user_id`, `doc_id`, plus the file). A
   /// cancelled pick restores the card to whatever it showed before,
   /// without an error.
   Future<void> pickAndUpload(int documentId, FilePickSource source) async {
@@ -252,6 +253,9 @@ class KycProvider extends ChangeNotifier {
       return;
     }
 
+    // Restore the pre-pick state so uploadPicked sees the document that is
+    // really on the server (not a transient "picking" card).
+    _update(documentId, previous);
     await uploadPicked(documentId, file);
   }
 
@@ -262,6 +266,9 @@ class KycProvider extends ChangeNotifier {
   Future<void> uploadPicked(int documentId, PickedFile file) async {
     final previous = slotFor(documentId);
     if (previous == null) return;
+    // A second tap or rebuild while this document is in flight must not
+    // fire a duplicate upload.
+    if (previous.status == KycUploadStatus.uploading) return;
 
     _update(
       documentId,
@@ -294,11 +301,18 @@ class KycProvider extends ChangeNotifier {
       return;
     }
 
+    final message = response.message ?? KycStrings.uploadFailed;
+    if (previous.isSatisfied) {
+      // A rejected replacement (e.g. 409 pending) leaves the server's copy
+      // untouched, so the card keeps showing the document already uploaded.
+      _update(documentId, previous.copyWith(errorMessage: message));
+      return;
+    }
     _update(
       documentId,
       previous.copyWith(
         status: KycUploadStatus.failed,
-        errorMessage: response.message ?? KycStrings.uploadFailed,
+        errorMessage: message,
         clearUploaded: true,
       ),
     );

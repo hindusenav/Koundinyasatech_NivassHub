@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:flutter_nivasshub/constants/app_colors.dart';
+import 'package:flutter_nivasshub/constants/figma_colors.dart';
 import 'package:flutter_nivasshub/screens/notices/notice_details_screen.dart';
 import 'package:flutter_nivasshub/models/dashboard/notice_model.dart';
 
@@ -17,6 +17,7 @@ class NoticeCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final t = FigmaColors.of(context);
     String headerTitle = 'Notice';
     if (notice.noticeId == 'not_1') {
       headerTitle = 'Notice 1';
@@ -42,12 +43,12 @@ class NoticeCard extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: isDark ? AppColors.surfaceDark : Colors.white,
+        color: t.card,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
           // Teal accent border reads clearly against both a light and a
           // dark card surface, so it's kept as-is in both themes.
-          color: const Color(0xFF2DD4BF).withValues(alpha: .5),
+          color: t.cardBorder,
           width: 1,
         ),
         boxShadow: [
@@ -76,7 +77,7 @@ class NoticeCard extends StatelessWidget {
                       height: 42,
                       width: 42,
                       decoration: BoxDecoration(
-                        color: isDark ? AppColors.dashboardHeaderDark : const Color(0xFFE0F2FE),
+                        color: isDark ? t.field : const Color(0xFFEAF1FF),
                         borderRadius: BorderRadius.circular(12),
                         boxShadow: [
                           BoxShadow(
@@ -88,7 +89,7 @@ class NoticeCard extends StatelessWidget {
                       ),
                       child: Icon(
                         Icons.assignment_add,
-                        color: isDark ? AppColors.textPrimaryDark : const Color(0xFF0F172A),
+                        color: t.heading,
                         size: 22,
                       ),
                     ),
@@ -102,7 +103,7 @@ class NoticeCard extends StatelessWidget {
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
-                              color: isDark ? AppColors.textPrimaryDark : const Color(0xFF0F172A),
+                              color: t.heading,
                             ),
                           ),
                           const SizedBox(height: 4),
@@ -114,7 +115,7 @@ class NoticeCard extends StatelessWidget {
                                   vertical: 3,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: isDark ? AppColors.grey700 : const Color(0xFF0F172A),
+                                  color: FigmaColors.navy,
                                   borderRadius: BorderRadius.circular(6),
                                 ),
                                 child: Text(
@@ -130,7 +131,7 @@ class NoticeCard extends StatelessWidget {
                               Text(
                                 notice.date,
                                 style: TextStyle(
-                                  color: isDark ? AppColors.textSecondaryDark : const Color(0xFF94A3B8),
+                                  color: t.body,
                                   fontSize: 11.5,
                                   fontWeight: FontWeight.w500,
                                 ),
@@ -142,7 +143,7 @@ class NoticeCard extends StatelessWidget {
                     ),
                     Icon(
                       Icons.more_vert,
-                      color: isDark ? AppColors.textPrimaryDark : const Color(0xFF0F172A),
+                      color: t.heading,
                       size: 20,
                     ),
                   ],
@@ -154,7 +155,7 @@ class NoticeCard extends StatelessWidget {
                   height: 2,
                   width: double.infinity,
                   decoration: BoxDecoration(
-                    color: isDark ? AppColors.noticesAmberDark : AppColors.noticesAmberLight,
+                    color: FigmaColors.orange,
                     borderRadius: BorderRadius.circular(1),
                   ),
                 ),
@@ -165,14 +166,14 @@ class NoticeCard extends StatelessWidget {
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 14,
-                    color: isDark ? AppColors.textPrimaryDark : const Color(0xFF0F172A),
+                    color: t.heading,
                   ),
                 ),
                 const SizedBox(height: 6),
                 Text(
                   notice.body,
                   style: TextStyle(
-                    color: isDark ? AppColors.textSecondaryDark : const Color(0xFF334155),
+                    color: t.body,
                     fontSize: 12.5,
                     height: 1.45,
                   ),
@@ -181,7 +182,7 @@ class NoticeCard extends StatelessWidget {
 
                 // Download Button Badge
                 Material(
-                  color: isDark ? const Color(0xFF1C3B2E) : const Color(0xFFC7F9CC),
+                  color: isDark ? t.field : const Color(0xFFE6F6EC),
                   borderRadius: BorderRadius.circular(8),
                   child: InkWell(
                     onTap: () {
@@ -206,14 +207,14 @@ class NoticeCard extends StatelessWidget {
                               Icon(
                                 Icons.article_outlined,
                                 size: 20,
-                                color: isDark ? AppColors.textPrimaryDark : const Color(0xFF0F172A),
+                                color: t.heading,
                               ),
                               Padding(
                                 padding: const EdgeInsets.only(top: 4),
                                 child: Icon(
                                   Icons.arrow_downward,
                                   size: 10,
-                                  color: isDark ? AppColors.textPrimaryDark : const Color(0xFF0F172A),
+                                  color: t.heading,
                                 ),
                               ),
                             ],
@@ -222,7 +223,7 @@ class NoticeCard extends StatelessWidget {
                           Text(
                             notice.downloadLabel,
                             style: TextStyle(
-                              color: isDark ? AppColors.textPrimaryDark : const Color(0xFF0F172A),
+                              color: t.heading,
                               fontSize: 13,
                               fontWeight: FontWeight.bold,
                             ),

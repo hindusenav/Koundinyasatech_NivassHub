@@ -1,4 +1,4 @@
-/// `data` payload of a successful `POST /kyc/upload`.
+/// `data` payload of a successful `POST /kyc/re-upload`.
 ///
 /// A fresh upload comes back `201` with `actionPerformed: "inserted"`; a
 /// re-upload of the same document comes back `200` with `"updated"` and

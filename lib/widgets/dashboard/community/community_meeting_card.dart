@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:flutter_nivasshub/constants/app_colors.dart';
+import 'package:flutter_nivasshub/constants/figma_colors.dart';
 import 'package:flutter_nivasshub/models/dashboard/community_meeting_model.dart';
 
 class CommunityMeetingCard extends StatelessWidget {
@@ -14,14 +14,15 @@ class CommunityMeetingCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final t = FigmaColors.of(context);
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: isDark ? AppColors.dashboardHeaderDark : const Color(0xFFEFF6FF),
+        color: t.card,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: isDark ? AppColors.borderDark : const Color(0xFFBAE6FD),
+          color: t.cardBorder,
         ),
         boxShadow: [
           BoxShadow(
@@ -38,7 +39,7 @@ class CommunityMeetingCard extends StatelessWidget {
             children: [
               Icon(
                 Icons.campaign_outlined,
-                color: isDark ? AppColors.info : const Color(0xFF0284C7),
+                color: FigmaColors.orange,
                 size: 20,
               ),
               const SizedBox(width: 8),
@@ -48,7 +49,7 @@ class CommunityMeetingCard extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.bold,
-                    color: isDark ? AppColors.textPrimaryDark : const Color(0xFF0F172A),
+                    color: t.heading,
                   ),
                 ),
               ),
@@ -60,7 +61,7 @@ class CommunityMeetingCard extends StatelessWidget {
             style: TextStyle(
               fontSize: 12.5,
               height: 1.4,
-              color: isDark ? AppColors.textSecondaryDark : const Color(0xFF334155),
+              color: t.body,
             ),
           ),
           const SizedBox(height: 12),
@@ -77,7 +78,7 @@ class CommunityMeetingCard extends StatelessWidget {
               },
               style: ElevatedButton.styleFrom(
                 elevation: 0,
-                backgroundColor: isDark ? AppColors.noticesAmberDark : AppColors.noticesAmberLight,
+                backgroundColor: FigmaColors.orange,
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 shape: RoundedRectangleBorder(

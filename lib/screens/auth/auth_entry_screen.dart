@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_nivasshub/constants/app_colors.dart';
-import 'package:flutter_nivasshub/constants/app_spacing.dart';
 import 'package:flutter_nivasshub/constants/app_text_styles.dart';
+import 'package:flutter_nivasshub/constants/figma_colors.dart';
 import 'package:flutter_nivasshub/constants/kyc/kyc_strings.dart';
 import 'package:flutter_nivasshub/models/auth/auth_flow_state.dart';
 import 'package:flutter_nivasshub/models/auth/auth_identifier.dart';
@@ -16,10 +15,8 @@ import 'package:flutter_nivasshub/screens/auth/user_details_screen.dart';
 import 'package:flutter_nivasshub/screens/kyc/kyc_documents_screen.dart';
 import 'package:flutter_nivasshub/utils/form_validators.dart';
 import 'package:flutter_nivasshub/widgets/auth/identifier_input_field.dart';
-import 'package:flutter_nivasshub/widgets/shared/app_bar/custom_app_bar.dart';
-import 'package:flutter_nivasshub/widgets/shared/buttons/custom_button.dart';
-import 'package:flutter_nivasshub/widgets/shared/buttons/primary_button.dart';
-import 'package:flutter_nivasshub/widgets/shared/brand/nivass_logo_mark.dart';
+import 'package:flutter_nivasshub/widgets/shared/figma/figma_scaffold.dart';
+import 'package:flutter_nivasshub/widgets/shared/figma/figma_widgets.dart';
 import 'package:provider/provider.dart';
 
 /// Route arguments for [AuthEntryScreen]. Every field is optional — the
@@ -185,77 +182,71 @@ class _AuthEntryScreenState extends State<AuthEntryScreen> {
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<AuthEntryProvider>();
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final textPrimary = isDark
-        ? AppColors.textPrimaryDark
-        : AppColors.textPrimaryLight;
-    final textSecondary = isDark
-        ? AppColors.textSecondaryDark
-        : AppColors.textSecondaryLight;
+    final t = FigmaColors.of(context);
 
-    return Scaffold(
-      appBar: const CustomAppBar(title: '', showBackButton: true),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: AppSpacing.screenPadding,
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                const Center(child: NivassLogoMark(size: 96)),
-                AppSpacing.gapLg,
-                Text(
-                  KycStrings.authEntryTitle,
-                  style: AppTextStyles.headlineSmall.copyWith(
-                    color: textPrimary,
+    return FigmaLightScaffold(
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const Center(child: FigmaBadge()),
+              const SizedBox(height: 20),
+              const FigmaTitleBlock(
+                title: KycStrings.authEntryTitle,
+                subtitle: KycStrings.authEntrySubtitle,
+              ),
+              const SizedBox(height: 28),
+              FigmaCard(
+                padding: const EdgeInsets.all(18),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    IdentifierInputField(
+                      controller: _identifierController,
+                      channel: provider.channel,
+                      countries: provider.dialCodes,
+                      selectedCountry: provider.selectedCountry,
+                      isLoadingCountries: provider.isLoadingDialCodes,
+                      enabled: !provider.isChecking,
+                      onCountrySelected: provider.setCountry,
+                      onRetryCountries: provider.loadCountryCodes,
+                      onChanged: (_) => provider.clearError(),
+                      onSubmitted: (_) => _handleContinue(),
+                      validator: _validateIdentifier,
+                    ),
+                    if (provider.errorMessage != null) ...[
+                      const SizedBox(height: 8),
+                      Text(
+                        provider.errorMessage!,
+                        style: AppTextStyles.errorText,
+                      ),
+                    ],
+                    const SizedBox(height: 18),
+                    FigmaButton(
+                      label: KycStrings.continueLabel,
+                      isLoading: provider.isChecking,
+                      onPressed: provider.isChecking ? null : _handleContinue,
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 12),
+              TextButton(
+                onPressed: provider.isChecking ? null : _toggleChannel,
+                child: Text(
+                  provider.isMobileMode
+                      ? KycStrings.useEmailInstead
+                      : KycStrings.useMobileInstead,
+                  style: TextStyle(
+                    color: t.heading,
+                    fontWeight: FontWeight.w600,
                   ),
-                  textAlign: TextAlign.center,
                 ),
-                AppSpacing.gapSm,
-                Text(
-                  KycStrings.authEntrySubtitle,
-                  style: AppTextStyles.bodyMedium.copyWith(
-                    color: textSecondary,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                AppSpacing.gapXl,
-                IdentifierInputField(
-                  controller: _identifierController,
-                  channel: provider.channel,
-                  countries: provider.dialCodes,
-                  selectedCountry: provider.selectedCountry,
-                  isLoadingCountries: provider.isLoadingDialCodes,
-                  enabled: !provider.isChecking,
-                  onCountrySelected: provider.setCountry,
-                  onRetryCountries: provider.loadCountryCodes,
-                  onChanged: (_) => provider.clearError(),
-                  onSubmitted: (_) => _handleContinue(),
-                  validator: _validateIdentifier,
-                ),
-                if (provider.errorMessage != null) ...[
-                  AppSpacing.gapSm,
-                  Text(provider.errorMessage!, style: AppTextStyles.errorText),
-                ],
-                AppSpacing.gapLg,
-                PrimaryButton(
-                  label: KycStrings.continueLabel,
-                  isLoading: provider.isChecking,
-                  size: CustomButtonSize.large,
-                  onPressed: provider.isChecking ? null : _handleContinue,
-                ),
-                AppSpacing.gapMd,
-                TextButton(
-                  onPressed: provider.isChecking ? null : _toggleChannel,
-                  child: Text(
-                    provider.isMobileMode
-                        ? KycStrings.useEmailInstead
-                        : KycStrings.useMobileInstead,
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
