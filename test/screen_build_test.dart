@@ -105,7 +105,6 @@ void main() {
               documentService: context.read<DocumentServiceBase>(),
               kycService: context.read<KycServiceBase>(),
               filePickerService: context.read<FilePickerServiceBase>(),
-              localStorage: localStorage,
               authState: authState,
             ),
           ),

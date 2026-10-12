@@ -13,10 +13,9 @@ import 'package:flutter_nivasshub/services/kyc/document_service_base.dart';
 
 /// Dio-backed KYC document list + upload.
 ///
-/// Upload is two steps: the file goes to `/upload` (multipart) to get a URL,
-/// then `POST /kyc/re-upload` registers it as JSON (`user_id`, `doc_id`,
-/// `doc_url`). 201 = inserted, 200 = re-uploaded (version incremented). If
-/// the response carries a `data.sessionToken` it replaces the caller's token.
+/// Upload is one multipart `POST /kyc/upload` (`user_id`, `doc_id`, file).
+/// 201 = inserted, 202 = last required document uploaded, 200 = re-uploaded.
+/// `data.sessionToken` replaces the caller's token.
 class DocumentService extends ApiService implements DocumentServiceBase {
   const DocumentService(super.client);
 
@@ -29,8 +28,38 @@ class DocumentService extends ApiService implements DocumentServiceBase {
         ApiEndpoints.kycDocuments,
         queryParameters: {'user_token': userToken},
       ),
-      (json) => KycApplicableDocument.listFromJson(_unwrapList(json)),
+      (json) {
+        final documents = KycApplicableDocument.listFromJson(_unwrapList(json));
+        final uploaded = _uploadedStatuses(json);
+        return [
+          for (final d in documents)
+            uploaded.containsKey(d.documentId)
+                ? d.markUploaded(uploaded[d.documentId]!)
+                : d,
+        ];
+      },
     );
+  }
+
+  /// Document id -> `Document_Status` for everything the backend already
+  /// holds, from the root-level `uploadedDocuments` array.
+  static Map<int, String> _uploadedStatuses(dynamic json) {
+    if (json is! Map<String, dynamic>) return const {};
+    final raw = json['uploadedDocuments'];
+    if (raw is! List) return const {};
+    final statuses = <int, String>{};
+    for (final entry in raw.whereType<Map>()) {
+      final id =
+          entry['document_name_id'] ??
+          entry['documentNameId'] ??
+          entry['documentId'] ??
+          entry['doc_id'];
+      final parsed = id is int ? id : int.tryParse('$id');
+      if (parsed == null) continue;
+      statuses[parsed] =
+          '${entry['Document_Status'] ?? entry['document_status'] ?? entry['status'] ?? ''}';
+    }
+    return statuses;
   }
 
   @override
@@ -51,45 +80,31 @@ class DocumentService extends ApiService implements DocumentServiceBase {
     DocumentUploadRequest request,
   ) async {
     try {
-      // Step 1: push the file to storage and receive its URL/path.
-      final storageResponse = await client.uploadFile(
-        ApiEndpoints.uploadFile,
-        files: {'file': request.file.path},
-      );
-      final docUrl = _extractDocUrl(storageResponse.data);
-      if (kDebugMode) {
-        final body = storageResponse.data;
-        debugPrint(
-          '[KycUpload] step1 /upload status=${storageResponse.statusCode} '
-          'body=$body extractedDocUrl=$docUrl',
-        );
-      }
-      if (docUrl == null) {
-        return ApiResponse.failure(
-          const ApiException(
-            message: 'Could not upload the file. Please try again.',
-            type: ApiExceptionType.unknown,
-          ),
-        );
-      }
-
-      // Step 2: register the stored document. The stored procedure decides
-      // insert vs. re-upload and the version.
+      // Single multipart call: `user_id`, `doc_id` and the file. The backend
+      // decides insert vs. re-upload and the version.
+      final endpoint = request.isReupload
+          ? ApiEndpoints.kycReUpload
+          : ApiEndpoints.kycUpload;
       if (kDebugMode) {
         debugPrint(
-          '[KycUpload] step2 POST ${ApiEndpoints.kycUpload} '
+          '[KycUpload] POST $endpoint '
           'user_id=${_redact(request.userId)} doc_id=${request.documentId} '
-          'doc_url=$docUrl',
+          'file=${request.file.path}',
         );
       }
-      final response = await client.post(
-        ApiEndpoints.kycUpload,
-        data: {
+      final response = await client.uploadFile(
+        endpoint,
+        files: {'file': request.file.path},
+        fields: {
           'user_id': request.userId,
           'doc_id': '${request.documentId}',
-          'doc_url': docUrl,
         },
       );
+      if (kDebugMode) {
+        debugPrint(
+          '[KycUpload] status=${response.statusCode} body=${response.data}',
+        );
+      }
 
       final data = _unwrapMap(response.data);
       // The upload endpoint confirms the document by name, not by id —
@@ -111,6 +126,8 @@ class DocumentService extends ApiService implements DocumentServiceBase {
           localPath: request.file.path,
           // 201 and 200 both return a fresh token that replaces the old.
           sessionToken: data['sessionToken'] as String?,
+          // 202 = last required document uploaded.
+          allDocumentsUploaded: response.statusCode == 202,
         ),
       );
     } on ApiException catch (e) {
@@ -132,7 +149,8 @@ class DocumentService extends ApiService implements DocumentServiceBase {
           type: ApiExceptionType.unknown,
         ),
       );
-    } catch (e) {
+    } catch (e, st) {
+      debugPrint('[KycUpload] unexpected ${e.runtimeType}: $e\n$st');
       return ApiResponse.failure(
         const ApiException(
           message: 'Something went wrong. Please try again.',
@@ -154,18 +172,6 @@ class DocumentService extends ApiService implements DocumentServiceBase {
   /// Token shown as its last 4 characters only, for debug logs.
   static String _redact(String value) =>
       value.length <= 4 ? '****' : '****${value.substring(value.length - 4)}';
-
-  /// Reads the stored file's URL/path from the `/upload` response. The
-  /// field name is not documented, so the common spellings are tried.
-  static String? _extractDocUrl(dynamic json) {
-    if (json is! Map<String, dynamic>) return null;
-    final data = _unwrapMap(json);
-    for (final key in const ['url', 'fileUrl', 'file_url', 'doc_url', 'path']) {
-      final value = data[key];
-      if (value is String && value.isNotEmpty) return value;
-    }
-    return null;
-  }
 
   /// Replaces the raw server text with a user-facing message for each
   /// documented `POST /kyc/re-upload` failure. A 409 shows the server's own

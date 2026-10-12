@@ -1,14 +1,11 @@
-import 'dart:async';
-
 import 'package:flutter/foundation.dart';
-import 'package:flutter_nivasshub/constants/kyc/kyc_config.dart';
 import 'package:flutter_nivasshub/constants/kyc/kyc_strings.dart';
 import 'package:flutter_nivasshub/models/auth/auth_flow_state.dart';
 import 'package:flutter_nivasshub/models/kyc/kyc_status.dart';
 import 'package:flutter_nivasshub/models/kyc/kyc_status_response_data.dart';
+import 'package:flutter_nivasshub/models/kyc/kyc_user_document.dart';
 import 'package:flutter_nivasshub/providers/auth/auth_state_provider.dart';
 import 'package:flutter_nivasshub/services/auth/auth_entry_service_base.dart';
-import 'package:flutter_nivasshub/services/kyc/kyc_service_base.dart';
 import 'package:flutter_nivasshub/storage/secure_storage_service.dart';
 
 enum KycStatusState {
@@ -20,36 +17,31 @@ enum KycStatusState {
   error,
 }
 
-/// Polls the review status and, on approval, exchanges it for an access
-/// token.
+/// Derives the review verdict from the user's stored documents
+/// (`GET /kyc/user-documents`, fetched once by the status screen) and, on
+/// approval, exchanges it for an access token.
 ///
-/// Screen-scoped, and this is the strongest scoping argument in the
-/// feature: it owns a `Timer.periodic`, and a route-scoped `dispose()` is
-/// the only reliable place to cancel it. A global instance would keep
-/// polling behind the Dashboard forever.
+/// There is no polling: the screen makes a single call and hands the result
+/// to [evaluate].
 class KycStatusProvider extends ChangeNotifier {
   KycStatusProvider({
-    required KycServiceBase kycService,
     required AuthEntryServiceBase authService,
     required AuthStateProvider authState,
     required SecureStorageService secureStorage,
-  }) : _kycService = kycService,
-       _authService = authService,
+  }) : _authService = authService,
        _authState = authState,
        _secureStorage = secureStorage;
 
-  final KycServiceBase _kycService;
   final AuthEntryServiceBase _authService;
   final AuthStateProvider _authState;
   final SecureStorageService _secureStorage;
 
-  Timer? _timer;
   bool _disposed = false;
 
   KycStatusState _state = KycStatusState.loading;
   KycStatusResponseData? _data;
   String? _errorMessage;
-  String _kycId = '';
+  String _token = '';
   bool _isGeneratingToken = false;
 
   KycStatusState get state => _state;
@@ -64,58 +56,52 @@ class KycStatusProvider extends ChangeNotifier {
 
   bool get isTerminal => status.isTerminal;
 
-  bool get canResubmit => _data?.canResubmit ?? false;
-
   String get reason => _data?.reason ?? KycStrings.genericError;
 
-  /// Fetches once immediately — so a resumed flow shows a frozen verdict
-  /// without waiting a poll interval — then repeats until terminal.
-  Future<void> startPolling(String kycId) async {
-    _kycId = kycId;
-    await _fetch();
-    if (_disposed || isTerminal) return;
-
-    _timer?.cancel();
-    _timer = Timer.periodic(KycConfig.statusPollInterval, (_) => _fetch());
+  /// Marks the screen as loading its one request.
+  void setLoading() {
+    _state = KycStatusState.loading;
+    _errorMessage = null;
+    _safeNotify();
   }
 
-  void stopPolling() {
-    _timer?.cancel();
-    _timer = null;
+  /// Reports a failed load of the stored documents.
+  void setError(String message) {
+    _errorMessage = message;
+    _state = KycStatusState.error;
+    _safeNotify();
   }
 
-  Future<void> retry() => startPolling(_kycId);
+  /// Computes the status from [documents]: any rejected -> rejected; all
+  /// approved -> approved; otherwise under review. [token] is the latest
+  /// session token, kept for [completeApproval].
+  void evaluate(String token, List<KycUserDocument> documents) {
+    _token = token;
 
-  Future<void> _fetch() async {
-    final response = await _kycService.getKycStatus(kycId: _kycId);
-
-    // The timer fires across awaits, so the provider may already be gone
-    // by the time a response lands.
-    if (_disposed) return;
-
-    if (response.isSuccess && response.data != null) {
-      _data = response.data;
-      _state = switch (_data!.status) {
-        KycVerificationStatus.approved => KycStatusState.approved,
-        KycVerificationStatus.rejected => KycStatusState.rejected,
-        KycVerificationStatus.correctionRequired =>
-          KycStatusState.correctionRequired,
-        _ => KycStatusState.polling,
-      };
-
-      if (_data!.status.isTerminal) {
-        stopPolling();
-        if (_data!.status == KycVerificationStatus.approved) {
-          await _authState.moveTo(AuthFlowState.approved);
-          await _secureStorage.saveKycApproved();
-        }
-      }
+    final KycVerificationStatus status;
+    if (documents.any((d) => d.isRejected)) {
+      status = KycVerificationStatus.rejected;
+    } else if (documents.isNotEmpty && documents.every((d) => d.isApproved)) {
+      status = KycVerificationStatus.approved;
     } else {
-      // A transient poll failure must not wipe a verdict already shown.
-      _errorMessage = response.message ?? KycStrings.statusFetchFailed;
-      if (_data == null) _state = KycStatusState.error;
+      status = KycVerificationStatus.underReview;
     }
 
+    _data = KycStatusResponseData(
+      kycId: token,
+      status: status,
+      stage: KycReviewStage.fromStatus(status),
+    );
+    _state = switch (status) {
+      KycVerificationStatus.approved => KycStatusState.approved,
+      KycVerificationStatus.rejected => KycStatusState.rejected,
+      _ => KycStatusState.polling,
+    };
+
+    if (status == KycVerificationStatus.approved) {
+      _authState.moveTo(AuthFlowState.approved);
+      _secureStorage.saveKycApproved();
+    }
     _safeNotify();
   }
 
@@ -123,8 +109,7 @@ class KycStatusProvider extends ChangeNotifier {
   /// entry. Returns false — leaving the approval intact so the button can
   /// be tapped again — if the call fails.
   Future<bool> completeApproval() async {
-    final userId = _authState.context.userId;
-    if (userId == null || _kycId.isEmpty) {
+    if (_token.isEmpty) {
       _errorMessage = KycStrings.genericError;
       _safeNotify();
       return false;
@@ -135,8 +120,8 @@ class KycStatusProvider extends ChangeNotifier {
     _safeNotify();
 
     final response = await _authService.generateAccessToken(
-      userId: userId,
-      kycId: _kycId,
+      userId: _token,
+      kycId: _token,
     );
 
     if (_disposed) return false;
@@ -160,11 +145,6 @@ class KycStatusProvider extends ChangeNotifier {
     return false;
   }
 
-  /// Moves the flow back to `kycPending` so a restart during the
-  /// correction lands on the document screen rather than back here.
-  Future<void> prepareResubmission() =>
-      _authState.moveTo(AuthFlowState.kycPending);
-
   void _safeNotify() {
     if (_disposed) return;
     notifyListeners();
@@ -173,7 +153,6 @@ class KycStatusProvider extends ChangeNotifier {
   @override
   void dispose() {
     _disposed = true;
-    stopPolling();
     super.dispose();
   }
 }

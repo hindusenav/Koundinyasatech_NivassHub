@@ -157,7 +157,11 @@ class OtpMobileEmailVerificationProvider extends ChangeNotifier {
       // Token rotation: every successful verify issues a fresh token that
       // replaces the previous one.
       final rotated = data!.sessionToken;
-      if (rotated != null && rotated.isNotEmpty) _sessionToken = rotated;
+      // It is also what the other channel's verify must send as `userId`.
+      if (rotated != null && rotated.isNotEmpty) {
+        _sessionToken = rotated;
+        _userId = rotated;
+      }
       _nextStep = data.nextStep ?? _nextStep;
       _update(
         channel,

@@ -1,10 +1,7 @@
-/// One entry of `data` from `GET /kyc/user-documents`.
-///
 import 'dart:convert';
 import 'dart:typed_data';
 
-/// The doc does not list a review-status field, so none is modelled; if the
-/// backend adds one it can be parsed here.
+/// One entry of `data` from `GET /kyc/user-documents`.
 class KycUserDocument {
   const KycUserDocument({
     required this.kycDocId,
@@ -14,7 +11,15 @@ class KycUserDocument {
     this.userType = '',
     this.documentUrl = '',
     this.bytes,
+    this.status = 'PENDING',
   });
+
+  /// Review status as sent by the backend (`PENDING`, `APPROVED`,
+  /// `REJECTED`), upper-cased.
+  final String status;
+
+  bool get isRejected => status.contains('REJECT');
+  bool get isApproved => status.contains('APPROV');
 
   final int kycDocId;
   final int documentNameId;
@@ -53,6 +58,9 @@ class KycUserDocument {
       userName: json['userName'] as String? ?? '',
       userType: json['userType'] as String? ?? '',
       documentUrl: url,
+      status:
+          '${json['Document_Status'] ?? json['status'] ?? json['document_status'] ?? json['kyc_status'] ?? 'PENDING'}'
+              .toUpperCase(),
     );
   }
 

@@ -178,6 +178,8 @@ class KycStrings {
   static const String verificationTitle = 'KYC Submitted Successfully';
   static const String verificationUnderReviewTitle = 'KYC Under Review';
   static const String verificationStatusLabel = 'Status';
+  static const String verificationRejectedMessage =
+      'Your KYC was rejected. Please verify your details and submit again.';
   static const String verificationBody =
       'Your KYC documents have been submitted successfully. Our admin team '
       'will review your documents. You will be notified once the '

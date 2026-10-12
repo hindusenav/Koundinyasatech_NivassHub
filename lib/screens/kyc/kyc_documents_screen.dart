@@ -33,7 +33,11 @@ class KycDocumentsScreenArgs {
     this.resubmitKycId,
     this.invalidDocuments = const [],
     this.rejectionReason,
+    this.onlyDocumentIds,
   });
+
+  /// When set, only these documents are shown (the ones still to upload).
+  final Set<int>? onlyDocumentIds;
 
   final String userId;
   final String kycToken;
@@ -83,6 +87,7 @@ class _KycDocumentsScreenState extends State<KycDocumentsScreen> {
         resubmitKycId: widget.args.resubmitKycId,
         invalidDocuments: widget.args.invalidDocuments,
         rejectionReason: widget.args.rejectionReason,
+        onlyDocumentIds: widget.args.onlyDocumentIds,
       );
     });
   }
@@ -126,6 +131,16 @@ class _KycDocumentsScreenState extends State<KycDocumentsScreen> {
     if (slot == null) return;
     if (slot.errorMessage != null) {
       await _showUploadFailedDialog(documentId, slot);
+    } else if (slot.uploaded?.allDocumentsUploaded ?? false) {
+      // 202: the last document is in — go straight to the status screen.
+      Navigator.of(context).pushReplacementNamed(
+        AppRoutes.kycVerificationStatus,
+        arguments: KycVerificationStatusScreenArgs(
+          kycId: provider.sessionToken,
+          userId: widget.args.userId,
+          role: widget.args.role ?? UserRole.owner,
+        ),
+      );
     } else if (slot.uploaded?.isReupload ?? false) {
       CustomSnackbar.success(
         context,

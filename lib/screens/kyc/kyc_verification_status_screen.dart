@@ -12,7 +12,6 @@ import 'package:flutter_nivasshub/providers/kyc/kyc_provider.dart';
 import 'package:flutter_nivasshub/providers/kyc/kyc_status_provider.dart';
 import 'package:flutter_nivasshub/routes/app_routes.dart';
 import 'package:flutter_nivasshub/routes/navigation_service.dart';
-import 'package:flutter_nivasshub/screens/kyc/kyc_documents_screen.dart';
 import 'package:flutter_nivasshub/widgets/kyc/kyc_stage_indicator.dart';
 import 'package:flutter_nivasshub/widgets/kyc/kyc_verdict_panel.dart';
 import 'package:flutter_nivasshub/widgets/shared/figma/figma_scaffold.dart';
@@ -55,13 +54,50 @@ class _KycVerificationStatusScreenState
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      context.read<KycStatusProvider>().startPolling(widget.args.kycId);
-      context.read<KycProvider>().loadStoredDocuments(
-        fallbackToken: widget.args.userId,
-      );
-    });
+    WidgetsBinding.instance.addPostFrameCallback((_) => _load());
+  }
+
+  /// The screen's one and only request: `GET /kyc/user-documents`. Its
+  /// response rotates the session token, so it must not be repeated with
+  /// the old one.
+  Future<void> _load() async {
+    if (!mounted) return;
+    final status = context.read<KycStatusProvider>();
+    final kyc = context.read<KycProvider>();
+    status.setLoading();
+
+    final ok = await kyc.loadStoredDocuments(
+      fallbackToken: widget.args.userId,
+    );
+    if (!mounted) return;
+
+    if (!ok) {
+      status.setError(kyc.storedError ?? KycStrings.statusFetchFailed);
+      return;
+    }
+    status.evaluate(kyc.sessionToken, kyc.storedDocuments);
+    if (status.status == KycVerificationStatus.rejected) {
+      await _handleRejected();
+    }
+  }
+
+  /// Rejected: the old token and every locally stored KYC trace are
+  /// dropped, and the user starts over at the user-check screen, where
+  /// registration-check issues a fresh token.
+  Future<void> _handleRejected() async {
+    CustomSnackbar.error(context, KycStrings.verificationRejectedMessage);
+    await _backToUserCheck();
+  }
+
+  /// Wipes the in-memory flow and session, then opens the user-check
+  /// screen with every earlier screen removed from the stack.
+  Future<void> _backToUserCheck() async {
+    final authState = context.read<AuthStateProvider>();
+    final kyc = context.read<KycProvider>();
+    await authState.clear();
+    await kyc.reset();
+    if (!mounted) return;
+    NavigationService.pushNamedAndRemoveUntil(AppRoutes.authEntry);
   }
 
   Future<void> _handleApproved() async {
@@ -89,36 +125,6 @@ class _KycVerificationStatusScreenState
     NavigationService.pushNamedAndRemoveUntil(AppRoutes.dashboard);
   }
 
-  Future<void> _handleResubmit() async {
-    final provider = context.read<KycStatusProvider>();
-    final authState = context.read<AuthStateProvider>();
-
-    final kycToken = await authState.readKycToken();
-    if (!mounted) return;
-
-    if (kycToken == null) {
-      CustomSnackbar.error(context, KycStrings.genericError);
-      return;
-    }
-
-    // Recorded before navigating so a restart mid-correction lands on the
-    // document screen rather than back on this one.
-    await provider.prepareResubmission();
-    if (!mounted) return;
-
-    Navigator.of(context).pushReplacementNamed(
-      AppRoutes.kycDocuments,
-      arguments: KycDocumentsScreenArgs(
-        userId: widget.args.userId,
-        kycToken: kycToken,
-        role: widget.args.role,
-        resubmitKycId: widget.args.kycId,
-        invalidDocuments: provider.data?.invalidDocuments ?? const [],
-        rejectionReason: provider.reason,
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<KycStatusProvider>();
@@ -135,7 +141,7 @@ class _KycVerificationStatusScreenState
           message: StringConstants.exitConfirmationMessage,
           confirmText: StringConstants.exit,
         );
-        if (shouldExit && context.mounted) Navigator.of(context).maybePop();
+        if (shouldExit && context.mounted) await _backToUserCheck();
       },
       child: FigmaHeaderScaffold(
         title: KycStrings.kycTitle,
@@ -153,7 +159,7 @@ class _KycVerificationStatusScreenState
     if (provider.state == KycStatusState.error) {
       return CustomErrorWidget(
         message: provider.errorMessage ?? KycStrings.statusFetchFailed,
-        onRetry: provider.retry,
+        onRetry: _load,
       );
     }
 
@@ -232,15 +238,6 @@ class _KycVerificationStatusScreenState
                 navy: true,
                 onPressed: provider.isGeneratingToken ? null : _handleApproved,
               )
-            else if (provider.canResubmit)
-              FigmaButton(
-                label: KycStrings.correctAndResubmit,
-                navy: true,
-                onPressed: _handleResubmit,
-              ),
-          ] else ...[
-            AppSpacing.gapXl,
-            const Center(child: Loader()),
           ],
           AppSpacing.gapLg,
         ],
@@ -374,9 +371,17 @@ class _SubmittedDocumentsSection extends StatelessWidget {
                       ],
                     ),
                   ),
-                  const StatusChip(
-                    label: 'Uploaded',
-                    type: StatusChipType.approved,
+                  StatusChip(
+                    label: doc.isRejected
+                        ? 'Rejected'
+                        : doc.isApproved
+                        ? 'Approved'
+                        : 'Pending',
+                    type: doc.isRejected
+                        ? StatusChipType.rejected
+                        : doc.isApproved
+                        ? StatusChipType.approved
+                        : StatusChipType.pending,
                   ),
                 ],
               ),

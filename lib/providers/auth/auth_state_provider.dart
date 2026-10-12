@@ -5,8 +5,6 @@ import 'package:flutter_nivasshub/models/auth/auth_identifier.dart';
 import 'package:flutter_nivasshub/models/auth/user_role.dart';
 import 'package:flutter_nivasshub/models/location/location_selection.dart';
 import 'package:flutter_nivasshub/routes/app_routes.dart';
-import 'package:flutter_nivasshub/screens/kyc/kyc_documents_screen.dart';
-import 'package:flutter_nivasshub/screens/kyc/kyc_verification_status_screen.dart';
 import 'package:flutter_nivasshub/storage/local_storage_service.dart';
 import 'package:flutter_nivasshub/storage/secure_storage_service.dart';
 
@@ -18,12 +16,13 @@ class AuthStartDestination {
   final Object? arguments;
 }
 
-/// Owns the persisted sign-up → KYC → access state machine (spec §21).
+/// Sign-up → KYC → access state, held **in memory only**.
 ///
-/// Global because Splash, the entry screens, the KYC screens and logout
-/// all read or write it, and it has to survive the route replacements
-/// that happen between those. Kept deliberately small — it holds no form
-/// state, so "global" stays defensible.
+/// Nothing about registration or KYC (tokens, drafts, flow state, uploaded
+/// documents) is written to disk: the backend is the record, and the user-
+/// check screen re-derives where they are. The only thing persisted is the
+/// login session (access/refresh token + logged-in flag), which is what
+/// auto-login uses until it expires or the user logs out.
 class AuthStateProvider extends ChangeNotifier {
   AuthStateProvider({
     required LocalStorageService localStorage,
@@ -31,6 +30,7 @@ class AuthStateProvider extends ChangeNotifier {
   }) : _localStorage = localStorage,
        _secureStorage = secureStorage;
 
+  /// Only used to purge keys written by older builds.
   final LocalStorageService _localStorage;
   final SecureStorageService _secureStorage;
 
@@ -38,38 +38,31 @@ class AuthStateProvider extends ChangeNotifier {
   AuthFlowContext _context = AuthFlowContext.empty;
   bool _isLoaded = false;
 
+  String? _kycToken;
+  String? _registrationToken;
+
   AuthFlowState get state => _state;
   AuthFlowContext get context => _context;
   bool get isLoaded => _isLoaded;
 
-  /// Reads the persisted state back into memory. Safe to call repeatedly.
+  /// Marks the provider ready. Nothing is read back from disk.
   Future<void> load() async {
-    final rawState = _localStorage.getString(StorageKeys.authFlowState);
-    _state = AuthFlowState.fromName(rawState);
-
-    final rawContext = _localStorage.getJson(StorageKeys.authFlowContext);
-    _context = rawContext is Map
-        ? AuthFlowContext.fromJson(Map<String, dynamic>.from(rawContext))
-        : AuthFlowContext.empty;
-
     _isLoaded = true;
+    // Callers may invoke this from initState; notifying synchronously would
+    // mark providers dirty mid-build. Defer to after the current build.
+    await Future<void>.delayed(Duration.zero);
     notifyListeners();
   }
 
-  /// The single write path for the machine — every transition goes
-  /// through here so state and context can never drift apart on disk.
+  /// In-memory transition; nothing is persisted.
   Future<void> moveTo(AuthFlowState next, {AuthFlowContext? context}) async {
     _state = next;
     if (context != null) _context = context;
-
-    await _localStorage.setString(StorageKeys.authFlowState, next.wireValue);
-    await _localStorage.setJson(StorageKeys.authFlowContext, _context.toJson());
-
     debugPrint('[AuthFlow] -> ${next.wireValue}');
     notifyListeners();
   }
 
-  /// Merges fields into the stored context without changing the state.
+  /// Merges fields into the in-memory context without changing the state.
   Future<void> updateContext({
     AuthIdentifier? identifier,
     String? userId,
@@ -97,10 +90,8 @@ class AuthStateProvider extends ChangeNotifier {
     );
   }
 
-  /// Stores the credentials and flips to [AuthFlowState.authenticated].
-  /// The KYC scratch state is dropped here rather than on logout alone:
-  /// once access is granted, the review ledger and the uploaded-document
-  /// cache have served their purpose.
+  /// Stores the login session (the only thing that is persisted) and flips
+  /// to [AuthFlowState.authenticated].
   Future<void> markAuthenticated({
     required String accessToken,
     String? refreshToken,
@@ -110,36 +101,31 @@ class AuthStateProvider extends ChangeNotifier {
       await _secureStorage.saveRefreshToken(refreshToken);
     }
     await _secureStorage.saveSession();
-    await _secureStorage.delete(StorageKeys.kycToken);
-    await _secureStorage.delete(StorageKeys.registrationToken);
-    await _localStorage.remove(StorageKeys.registrationDraft);
-    await _localStorage.remove(StorageKeys.kycUploadedDocuments);
-    await _localStorage.remove(StorageKeys.kycMockLedger);
+    _clearFlowMemory();
     await moveTo(AuthFlowState.authenticated);
   }
 
-  Future<void> saveKycToken(String kycToken) =>
-      _secureStorage.write(StorageKeys.kycToken, kycToken);
+  // Registration/KYC tokens live in memory for the current run only.
+  Future<void> saveKycToken(String kycToken) async => _kycToken = kycToken;
 
-  Future<String?> readKycToken() => _secureStorage.read(StorageKeys.kycToken);
+  Future<String?> readKycToken() async => _kycToken;
 
-  Future<void> saveRegistrationToken(String token) =>
-      _secureStorage.write(StorageKeys.registrationToken, token);
+  Future<void> saveRegistrationToken(String token) async =>
+      _registrationToken = token;
 
-  Future<String?> readRegistrationToken() =>
-      _secureStorage.read(StorageKeys.registrationToken);
+  Future<String?> readRegistrationToken() async => _registrationToken;
 
-  Future<void> clearRegistrationToken() =>
-      _secureStorage.delete(StorageKeys.registrationToken);
+  Future<void> clearRegistrationToken() async => _registrationToken = null;
 
-  /// Wipes everything this feature owns — both storages.
-  ///
-  /// `SecureStorageService.clearSession()` predates this flow and knows
-  /// nothing about the local keys below, so logout must come through
-  /// here or a second user on the same device would inherit the first
-  /// user's KYC ledger and land mid-flow.
-  Future<void> clear() async {
-    await _secureStorage.clearSession();
+  void _clearFlowMemory() {
+    _kycToken = null;
+    _registrationToken = null;
+    _state = AuthFlowState.unauthenticated;
+    _context = AuthFlowContext.empty;
+  }
+
+  /// Removes everything older builds persisted about registration / KYC.
+  Future<void> _purgeLegacyFlowStorage() async {
     await _secureStorage.delete(StorageKeys.kycToken);
     await _secureStorage.delete(StorageKeys.registrationToken);
     await _localStorage.remove(StorageKeys.registrationDraft);
@@ -147,90 +133,37 @@ class AuthStateProvider extends ChangeNotifier {
     await _localStorage.remove(StorageKeys.authFlowContext);
     await _localStorage.remove(StorageKeys.kycUploadedDocuments);
     await _localStorage.remove(StorageKeys.kycMockLedger);
+  }
 
-    _state = AuthFlowState.unauthenticated;
-    _context = AuthFlowContext.empty;
+  /// Drops the in-memory flow (and any legacy persisted traces) without
+  /// touching a login session. Used after the last document upload.
+  Future<void> clearKycLocalData() async {
+    _clearFlowMemory();
+    await _purgeLegacyFlowStorage();
+    debugPrint('[AuthFlow] KYC data cleared');
+    notifyListeners();
+  }
+
+  /// Logout / start over: the login session and the whole flow.
+  Future<void> clear() async {
+    await _secureStorage.clearSession();
+    _clearFlowMemory();
+    await _purgeLegacyFlowStorage();
     debugPrint('[AuthFlow] cleared');
     notifyListeners();
   }
 
-  /// Resolves the screen Splash should land on, resuming a half-finished
-  /// registration rather than dumping the user back at the entry form.
+  /// Where Splash should land: the dashboard when a login session exists
+  /// (auto-login), otherwise the welcome screen. Registration and KYC are
+  /// never resumed from local data — the user-check screen decides from the
+  /// backend.
   Future<AuthStartDestination> resolveStartDestination() async {
     await load();
+    await _purgeLegacyFlowStorage();
 
-    final hasSession = await _secureStorage.hasValidSession();
-    if (_state == AuthFlowState.authenticated) {
-      if (hasSession) return const AuthStartDestination(AppRoutes.dashboard);
-      // Flagged authenticated with no session behind it — a partially
-      // wiped keystore is real Android behaviour, so treat it as a
-      // corrupt record rather than trusting either half.
-      debugPrint('[AuthFlow] authenticated without a session — resetting');
-      await clear();
-      return const AuthStartDestination(AppRoutes.authEntry);
+    if (await _secureStorage.hasValidSession()) {
+      return const AuthStartDestination(AppRoutes.dashboard);
     }
-
-    switch (_state) {
-      case AuthFlowState.unauthenticated:
-        // Every signed-out launch opens the first onboarding (welcome)
-        // screen after the splash, including users who logged out before;
-        // Get Started leads on to the login/registration flow.
-        return const AuthStartDestination(AppRoutes.welcome);
-
-      // A half-finished registration or OTP step is not resumed from local
-      // storage: start at the entry screen, where registration-check
-      // decides (OTP resume, KYC, password) from the backend state.
-      case AuthFlowState.registration:
-      case AuthFlowState.otpPending:
-        await clearRegistrationToken();
-        await _localStorage.remove(StorageKeys.registrationDraft);
-        return const AuthStartDestination(AppRoutes.authEntry);
-
-      case AuthFlowState.kycPending:
-        final kycToken = await readKycToken();
-        final userId = _context.userId;
-        final role = _context.role;
-        if (kycToken == null || userId == null || role == null) {
-          return _corrupt('kycPending without a token, user or role');
-        }
-        return AuthStartDestination(
-          AppRoutes.kycDocuments,
-          KycDocumentsScreenArgs(
-            userId: userId,
-            kycToken: kycToken,
-            role: role,
-          ),
-        );
-
-      // `approved` shares the status screen with `underReview` on purpose:
-      // its first poll returns APPROVED from the frozen ledger, mints the
-      // token and forwards to the Dashboard — one code path, not two.
-      case AuthFlowState.underReview:
-      case AuthFlowState.approved:
-        final kycId = _context.kycId;
-        final userId = _context.userId;
-        final role = _context.role;
-        if (kycId == null || userId == null || role == null) {
-          return _corrupt('review state without a kycId, user or role');
-        }
-        return AuthStartDestination(
-          AppRoutes.kycVerificationStatus,
-          KycVerificationStatusScreenArgs(
-            kycId: kycId,
-            userId: userId,
-            role: role,
-          ),
-        );
-
-      case AuthFlowState.authenticated:
-        // Handled above; unreachable.
-        return const AuthStartDestination(AppRoutes.dashboard);
-    }
-  }
-
-  Future<AuthStartDestination> _corrupt(String reason) async {
-    debugPrint('[AuthFlow] inconsistent stored state ($reason) — resetting');
-    await clear();
-    return const AuthStartDestination(AppRoutes.authEntry);
+    return const AuthStartDestination(AppRoutes.welcome);
   }
 }

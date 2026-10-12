@@ -23,7 +23,6 @@ import 'package:flutter_nivasshub/screens/notifications/mock_notification_log_sc
 import 'package:flutter_nivasshub/services/auth/auth_entry_service_base.dart';
 import 'package:flutter_nivasshub/services/auth/otp_verification_service_base.dart';
 import 'package:flutter_nivasshub/services/country/country_service_base.dart';
-import 'package:flutter_nivasshub/services/kyc/kyc_service_base.dart';
 import 'package:flutter_nivasshub/services/location/location_service_base.dart';
 import 'package:flutter_nivasshub/services/registration/registration_service_base.dart';
 import 'package:flutter_nivasshub/services/society/society_service_base.dart';
@@ -248,7 +247,6 @@ class AuthRouter {
           // dispose rather than running on behind the Dashboard.
           builder: (context) => ChangeNotifierProvider(
             create: (_) => KycStatusProvider(
-              kycService: context.read<KycServiceBase>(),
               authService: context.read<AuthEntryServiceBase>(),
               authState: context.read<AuthStateProvider>(),
               secureStorage: context.read<SecureStorageService>(),

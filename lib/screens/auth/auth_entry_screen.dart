@@ -12,7 +12,10 @@ import 'package:flutter_nivasshub/providers/auth/auth_state_provider.dart';
 import 'package:flutter_nivasshub/routes/app_routes.dart';
 import 'package:flutter_nivasshub/screens/auth/enter_password_screen.dart';
 import 'package:flutter_nivasshub/screens/auth/user_details_screen.dart';
+import 'package:flutter_nivasshub/models/auth/user_role.dart';
 import 'package:flutter_nivasshub/screens/kyc/kyc_documents_screen.dart';
+import 'package:flutter_nivasshub/screens/kyc/kyc_verification_status_screen.dart';
+import 'package:flutter_nivasshub/services/kyc/document_service_base.dart';
 import 'package:flutter_nivasshub/utils/form_validators.dart';
 import 'package:flutter_nivasshub/widgets/auth/identifier_input_field.dart';
 import 'package:flutter_nivasshub/widgets/shared/figma/figma_scaffold.dart';
@@ -70,6 +73,47 @@ class _AuthEntryScreenState extends State<AuthEntryScreen> {
     _identifierController.clear();
   }
 
+  /// Compares `GET /kyc/documents` against what is uploaded: if a mandatory
+  /// document is missing or a document was rejected, only those go to the
+  /// upload screen; otherwise everything required is in and the user sees
+  /// the KYC status screen.
+  Future<void> _routeKyc(String token) async {
+    final response = await context
+        .read<DocumentServiceBase>()
+        .getApplicableDocuments(userToken: token);
+    if (!mounted) return;
+
+    if (!response.isSuccess || response.data == null) {
+      _showMessage(response.message ?? KycStrings.genericError);
+      return;
+    }
+
+    final outstanding = {
+      for (final d in response.data!)
+        if (d.needsUpload) d.documentId,
+    };
+
+    if (outstanding.isEmpty) {
+      await Navigator.of(context).pushNamed(
+        AppRoutes.kycVerificationStatus,
+        arguments: KycVerificationStatusScreenArgs(
+          kycId: token,
+          userId: token,
+          role: UserRole.owner,
+        ),
+      );
+      return;
+    }
+
+    await Navigator.of(context).pushNamed(
+      AppRoutes.kycDocuments,
+      arguments: KycDocumentsScreenArgs(
+        userId: token,
+        onlyDocumentIds: outstanding,
+      ),
+    );
+  }
+
   Future<void> _handleContinue() async {
     final provider = context.read<AuthEntryProvider>();
 
@@ -89,24 +133,16 @@ class _AuthEntryScreenState extends State<AuthEntryScreen> {
 
     final authState = context.read<AuthStateProvider>();
 
-    if (provider.status == AuthEntryStatus.kycPending) {
-      final userId = provider.pendingKycUserId;
-      if (userId == null || userId.isEmpty) {
+    // 424 (KYC pending) and 423 (KYC in progress) both resolve the same
+    // way: ask the backend what is uploaded and route on that.
+    if (provider.status == AuthEntryStatus.kycPending ||
+        provider.status == AuthEntryStatus.kycInProgress) {
+      final token = provider.registrationToken ?? provider.pendingKycUserId;
+      if (token == null || token.isEmpty) {
         _showMessage(KycStrings.genericError);
         return;
       }
-      // Registered but KYC isn't done — straight to the documents screen,
-      // skipping the password step entirely. No role is known here;
-      // `GET /kyc/documents` resolves it server-side from `userId` alone.
-      await Navigator.of(context).pushNamed(
-        AppRoutes.kycDocuments,
-        arguments: KycDocumentsScreenArgs(userId: userId),
-      );
-      return;
-    }
-
-    if (provider.status == AuthEntryStatus.kycInProgress) {
-      await Navigator.of(context).pushNamed(AppRoutes.kycInProgress);
+      await _routeKyc(token);
       return;
     }
 

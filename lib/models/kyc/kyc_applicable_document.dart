@@ -15,7 +15,32 @@ class KycApplicableDocument {
     required this.documentName,
     this.description = '',
     this.isMandatory = true,
+    this.alreadyUploaded = false,
+    this.uploadStatus = '',
   });
+
+  /// True when the backend already holds this document for the user (it is
+  /// in `uploadedDocuments`), so a new file goes to `POST /kyc/re-upload`.
+  final bool alreadyUploaded;
+
+  /// Upper-cased `Document_Status` of the uploaded copy (e.g. "DOCUMENT IS
+  /// IN PENDING STATE"); empty when nothing is uploaded.
+  final String uploadStatus;
+
+  bool get isRejected => alreadyUploaded && uploadStatus.contains('REJECT');
+
+  /// The user still has to (re-)upload this: a mandatory document that is
+  /// missing, or any uploaded document the admin rejected.
+  bool get needsUpload => alreadyUploaded ? isRejected : isMandatory;
+
+  KycApplicableDocument markUploaded(String status) => KycApplicableDocument(
+    documentId: documentId,
+    documentName: documentName,
+    description: description,
+    isMandatory: isMandatory,
+    alreadyUploaded: true,
+    uploadStatus: status.toUpperCase(),
+  );
 
   final int documentId;
   final String documentName;

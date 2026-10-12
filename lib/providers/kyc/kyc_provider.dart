@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_nivasshub/constants/kyc/kyc_strings.dart';
-import 'package:flutter_nivasshub/constants/storage_keys.dart';
 import 'package:flutter_nivasshub/models/auth/auth_flow_state.dart';
 import 'package:flutter_nivasshub/models/auth/user_role.dart';
 import 'package:flutter_nivasshub/models/kyc/document_upload_request.dart';
@@ -16,7 +15,6 @@ import 'package:flutter_nivasshub/providers/auth/auth_state_provider.dart';
 import 'package:flutter_nivasshub/services/file/file_picker_service_base.dart';
 import 'package:flutter_nivasshub/services/kyc/document_service_base.dart';
 import 'package:flutter_nivasshub/services/kyc/kyc_service_base.dart';
-import 'package:flutter_nivasshub/storage/local_storage_service.dart';
 
 enum KycProviderState { initial, loading, ready, submitting, submitted, error }
 
@@ -39,18 +37,15 @@ class KycProvider extends ChangeNotifier {
     required DocumentServiceBase documentService,
     required KycServiceBase kycService,
     required FilePickerServiceBase filePickerService,
-    required LocalStorageService localStorage,
     required AuthStateProvider authState,
   }) : _documentService = documentService,
        _kycService = kycService,
        _filePickerService = filePickerService,
-       _localStorage = localStorage,
        _authState = authState;
 
   final DocumentServiceBase _documentService;
   final KycServiceBase _kycService;
   final FilePickerServiceBase _filePickerService;
-  final LocalStorageService _localStorage;
   final AuthStateProvider _authState;
 
   KycProviderState _state = KycProviderState.initial;
@@ -80,6 +75,9 @@ class KycProvider extends ChangeNotifier {
   String? get errorMessage => _errorMessage;
   String? get rejectionReason => _rejectionReason;
   String? get submittedKycId => _submittedKycId;
+
+  /// Current (rotated) KYC session token.
+  String get sessionToken => _userId;
   bool get isSubmitting => _state == KycProviderState.submitting;
   bool get isResubmission => _previousKycId != null;
 
@@ -123,6 +121,7 @@ class KycProvider extends ChangeNotifier {
     String? resubmitKycId,
     List<KycDocumentIssue> invalidDocuments = const [],
     String? rejectionReason,
+    Set<int>? onlyDocumentIds,
   }) async {
     _userId = userId;
     _kycToken = kycToken;
@@ -146,13 +145,14 @@ class KycProvider extends ChangeNotifier {
       return;
     }
 
-    final documents = response.data ?? const <KycApplicableDocument>[];
-    final stored = _readStoredDocuments();
-    final isSameApplication = stored != null;
-
-    _attemptNumber = resubmitKycId == null
-        ? 1
-        : (isSameApplication ? stored.attemptNumber + 1 : 1);
+    // A returning user only sees what is still outstanding: missing
+    // mandatory documents and rejected ones.
+    final documents = (response.data ?? const <KycApplicableDocument>[])
+        .where(
+          (d) => onlyDocumentIds == null || onlyDocumentIds.contains(d.documentId),
+        )
+        .toList(growable: false);
+    _attemptNumber = 1;
 
     _order
       ..clear()
@@ -166,7 +166,6 @@ class KycProvider extends ChangeNotifier {
             document.documentId,
             _hydrateSlot(
               document: document,
-              stored: isSameApplication ? stored.slots[document.documentId] : null,
               issue: _issueFor(invalidDocuments, document.documentId),
             ),
           ),
@@ -177,14 +176,9 @@ class KycProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// A flagged document is cleared so it must be replaced; anything else
-  /// that previously uploaded is carried forward untouched.
-  ///
-  /// If the cache is missing, the slot comes back empty — a wiped cache
-  /// must not brick the loop, it just means the user re-uploads.
+  /// A flagged document comes back empty with the reviewer's reason.
   KycDocumentSlot _hydrateSlot({
     required KycApplicableDocument document,
-    required KycDocumentSlot? stored,
     required KycDocumentIssue? issue,
   }) {
     if (issue != null) {
@@ -192,13 +186,6 @@ class KycProvider extends ChangeNotifier {
         document: document,
         status: KycUploadStatus.empty,
         issueReason: issue.reason,
-      );
-    }
-    if (stored != null && stored.uploaded != null) {
-      return KycDocumentSlot(
-        document: document,
-        status: KycUploadStatus.preserved,
-        uploaded: stored.uploaded,
       );
     }
     return KycDocumentSlot(document: document);
@@ -281,6 +268,8 @@ class KycProvider extends ChangeNotifier {
         documentId: documentId,
         documentName: previous.document.documentName,
         file: file,
+        isReupload:
+            previous.document.alreadyUploaded || previous.uploaded != null,
       ),
     );
 
@@ -297,7 +286,11 @@ class KycProvider extends ChangeNotifier {
           uploaded: response.data,
         ),
       );
-      await _persistDocuments();
+      // 202: everything is submitted. Nothing is stored locally; only this
+      // provider's in-memory token stays, for the status screen's request.
+      if (response.data!.allDocumentsUploaded) {
+        await _authState.clearKycLocalData();
+      }
       return;
     }
 
@@ -329,8 +322,6 @@ class KycProvider extends ChangeNotifier {
       documentId,
       KycDocumentSlot(document: slot.document, issueReason: slot.issueReason),
     );
-    await _persistDocuments();
-
     unawaited(
       _documentService.deleteDocument(userId: _userId, documentId: documentId),
     );
@@ -371,9 +362,6 @@ class KycProvider extends ChangeNotifier {
       _submittedKycId = response.data!.kycId;
       _state = KycProviderState.submitted;
 
-      // Persisted before the state moves on, so the documents survive a
-      // process death between submitting and the verdict arriving.
-      await _persistDocuments();
       await _authState.moveTo(
         AuthFlowState.underReview,
         context: _authState.context.copyWith(
@@ -400,7 +388,7 @@ class KycProvider extends ChangeNotifier {
   /// screen. [fallbackToken] is used when no upload happened in this
   /// process (cold start straight onto the status screen). The returned
   /// `session_Token` replaces the current token.
-  Future<void> loadStoredDocuments({required String fallbackToken}) async {
+  Future<bool> loadStoredDocuments({required String fallbackToken}) async {
     _storedState = KycProviderState.loading;
     _storedError = null;
     notifyListeners();
@@ -418,6 +406,7 @@ class KycProvider extends ChangeNotifier {
       _storedState = KycProviderState.error;
     }
     notifyListeners();
+    return _storedState == KycProviderState.ready;
   }
 
   /// Drops every trace of the current application — called on logout and
@@ -437,55 +426,7 @@ class KycProvider extends ChangeNotifier {
     _storedState = KycProviderState.initial;
     _storedError = null;
 
-    await _localStorage.remove(StorageKeys.kycUploadedDocuments);
     await _kycService.reset();
     notifyListeners();
   }
-
-  // -------------------------------------------------------------------
-  // Persistence — the document-preservation record
-  // -------------------------------------------------------------------
-
-  Future<void> _persistDocuments() {
-    return _localStorage.setJson(StorageKeys.kycUploadedDocuments, {
-      'attemptNumber': _attemptNumber,
-      'slots': _slots.values.map((slot) => slot.toJson()).toList(),
-    });
-  }
-
-  _StoredDocuments? _readStoredDocuments() {
-    try {
-      final raw = _localStorage.getJson(StorageKeys.kycUploadedDocuments);
-      if (raw is! Map) return null;
-      final map = Map<String, dynamic>.from(raw);
-
-      final rawSlots = map['slots'];
-      final slots = <int, KycDocumentSlot>{};
-      if (rawSlots is List) {
-        for (final entry in rawSlots.whereType<Map>()) {
-          final slot = KycDocumentSlot.tryFromJson(
-            Map<String, dynamic>.from(entry),
-          );
-          if (slot != null) slots[slot.document.documentId] = slot;
-        }
-      }
-
-      return _StoredDocuments(
-        attemptNumber: map['attemptNumber'] as int? ?? 1,
-        slots: slots,
-      );
-    } catch (e, stack) {
-      // A corrupt cache must degrade to "upload everything again", never
-      // to a crash on the way into the KYC screen.
-      debugPrint('[Kyc] could not read stored documents: $e\n$stack');
-      return null;
-    }
-  }
-}
-
-class _StoredDocuments {
-  const _StoredDocuments({required this.attemptNumber, required this.slots});
-
-  final int attemptNumber;
-  final Map<int, KycDocumentSlot> slots;
 }

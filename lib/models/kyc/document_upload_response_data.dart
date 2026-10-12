@@ -24,6 +24,7 @@ class DocumentUploadResponseData {
     this.uploadedAt,
     this.localPath,
     this.sessionToken,
+    this.allDocumentsUploaded = false,
   });
 
   /// The `doc_id` this upload was sent for — carried forward from the
@@ -53,6 +54,10 @@ class DocumentUploadResponseData {
   /// one used for the request.
   final String? sessionToken;
 
+  /// True when the upload came back `202`: the last required document is in
+  /// and the backend has moved the KYC to review. Not persisted.
+  final bool allDocumentsUploaded;
+
   bool get isReupload => actionPerformed == 'updated';
 
   String get displayType => fileType.toUpperCase();
@@ -76,7 +81,9 @@ class DocumentUploadResponseData {
       fileName: json['fileName'] as String? ?? '',
       fileType: json['fileType'] as String? ?? '',
       version: json['version'] as int? ?? 1,
-      actionPerformed: json['actionPerformed'] as String? ?? 'inserted',
+      // `/kyc/upload` says `actionPerformed`, `/kyc/re-upload` says `action`.
+      actionPerformed:
+          (json['actionPerformed'] ?? json['action']) as String? ?? 'inserted',
       sizeBytes: json['sizeBytes'] as int? ?? 0,
       uploadedAt: rawUploadedAt is String
           ? DateTime.tryParse(rawUploadedAt)

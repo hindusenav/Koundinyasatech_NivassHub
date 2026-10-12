@@ -253,7 +253,6 @@ class NivasHubApp extends StatelessWidget {
             documentService: documentService,
             kycService: kycService,
             filePickerService: filePickerService,
-            localStorage: localStorageService,
             authState: authStateProvider,
           ),
         ),

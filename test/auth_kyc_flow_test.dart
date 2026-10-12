@@ -564,7 +564,6 @@ void main() {
         documentService: FakeDocumentService(documents: threeFakeDocuments()),
         kycService: kycService,
         filePickerService: MockFilePickerService(),
-        localStorage: localStorage,
         authState: AuthStateProvider(
           localStorage: localStorage,
           secureStorage: SecureStorageService(storage: InMemorySecureStorage()),
@@ -598,7 +597,6 @@ void main() {
         documentService: documents,
         kycService: kycService,
         filePickerService: MockFilePickerService(),
-        localStorage: localStorage,
         authState: AuthStateProvider(
           localStorage: localStorage,
           secureStorage: SecureStorageService(storage: InMemorySecureStorage()),
@@ -624,7 +622,6 @@ void main() {
         documentService: documents,
         kycService: kycService,
         filePickerService: MockFilePickerService(),
-        localStorage: localStorage,
         authState: AuthStateProvider(
           localStorage: localStorage,
           secureStorage: SecureStorageService(storage: InMemorySecureStorage()),
@@ -654,7 +651,6 @@ void main() {
         documentService: documents,
         kycService: kycService,
         filePickerService: MockFilePickerService(),
-        localStorage: localStorage,
         authState: AuthStateProvider(
           localStorage: localStorage,
           secureStorage: SecureStorageService(storage: InMemorySecureStorage()),

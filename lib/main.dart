@@ -53,7 +53,6 @@ import 'package:flutter_nivasshub/services/kyc/document_service.dart';
 import 'package:flutter_nivasshub/services/kyc/document_service_base.dart';
 import 'package:flutter_nivasshub/services/kyc/kyc_service.dart';
 import 'package:flutter_nivasshub/services/kyc/kyc_service_base.dart';
-import 'package:flutter_nivasshub/services/kyc/mock_kyc_service.dart';
 import 'package:flutter_nivasshub/services/location/location_service.dart';
 import 'package:flutter_nivasshub/services/location/location_service_base.dart';
 import 'package:flutter_nivasshub/services/location/mock_location_service.dart';
@@ -235,22 +234,13 @@ Future<void> main() async {
   // KYC
   // ============================================================
 
-  // `GET /kyc/documents` and `POST /kyc/re-upload` are both documented and
-  // always real — no mock twin, unlike `KycServiceBase`'s submit/status
-  // pair below, which the backend has not documented yet.
+  // `GET /kyc/documents` and `POST /kyc/upload` are both documented and
+  // always real.
   final DocumentServiceBase documentService = DocumentService(apiClient);
 
-  final KycServiceBase kycService = KycConfig.useMockKycApi
-      ? MockKycService(
-          storage: localStorageService,
-          notificationService: notificationService,
-          // Resolved lazily: the service is built at startup, long before
-          // the user has registered and these values exist.
-          recipientResolver: () =>
-              authStateProvider.context.notificationRecipient,
-          nameResolver: () => authStateProvider.context.displayName,
-        )
-      : KycService(apiClient);
+  // Status now comes from `GET /kyc/documents?user_token=`, so this is
+  // always the real service.
+  final KycServiceBase kycService = KycService(apiClient);
 
   final FilePickerServiceBase filePickerService = FilePickerService();
 
