@@ -178,6 +178,21 @@ class KycStrings {
   static const String verificationTitle = 'KYC Submitted Successfully';
   static const String verificationUnderReviewTitle = 'KYC Under Review';
   static const String verificationStatusLabel = 'Status';
+  static const String verificationActionRequiredTitle = 'Action Required';
+  static const String verificationActionRequiredBody =
+      'One or more documents were rejected. Please re-upload only the '
+      'rejected documents below to continue.';
+  static const String submittedDocuments = 'Submitted documents';
+  static const String noDocumentsFound = 'No documents found.';
+  static const String reuploadButton = 'Re-upload';
+  static const String documentRejectedNote = 'Document rejected';
+  static const String previewUnavailable = 'Preview not available';
+  static const String statusApproved = 'Approved';
+  static const String statusRejected = 'Rejected';
+  static const String statusActionRequired = 'Action Required';
+  static const String verifiedWithinHint = 'Generally verified within 4 hours';
+  static const String verifiedWithinHintSub =
+      'We will notify you once your documents are approved.';
   static const String verificationRejectedMessage =
       'Your KYC was rejected. Please verify your details and submit again.';
   static const String verificationBody =

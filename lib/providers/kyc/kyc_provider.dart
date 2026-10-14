@@ -409,6 +409,45 @@ class KycProvider extends ChangeNotifier {
     return _storedState == KycProviderState.ready;
   }
 
+  final Set<int> _reuploadingIds = {};
+
+  /// Document ids with a re-upload in flight on the status screen.
+  Set<int> get reuploadingIds => Set.unmodifiable(_reuploadingIds);
+
+  /// Replaces one rejected stored document with [file]. Returns null on
+  /// success, else the error message. Nothing else is touched; the caller
+  /// reloads the stored documents afterwards.
+  Future<String?> reuploadStoredDocument(
+    KycUserDocument doc,
+    PickedFile file,
+  ) async {
+    final id = doc.documentNameId;
+    if (_reuploadingIds.contains(id)) return null;
+    _reuploadingIds.add(id);
+    notifyListeners();
+
+    final response = await _documentService.uploadDocument(
+      DocumentUploadRequest(
+        userId: _userId,
+        documentId: id,
+        documentName: doc.documentName,
+        file: file,
+        isReupload: true,
+      ),
+    );
+
+    _reuploadingIds.remove(id);
+    String? error;
+    if (response.isSuccess && response.data != null) {
+      final rotated = response.data!.sessionToken;
+      if (rotated != null && rotated.isNotEmpty) _userId = rotated;
+    } else {
+      error = response.message ?? KycStrings.uploadFailed;
+    }
+    notifyListeners();
+    return error;
+  }
+
   /// Drops every trace of the current application — called on logout and
   /// once an approval has been exchanged for an access token.
   Future<void> reset() async {

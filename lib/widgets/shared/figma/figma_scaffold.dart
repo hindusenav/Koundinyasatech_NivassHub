@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_nivasshub/constants/app_icons.dart';
 import 'package:flutter_nivasshub/constants/figma_colors.dart';
@@ -24,50 +25,67 @@ class FigmaHeaderScaffold extends StatelessWidget {
     final t = FigmaColors.of(context);
     final canPop = showBackButton && Navigator.of(context).canPop();
 
-    return Scaffold(
-      backgroundColor: t.page,
-      body: Column(
-        children: [
-          ClipRRect(
-            borderRadius: const BorderRadius.vertical(bottom: Radius.circular(28)),
-            child: Container(
-              width: double.infinity,
-              color: t.header,
-              child: SafeArea(
-                bottom: false,
-                child: SizedBox(
-                  height: 60,
-                  child: Row(
-                    children: [
-                      SizedBox(
-                        width: 56,
-                        child: canPop
-                            ? IconButton(
-                                icon: const Icon(AppIcons.back, color: Colors.white, size: 20),
-                                onPressed: onBackPressed ?? () => Navigator.of(context).pop(),
-                              )
-                            : null,
-                      ),
-                      Expanded(
-                        child: Text(
-                          title,
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.light,
+        statusBarBrightness: Brightness.dark,
+      ),
+      child: Scaffold(
+        backgroundColor: t.page,
+        body: FigmaBackground(
+          child: Column(
+            children: [
+              ClipRRect(
+                borderRadius: const BorderRadius.vertical(
+                  bottom: Radius.circular(28),
+                ),
+                child: Container(
+                  width: double.infinity,
+                  color: t.header,
+                  child: SafeArea(
+                    bottom: false,
+                    child: SizedBox(
+                      height: 60,
+                      child: Row(
+                        children: [
+                          SizedBox(
+                            width: 56,
+                            child: canPop
+                                ? IconButton(
+                                    icon: const Icon(
+                                      AppIcons.back,
+                                      color: Colors.white,
+                                      size: 20,
+                                    ),
+                                    onPressed:
+                                        onBackPressed ??
+                                        () => Navigator.of(context).pop(),
+                                  )
+                                : null,
                           ),
-                        ),
+                          Expanded(
+                            child: Text(
+                              title,
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 56),
+                        ],
                       ),
-                      const SizedBox(width: 56),
-                    ],
+                    ),
                   ),
                 ),
               ),
-            ),
+              Expanded(child: body),
+            ],
           ),
-          Expanded(child: body),
-        ],
+        ),
       ),
     );
   }
@@ -94,34 +112,68 @@ class FigmaLightScaffold extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: t.page,
-      body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (canPop)
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-                child: Material(
-                  color: t.card,
-                  shape: const CircleBorder(),
-                  elevation: 1,
-                  child: InkWell(
-                    customBorder: const CircleBorder(),
-                    onTap: onBackPressed ?? () => Navigator.of(context).pop(),
-                    child: SizedBox(
-                      width: 36,
-                      height: 36,
-                      child: Icon(AppIcons.back, size: 18, color: t.heading),
+      body: FigmaBackground(
+        child: SafeArea(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (canPop)
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                  child: Material(
+                    color: t.card,
+                    shape: const CircleBorder(),
+                    elevation: 1,
+                    child: InkWell(
+                      customBorder: const CircleBorder(),
+                      onTap: onBackPressed ?? () => Navigator.of(context).pop(),
+                      child: SizedBox(
+                        width: 36,
+                        height: 36,
+                        child: Icon(AppIcons.back, size: 18, color: t.heading),
+                      ),
                     ),
                   ),
-                ),
-              )
-            else
-              const SizedBox(height: 8),
-            Expanded(child: body),
-          ],
+                )
+              else
+                const SizedBox(height: 8),
+              Expanded(child: body),
+            ],
+          ),
         ),
       ),
+    );
+  }
+}
+
+/// Soft-blue skyline artwork (`Layoutbg.png`) behind a screen's content.
+/// Light theme only; the dark theme keeps its flat colour.
+class FigmaBackground extends StatelessWidget {
+  const FigmaBackground({super.key, required this.child});
+
+  final Widget child;
+
+  static const String asset = 'assets/images/Layoutbg.png';
+
+  @override
+  Widget build(BuildContext context) {
+    if (Theme.of(context).brightness == Brightness.dark) return child;
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        Positioned.fill(
+          child: IgnorePointer(
+            child: Image.asset(
+              asset,
+              fit: BoxFit.cover,
+              alignment: Alignment.bottomCenter,
+              excludeFromSemantics: true,
+              errorBuilder: (_, _, _) => const SizedBox.shrink(),
+            ),
+          ),
+        ),
+        child,
+      ],
     );
   }
 }

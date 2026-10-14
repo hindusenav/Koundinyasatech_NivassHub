@@ -57,7 +57,7 @@ class DocumentService extends ApiService implements DocumentServiceBase {
       final parsed = id is int ? id : int.tryParse('$id');
       if (parsed == null) continue;
       statuses[parsed] =
-          '${entry['Document_Status'] ?? entry['document_status'] ?? entry['status'] ?? ''}';
+          '${entry['Document_Status'] ?? entry['documentStatus'] ?? entry['document_status'] ?? entry['status'] ?? ''}';
     }
     return statuses;
   }
@@ -95,10 +95,7 @@ class DocumentService extends ApiService implements DocumentServiceBase {
       final response = await client.uploadFile(
         endpoint,
         files: {'file': request.file.path},
-        fields: {
-          'user_id': request.userId,
-          'doc_id': '${request.documentId}',
-        },
+        fields: {'user_id': request.userId, 'doc_id': '${request.documentId}'},
       );
       if (kDebugMode) {
         debugPrint(
@@ -179,12 +176,14 @@ class DocumentService extends ApiService implements DocumentServiceBase {
   static ApiException _friendlyUploadError(ApiException e) {
     final message = switch (e.statusCode) {
       400 when _hasServerMessage(e) => e.message,
-      400 => 'This upload could not be processed. Please check the file and try again.',
+      400 =>
+        'This upload could not be processed. Please check the file and try again.',
       403 => 'Your account is not active, so documents cannot be uploaded.',
       // The server's own 404 text names what it could not find, so it is
       // shown as-is; the generic wording is only a fallback for an empty body.
       404 when _hasServerMessage(e) => e.message,
-      404 => 'We could not find this document request. Please refresh and try again.',
+      404 =>
+        'We could not find this document request. Please refresh and try again.',
       409 when e.message.trim().isNotEmpty => e.message,
       409 =>
         'This document is already pending review. Please wait for the admin.',

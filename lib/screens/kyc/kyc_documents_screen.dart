@@ -229,7 +229,8 @@ class _KycDocumentsScreenState extends State<KycDocumentsScreen> {
       // so it cannot run during build), leaving one frame with no slots.
       // It also fetches `GET /kyc/documents`, which shows the same loader
       // for the round trip rather than a blank list.
-      body: provider.state == KycProviderState.initial ||
+      body:
+          provider.state == KycProviderState.initial ||
               provider.state == KycProviderState.loading
           ? const Loader()
           : provider.state == KycProviderState.error && provider.slots.isEmpty
@@ -285,9 +286,7 @@ class _KycDocumentsScreenState extends State<KycDocumentsScreen> {
                     if (provider.slots.isEmpty)
                       Text(
                         KycStrings.noOptionsAvailable,
-                        style: AppTextStyles.bodyMedium.copyWith(
-                          color: t.body,
-                        ),
+                        style: AppTextStyles.bodyMedium.copyWith(color: t.body),
                       ),
                     for (final slot in provider.slots)
                       KycDocumentCard(
@@ -295,7 +294,8 @@ class _KycDocumentsScreenState extends State<KycDocumentsScreen> {
                         onUpload: slot.status.isBusy
                             ? () {}
                             : () => _handleUpload(slot.document.documentId),
-                        onRemove: () => provider.remove(slot.document.documentId),
+                        onRemove: () =>
+                            provider.remove(slot.document.documentId),
                       ),
                     AppSpacing.gapLg,
                     FigmaButton(

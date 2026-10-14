@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_nivasshub/constants/figma_colors.dart';
+import 'package:flutter_nivasshub/widgets/shared/figma/figma_scaffold.dart';
 import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter_nivasshub/constants/app_dimensions.dart';
 import 'package:flutter_nivasshub/constants/app_icons.dart';
@@ -79,79 +81,85 @@ class _EnterPasswordScreenState extends State<EnterPasswordScreen> {
 
     return Scaffold(
       appBar: const CustomAppBar(title: '', showBackButton: true),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: AppSpacing.screenPadding,
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                AppSpacing.gapLg,
-                Text(
-                  KycStrings.enterPasswordTitle,
-                  style: AppTextStyles.headlineSmall.copyWith(
-                    color: textPrimary,
-                  ),
-                ),
-                AppSpacing.gapSm,
-                Text(
-                  widget.args.maskedIdentifier,
-                  style: AppTextStyles.bodyMedium.copyWith(
-                    color: textSecondary,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                AppSpacing.gapXl,
-                CustomTextField(
-                  controller: _passwordController,
-                  label: KycStrings.passwordLabel,
-                  hint: KycStrings.passwordHint,
-                  prefixIcon: AppIcons.lock,
-                  obscureText: _obscurePassword,
-                  enabled: !provider.isSubmitting,
-                  textInputAction: TextInputAction.done,
-                  onChanged: (_) => provider.clearError(),
-                  onFieldSubmitted: (_) => _handleLogin(),
-                  validator: (value) => (value == null || value.isEmpty)
-                      ? 'Password is required'
-                      : null,
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      _obscurePassword
-                          ? AppIcons.visibilityOff
-                          : AppIcons.visibilityOn,
-                      size: AppDimensions.iconSm,
+      backgroundColor: FigmaColors.of(context).page,
+      body: FigmaBackground(
+        child: SafeArea(
+          child: SingleChildScrollView(
+            padding: AppSpacing.screenPadding,
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  AppSpacing.gapLg,
+                  Text(
+                    KycStrings.enterPasswordTitle,
+                    style: AppTextStyles.headlineSmall.copyWith(
+                      color: textPrimary,
                     ),
-                    onPressed: () =>
-                        setState(() => _obscurePassword = !_obscurePassword),
                   ),
-                ),
-                if (provider.errorMessage != null) ...[
                   AppSpacing.gapSm,
-                  Text(provider.errorMessage!, style: AppTextStyles.errorText),
-                ],
-                AppSpacing.gapSm,
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: TextButton(
-                    // Reuses the existing forgot-password chain unchanged.
-                    onPressed: provider.isSubmitting
-                        ? null
-                        : () => Navigator.of(
-                            context,
-                          ).pushNamed(AppRoutes.forgotPassword),
-                    child: const Text(KycStrings.forgotPassword),
+                  Text(
+                    widget.args.maskedIdentifier,
+                    style: AppTextStyles.bodyMedium.copyWith(
+                      color: textSecondary,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
-                ),
-                AppSpacing.gapLg,
-                PrimaryButton(
-                  label: KycStrings.loginLabel,
-                  isLoading: provider.isSubmitting,
-                  size: CustomButtonSize.large,
-                  onPressed: provider.isSubmitting ? null : _handleLogin,
-                ),
-              ],
+                  AppSpacing.gapXl,
+                  CustomTextField(
+                    controller: _passwordController,
+                    label: KycStrings.passwordLabel,
+                    hint: KycStrings.passwordHint,
+                    prefixIcon: AppIcons.lock,
+                    obscureText: _obscurePassword,
+                    enabled: !provider.isSubmitting,
+                    textInputAction: TextInputAction.done,
+                    onChanged: (_) => provider.clearError(),
+                    onFieldSubmitted: (_) => _handleLogin(),
+                    validator: (value) => (value == null || value.isEmpty)
+                        ? 'Password is required'
+                        : null,
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _obscurePassword
+                            ? AppIcons.visibilityOff
+                            : AppIcons.visibilityOn,
+                        size: AppDimensions.iconSm,
+                      ),
+                      onPressed: () =>
+                          setState(() => _obscurePassword = !_obscurePassword),
+                    ),
+                  ),
+                  if (provider.errorMessage != null) ...[
+                    AppSpacing.gapSm,
+                    Text(
+                      provider.errorMessage!,
+                      style: AppTextStyles.errorText,
+                    ),
+                  ],
+                  AppSpacing.gapSm,
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: TextButton(
+                      // Reuses the existing forgot-password chain unchanged.
+                      onPressed: provider.isSubmitting
+                          ? null
+                          : () => Navigator.of(
+                              context,
+                            ).pushNamed(AppRoutes.forgotPassword),
+                      child: const Text(KycStrings.forgotPassword),
+                    ),
+                  ),
+                  AppSpacing.gapLg,
+                  PrimaryButton(
+                    label: KycStrings.loginLabel,
+                    isLoading: provider.isSubmitting,
+                    size: CustomButtonSize.large,
+                    onPressed: provider.isSubmitting ? null : _handleLogin,
+                  ),
+                ],
+              ),
             ),
           ),
         ),

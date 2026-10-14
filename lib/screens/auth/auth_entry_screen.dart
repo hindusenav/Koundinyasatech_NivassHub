@@ -93,7 +93,13 @@ class _AuthEntryScreenState extends State<AuthEntryScreen> {
         if (d.needsUpload) d.documentId,
     };
 
-    if (outstanding.isEmpty) {
+    // Only rejected documents left: the status screen shows them with a
+    // per-document Re-upload button, so there is no upload screen detour.
+    final hasMissing = response.data!.any(
+      (d) => d.needsUpload && !d.alreadyUploaded,
+    );
+
+    if (outstanding.isEmpty || !hasMissing) {
       await Navigator.of(context).pushNamed(
         AppRoutes.kycVerificationStatus,
         arguments: KycVerificationStatusScreenArgs(
@@ -221,68 +227,80 @@ class _AuthEntryScreenState extends State<AuthEntryScreen> {
     final t = FigmaColors.of(context);
 
     return FigmaLightScaffold(
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const Center(child: FigmaBadge()),
-              const SizedBox(height: 20),
-              const FigmaTitleBlock(
-                title: KycStrings.authEntryTitle,
-                subtitle: KycStrings.authEntrySubtitle,
-              ),
-              const SizedBox(height: 28),
-              FigmaCard(
-                padding: const EdgeInsets.all(18),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    IdentifierInputField(
-                      controller: _identifierController,
-                      channel: provider.channel,
-                      countries: provider.dialCodes,
-                      selectedCountry: provider.selectedCountry,
-                      isLoadingCountries: provider.isLoadingDialCodes,
-                      enabled: !provider.isChecking,
-                      onCountrySelected: provider.setCountry,
-                      onRetryCountries: provider.loadCountryCodes,
-                      onChanged: (_) => provider.clearError(),
-                      onSubmitted: (_) => _handleContinue(),
-                      validator: _validateIdentifier,
-                    ),
-                    if (provider.errorMessage != null) ...[
-                      const SizedBox(height: 8),
-                      Text(
-                        provider.errorMessage!,
-                        style: AppTextStyles.errorText,
+      body: LayoutBuilder(
+        builder: (context, constraints) => SingleChildScrollView(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(minHeight: constraints.maxHeight),
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      const Center(child: FigmaBadge()),
+                      const SizedBox(height: 20),
+                      const FigmaTitleBlock(
+                        title: KycStrings.authEntryTitle,
+                        subtitle: KycStrings.authEntrySubtitle,
+                      ),
+                      const SizedBox(height: 28),
+                      FigmaCard(
+                        padding: const EdgeInsets.all(18),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            IdentifierInputField(
+                              controller: _identifierController,
+                              channel: provider.channel,
+                              countries: provider.dialCodes,
+                              selectedCountry: provider.selectedCountry,
+                              isLoadingCountries: provider.isLoadingDialCodes,
+                              enabled: !provider.isChecking,
+                              onCountrySelected: provider.setCountry,
+                              onRetryCountries: provider.loadCountryCodes,
+                              onChanged: (_) => provider.clearError(),
+                              onSubmitted: (_) => _handleContinue(),
+                              validator: _validateIdentifier,
+                            ),
+                            if (provider.errorMessage != null) ...[
+                              const SizedBox(height: 8),
+                              Text(
+                                provider.errorMessage!,
+                                style: AppTextStyles.errorText,
+                              ),
+                            ],
+                            const SizedBox(height: 18),
+                            FigmaButton(
+                              label: KycStrings.continueLabel,
+                              isLoading: provider.isChecking,
+                              onPressed: provider.isChecking
+                                  ? null
+                                  : _handleContinue,
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      TextButton(
+                        onPressed: provider.isChecking ? null : _toggleChannel,
+                        child: Text(
+                          provider.isMobileMode
+                              ? KycStrings.useEmailInstead
+                              : KycStrings.useMobileInstead,
+                          style: TextStyle(
+                            color: t.heading,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
                       ),
                     ],
-                    const SizedBox(height: 18),
-                    FigmaButton(
-                      label: KycStrings.continueLabel,
-                      isLoading: provider.isChecking,
-                      onPressed: provider.isChecking ? null : _handleContinue,
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 12),
-              TextButton(
-                onPressed: provider.isChecking ? null : _toggleChannel,
-                child: Text(
-                  provider.isMobileMode
-                      ? KycStrings.useEmailInstead
-                      : KycStrings.useMobileInstead,
-                  style: TextStyle(
-                    color: t.heading,
-                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ),
-            ],
+            ),
           ),
         ),
       ),

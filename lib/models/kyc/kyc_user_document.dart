@@ -12,7 +12,11 @@ class KycUserDocument {
     this.documentUrl = '',
     this.bytes,
     this.status = 'PENDING',
+    this.rejectionReason = '',
   });
+
+  /// Reviewer's note for a rejected document, when the backend sends one.
+  final String rejectionReason;
 
   /// Review status as sent by the backend (`PENDING`, `APPROVED`,
   /// `REJECTED`), upper-cased.
@@ -58,8 +62,10 @@ class KycUserDocument {
       userName: json['userName'] as String? ?? '',
       userType: json['userType'] as String? ?? '',
       documentUrl: url,
+      rejectionReason:
+          '${json['rejection_reason'] ?? json['rejectionReason'] ?? json['remarks'] ?? json['reason'] ?? ''}',
       status:
-          '${json['Document_Status'] ?? json['status'] ?? json['document_status'] ?? json['kyc_status'] ?? 'PENDING'}'
+          '${json['Document_Status'] ?? json['documentStatus'] ?? json['status'] ?? json['document_status'] ?? json['kyc_status'] ?? 'PENDING'}'
               .toUpperCase(),
     );
   }
