@@ -184,7 +184,9 @@ class _KycDocumentsScreenState extends State<KycDocumentsScreen> {
       AppRoutes.kycVerificationStatus,
       arguments: KycVerificationStatusScreenArgs(
         kycId: provider.submittedKycId!,
-        userId: widget.args.userId,
+        userId: provider.userId.isNotEmpty
+            ? provider.userId
+            : widget.args.userId,
         role: widget.args.role ?? UserRole.owner,
       ),
     );

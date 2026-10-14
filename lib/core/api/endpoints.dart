@@ -2,7 +2,7 @@
 class ApiEndpoints {
   ApiEndpoints._();
 
-  static const String baseUrl = 'http://10.10.10.86:3000';
+  static const String baseUrl = 'http://10.10.10.74:3004';
 
   // ---------------------------------------------------------------------
   // 1b. Identifier-first authentication entry (mobile OR email)
@@ -71,6 +71,7 @@ class ApiEndpoints {
   // real (non-`/api/v1`) endpoint in this contract.
   // ---------------------------------------------------------------------
   static const String kycDocuments = '/kyc/documents';
+  static const String kycUserDocuments = '/kyc/user-documents';
   static const String kycUpload = '/kyc/upload';
   static const String kycSubmit = '/api/v1/kyc/submit';
   static String kycStatus(String kycId) => '/api/v1/kyc/$kycId/status';

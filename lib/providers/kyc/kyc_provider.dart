@@ -6,11 +6,13 @@ import 'package:flutter_nivasshub/constants/storage_keys.dart';
 import 'package:flutter_nivasshub/models/auth/auth_flow_state.dart';
 import 'package:flutter_nivasshub/models/auth/user_role.dart';
 import 'package:flutter_nivasshub/models/kyc/document_upload_request.dart';
+import 'package:flutter_nivasshub/models/kyc/document_upload_response_data.dart';
 import 'package:flutter_nivasshub/models/kyc/kyc_applicable_document.dart';
 import 'package:flutter_nivasshub/models/kyc/kyc_document_issue.dart';
 import 'package:flutter_nivasshub/models/kyc/kyc_document_slot.dart';
 import 'package:flutter_nivasshub/models/kyc/kyc_submit_request.dart';
 import 'package:flutter_nivasshub/models/kyc/picked_file.dart';
+import 'package:flutter_nivasshub/models/kyc/stored_user_kyc_document.dart';
 import 'package:flutter_nivasshub/providers/auth/auth_state_provider.dart';
 import 'package:flutter_nivasshub/services/file/file_picker_service_base.dart';
 import 'package:flutter_nivasshub/services/kyc/document_service_base.dart';
@@ -67,6 +69,7 @@ class KycProvider extends ChangeNotifier {
 
   KycProviderState get state => _state;
   UserRole? get role => _role;
+  String get userId => _userId;
   int get attemptNumber => _attemptNumber;
   String? get errorMessage => _errorMessage;
   String? get rejectionReason => _rejectionReason;
@@ -136,6 +139,23 @@ class KycProvider extends ChangeNotifier {
       return;
     }
 
+    // Also fetch stored user KYC documents per API Contract (GET /kyc/user-documents)
+    // and rotate session token if a fresh token is returned.
+    final storedUserDocsResponse = await _documentService.getStoredUserKycDocuments(
+      userToken: userId,
+    );
+    if (storedUserDocsResponse.isSuccess && storedUserDocsResponse.data != null) {
+      final rotated = storedUserDocsResponse.data!.sessionToken;
+      if (rotated != null && rotated.isNotEmpty) {
+        _userId = rotated;
+      }
+    }
+
+    final serverDocs = (storedUserDocsResponse.isSuccess && storedUserDocsResponse.data != null)
+        ? storedUserDocsResponse.data!.documents
+        : const <StoredUserKycDocument>[];
+    final serverDocMap = {for (final d in serverDocs) d.documentNameId: d};
+
     final documents = response.data ?? const <KycApplicableDocument>[];
     final stored = _readStoredDocuments();
     final isSameApplication = stored != null;
@@ -157,6 +177,7 @@ class KycProvider extends ChangeNotifier {
             _hydrateSlot(
               document: document,
               stored: isSameApplication ? stored.slots[document.documentId] : null,
+              serverDoc: serverDocMap[document.documentId],
               issue: _issueFor(invalidDocuments, document.documentId),
             ),
           ),
@@ -175,6 +196,7 @@ class KycProvider extends ChangeNotifier {
   KycDocumentSlot _hydrateSlot({
     required KycApplicableDocument document,
     required KycDocumentSlot? stored,
+    StoredUserKycDocument? serverDoc,
     required KycDocumentIssue? issue,
   }) {
     if (issue != null) {
@@ -189,6 +211,20 @@ class KycProvider extends ChangeNotifier {
         document: document,
         status: KycUploadStatus.preserved,
         uploaded: stored.uploaded,
+      );
+    }
+    if (serverDoc != null) {
+      return KycDocumentSlot(
+        document: document,
+        status: KycUploadStatus.preserved,
+        uploaded: DocumentUploadResponseData(
+          documentId: serverDoc.documentNameId,
+          documentName: serverDoc.documentName,
+          fileName: serverDoc.documentName,
+          fileType: 'pdf',
+          version: 1,
+          actionPerformed: 'inserted',
+        ),
       );
     }
     return KycDocumentSlot(document: document);

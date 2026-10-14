@@ -47,6 +47,7 @@ import 'package:flutter_nivasshub/services/auth/mock_auth_entry_service.dart';
 import 'package:flutter_nivasshub/services/auth/partial_real_auth_entry_service.dart';
 import 'package:flutter_nivasshub/services/country/country_service.dart';
 import 'package:flutter_nivasshub/services/country/country_service_base.dart';
+import 'package:flutter_nivasshub/services/country/mock_country_service.dart';
 import 'package:flutter_nivasshub/services/file/file_picker_service.dart';
 import 'package:flutter_nivasshub/services/file/file_picker_service_base.dart';
 import 'package:flutter_nivasshub/services/kyc/document_service.dart';
@@ -191,8 +192,10 @@ Future<void> main() async {
           mock: mockAuthEntryService,
         );
 
-  // `GET /country-codes` is fully documented — always real, no mock twin.
-  final CountryServiceBase countryService = CountryService(apiClient);
+  // `GET /country-codes` (dbo.USP_Get_User_Country_List) with mock & offline fallback.
+  final CountryServiceBase countryService = useMockApi
+      ? const MockCountryService()
+      : CountryService(apiClient);
 
   // State/city/society/tower/floor/flat have no documented endpoint, so
   // this stays mocked regardless of `useMockApi`/`KycConfig.useMockKycApi`

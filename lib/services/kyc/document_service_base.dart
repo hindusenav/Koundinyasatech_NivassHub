@@ -3,6 +3,8 @@ import 'package:flutter_nivasshub/models/kyc/document_upload_request.dart';
 import 'package:flutter_nivasshub/models/kyc/document_upload_response_data.dart';
 import 'package:flutter_nivasshub/models/kyc/kyc_applicable_document.dart';
 
+import 'package:flutter_nivasshub/models/kyc/stored_user_kyc_document.dart';
+
 /// Document-list lookup and per-document upload, kept separate from
 /// [KycServiceBase][1] because the two have different shapes on the wire:
 /// this one is `GET`-then-multipart and is driven entirely by the
@@ -18,6 +20,12 @@ abstract class DocumentServiceBase {
   /// document list for the caller, entirely backend-configured. The
   /// frontend renders whatever this returns and nothing else.
   Future<ApiResponse<List<KycApplicableDocument>>> getApplicableDocuments({
+    required String userToken,
+  });
+
+  /// `GET /kyc/user-documents?user_token=<userToken>` — returns stored user
+  /// KYC details (with rotated session_Token).
+  Future<ApiResponse<StoredUserKycResponseData>> getStoredUserKycDocuments({
     required String userToken,
   });
 

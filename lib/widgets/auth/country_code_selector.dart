@@ -5,6 +5,7 @@ import 'package:flutter_nivasshub/constants/app_icons.dart';
 import 'package:flutter_nivasshub/constants/app_radius.dart';
 import 'package:flutter_nivasshub/constants/app_spacing.dart';
 import 'package:flutter_nivasshub/constants/app_text_styles.dart';
+import 'package:flutter_nivasshub/constants/auth/auth_colors.dart';
 import 'package:flutter_nivasshub/constants/kyc/kyc_strings.dart';
 import 'package:flutter_nivasshub/models/location/location_node.dart';
 import 'package:flutter_nivasshub/widgets/shared/inputs/selection_bottom_sheet.dart';
@@ -40,13 +41,9 @@ class CountryCodeSelector extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final borderColor = isDark ? AppColors.borderDark : AppColors.borderLight;
-    final textPrimary = isDark
-        ? AppColors.textPrimaryDark
-        : AppColors.textPrimaryLight;
-    final textDisabled = isDark
-        ? AppColors.textDisabledDark
-        : AppColors.textDisabledLight;
+    final borderColor = isDark ? AppColors.borderDark : AuthColors.inputBorder;
+    final bgColor = isDark ? AppColors.surfaceDark : AuthColors.inputBackground;
+    final textColor = isDark ? AppColors.textPrimaryDark : AuthColors.blueNh;
 
     final canRetry = enabled && !isLoading && countries.isEmpty && onRetry != null;
     final isInteractive = enabled && !isLoading && (countries.isNotEmpty || canRetry);
@@ -55,42 +52,32 @@ class CountryCodeSelector extends StatelessWidget {
       onTap: isInteractive
           ? (canRetry ? onRetry : () => _openPicker(context))
           : null,
-      borderRadius: AppRadius.radiusSm,
+      borderRadius: BorderRadius.circular(12),
       child: Container(
-        height: AppDimensions.inputHeight,
-        padding: AppSpacing.horizontal(AppSpacing.sm),
+        width: 80,
+        height: 52,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
-          borderRadius: AppRadius.radiusSm,
-          border: Border.all(color: borderColor),
+          color: bgColor,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: borderColor, width: 1),
         ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (selected?.flagEmoji != null) ...[
-              Text(selected!.flagEmoji!, style: AppTextStyles.bodyLarge),
-              AppSpacing.gapWXs,
-            ],
-            Text(
-              selected?.dialCode ?? '—',
-              style: AppTextStyles.bodyLarge.copyWith(
-                color: isInteractive ? textPrimary : textDisabled,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-            AppSpacing.gapWXs,
-            if (isLoading)
-              const SizedBox(
-                width: AppDimensions.iconXs,
-                height: AppDimensions.iconXs,
-                child: CircularProgressIndicator(strokeWidth: 2),
-              )
-            else
-              Icon(
-                canRetry ? AppIcons.refresh : AppIcons.chevronDown,
-                size: AppDimensions.iconXs,
-                color: isInteractive ? textPrimary : textDisabled,
-              ),
-          ],
+        child: Center(
+          child: isLoading
+              ? const SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              : Text(
+                  selected?.dialCode ?? '+91',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    height: 1.5,
+                    color: isInteractive ? textColor : textColor.withValues(alpha: 0.5),
+                  ),
+                ),
         ),
       ),
     );

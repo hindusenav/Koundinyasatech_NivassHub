@@ -811,6 +811,33 @@ void main() {
       expect(KycMockLedger.read(localStorage), isNull);
       expect(provider.slots, isEmpty);
     });
+
+    test('token rotates upon document upload and updates provider.userId', () async {
+      final rotatingService = FakeDocumentService(
+        documents: threeFakeDocuments(),
+        rotateTokens: true,
+      );
+      final p = KycProvider(
+        documentService: rotatingService,
+        kycService: kycService,
+        filePickerService: MockFilePickerService(),
+        localStorage: localStorage,
+        authState: AuthStateProvider(
+          localStorage: localStorage,
+          secureStorage: SecureStorageService(storage: InMemorySecureStorage()),
+        ),
+      );
+
+      await p.initialise(
+        userId: 'INITIAL_TOKEN',
+        kycToken: 'token',
+        role: UserRole.owner,
+      );
+      expect(p.userId, 'INITIAL_TOKEN');
+
+      await p.pickAndUpload(1, FilePickSource.files);
+      expect(p.userId, 'ROTATED_1');
+    });
   });
 }
 

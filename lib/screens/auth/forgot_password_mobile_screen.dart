@@ -11,6 +11,7 @@ import 'package:flutter_nivasshub/providers/auth/forgot_password_provider.dart';
 import 'package:flutter_nivasshub/routes/app_routes.dart';
 import 'package:flutter_nivasshub/screens/auth/forgot_password_verify_otp_screen.dart';
 import 'package:flutter_nivasshub/services/country/country_service_base.dart';
+import 'package:flutter_nivasshub/services/country/mock_country_service.dart';
 import 'package:flutter_nivasshub/utils/extensions/context_extensions.dart';
 import 'package:flutter_nivasshub/utils/form_validators.dart';
 import 'package:flutter_nivasshub/widgets/auth/auth_back_button.dart';
@@ -38,8 +39,8 @@ class _ForgotPasswordMobileScreenState
   final _formKey = GlobalKey<FormState>();
   final _mobileController = TextEditingController();
 
-  List<LocationNode> _dialCodes = const [];
-  LocationNode? _selectedCountry;
+  List<LocationNode> _dialCodes = MockCountryService.defaultCountries;
+  LocationNode? _selectedCountry = MockCountryService.defaultCountry;
   bool _isLoadingDialCodes = false;
 
   @override

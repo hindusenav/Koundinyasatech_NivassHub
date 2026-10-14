@@ -6,6 +6,7 @@ import 'package:flutter_nivasshub/models/auth/check_user_exists_response_data.da
 import 'package:flutter_nivasshub/models/location/location_node.dart';
 import 'package:flutter_nivasshub/services/auth/auth_entry_service_base.dart';
 import 'package:flutter_nivasshub/services/country/country_service_base.dart';
+import 'package:flutter_nivasshub/services/country/mock_country_service.dart';
 
 enum AuthEntryStatus {
   idle,
@@ -51,8 +52,8 @@ class AuthEntryProvider extends ChangeNotifier {
   String? _errorMessage;
   String? _maskedIdentifier;
 
-  List<LocationNode> _dialCodes = const [];
-  LocationNode? _selectedCountry;
+  List<LocationNode> _dialCodes = MockCountryService.defaultCountries;
+  LocationNode? _selectedCountry = MockCountryService.defaultCountry;
   bool _isLoadingDialCodes = false;
   String? _dialCodesError;
 
@@ -102,16 +103,17 @@ class AuthEntryProvider extends ChangeNotifier {
     notifyListeners();
 
     final response = await _countryService.getCountries();
-    if (response.isSuccess && response.data != null) {
+    if (response.isSuccess && response.data != null && response.data!.isNotEmpty) {
       _dialCodes = response.data!
           .where((c) => (c.dialCode ?? '').isNotEmpty)
           .toList(growable: false);
-      _selectedCountry ??= _defaultCountry(_dialCodes);
-      if (_dialCodes.isEmpty) {
-        _dialCodesError = 'Could not load country codes. Tap to retry.';
-      }
+      _selectedCountry = _defaultCountry(_dialCodes) ?? _selectedCountry;
     } else {
-      _dialCodesError = response.message ?? 'Could not load country codes. Tap to retry.';
+      if (_dialCodes.isEmpty) {
+        _dialCodes = MockCountryService.defaultCountries;
+        _selectedCountry ??= MockCountryService.defaultCountry;
+      }
+      _dialCodesError = response.message;
     }
 
     _isLoadingDialCodes = false;
@@ -119,12 +121,10 @@ class AuthEntryProvider extends ChangeNotifier {
   }
 
   /// Pre-selects `+91`, matching the fixed badge the previous auth
-  /// screens used. Returns `null` on an empty list rather than
-  /// substituting a placeholder country, so the "country code is
-  /// required" validation fires instead of sending a blank dial code.
+  /// screens used.
   static LocationNode? _defaultCountry(List<LocationNode> countries) {
     for (final country in countries) {
-      if (country.dialCode == '+91') return country;
+      if (country.dialCode == '+91' || country.id.toUpperCase() == 'IN') return country;
     }
     return countries.isEmpty ? null : countries.first;
   }

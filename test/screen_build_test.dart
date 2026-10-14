@@ -171,7 +171,7 @@ void main() {
     expect(find.text('98*****211'), findsOneWidget);
   });
 
-  testWidgets('the user details screen builds with the whole cascade',
+  testWidgets('the user details screen builds the profile screen',
       (tester) async {
     await pumpRoute(
       tester,
@@ -179,16 +179,12 @@ void main() {
       arguments: const UserDetailsScreenArgs(identifier: identifier),
     );
 
-    // This is the regression: the cascade fields watch LocationProvider,
-    // RegistrationMasterDataProvider and SocietyDetailsProvider in the
-    // same frame, which previously notified during `initState` (illegal
-    // once siblings are already watching it) and marked them dirty
-    // mid-build.
     expectSettled(tester);
     expect(find.byType(UserDetailsScreen), findsOneWidget);
-    expect(find.text('Country'), findsOneWidget);
-    expect(find.text('Tower / Block'), findsOneWidget);
-    expect(find.text('Unit Sub-Branch'), findsOneWidget);
+    expect(find.text('Create Your Profile'), findsOneWidget);
+    expect(find.text('Name'), findsOneWidget);
+    expect(find.text('Email ID'), findsOneWidget);
+    expect(find.text('Create Password'), findsOneWidget);
   });
 
   testWidgets(
@@ -221,10 +217,9 @@ void main() {
 
     expectSettled(tester);
     expect(find.byType(OtpMobileEmailVerificationScreen), findsOneWidget);
-    expect(find.text('Mobile Verification'), findsOneWidget);
-    expect(find.text('Email Verification'), findsOneWidget);
-    expect(find.text('9876543212'), findsOneWidget);
-    expect(find.text('charan@example.com'), findsOneWidget);
+    expect(find.text('Verify Your Mobile Number'), findsOneWidget);
+    expect(find.text('Verify OTP'), findsOneWidget);
+    expect(find.text('Resend Code'), findsOneWidget);
 
     // The screen runs a `Timer.periodic` resend-cooldown ticker, cancelled
     // only in `dispose()` — unmount before the test ends so it doesn't
