@@ -197,6 +197,7 @@ class _OtpMobileEmailVerificationScreenState
       },
       child: Scaffold(
         backgroundColor: isDark ? AppColors.backgroundDark : const Color(0xFFF4F7FC),
+        extendBodyBehindAppBar: true,
         appBar: _isSuccessView
             ? null
             : AppBar(
@@ -226,10 +227,10 @@ class _OtpMobileEmailVerificationScreenState
             // Background Image matching Figma Dev Mode specs (Verification Screen):
             // Image: bg img 2.png, Scale: Crop, Opacity: 70%, Layout: Width 442px, Height 616px, Top 340px, Left -1px
             Positioned(
+              top: 340,
               left: -1,
               right: -1,
               bottom: 0,
-              height: 616,
               child: IgnorePointer(
                 child: Opacity(
                   opacity: 0.70,
@@ -564,6 +565,7 @@ class _OtpMobileEmailVerificationScreenState
                       Image.asset(
                         AppAssets.stackedLogo,
                         width: 238 * logoScale,
+                        height: 238 * logoScale,
                         fit: BoxFit.contain,
                         errorBuilder: (_, __, ___) => NivassStackedLogo(
                           width: 238,
@@ -592,7 +594,7 @@ class _OtpMobileEmailVerificationScreenState
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  // Text Header Title (Figma: 322x31, DM Sans 600 SemiBold 24px, 100% height, Center)
+                                  // Text Header Title (Figma: 322x31, DM Sans 600 SemiBold 24px, 100% line height, Center)
                                   RichText(
                                     textAlign: TextAlign.center,
                                     text: const TextSpan(
@@ -602,7 +604,7 @@ class _OtpMobileEmailVerificationScreenState
                                         fontSize: 24,
                                         fontWeight: FontWeight.w600,
                                         color: Color(0xFF10213D),
-                                        height: 31 / 24,
+                                        height: 1.0,
                                         letterSpacing: 0,
                                       ),
                                       children: [
@@ -613,7 +615,7 @@ class _OtpMobileEmailVerificationScreenState
                                             fontSize: 24,
                                             fontWeight: FontWeight.w600,
                                             color: Color(0xFF1A4789),
-                                            height: 31 / 24,
+                                            height: 1.0,
                                             letterSpacing: 0,
                                           ),
                                         ),
@@ -621,15 +623,15 @@ class _OtpMobileEmailVerificationScreenState
                                     ),
                                   ),
                                   const SizedBox(height: 14), // Exact Figma Gap: 14px
-                                  // Text Verification Description (Figma: 322x36, DM Sans 500 Medium 14px, Color #10213D Blue 2)
+                                  // Text Verification Description (Figma: 322x36, DM Sans 500 Medium 14px, Line height 100%, Color #10213D Blue 2)
                                   const Text(
                                     'Your mobile number has been verified\nsuccessfully.',
                                     style: TextStyle(
                                       fontFamily: 'DM Sans',
                                       fontSize: 14,
                                       fontWeight: FontWeight.w500,
-                                      color: Color(0xFF10213D),
-                                      height: 18 / 14,
+                                      color: Color(0xFF10213D), // Blue 2: #10213D
+                                      height: 1.28,
                                       letterSpacing: 0,
                                     ),
                                     textAlign: TextAlign.center,
@@ -684,7 +686,7 @@ class _OtpMobileEmailVerificationScreenState
                       ),
                     ],
                   ),
-                  // Security Info pinned to bottom (Figma: Top 893px, Fixed 148px width, Hug 16px)
+                  // Security Info pinned to bottom (Figma: Top 893px, Fixed 148px width, Hug 16px, Gap 12px)
                   Padding(
                     padding: const EdgeInsets.only(top: 24, bottom: 8),
                     child: SizedBox(
@@ -695,22 +697,18 @@ class _OtpMobileEmailVerificationScreenState
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: const [
                           Icon(Icons.shield_outlined, size: 14, color: Color(0xFF414141)),
-                          SizedBox(width: 7), // Exact Figma Gap: 7px
-                          SizedBox(
-                            width: 75,
-                            height: 16,
-                            child: Text(
-                              '100% Secure',
-                              style: TextStyle(
-                                fontFamily: 'DM Sans',
-                                fontSize: 12,
-                                fontWeight: FontWeight.w400,
-                                color: Color(0xFF414141), // Grey 1: #414141
-                                height: 1.0, // 100% line height
-                                letterSpacing: 0,
-                              ),
-                              textAlign: TextAlign.center,
+                          SizedBox(width: 12), // Exact Figma Gap: 12px
+                          Text(
+                            '100% Secure',
+                            style: TextStyle(
+                              fontFamily: 'DM Sans',
+                              fontSize: 12,
+                              fontWeight: FontWeight.w400,
+                              color: Color(0xFF414141), // Grey 1: #414141
+                              height: 1.0, // 100% line height
+                              letterSpacing: 0,
                             ),
+                            textAlign: TextAlign.center,
                           ),
                         ],
                       ),

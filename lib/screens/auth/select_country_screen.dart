@@ -85,8 +85,12 @@ class _SelectCountryScreenState extends State<SelectCountryScreen> {
       body: Stack(
         children: [
           // Background Image matching Figma Dev Mode specs:
-          // Image: bg img 2.png, Scale: Crop, Opacity: 70%, pinned to bottom
-          Positioned.fill(
+          // Image: bg img 2.png, Scale: Crop, Opacity: 70%, Top: 340px, Left: -1px
+          Positioned(
+            top: 340,
+            left: -1,
+            right: -1,
+            bottom: 0,
             child: IgnorePointer(
               child: Opacity(
                 opacity: 0.70,

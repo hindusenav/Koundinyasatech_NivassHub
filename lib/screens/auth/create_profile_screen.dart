@@ -151,10 +151,10 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
           // Background Image matching Figma Dev Mode specs (Profile Screen):
           // Image: bg img 2.png, Scale: Crop, Opacity: 70%, Layout: Width 442px, Height 616px, Top 340px, Left -1px
           Positioned(
+            top: 340,
             left: -1,
             right: -1,
             bottom: 0,
-            height: 616,
             child: IgnorePointer(
               child: Opacity(
                 opacity: 0.70,
