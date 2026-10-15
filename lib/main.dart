@@ -47,13 +47,13 @@ import 'package:flutter_nivasshub/services/auth/mock_auth_entry_service.dart';
 import 'package:flutter_nivasshub/services/auth/partial_real_auth_entry_service.dart';
 import 'package:flutter_nivasshub/services/country/country_service.dart';
 import 'package:flutter_nivasshub/services/country/country_service_base.dart';
+import 'package:flutter_nivasshub/services/country/mock_country_service.dart';
 import 'package:flutter_nivasshub/services/file/file_picker_service.dart';
 import 'package:flutter_nivasshub/services/file/file_picker_service_base.dart';
 import 'package:flutter_nivasshub/services/kyc/document_service.dart';
 import 'package:flutter_nivasshub/services/kyc/document_service_base.dart';
 import 'package:flutter_nivasshub/services/kyc/kyc_service.dart';
 import 'package:flutter_nivasshub/services/kyc/kyc_service_base.dart';
-import 'package:flutter_nivasshub/services/kyc/mock_document_service.dart';
 import 'package:flutter_nivasshub/services/kyc/mock_kyc_service.dart';
 import 'package:flutter_nivasshub/services/location/location_service.dart';
 import 'package:flutter_nivasshub/services/location/location_service_base.dart';
@@ -192,8 +192,10 @@ Future<void> main() async {
           mock: mockAuthEntryService,
         );
 
-  // `GET /country-codes` is fully documented — always real, no mock twin.
-  final CountryServiceBase countryService = CountryService(apiClient);
+  // `GET /country-codes` (dbo.USP_Get_User_Country_List) with mock & offline fallback.
+  final CountryServiceBase countryService = useMockApi
+      ? const MockCountryService()
+      : CountryService(apiClient);
 
   // State/city/society/tower/floor/flat have no documented endpoint, so
   // this stays mocked regardless of `useMockApi`/`KycConfig.useMockKycApi`
@@ -236,9 +238,10 @@ Future<void> main() async {
   // KYC
   // ============================================================
 
-  final DocumentServiceBase documentService = KycConfig.useMockKycApi
-      ? MockDocumentService()
-      : DocumentService(apiClient);
+  // `GET /kyc/documents` and `POST /kyc/upload` are both documented and
+  // always real — no mock twin, unlike `KycServiceBase`'s submit/status
+  // pair below, which the backend has not documented yet.
+  final DocumentServiceBase documentService = DocumentService(apiClient);
 
   final KycServiceBase kycService = KycConfig.useMockKycApi
       ? MockKycService(

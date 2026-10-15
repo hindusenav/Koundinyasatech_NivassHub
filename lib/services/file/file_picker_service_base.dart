@@ -1,4 +1,5 @@
 import 'package:flutter_nivasshub/constants/kyc/kyc_config.dart';
+import 'package:flutter_nivasshub/core/api/api_exception.dart';
 import 'package:flutter_nivasshub/core/api/api_response.dart';
 import 'package:flutter_nivasshub/models/kyc/picked_file.dart';
 
@@ -29,4 +30,13 @@ abstract class FilePickerServiceBase {
   /// Opens this device's app-settings screen — the only recovery path
   /// once a permission (e.g. camera) has been permanently denied.
   Future<void> openSettings();
+
+  /// Requests the camera permission if needed, returning `null` once it is
+  /// granted (or already was) and an explanatory [ApiException] otherwise.
+  ///
+  /// Exposed separately from [pick] so the in-app camera capture screen
+  /// can gate its own `CameraController` on the exact same permission
+  /// flow — and the exact same permanently-denied message — that [pick]
+  /// already uses for `FilePickSource.camera`.
+  Future<ApiException?> ensureCameraPermission();
 }

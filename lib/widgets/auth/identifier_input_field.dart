@@ -1,19 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_nivasshub/constants/app_icons.dart';
-import 'package:flutter_nivasshub/constants/app_spacing.dart';
+import 'package:flutter_nivasshub/constants/app_colors.dart';
+import 'package:flutter_nivasshub/constants/auth/auth_colors.dart';
 import 'package:flutter_nivasshub/constants/kyc/kyc_strings.dart';
 import 'package:flutter_nivasshub/models/auth/auth_identifier.dart';
 import 'package:flutter_nivasshub/models/location/location_node.dart';
 import 'package:flutter_nivasshub/widgets/auth/country_code_selector.dart';
-import 'package:flutter_nivasshub/widgets/shared/inputs/custom_text_field.dart';
 
 /// The mobile-or-email field on the authentication entry screen.
 ///
 /// Composes a [CountryCodeSelector] (mobile only) with a
-/// [CustomTextField], and swaps label, hint, keyboard and input
-/// formatters as the channel changes — so the caller owns one controller
-/// and one validator regardless of which mode is active.
+/// styled [TextFormField] matching Figma Dev Mode specifications:
+/// 52px height, 12px border radius, 1px #E5E7EB border, #F9FAFB background,
+/// and 16px DM Sans typography in #0E2543 (BLUE NH).
 class IdentifierInputField extends StatelessWidget {
   const IdentifierInputField({
     super.key,
@@ -46,27 +45,63 @@ class IdentifierInputField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final field = CustomTextField(
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final borderColor = isDark ? AppColors.borderDark : AuthColors.inputBorder;
+    final bgColor = isDark ? AppColors.surfaceDark : AuthColors.inputBackground;
+
+    final field = TextFormField(
       controller: controller,
-      label: _isMobile ? KycStrings.mobileLabel : KycStrings.emailLabel,
-      hint: _isMobile ? KycStrings.mobileHint : KycStrings.emailHint,
-      prefixIcon: _isMobile ? null : AppIcons.email,
-      keyboardType: _isMobile
-          ? TextInputType.phone
-          : TextInputType.emailAddress,
-      textInputAction: TextInputAction.next,
       enabled: enabled,
+      keyboardType: _isMobile ? TextInputType.phone : TextInputType.emailAddress,
+      textInputAction: TextInputAction.done,
       validator: validator,
       onChanged: onChanged,
       onFieldSubmitted: onSubmitted,
-      // Digits-only keeps the field's contents consistent with what
-      // `AuthIdentifier.normalized` will send; an email needs no filter.
       inputFormatters: _isMobile
           ? [
               FilteringTextInputFormatter.digitsOnly,
               LengthLimitingTextInputFormatter(15),
             ]
           : null,
+      style: const TextStyle(
+        fontSize: 16,
+        fontWeight: FontWeight.w400,
+        color: AuthColors.blueNh,
+        height: 1.25,
+      ),
+      decoration: InputDecoration(
+        isDense: true,
+        filled: true,
+        fillColor: bgColor,
+        hintText: _isMobile ? '9876543210' : KycStrings.emailHint,
+        hintStyle: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w400,
+          color: isDark ? AppColors.textSecondaryDark : const Color(0xFF9CA3AF),
+          height: 1.25,
+        ),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: borderColor, width: 1),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: borderColor, width: 1),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: AuthColors.blueNh, width: 1.5),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: AppColors.error, width: 1),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: AppColors.error, width: 1.5),
+        ),
+      ),
     );
 
     if (!_isMobile) return field;
@@ -74,20 +109,15 @@ class IdentifierInputField extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Nudged down so the chip aligns with the field's input line
-        // rather than with its floating label.
-        Padding(
-          padding: const EdgeInsets.only(top: 4),
-          child: CountryCodeSelector(
-            countries: countries,
-            selected: selectedCountry,
-            onSelected: onCountrySelected,
-            isLoading: isLoadingCountries,
-            enabled: enabled,
-            onRetry: onRetryCountries,
-          ),
+        CountryCodeSelector(
+          countries: countries,
+          selected: selectedCountry,
+          onSelected: onCountrySelected,
+          isLoading: isLoadingCountries,
+          enabled: enabled,
+          onRetry: onRetryCountries,
         ),
-        AppSpacing.gapWSm,
+        const SizedBox(width: 8),
         Expanded(child: field),
       ],
     );

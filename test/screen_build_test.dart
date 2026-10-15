@@ -8,6 +8,8 @@ import 'package:flutter_nivasshub/routes/auth_router.dart';
 import 'package:flutter_nivasshub/screens/auth/auth_entry_screen.dart';
 import 'package:flutter_nivasshub/screens/auth/enter_password_screen.dart';
 import 'package:flutter_nivasshub/screens/auth/otp_mobile_email_verification_screen.dart';
+import 'package:flutter_nivasshub/screens/auth/select_city_screen.dart';
+import 'package:flutter_nivasshub/screens/auth/select_country_screen.dart';
 import 'package:flutter_nivasshub/screens/auth/user_details_screen.dart';
 import 'package:flutter_nivasshub/screens/kyc/kyc_documents_screen.dart';
 import 'package:flutter_nivasshub/services/auth/auth_entry_service_base.dart';
@@ -19,7 +21,6 @@ import 'package:flutter_nivasshub/services/file/file_picker_service_base.dart';
 import 'package:flutter_nivasshub/services/file/mock_file_picker_service.dart';
 import 'package:flutter_nivasshub/services/kyc/document_service_base.dart';
 import 'package:flutter_nivasshub/services/kyc/kyc_service_base.dart';
-import 'package:flutter_nivasshub/services/kyc/mock_document_service.dart';
 import 'package:flutter_nivasshub/services/kyc/mock_kyc_service.dart';
 import 'package:flutter_nivasshub/services/location/location_service_base.dart';
 import 'package:flutter_nivasshub/services/location/mock_location_service.dart';
@@ -32,6 +33,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'support/fake_document_service.dart';
 import 'support/fake_otp_verification_service.dart';
 import 'support/fake_registration_service.dart';
 import 'support/fake_society_service.dart';
@@ -94,7 +96,7 @@ void main() {
           Provider<OtpVerificationServiceBase>.value(
             value: const FakeOtpVerificationService(),
           ),
-          Provider<DocumentServiceBase>.value(value: MockDocumentService()),
+          Provider<DocumentServiceBase>.value(value: FakeDocumentService()),
           Provider<KycServiceBase>.value(value: kycService),
           Provider<FilePickerServiceBase>.value(
             value: MockFilePickerService(),
@@ -171,7 +173,39 @@ void main() {
     expect(find.text('98*****211'), findsOneWidget);
   });
 
-  testWidgets('the user details screen builds with the whole cascade',
+  testWidgets('the select country screen builds popular and all countries',
+      (tester) async {
+    await pumpRoute(
+      tester,
+      AppRoutes.selectCountry,
+      arguments: const SelectCountryScreenArgs(identifier: identifier),
+    );
+
+    expectSettled(tester);
+    expect(find.byType(SelectCountryScreen), findsOneWidget);
+    expect(find.text('Select Country'), findsOneWidget);
+    expect(find.text('POPULAR COUNTRIES'), findsOneWidget);
+    expect(find.text('ALL COUNTRIES'), findsOneWidget);
+    expect(find.text('India'), findsOneWidget);
+  });
+
+  testWidgets('the select city screen builds popular grid cities and all cities',
+      (tester) async {
+    await pumpRoute(
+      tester,
+      AppRoutes.selectCity,
+      arguments: const SelectCityScreenArgs(identifier: identifier),
+    );
+
+    expectSettled(tester);
+    expect(find.byType(SelectCityScreen), findsOneWidget);
+    expect(find.text('Select City'), findsOneWidget);
+    expect(find.text('POPULAR CITIES'), findsOneWidget);
+    expect(find.text('ALL CITIES'), findsOneWidget);
+    expect(find.text('Bangalore'), findsOneWidget);
+  });
+
+  testWidgets('the user details screen builds Complete Your Profile screen',
       (tester) async {
     await pumpRoute(
       tester,
@@ -179,16 +213,13 @@ void main() {
       arguments: const UserDetailsScreenArgs(identifier: identifier),
     );
 
-    // This is the regression: the cascade fields watch LocationProvider,
-    // RegistrationMasterDataProvider and SocietyDetailsProvider in the
-    // same frame, which previously notified during `initState` (illegal
-    // once siblings are already watching it) and marked them dirty
-    // mid-build.
     expectSettled(tester);
     expect(find.byType(UserDetailsScreen), findsOneWidget);
-    expect(find.text('Country'), findsOneWidget);
-    expect(find.text('Tower / Block'), findsOneWidget);
-    expect(find.text('Unit Sub-Branch'), findsOneWidget);
+    expect(find.text('Complete Your Profile'), findsOneWidget);
+    expect(find.text('PERSONAL DETAILS'), findsOneWidget);
+    expect(find.text('LOCATION DETAILS'), findsOneWidget);
+    expect(find.text('PROPERTY DETAILS'), findsOneWidget);
+    expect(find.text('Submit Details'), findsOneWidget);
   });
 
   testWidgets(
@@ -221,10 +252,9 @@ void main() {
 
     expectSettled(tester);
     expect(find.byType(OtpMobileEmailVerificationScreen), findsOneWidget);
-    expect(find.text('Mobile Verification'), findsOneWidget);
-    expect(find.text('Email Verification'), findsOneWidget);
-    expect(find.text('9876543212'), findsOneWidget);
-    expect(find.text('charan@example.com'), findsOneWidget);
+    expect(find.text('Verify Your Mobile Number'), findsOneWidget);
+    expect(find.text('Verify OTP'), findsOneWidget);
+    expect(find.text('Resend Code'), findsOneWidget);
 
     // The screen runs a `Timer.periodic` resend-cooldown ticker, cancelled
     // only in `dispose()` — unmount before the test ends so it doesn't
@@ -232,7 +262,8 @@ void main() {
     await tester.pumpWidget(const SizedBox.shrink());
   });
 
-  testWidgets('the KYC documents screen builds the owner document set',
+  testWidgets(
+      'the KYC documents screen renders whatever GET /kyc/documents returns',
       (tester) async {
     await pumpRoute(
       tester,
@@ -246,25 +277,10 @@ void main() {
 
     expectSettled(tester);
     expect(find.byType(KycDocumentsScreen), findsOneWidget);
-    expect(find.text('Address Proof — Document 1'), findsOneWidget);
-    expect(find.text('Registration Proof'), findsOneWidget);
-    expect(find.text('Rental Agreement'), findsNothing);
-  });
-
-  testWidgets('the KYC documents screen builds the tenant document set',
-      (tester) async {
-    await pumpRoute(
-      tester,
-      AppRoutes.kycDocuments,
-      arguments: const KycDocumentsScreenArgs(
-        userId: 'USR1001',
-        kycToken: 'mock_kyc_token',
-        role: UserRole.tenant,
-      ),
-    );
-
-    expectSettled(tester);
-    expect(find.text('Rental Agreement'), findsOneWidget);
-    expect(find.text('Registration Proof'), findsNothing);
+    // Card titles come straight from the fake document service's
+    // `getApplicableDocuments` response — the screen never hardcodes them.
+    expect(find.text('Address Proof 1'), findsOneWidget);
+    expect(find.text('Address Proof 2'), findsOneWidget);
+    expect(find.text('Ownership Proof'), findsOneWidget);
   });
 }

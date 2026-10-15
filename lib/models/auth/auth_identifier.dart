@@ -51,6 +51,16 @@ class AuthIdentifier {
   /// the mock user table match on.
   String get nationalNumber => raw.replaceAll(RegExp(r'\D'), '');
 
+  /// Formatted display form, e.g. `+91 9876543210`.
+  String get formatted {
+    if (channel == AuthChannel.email) return raw.trim();
+    final cc = countryCode?.trim();
+    if (cc != null && cc.isNotEmpty) {
+      return '$cc $nationalNumber';
+    }
+    return nationalNumber;
+  }
+
   /// Display form for the "we sent this to…" line on the password screen:
   /// `98*****210` or `us••••@gmail.com`.
   String get masked {

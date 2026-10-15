@@ -19,6 +19,7 @@ class OtpInputBoxes extends StatefulWidget {
     this.onChanged,
     this.enabled = true,
     this.autofocus = true,
+    this.controller,
   });
 
   final int length;
@@ -26,6 +27,11 @@ class OtpInputBoxes extends StatefulWidget {
   final ValueChanged<String>? onChanged;
   final bool enabled;
   final bool autofocus;
+
+  /// Optional external controller so a caller can fill the boxes
+  /// programmatically (e.g. SMS auto-fill). Owned by the caller: not
+  /// disposed here.
+  final TextEditingController? controller;
 
   @override
   State<OtpInputBoxes> createState() => _OtpInputBoxesState();
@@ -38,13 +44,13 @@ class _OtpInputBoxesState extends State<OtpInputBoxes> {
   @override
   void initState() {
     super.initState();
-    _controller = TextEditingController();
+    _controller = widget.controller ?? TextEditingController();
     _focusNode = FocusNode();
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    if (widget.controller == null) _controller.dispose();
     _focusNode.dispose();
     super.dispose();
   }
@@ -71,7 +77,7 @@ class _OtpInputBoxesState extends State<OtpInputBoxes> {
     // the available width (narrow phones, a 6-digit code, etc.).
     return LayoutBuilder(
       builder: (context, constraints) {
-        const preferredBoxSize = 52.0;
+        const preferredBoxSize = 64.0;
         const preferredGap = 12.0;
         final preferredWidth =
             widget.length * preferredBoxSize + (widget.length - 1) * preferredGap;
@@ -82,7 +88,7 @@ class _OtpInputBoxesState extends State<OtpInputBoxes> {
         final boxSize = preferredBoxSize * scale;
         final boxGap = preferredGap * scale;
         final totalWidth = widget.length * boxSize + (widget.length - 1) * boxGap;
-        final fontSize = (boxSize * 0.4).clamp(14.0, 22.0);
+        final fontSize = (boxSize * 0.38).clamp(16.0, 24.0);
 
         return GestureDetector(
           onTap: () => _focusNode.requestFocus(),
@@ -102,8 +108,10 @@ class _OtpInputBoxesState extends State<OtpInputBoxes> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: List.generate(widget.length, (index) {
                           final char = index < text.length ? text[index] : '';
-                          final isNextToFill =
-                              index == text.length && _focusNode.hasFocus;
+                          final isFocused =
+                              (index == text.length && _focusNode.hasFocus) ||
+                              (text.isEmpty && index == 0 && _focusNode.hasFocus) ||
+                              (text.length == widget.length && index == 0);
                           return Padding(
                             padding: EdgeInsets.only(
                               right: index == widget.length - 1 ? 0 : boxGap,
@@ -115,15 +123,17 @@ class _OtpInputBoxesState extends State<OtpInputBoxes> {
                               alignment: Alignment.center,
                               decoration: BoxDecoration(
                                 color: boxBackground,
-                                borderRadius: AppRadius.radiusMd,
+                                borderRadius: BorderRadius.circular(14),
                                 border: Border.all(
-                                  color: isNextToFill ? primaryBlue : border,
-                                  width: isNextToFill ? 2 : 1,
+                                  color: isFocused
+                                      ? (isDark ? AuthColors.primaryBlueDarkMode : AuthColors.blueNh)
+                                      : (isDark ? AuthColors.borderDarkMode : const Color(0xFFE2E8F0)),
+                                  width: isFocused ? 2 : 1,
                                 ),
-                                boxShadow: isNextToFill
+                                boxShadow: isFocused
                                     ? [
                                         BoxShadow(
-                                          color: primaryBlue.withValues(alpha: 0.15),
+                                          color: AuthColors.blueNh.withValues(alpha: 0.1),
                                           blurRadius: 8,
                                           offset: const Offset(0, 2),
                                         ),
@@ -135,6 +145,7 @@ class _OtpInputBoxesState extends State<OtpInputBoxes> {
                                 style: TextStyle(
                                   fontSize: fontSize,
                                   fontWeight: FontWeight.bold,
+                                  color: isDark ? AppColors.textPrimaryDark : AuthColors.blueNh,
                                 ),
                               ),
                             ),

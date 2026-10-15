@@ -1,5 +1,4 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter_nivasshub/models/auth/user_role.dart';
 import 'package:flutter_nivasshub/models/registration/registration_master_data.dart';
 import 'package:flutter_nivasshub/services/registration/registration_service_base.dart';
 
@@ -21,6 +20,9 @@ class RegistrationMasterDataProvider extends ChangeNotifier {
   RegistrationState? _selectedState;
   String? _selectedCity;
   RegistrationSociety? _selectedSociety;
+  RegistrationRole? _selectedRole;
+  RegistrationSubRole? _selectedSubRole;
+  RegistrationCategory? _selectedCategory;
 
   RegistrationDataState get state => _state;
   bool get isLoading => _state == RegistrationDataState.loading;
@@ -68,17 +70,40 @@ class RegistrationMasterDataProvider extends ChangeNotifier {
     return cities;
   }
 
-  /// The `Roles[]` entry matching [role]'s wire value ("R" for
-  /// [UserRole.owner]/Resident, "T" for [UserRole.tenant]) — `null` until
-  /// master data has loaded, or if the backend ever stops sending that
-  /// role. Looked up dynamically each call rather than cached by id, so a
-  /// backend renumbering of `role_id` is picked up automatically.
-  String? roleIdFor(UserRole role) {
-    final wireName = role == UserRole.owner ? 'R' : 'T';
-    for (final r in _data.roles) {
-      if (r.name.toUpperCase() == wireName) return r.roleId;
-    }
-    return null;
+  List<RegistrationRole> get roles => _data.roles;
+  RegistrationRole? get selectedRole => _selectedRole;
+  RegistrationSubRole? get selectedSubRole => _selectedSubRole;
+  RegistrationCategory? get selectedCategory => _selectedCategory;
+
+  List<RegistrationSubRole> get subRolesForSelectedRole =>
+      _selectedRole?.subRoles ?? const [];
+
+  List<RegistrationCategory> get categoriesForSelectedSubRole =>
+      _selectedSubRole?.categories ?? const [];
+
+  /// `sub_role_cat` is required only for sub-roles that have categories.
+  bool get needsCategory => categoriesForSelectedSubRole.isNotEmpty;
+
+  /// Clears the previously chosen Sub-role/Category, since they belonged to
+  /// the old role.
+  void selectRole(RegistrationRole role) {
+    if (_selectedRole?.roleId == role.roleId) return;
+    _selectedRole = role;
+    _selectedSubRole = null;
+    _selectedCategory = null;
+    notifyListeners();
+  }
+
+  void selectSubRole(RegistrationSubRole subRole) {
+    if (_selectedSubRole?.subRoleId == subRole.subRoleId) return;
+    _selectedSubRole = subRole;
+    _selectedCategory = null;
+    notifyListeners();
+  }
+
+  void selectCategory(RegistrationCategory category) {
+    _selectedCategory = category;
+    notifyListeners();
   }
 
   Future<void> load() async {

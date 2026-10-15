@@ -1,5 +1,5 @@
 import 'package:flutter_nivasshub/models/kyc/document_upload_response_data.dart';
-import 'package:flutter_nivasshub/models/kyc/kyc_document_type.dart';
+import 'package:flutter_nivasshub/models/kyc/kyc_applicable_document.dart';
 
 /// Lifecycle of one document card.
 enum KycUploadStatus {
@@ -42,19 +42,21 @@ enum KycUploadStatus {
 /// The state of a single document card, and the unit of persistence that
 /// makes document preservation across a resubmit work.
 ///
+/// [document] — `documentId`/`documentName` — comes from `GET
+/// /kyc/documents` and is never invented on the client.
 /// `uploaded.documentId` is the load-bearing field: it is what
 /// `KycSubmitRequest` sends, so a carried-forward document needs nothing
 /// but its id and its display metadata.
 class KycDocumentSlot {
   const KycDocumentSlot({
-    required this.type,
+    required this.document,
     this.status = KycUploadStatus.empty,
     this.uploaded,
     this.errorMessage,
     this.issueReason,
   });
 
-  final KycDocumentType type;
+  final KycApplicableDocument document;
   final KycUploadStatus status;
 
   /// Present whenever [status] is `uploaded` or `preserved`.
@@ -86,7 +88,7 @@ class KycDocumentSlot {
     bool clearIssue = false,
   }) {
     return KycDocumentSlot(
-      type: type,
+      document: document,
       status: status ?? this.status,
       uploaded: clearUploaded ? null : (uploaded ?? this.uploaded),
       errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
@@ -100,7 +102,8 @@ class KycDocumentSlot {
   Map<String, dynamic> toJson() {
     final persistable = status.isSatisfied ? status : KycUploadStatus.empty;
     return {
-      'documentType': type.wireValue,
+      'documentId': document.documentId,
+      'documentName': document.documentName,
       'status': persistable.wireValue,
       'uploaded': uploaded?.toJson(),
       'issueReason': issueReason,
@@ -108,8 +111,15 @@ class KycDocumentSlot {
   }
 
   static KycDocumentSlot? tryFromJson(Map<String, dynamic> json) {
-    final type = KycDocumentType.tryFromJson(json['documentType']);
-    if (type == null) return null;
+    final documentId = json['documentId'];
+    if (documentId == null) return null;
+
+    final document = KycApplicableDocument(
+      documentId: documentId is int
+          ? documentId
+          : int.tryParse('$documentId') ?? 0,
+      documentName: json['documentName'] as String? ?? '',
+    );
 
     final rawUploaded = json['uploaded'];
     final uploaded = rawUploaded is Map
@@ -126,7 +136,7 @@ class KycDocumentSlot {
     }
 
     return KycDocumentSlot(
-      type: type,
+      document: document,
       status: status,
       uploaded: uploaded,
       issueReason: json['issueReason'] as String?,

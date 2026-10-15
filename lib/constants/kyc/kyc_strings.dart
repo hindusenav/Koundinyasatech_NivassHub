@@ -8,7 +8,7 @@ class KycStrings {
   // ---------------------------------------------------------------------
   // Authentication entry
   // ---------------------------------------------------------------------
-  static const String authEntryTitle = 'Welcome to NivassHub';
+  static const String authEntryTitle = 'Welcome to NivaasHub';
   static const String authEntrySubtitle =
       'Enter your mobile number or email to continue.';
   static const String mobileLabel = 'Mobile Number';
@@ -49,6 +49,16 @@ class KycStrings {
   static const String roleOwner = 'Owner';
   static const String roleTenant = 'Tenant';
   static const String roleRequired = 'Please select your role';
+  static const String roleLabel = 'Role';
+  static const String roleHint = 'Select role';
+  static const String subRoleLabel = 'Sub-role';
+  static const String subRoleHint = 'Select sub-role';
+  static const String subRoleRequired = 'Please select your sub-role';
+  static const String selectRoleFirst = 'Select role first';
+  static const String categoryLabel = 'Category';
+  static const String categoryHint = 'Select category';
+  static const String categoryRequired = 'Please select a category';
+  static const String selectSubRoleFirst = 'Select sub-role first';
   static const String subBranchLabel = 'Unit Sub-Branch';
   // Auto-filled from the selected unit's BHK type — not a free choice.
   static const String subBranchHint = 'Auto-filled from the selected unit';
@@ -126,6 +136,24 @@ class KycStrings {
   static const String cameraPermanentlyDeniedMessage =
       'Camera permission is turned off for this app. '
       'Enable it from Settings to take a photo.';
+
+  /// In-app camera capture screen.
+  static const String cameraRetake = 'Retake';
+  static const String cameraUsePhoto = 'Use Photo';
+  static const String cameraUnavailableMessage =
+      'The camera is unavailable on this device right now. '
+      'Please try again or choose a different option.';
+  static const String cameraCaptureFailedMessage =
+      'We could not capture that photo. Please try again.';
+
+  /// Local file/gallery preview sheet.
+  static const String filePreviewTitle = 'Preview';
+  static const String filePreviewUpload = 'Upload';
+
+  /// Document-specific upload-failure popup (spec: "[Document Name]
+  /// Upload Failed", with Retry/Cancel).
+  static String uploadFailedTitle(String documentName) =>
+      '$documentName Upload Failed';
 
   // Document card copy
   static const String addressProofOneTitle = 'Address Proof — Document 1';

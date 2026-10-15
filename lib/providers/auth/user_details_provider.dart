@@ -78,12 +78,18 @@ class UserDetailsProvider extends ChangeNotifier {
     required String floorId,
     required String unitId,
     required String roleId,
+    required String subRole,
+    String? subRoleCat,
     required String? unitBranch,
   }) async {
     if (_role == null) {
       markValidationVisible();
       return null;
     }
+
+    // Fires exactly once per submission: a double-tap or a rebuild while the
+    // request is in flight must not send a second POST.
+    if (_status == UserDetailsStatus.submitting) return null;
 
     _status = UserDetailsStatus.submitting;
     _errorMessage = null;
@@ -103,6 +109,8 @@ class UserDetailsProvider extends ChangeNotifier {
         floorId: floorId,
         unitId: unitId,
         roleId: roleId,
+        subRole: subRole,
+        subRoleCat: subRoleCat,
         unitBranch: unitBranch,
       ),
     );

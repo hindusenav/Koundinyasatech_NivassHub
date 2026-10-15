@@ -15,8 +15,11 @@ import 'package:flutter_nivasshub/providers/society/society_details_provider.dar
 import 'package:flutter_nivasshub/screens/auth/auth_entry_screen.dart';
 import 'package:flutter_nivasshub/screens/auth/enter_password_screen.dart';
 import 'package:flutter_nivasshub/screens/auth/otp_mobile_email_verification_screen.dart';
+import 'package:flutter_nivasshub/screens/auth/select_city_screen.dart';
+import 'package:flutter_nivasshub/screens/auth/select_country_screen.dart';
 import 'package:flutter_nivasshub/screens/auth/user_details_screen.dart';
 import 'package:flutter_nivasshub/screens/kyc/kyc_documents_screen.dart';
+import 'package:flutter_nivasshub/screens/kyc/kyc_in_progress_screen.dart';
 import 'package:flutter_nivasshub/screens/kyc/kyc_verification_status_screen.dart';
 import 'package:flutter_nivasshub/screens/notifications/mock_notification_log_screen.dart';
 import 'package:flutter_nivasshub/services/auth/auth_entry_service_base.dart';
@@ -134,7 +137,39 @@ class AuthRouter {
         );
 
       // ========================================================
-      // USER DETAILS (new user registration)
+      // SELECT COUNTRY (Screen 1)
+      // ========================================================
+
+      case AppRoutes.selectCountry:
+        final args = settings.arguments;
+
+        if (args is! SelectCountryScreenArgs) {
+          return _unknownRoute(settings);
+        }
+
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => SelectCountryScreen(args: args),
+        );
+
+      // ========================================================
+      // SELECT CITY (Screen 2 & 3)
+      // ========================================================
+
+      case AppRoutes.selectCity:
+        final args = settings.arguments;
+
+        if (args is! SelectCityScreenArgs) {
+          return _unknownRoute(settings);
+        }
+
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => SelectCityScreen(args: args),
+        );
+
+      // ========================================================
+      // USER DETAILS (new user registration - Screen 4)
       // ========================================================
 
       case AppRoutes.userDetails:
@@ -196,9 +231,11 @@ class AuthRouter {
           builder: (context) => ChangeNotifierProvider(
             create: (_) => OtpMobileEmailVerificationProvider(
               service: context.read<OtpVerificationServiceBase>(),
+              authService: context.read<AuthEntryServiceBase>(),
+              resendIdentifier: args.resendIdentifier,
               userId: args.userId,
-              mobileNumber: args.mobileNumber,
-              email: args.email,
+              pendingChannels: args.pendingChannels,
+              otpJustSent: args.otpJustSent,
             ),
             child: OtpMobileEmailVerificationScreen(args: args),
           ),
@@ -222,6 +259,14 @@ class AuthRouter {
         return MaterialPageRoute(
           settings: settings,
           builder: (_) => KycDocumentsScreen(args: args),
+        );
+
+      case AppRoutes.kycInProgress:
+        final message = settings.arguments;
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) =>
+              KycInProgressScreen(message: message is String ? message : null),
         );
 
       case AppRoutes.kycVerificationStatus:

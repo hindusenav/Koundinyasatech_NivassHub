@@ -44,7 +44,7 @@ class UserRegistrationResponseData {
       statusCode: lookup.intValue(['statusCode']) ?? 0,
       success: lookup.boolValue(['success']) ?? false,
       message: lookup.string(['message']) ?? '',
-      userId: data.string(['userId']) ?? '',
+      userId: data.string(['registrationToken', 'userId']) ?? '',
       isNewUser: data.boolValue(['isNewUser']) ?? false,
       email: data.string(['email']) ?? '',
       mobileNumber: data.string(['mobileNumber']) ?? '',

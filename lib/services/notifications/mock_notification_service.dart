@@ -4,7 +4,6 @@ import 'package:flutter_nivasshub/constants/storage_keys.dart';
 import 'package:flutter_nivasshub/core/api/api_exception.dart';
 import 'package:flutter_nivasshub/core/api/api_response.dart';
 import 'package:flutter_nivasshub/models/kyc/kyc_document_issue.dart';
-import 'package:flutter_nivasshub/models/kyc/kyc_document_type.dart';
 import 'package:flutter_nivasshub/models/notifications/mock_notification_model.dart';
 import 'package:flutter_nivasshub/services/notifications/notification_service_base.dart';
 import 'package:flutter_nivasshub/storage/local_storage_service.dart';
@@ -132,12 +131,6 @@ class MockNotificationService implements NotificationServiceBase {
 
   static String _reasonFrom(List<KycDocumentIssue> issues) {
     if (issues.isEmpty) return KycStrings.genericError;
-    return issues
-        .map(
-          (i) =>
-              '• ${KycDocumentCatalog.specFor(i.documentType).title}: '
-              '${i.reason}',
-        )
-        .join('\n');
+    return issues.map((i) => '• ${i.documentName}: ${i.reason}').join('\n');
   }
 }

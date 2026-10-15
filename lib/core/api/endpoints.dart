@@ -71,6 +71,7 @@ class ApiEndpoints {
   // real (non-`/api/v1`) endpoint in this contract.
   // ---------------------------------------------------------------------
   static const String kycDocuments = '/kyc/documents';
+  static const String kycUserDocuments = '/kyc/user-documents';
   static const String kycUpload = '/kyc/upload';
   static const String kycSubmit = '/api/v1/kyc/submit';
   static String kycStatus(String kycId) => '/api/v1/kyc/$kycId/status';

@@ -1,5 +1,4 @@
 import 'package:flutter_nivasshub/models/kyc/kyc_document_issue.dart';
-import 'package:flutter_nivasshub/models/kyc/kyc_document_type.dart';
 import 'package:flutter_nivasshub/models/kyc/kyc_status.dart';
 
 /// `data` payload of `GET /kyc/{kycId}/status` — polled by the
@@ -38,9 +37,6 @@ class KycStatusResponseData {
   /// Whether "Correct & Re-submit" should be offered. Server-driven so a
   /// hard rejection can close the loop without a client-side rule.
   final bool canResubmit;
-
-  List<KycDocumentType> get invalidDocumentTypes =>
-      invalidDocuments.map((i) => i.documentType).toList(growable: false);
 
   factory KycStatusResponseData.fromJson(Map<String, dynamic> json) {
     final status = KycVerificationStatus.fromJson(json['status']);

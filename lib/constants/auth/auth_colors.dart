@@ -25,6 +25,32 @@ class AuthColors {
   static const Color bodyText = Color(0xFF6B7280);
   static const Color border = Color(0xFFD6E4FF);
 
+  // New Design tokens for Auth & Registration screens (Figma Dev Mode)
+  static const Color orangeButton = Color(0xFFFC7118); // Figma Orange #FC7118
+  static const Color dividerText = Color(0xFF9CA3AF); // Divider text #9CA3AF
+  static const Color blueNh = Color(0xFF0E2543);
+  static const Color navyButton = Color(0xFF0E2543);
+  static const Color navyBadge = Color(0xFF0E2543);
+  static const Color successGreen = Color(0xFF2EBA60);
+  static const Color pillBackground = Color(0xFFF1F5F9);
+  static const Color cardBackground = Color(0xFFFFFFFF);
+  static const Color cardBorder = Color(0xFFE2E8F0);
+  static const Color formCardBorder = Color(0xFF9AA7B5); // Light Grey 0.5px
+  static const Color gray1 = Color(0xFF3E3E3E); // Subtitle Gray 1
+  static const Color graysBlack = Color(0xFF000000); // Page title Black
+  static const Color inputBackground = Color(0xFFF9FAFB); // Phone input fill
+  static const Color inputBorder = Color(0xFFE5E7EB); // Phone input 1px border
+  static const Color textMuted = Color(0xFF6B7280); // Microcopy & Security note
+
+  /// Exact Figma Dev Mode "Shadow cards 1"
+  /// X: 4, Y: 4, Blur: 4, Spread: 0, #000000 15%
+  static const BoxShadow shadowCards1 = BoxShadow(
+    offset: Offset(4, 4),
+    blurRadius: 4,
+    spreadRadius: 0,
+    color: Color(0x26000000),
+  );
+
   // ---------------------------------------------------------------------
   // Dark-theme counterparts (used when Theme.of(context).brightness ==
   // Brightness.dark). Not to be confused with `primaryBlueDark` above.

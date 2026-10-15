@@ -1,44 +1,47 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_nivasshub/constants/app_colors.dart';
-import 'package:flutter_nivasshub/constants/app_icons.dart';
-import 'package:flutter_nivasshub/constants/app_spacing.dart';
-import 'package:flutter_nivasshub/constants/app_text_styles.dart';
-import 'package:flutter_nivasshub/constants/kyc/kyc_strings.dart';
-import 'package:flutter_nivasshub/models/auth/auth_identifier.dart';
-import 'package:flutter_nivasshub/models/auth/user_role.dart';
-import 'package:flutter_nivasshub/models/location/location_level.dart';
-import 'package:flutter_nivasshub/models/location/location_node.dart';
-import 'package:flutter_nivasshub/models/registration/registration_master_data.dart';
-import 'package:flutter_nivasshub/models/society/society_floor.dart';
-import 'package:flutter_nivasshub/models/society/society_tower.dart';
-import 'package:flutter_nivasshub/models/society/society_unit.dart';
-import 'package:flutter_nivasshub/providers/auth/user_details_provider.dart';
-import 'package:flutter_nivasshub/providers/location/location_provider.dart';
-import 'package:flutter_nivasshub/providers/registration/registration_master_data_provider.dart';
-import 'package:flutter_nivasshub/providers/society/society_details_provider.dart';
-import 'package:flutter_nivasshub/routes/app_routes.dart';
-import 'package:flutter_nivasshub/screens/auth/otp_mobile_email_verification_screen.dart';
-import 'package:flutter_nivasshub/utils/form_validators.dart';
-import 'package:flutter_nivasshub/widgets/shared/app_bar/custom_app_bar.dart';
-import 'package:flutter_nivasshub/widgets/shared/buttons/custom_button.dart';
-import 'package:flutter_nivasshub/widgets/shared/buttons/primary_button.dart';
-import 'package:flutter_nivasshub/widgets/shared/common/section_title.dart';
-import 'package:flutter_nivasshub/widgets/shared/feedback/custom_snackbar.dart';
-import 'package:flutter_nivasshub/widgets/shared/inputs/custom_text_field.dart';
-import 'package:flutter_nivasshub/widgets/shared/inputs/selection_bottom_sheet.dart';
-import 'package:flutter_nivasshub/widgets/shared/inputs/selection_field.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_nivasshub/constants/auth/auth_colors.dart';
+import 'package:flutter_nivasshub/models/auth/auth_flow_state.dart';
+import 'package:flutter_nivasshub/models/auth/auth_identifier.dart';
+import 'package:flutter_nivasshub/providers/auth/auth_state_provider.dart';
+import 'package:flutter_nivasshub/routes/app_routes.dart';
+import 'package:flutter_nivasshub/screens/auth/select_city_screen.dart';
+import 'package:flutter_nivasshub/screens/auth/select_country_screen.dart';
+import 'package:flutter_nivasshub/screens/kyc/kyc_documents_screen.dart';
+import 'package:flutter_nivasshub/utils/flag_emoji.dart';
+import 'package:flutter_nivasshub/utils/form_validators.dart';
+import 'package:flutter_nivasshub/widgets/auth/auth_curved_app_bar.dart';
+import 'package:flutter_nivasshub/widgets/auth/section_header_badge.dart';
+import 'package:flutter_nivasshub/widgets/shared/feedback/custom_snackbar.dart';
 
 class UserDetailsScreenArgs {
-  const UserDetailsScreenArgs({required this.identifier, this.prefillFullName});
+  const UserDetailsScreenArgs({
+    required this.identifier,
+    this.prefillFullName,
+    this.prefillCountry = 'India',
+    this.prefillCountryCode = 'IN',
+    this.prefillState,
+    this.prefillCity,
+  });
 
   final AuthIdentifier identifier;
   final String? prefillFullName;
+  final String prefillCountry;
+  final String prefillCountryCode;
+  final String? prefillState;
+  final String? prefillCity;
 }
 
-/// Registration form for a new user: personal details, Country → State →
-/// City, Society → Tower → Floor → Unit, role, and unit branch.
+/// Screen 4: "Complete Your Profile"
+///
+/// Matches Screen 4 of the new registration design mockups:
+/// - Curved dark navy app bar ("Complete Your Profile")
+/// - 3 Cards with vertical orange badge headers:
+///   1. PERSONAL DETAILS: Name, Mobile Number (read-only/disabled), Email ID
+///   2. LOCATION DETAILS: Country, State, City (with navigation links)
+///   3. PROPERTY DETAILS: Society/Building Name, Wing/Tower, Floor, Flat/House No.
+/// - Dark navy "Submit Details" CTA button
 class UserDetailsScreen extends StatefulWidget {
   const UserDetailsScreen({super.key, required this.args});
 
@@ -52,8 +55,73 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
   final _formKey = GlobalKey<FormState>();
 
   late final TextEditingController _nameController;
-  late final TextEditingController _mobileController;
   late final TextEditingController _emailController;
+  late final TextEditingController _flatController;
+
+  late String _selectedCountry;
+  late String _selectedCountryCode;
+  late String _selectedState;
+  late String _selectedCity;
+
+  String? _selectedSociety;
+  String? _selectedTower;
+  String? _selectedFloor;
+
+  bool _isSubmitting = false;
+
+  static const List<String> _statesList = [
+    'Karnataka',
+    'Maharashtra',
+    'Delhi',
+    'Tamil Nadu',
+    'Telangana',
+    'Gujarat',
+    'West Bengal',
+    'Kerala',
+    'Punjab',
+    'Rajasthan',
+    'Uttar Pradesh',
+    'Andhra Pradesh',
+    'Madhya Pradesh',
+  ];
+
+  static const List<String> _societiesList = [
+    'Sunrise Heights',
+    'Green Valley Apartment',
+    'Prestige Falcon City',
+    'Sobha Dream Acres',
+    'Brigade Gateway',
+    'Godrej Woods',
+    'Hiranandani Gardens',
+    'DLF Phase 5',
+  ];
+
+  static const List<String> _towersList = [
+    'Tower A',
+    'Tower B',
+    'Tower C',
+    'Tower D',
+    'Wing A',
+    'Wing B',
+    'Block 1',
+    'Block 2',
+  ];
+
+  static const List<String> _floorsList = [
+    'Ground Floor',
+    '1st Floor',
+    '2nd Floor',
+    '3rd Floor',
+    '4th Floor',
+    '5th Floor',
+    '6th Floor',
+    '7th Floor',
+    '8th Floor',
+    '9th Floor',
+    '10th Floor',
+    '11th Floor',
+    '12th Floor',
+  ];
 
   @override
   void initState() {
@@ -63,218 +131,337 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
     _nameController = TextEditingController(
       text: widget.args.prefillFullName ?? '',
     );
-    // Whichever channel the user signed up with is pre-filled and the
-    // other left blank, so nothing has to be re-typed.
-    _mobileController = TextEditingController(
-      text: identifier.channel == AuthChannel.mobile
-          ? identifier.nationalNumber
-          : '',
-    );
     _emailController = TextEditingController(
       text: identifier.channel == AuthChannel.email ? identifier.raw : '',
     );
+    _flatController = TextEditingController(text: '502');
+
+    _selectedCountry = widget.args.prefillCountry;
+    _selectedCountryCode = widget.args.prefillCountryCode;
+    _selectedState = widget.args.prefillState ?? 'Karnataka';
+    _selectedCity = widget.args.prefillCity ?? 'Bangalore';
+
+    _selectedSociety = _societiesList.first;
+    _selectedTower = _towersList.first;
+    _selectedFloor = _floorsList[4]; // 5th Floor
   }
 
   @override
   void dispose() {
     _nameController.dispose();
-    _mobileController.dispose();
     _emailController.dispose();
+    _flatController.dispose();
     super.dispose();
   }
 
-  String get _countryCode =>
-      context.read<LocationProvider>().selectedFor(LocationLevel.country)?.dialCode ??
-      widget.args.identifier.countryCode ??
-      '+91';
-
-  Future<void> _handleSubmit() async {
-    final details = context.read<UserDetailsProvider>();
-    final location = context.read<LocationProvider>();
-    final master = context.read<RegistrationMasterDataProvider>();
-    final society = context.read<SocietyDetailsProvider>();
-
-    // Turn on the picker-level errors before validating, so the role
-    // message appears in the same pass as the field ones.
-    details.markValidationVisible();
-
-    final isFormValid = _formKey.currentState?.validate() ?? false;
-    if (!isFormValid) return;
-
-    if (details.role == null) return;
-
-    final country = location.selectedFor(LocationLevel.country);
-    final state = master.selectedState;
-    final city = master.selectedCity;
-    if (country == null || state == null || city == null) {
-      CustomSnackbar.warning(
-        context,
-        'Please select your country, state and city.',
-      );
-      return;
-    }
-
-    if (society.selectedTower == null ||
-        society.selectedFloor == null ||
-        society.selectedUnit == null) {
-      CustomSnackbar.warning(context, KycStrings.propertySelectionIncomplete);
-      return;
-    }
-
-    final roleId = master.roleIdFor(details.role!);
-    if (roleId == null) {
-      CustomSnackbar.error(context, KycStrings.genericError);
-      return;
-    }
-
-    final result = await details.submit(
-      fullName: _nameController.text.trim(),
-      mobileNumber: _mobileController.text.trim(),
-      mobileCountryCode: _countryCode,
-      email: _emailController.text.trim(),
-      country: country.id,
-      state: state.provinceId,
-      city: city,
-      socId: master.selectedSociety?.socId ?? '',
-      towerId: society.selectedTower!.towerId,
-      floorId: society.selectedFloor!.floorId,
-      unitId: society.selectedUnit!.unitId,
-      roleId: roleId,
-      unitBranch: society.selectedUnitBranch,
+  void _navigateToSelectCountry() {
+    Navigator.of(context).pushNamed(
+      AppRoutes.selectCountry,
+      arguments: SelectCountryScreenArgs(identifier: widget.args.identifier),
     );
+  }
 
-    if (!mounted) return;
-
-    if (result == null) {
-      CustomSnackbar.error(
-        context,
-        details.errorMessage ?? KycStrings.genericError,
-      );
-      return;
-    }
-
-    final role = details.role!;
-
-    // `pushReplacement` so a resubmit loop does not grow the stack by two
-    // routes per attempt.
-    Navigator.of(context).pushReplacementNamed(
-      AppRoutes.otpMobileEmailVerification,
-      arguments: OtpMobileEmailVerificationScreenArgs(
-        userId: result.userId,
-        email: result.email.isNotEmpty ? result.email : _emailController.text.trim(),
-        mobileNumber: result.mobileNumber.isNotEmpty
-            ? result.mobileNumber
-            : _mobileController.text.trim(),
-        role: role,
+  void _navigateToSelectCity() {
+    Navigator.of(context).pushNamed(
+      AppRoutes.selectCity,
+      arguments: SelectCityScreenArgs(
+        identifier: widget.args.identifier,
+        selectedCountryName: _selectedCountry,
+        selectedCountryCode: _selectedCountryCode,
       ),
     );
   }
 
+  Future<void> _handleSubmit() async {
+    final isFormValid = _formKey.currentState?.validate() ?? false;
+    if (!isFormValid) return;
+
+    if (_selectedSociety == null || _selectedSociety!.isEmpty) {
+      CustomSnackbar.error(context, 'Please select a Society / Building');
+      return;
+    }
+    if (_selectedTower == null || _selectedTower!.isEmpty) {
+      CustomSnackbar.error(context, 'Please select a Wing / Tower');
+      return;
+    }
+    if (_selectedFloor == null || _selectedFloor!.isEmpty) {
+      CustomSnackbar.error(context, 'Please select a Floor');
+      return;
+    }
+    if (_flatController.text.trim().isEmpty) {
+      CustomSnackbar.error(context, 'Please enter Flat / House No.');
+      return;
+    }
+
+    setState(() => _isSubmitting = true);
+
+    try {
+      final authState = context.read<AuthStateProvider>();
+      await authState.moveTo(
+        AuthFlowState.kycPending,
+        context: authState.context.copyWith(
+          fullName: _nameController.text.trim(),
+          email: _emailController.text.trim(),
+        ),
+      );
+      if (!mounted) return;
+
+      Navigator.of(context).pushReplacementNamed(
+        AppRoutes.kycDocuments,
+        arguments: KycDocumentsScreenArgs(
+          userId: widget.args.identifier.normalized,
+        ),
+      );
+    } catch (e) {
+      if (mounted) {
+        CustomSnackbar.error(context, 'Failed to save profile: $e');
+      }
+    } finally {
+      if (mounted) setState(() => _isSubmitting = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final details = context.watch<UserDetailsProvider>();
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final textSecondary = isDark
-        ? AppColors.textSecondaryDark
-        : AppColors.textSecondaryLight;
-
     return Scaffold(
-      appBar: const CustomAppBar(title: KycStrings.userDetailsTitle),
+      backgroundColor: const Color(0xFFF4F7FC),
+      appBar: const AuthCurvedAppBar(title: 'Complete Your Profile'),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: AppSpacing.screenPadding,
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
           child: Form(
             key: _formKey,
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  KycStrings.userDetailsSubtitle,
-                  style: AppTextStyles.bodyMedium.copyWith(
-                    color: textSecondary,
+                // CARD 1: PERSONAL DETAILS
+                const SectionHeaderBadge(title: 'PERSONAL DETAILS'),
+                const SizedBox(height: 8),
+                _buildCard(
+                  children: [
+                    _buildLabel('Name'),
+                    const SizedBox(height: 6),
+                    _buildInputContainer(
+                      child: TextFormField(
+                        controller: _nameController,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: AuthColors.blueNh,
+                        ),
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(RegExp(r'[A-Za-z ]')),
+                        ],
+                        decoration: _inputDecoration(
+                          hintText: 'Enter your full name',
+                          prefixIcon: Icons.person_outline_rounded,
+                        ),
+                        validator: FormValidators.fullName,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    _buildLabel('Mobile Number'),
+                    const SizedBox(height: 6),
+                    _buildInputContainer(
+                      color: const Color(0xFFF3F4F6),
+                      child: TextFormField(
+                        initialValue: widget.args.identifier.formatted,
+                        readOnly: true,
+                        enabled: false,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: Color(0xFF6B7280),
+                        ),
+                        decoration: _inputDecoration(
+                          prefixIcon: Icons.phone_iphone_rounded,
+                          suffixIcon: Icons.lock_outline_rounded,
+                          suffixColor: const Color(0xFF9CA3AF),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    _buildLabel('Email ID'),
+                    const SizedBox(height: 6),
+                    _buildInputContainer(
+                      child: TextFormField(
+                        controller: _emailController,
+                        keyboardType: TextInputType.emailAddress,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: AuthColors.blueNh,
+                        ),
+                        decoration: _inputDecoration(
+                          hintText: 'Username@gmail.com',
+                          prefixIcon: Icons.mail_outline_rounded,
+                        ),
+                        validator: FormValidators.email,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+
+                // CARD 2: LOCATION DETAILS
+                const SectionHeaderBadge(title: 'LOCATION DETAILS'),
+                const SizedBox(height: 8),
+                _buildCard(
+                  children: [
+                    _buildLabel('Country'),
+                    const SizedBox(height: 6),
+                    InkWell(
+                      onTap: _navigateToSelectCountry,
+                      borderRadius: BorderRadius.circular(12),
+                      child: _buildSelectorTile(
+                        leading: Text(
+                          flagEmojiFromIso(_selectedCountryCode) ?? '🌐',
+                          style: const TextStyle(fontSize: 18),
+                        ),
+                        text: _selectedCountry,
+                        trailing: const Icon(
+                          Icons.chevron_right_rounded,
+                          color: Color(0xFF9CA3AF),
+                          size: 20,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    _buildLabel('State'),
+                    const SizedBox(height: 6),
+                    _buildDropdownField<String>(
+                      value: _selectedState,
+                      items: _statesList,
+                      hintText: 'Select State',
+                      prefixIcon: Icons.location_on_outlined,
+                      onChanged: (val) {
+                        if (val != null) setState(() => _selectedState = val);
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    _buildLabel('City'),
+                    const SizedBox(height: 6),
+                    InkWell(
+                      onTap: _navigateToSelectCity,
+                      borderRadius: BorderRadius.circular(12),
+                      child: _buildSelectorTile(
+                        leading: const Icon(
+                          Icons.location_city_outlined,
+                          color: AuthColors.blueNh,
+                          size: 20,
+                        ),
+                        text: _selectedCity,
+                        trailing: const Icon(
+                          Icons.chevron_right_rounded,
+                          color: Color(0xFF9CA3AF),
+                          size: 20,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+
+                // CARD 3: PROPERTY DETAILS
+                const SectionHeaderBadge(title: 'PROPERTY DETAILS'),
+                const SizedBox(height: 8),
+                _buildCard(
+                  children: [
+                    _buildLabel('Society / Building Name'),
+                    const SizedBox(height: 6),
+                    _buildDropdownField<String>(
+                      value: _selectedSociety,
+                      items: _societiesList,
+                      hintText: 'Select Society / Building',
+                      prefixIcon: Icons.apartment_rounded,
+                      onChanged: (val) {
+                        if (val != null) setState(() => _selectedSociety = val);
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    _buildLabel('Wing / Tower'),
+                    const SizedBox(height: 6),
+                    _buildDropdownField<String>(
+                      value: _selectedTower,
+                      items: _towersList,
+                      hintText: 'Select Wing / Tower',
+                      prefixIcon: Icons.domain_rounded,
+                      onChanged: (val) {
+                        if (val != null) setState(() => _selectedTower = val);
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    _buildLabel('Floor'),
+                    const SizedBox(height: 6),
+                    _buildDropdownField<String>(
+                      value: _selectedFloor,
+                      items: _floorsList,
+                      hintText: 'Select Floor',
+                      prefixIcon: Icons.layers_outlined,
+                      onChanged: (val) {
+                        if (val != null) setState(() => _selectedFloor = val);
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    _buildLabel('Flat / House No.'),
+                    const SizedBox(height: 6),
+                    _buildInputContainer(
+                      child: TextFormField(
+                        controller: _flatController,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: AuthColors.blueNh,
+                        ),
+                        decoration: _inputDecoration(
+                          hintText: 'e.g. 502',
+                          prefixIcon: Icons.meeting_room_outlined,
+                        ),
+                        validator: (val) {
+                          if (val == null || val.trim().isEmpty) {
+                            return 'Please enter Flat / House No.';
+                          }
+                          return null;
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 28),
+
+                // Dark Navy Submit Details Button
+                SizedBox(
+                  width: double.infinity,
+                  height: 52,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AuthColors.navyButton,
+                      foregroundColor: Colors.white,
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                    ),
+                    onPressed: _isSubmitting ? null : _handleSubmit,
+                    child: _isSubmitting
+                        ? const SizedBox(
+                            width: 22,
+                            height: 22,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white,
+                            ),
+                          )
+                        : const Text(
+                            'Submit Details',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
                   ),
                 ),
-                AppSpacing.gapLg,
-
-                const SectionTitle(title: KycStrings.sectionPersonalDetails),
-                AppSpacing.gapSm,
-                CustomTextField(
-                  controller: _nameController,
-                  label: KycStrings.fullNameLabel,
-                  hint: KycStrings.fullNameHint,
-                  prefixIcon: AppIcons.profile,
-                  textInputAction: TextInputAction.next,
-                  inputFormatters: [
-                    FilteringTextInputFormatter.allow(RegExp(r'[A-Za-z ]')),
-                  ],
-                  validator: FormValidators.fullName,
-                ),
-                AppSpacing.gapMd,
-                CustomTextField(
-                  controller: _mobileController,
-                  label: '${KycStrings.mobileLabel} ($_countryCode)',
-                  hint: KycStrings.mobileHint,
-                  prefixIcon: AppIcons.phone,
-                  keyboardType: TextInputType.phone,
-                  textInputAction: TextInputAction.next,
-                  inputFormatters: [
-                    FilteringTextInputFormatter.digitsOnly,
-                    LengthLimitingTextInputFormatter(15),
-                  ],
-                  validator: FormValidators.mobileNumberForDialCode(
-                    _countryCode,
-                  ),
-                ),
-                AppSpacing.gapMd,
-                CustomTextField(
-                  controller: _emailController,
-                  label: KycStrings.emailLabel,
-                  hint: KycStrings.emailHint,
-                  prefixIcon: AppIcons.email,
-                  keyboardType: TextInputType.emailAddress,
-                  textInputAction: TextInputAction.next,
-                  validator: FormValidators.email,
-                ),
-                AppSpacing.gapLg,
-
-                const SectionTitle(title: KycStrings.sectionLocationDetails),
-                AppSpacing.gapSm,
-                const _CountryField(),
-                AppSpacing.gapMd,
-                const _StateField(),
-                AppSpacing.gapMd,
-                const _CityField(),
-                AppSpacing.gapLg,
-
-                const SectionTitle(title: KycStrings.sectionPropertyDetails),
-                AppSpacing.gapSm,
-                const _SocietyField(),
-                AppSpacing.gapMd,
-                const _TowerField(),
-                AppSpacing.gapMd,
-                const _FloorField(),
-                AppSpacing.gapMd,
-                const _UnitField(),
-                AppSpacing.gapMd,
-                const _UnitBranchField(),
-                AppSpacing.gapLg,
-
-                const SectionTitle(title: KycStrings.sectionRole),
-                AppSpacing.gapSm,
-                _RoleSelector(
-                  selected: details.role,
-                  errorText: details.roleError,
-                  onSelected: details.setRole,
-                ),
-                AppSpacing.gapXl,
-
-                PrimaryButton(
-                  label: KycStrings.submitDetails,
-                  isLoading: details.isSubmitting,
-                  size: CustomButtonSize.large,
-                  onPressed: details.isSubmitting ? null : _handleSubmit,
-                ),
-                AppSpacing.gapLg,
+                const SizedBox(height: 28),
               ],
             ),
           ),
@@ -282,415 +469,167 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
       ),
     );
   }
-}
 
-/// Country picker — the only field still driven by `LocationProvider`
-/// (its `getCountries()` now points at the registration master-data
-/// endpoint via `RegistrationServiceBase`). Selecting a country also syncs
-/// `RegistrationMasterDataProvider` so the State picker can read that
-/// country's nested states.
-class _CountryField extends StatelessWidget {
-  const _CountryField();
-
-  @override
-  Widget build(BuildContext context) {
-    final location = context.watch<LocationProvider>();
-    final selected = location.selectedFor(LocationLevel.country);
-
-    return SelectionField(
-      label: LocationLevel.country.label,
-      value: selected?.name,
-      hint: LocationLevel.country.hint,
-      isLoading: location.isLoading(LocationLevel.country),
-      onTap: () => _openPicker(context, location),
+  Widget _buildCard({required List<Widget> children}) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFE5E7EB), width: 0.8),
+        boxShadow: const [AuthColors.shadowCards1],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: children,
+      ),
     );
   }
 
-  Future<void> _openPicker(BuildContext context, LocationProvider location) async {
-    if (location.stateFor(LocationLevel.country) == LocationLoadState.initial) {
-      await location.load(LocationLevel.country);
-      if (!context.mounted) return;
-    }
-
-    final choice = await SelectionBottomSheet.show<LocationNode>(
-      context,
-      title: LocationLevel.country.sheetTitle,
-      items: location.optionsFor(LocationLevel.country),
-      selected: location.selectedFor(LocationLevel.country),
-      labelOf: (node) => node.name,
-      searchHint: 'Search country',
-      isLoading: location.isLoading(LocationLevel.country),
-      errorMessage: location.errorFor(LocationLevel.country),
-      emptyTitle: KycStrings.noOptionsAvailable,
-      emptyMessage: KycStrings.noOptionsMessage,
-      onRetry: () => location.retry(LocationLevel.country),
-    );
-
-    if (choice == null || !context.mounted) return;
-    await location.select(LocationLevel.country, choice);
-    if (!context.mounted) return;
-    context.read<RegistrationMasterDataProvider>().selectCountry(choice.id);
-    context.read<SocietyDetailsProvider>().reset();
-  }
-}
-
-/// State picker — sourced synchronously from the selected country's
-/// states already cached by `RegistrationMasterDataProvider`; no network
-/// call happens here.
-class _StateField extends StatelessWidget {
-  const _StateField();
-
-  @override
-  Widget build(BuildContext context) {
-    final location = context.watch<LocationProvider>();
-    final master = context.watch<RegistrationMasterDataProvider>();
-    final countrySelected =
-        location.selectedFor(LocationLevel.country) != null;
-
-    return SelectionField(
-      label: KycStrings.stateLabel,
-      value: master.selectedState?.provinceName,
-      hint: countrySelected ? KycStrings.stateHint : KycStrings.selectCountryFirst,
-      onTap: countrySelected ? () => _openPicker(context, master) : null,
+  Widget _buildLabel(String text) {
+    return Text(
+      text,
+      style: const TextStyle(
+        fontSize: 13,
+        fontWeight: FontWeight.w600,
+        color: AuthColors.blueNh,
+      ),
     );
   }
 
-  Future<void> _openPicker(
-    BuildContext context,
-    RegistrationMasterDataProvider master,
-  ) async {
-    final choice = await SelectionBottomSheet.show<RegistrationState>(
-      context,
-      title: 'Select ${KycStrings.stateLabel}',
-      items: master.statesForSelectedCountry,
-      selected: master.selectedState,
-      labelOf: (state) => state.provinceName,
-      searchHint: 'Search state',
-      emptyTitle: KycStrings.noOptionsAvailable,
-      emptyMessage: KycStrings.noOptionsMessage,
-    );
-    if (choice == null || !context.mounted) return;
-    master.selectState(choice);
-    context.read<SocietyDetailsProvider>().reset();
-  }
-}
-
-/// City picker — sourced from the distinct `city` values of the societies
-/// in the selected state (`Societies[].city`; there is no dedicated city
-/// list endpoint). Selecting a city narrows the Society picker below to
-/// that city.
-class _CityField extends StatelessWidget {
-  const _CityField();
-
-  @override
-  Widget build(BuildContext context) {
-    final master = context.watch<RegistrationMasterDataProvider>();
-    final stateSelected = master.selectedState != null;
-
-    return SelectionField(
-      label: KycStrings.cityLabel,
-      value: master.selectedCity,
-      hint: stateSelected ? KycStrings.cityHint : KycStrings.selectStateFirst,
-      onTap: stateSelected ? () => _openPicker(context, master) : null,
+  Widget _buildInputContainer({
+    required Widget child,
+    Color color = Colors.white,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFFE5E7EB), width: 1),
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 14),
+      child: child,
     );
   }
 
-  Future<void> _openPicker(
-    BuildContext context,
-    RegistrationMasterDataProvider master,
-  ) async {
-    final choice = await SelectionBottomSheet.show<String>(
-      context,
-      title: 'Select ${KycStrings.cityLabel}',
-      items: master.citiesForSelectedState,
-      selected: master.selectedCity,
-      labelOf: (city) => city,
-      searchHint: 'Search city',
-      emptyTitle: KycStrings.noOptionsAvailable,
-      emptyMessage: KycStrings.noOptionsMessage,
-    );
-    if (choice == null || !context.mounted) return;
-    master.selectCity(choice);
-    context.read<SocietyDetailsProvider>().reset();
-  }
-}
-
-/// Society picker — sourced from the same cached master-data response,
-/// filtered to the selected city. Selecting a society kicks off
-/// `GET /society/details?socid=` to load the Tower→Floor→Unit tree.
-class _SocietyField extends StatelessWidget {
-  const _SocietyField();
-
-  @override
-  Widget build(BuildContext context) {
-    final master = context.watch<RegistrationMasterDataProvider>();
-    final citySelected = master.selectedCity != null;
-
-    return SelectionField(
-      label: KycStrings.societyLabel,
-      value: master.selectedSociety?.societyName,
-      hint: citySelected ? KycStrings.societyHint : KycStrings.selectCityFirst,
-      isLoading: master.isLoading,
-      onTap: citySelected ? () => _openPicker(context, master) : null,
+  InputDecoration _inputDecoration({
+    String? hintText,
+    IconData? prefixIcon,
+    IconData? suffixIcon,
+    Color? suffixColor,
+  }) {
+    return InputDecoration(
+      hintText: hintText,
+      hintStyle: const TextStyle(
+        fontSize: 14,
+        fontWeight: FontWeight.w400,
+        color: Color(0xFF9CA3AF),
+      ),
+      icon: prefixIcon != null
+          ? Icon(prefixIcon, color: AuthColors.blueNh, size: 18)
+          : null,
+      suffixIcon: suffixIcon != null
+          ? Icon(suffixIcon, color: suffixColor ?? AuthColors.blueNh, size: 18)
+          : null,
+      border: InputBorder.none,
+      isDense: true,
+      contentPadding: const EdgeInsets.symmetric(vertical: 14),
     );
   }
 
-  Future<void> _openPicker(
-    BuildContext context,
-    RegistrationMasterDataProvider master,
-  ) async {
-    final choice = await SelectionBottomSheet.show<RegistrationSociety>(
-      context,
-      title: 'Select ${KycStrings.societyLabel}',
-      items: master.societies,
-      selected: master.selectedSociety,
-      labelOf: (society) => society.societyName,
-      subtitleOf: (society) => society.subtitle,
-      searchHint: 'Search society',
-      isLoading: master.isLoading,
-      errorMessage: master.errorMessage,
-      emptyTitle: KycStrings.noOptionsAvailable,
-      emptyMessage: KycStrings.noOptionsMessage,
-      onRetry: master.retry,
-    );
-    if (choice == null || !context.mounted) return;
-    master.selectSociety(choice);
-    await context.read<SocietyDetailsProvider>().fetchSociety(choice.socId);
-  }
-}
-
-class _TowerField extends StatelessWidget {
-  const _TowerField();
-
-  @override
-  Widget build(BuildContext context) {
-    final society = context.watch<SocietyDetailsProvider>();
-
-    return SelectionField(
-      label: KycStrings.towerLabel,
-      value: society.selectedTower?.towerName,
-      hint: society.isTowerEnabled
-          ? KycStrings.towerHint
-          : KycStrings.selectSocietyFirst,
-      isLoading: society.isLoading,
-      onTap: society.isTowerEnabled ? () => _openPicker(context, society) : null,
+  Widget _buildSelectorTile({
+    required Widget leading,
+    required String text,
+    required Widget trailing,
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFFE5E7EB), width: 1),
+      ),
+      child: Row(
+        children: [
+          leading,
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              text,
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: AuthColors.blueNh,
+              ),
+            ),
+          ),
+          trailing,
+        ],
+      ),
     );
   }
 
-  Future<void> _openPicker(
-    BuildContext context,
-    SocietyDetailsProvider society,
-  ) async {
-    final choice = await SelectionBottomSheet.show<SocietyTower>(
-      context,
-      title: 'Select ${KycStrings.towerLabel}',
-      items: society.towers,
-      selected: society.selectedTower,
-      labelOf: (tower) => tower.towerName,
-      subtitleOf: (tower) => tower.towerCode,
-      searchHint: 'Search tower',
-      isLoading: society.isLoading,
-      errorMessage: society.errorMessage,
-      emptyTitle: KycStrings.noOptionsAvailable,
-      emptyMessage: KycStrings.noOptionsMessage,
-      onRetry: society.retry,
-    );
-    if (choice != null) society.selectTower(choice);
-  }
-}
-
-class _FloorField extends StatelessWidget {
-  const _FloorField();
-
-  @override
-  Widget build(BuildContext context) {
-    final society = context.watch<SocietyDetailsProvider>();
-
-    return SelectionField(
-      label: KycStrings.floorLabel,
-      value: society.selectedFloor?.floorName,
-      hint: society.isFloorEnabled
-          ? KycStrings.floorHint
-          : KycStrings.selectTowerFirst,
-      onTap: society.isFloorEnabled ? () => _openPicker(context, society) : null,
-    );
-  }
-
-  Future<void> _openPicker(
-    BuildContext context,
-    SocietyDetailsProvider society,
-  ) async {
-    final choice = await SelectionBottomSheet.show<SocietyFloor>(
-      context,
-      title: 'Select ${KycStrings.floorLabel}',
-      items: society.floors,
-      selected: society.selectedFloor,
-      labelOf: (floor) => floor.floorName,
-      searchHint: 'Search floor',
-      emptyTitle: KycStrings.noOptionsAvailable,
-      emptyMessage: KycStrings.noOptionsMessage,
-    );
-    if (choice != null) society.selectFloor(choice);
-  }
-}
-
-class _UnitField extends StatelessWidget {
-  const _UnitField();
-
-  @override
-  Widget build(BuildContext context) {
-    final society = context.watch<SocietyDetailsProvider>();
-
-    return SelectionField(
-      label: KycStrings.unitLabel,
-      value: society.selectedUnit?.unitNumber,
-      hint: society.isUnitEnabled
-          ? KycStrings.unitHint
-          : KycStrings.selectFloorFirst,
-      onTap: society.isUnitEnabled ? () => _openPicker(context, society) : null,
-    );
-  }
-
-  Future<void> _openPicker(
-    BuildContext context,
-    SocietyDetailsProvider society,
-  ) async {
-    final choice = await SelectionBottomSheet.show<SocietyUnit>(
-      context,
-      title: 'Select ${KycStrings.unitLabel}',
-      items: society.units,
-      selected: society.selectedUnit,
-      labelOf: (unit) => unit.unitNumber,
-      subtitleOf: (unit) => unit.unitTypeBhk,
-      searchHint: 'Search unit',
-      // A floor with no units yet is a genuine empty state, not an error.
-      emptyTitle: KycStrings.noOptionsAvailable,
-      emptyMessage: KycStrings.noOptionsMessage,
-    );
-    if (choice != null) society.selectUnit(choice);
-  }
-}
-
-/// Unit Sub-Branch — not an independent choice, there is no API for it.
-/// It mirrors the selected unit's `unitTypeBhk` (e.g. `"5bhk"`), so it's
-/// read-only and stays disabled until a Unit is picked.
-class _UnitBranchField extends StatelessWidget {
-  const _UnitBranchField();
-
-  @override
-  Widget build(BuildContext context) {
-    final society = context.watch<SocietyDetailsProvider>();
-
-    return SelectionField(
-      label: KycStrings.subBranchLabel,
-      value: society.selectedUnitBranch,
-      hint: society.selectedUnit != null
-          ? KycStrings.subBranchHint
-          : KycStrings.selectUnitFirst,
-      onTap: null,
-    );
-  }
-}
-
-/// Owner / Tenant. A pair of cards rather than a picker, because the
-/// choice changes which documents KYC will ask for and deserves to be
-/// visible rather than hidden behind a tap.
-class _RoleSelector extends StatelessWidget {
-  const _RoleSelector({
-    required this.selected,
-    required this.onSelected,
-    this.errorText,
-  });
-
-  final UserRole? selected;
-  final ValueChanged<UserRole> onSelected;
-  final String? errorText;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Row(
-          children: [
-            for (final role in UserRole.values) ...[
-              Expanded(
-                child: _RoleCard(
-                  role: role,
-                  isSelected: selected == role,
-                  onTap: () => onSelected(role),
+  Widget _buildDropdownField<T>({
+    required T? value,
+    required List<T> items,
+    required String hintText,
+    required IconData prefixIcon,
+    required void Function(T?) onChanged,
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFFE5E7EB), width: 1),
+      ),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<T>(
+          value: value,
+          isExpanded: true,
+          icon: const Icon(
+            Icons.keyboard_arrow_down_rounded,
+            color: Color(0xFF9CA3AF),
+            size: 22,
+          ),
+          hint: Row(
+            children: [
+              Icon(prefixIcon, color: const Color(0xFF9CA3AF), size: 18),
+              const SizedBox(width: 10),
+              Text(
+                hintText,
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
+                  color: Color(0xFF9CA3AF),
                 ),
               ),
-              if (role != UserRole.values.last) AppSpacing.gapWSm,
             ],
-          ],
-        ),
-        if (errorText != null) ...[
-          AppSpacing.gapXs,
-          Text(errorText!, style: AppTextStyles.errorText),
-        ],
-      ],
-    );
-  }
-}
-
-class _RoleCard extends StatelessWidget {
-  const _RoleCard({
-    required this.role,
-    required this.isSelected,
-    required this.onTap,
-  });
-
-  final UserRole role;
-  final bool isSelected;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final borderColor = isDark ? AppColors.borderDark : AppColors.borderLight;
-    final textPrimary = isDark
-        ? AppColors.textPrimaryDark
-        : AppColors.textPrimaryLight;
-    final textSecondary = isDark
-        ? AppColors.textSecondaryDark
-        : AppColors.textSecondaryLight;
-
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
-      child: Container(
-        padding: AppSpacing.cardInsets,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
-          color: isSelected
-              ? AppColors.primary.withValues(alpha: 0.08)
-              : Colors.transparent,
-          border: Border.all(
-            color: isSelected ? AppColors.primary : borderColor,
-            width: isSelected ? 2 : 1,
           ),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Icon(
-              role == UserRole.owner ? AppIcons.society : AppIcons.resident,
-              color: isSelected ? AppColors.primary : textSecondary,
-            ),
-            AppSpacing.gapSm,
-            Text(
-              role.label,
-              style: AppTextStyles.titleSmall.copyWith(
-                color: isSelected ? AppColors.primary : textPrimary,
+          items: items.map((item) {
+            return DropdownMenuItem<T>(
+              value: item,
+              child: Row(
+                children: [
+                  Icon(prefixIcon, color: AuthColors.blueNh, size: 18),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      item.toString(),
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        color: AuthColors.blueNh,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
               ),
-            ),
-            AppSpacing.gapXs,
-            Text(
-              role.description,
-              style: AppTextStyles.bodySmall.copyWith(color: textSecondary),
-            ),
-          ],
+            );
+          }).toList(),
+          onChanged: onChanged,
         ),
       ),
     );

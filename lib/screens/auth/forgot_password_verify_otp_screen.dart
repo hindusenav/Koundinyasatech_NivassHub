@@ -10,6 +10,7 @@ import 'package:flutter_nivasshub/constants/auth/auth_colors.dart';
 import 'package:flutter_nivasshub/providers/auth/forgot_password_provider.dart';
 import 'package:flutter_nivasshub/routes/app_routes.dart';
 import 'package:flutter_nivasshub/screens/auth/update_password_screen.dart';
+import 'package:flutter_nivasshub/services/auth/sms_otp_listener.dart';
 import 'package:flutter_nivasshub/utils/extensions/context_extensions.dart';
 import 'package:flutter_nivasshub/widgets/auth/auth_back_button.dart';
 import 'package:flutter_nivasshub/widgets/auth/auth_gradient_button.dart';
@@ -59,9 +60,17 @@ class _ForgotPasswordVerifyOtpScreenState extends State<ForgotPasswordVerifyOtpS
   int _secondsRemaining = _resendCooldownSeconds;
   String _otpCode = '';
 
+  // SMS auto-fill for the mobile channel only; email OTP stays manual.
+  final TextEditingController _otpController = TextEditingController();
+  late final SmsOtpListener _smsListener = SmsOtpListener(
+    length: _otpLength,
+    onCode: _onSmsCode,
+  );
+
   @override
   void initState() {
     super.initState();
+    if (widget.channel == ForgotPasswordChannel.mobile) _smsListener.start();
     _entrance = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 900),
@@ -73,7 +82,15 @@ class _ForgotPasswordVerifyOtpScreenState extends State<ForgotPasswordVerifyOtpS
   void dispose() {
     _entrance.dispose();
     _countdownTimer?.cancel();
+    _smsListener.stop();
+    _otpController.dispose();
     super.dispose();
+  }
+
+  void _onSmsCode(String code) {
+    if (!mounted) return;
+    _otpController.text = code;
+    setState(() => _otpCode = code);
   }
 
   void _startCountdown() {
@@ -139,6 +156,7 @@ class _ForgotPasswordVerifyOtpScreenState extends State<ForgotPasswordVerifyOtpS
 
     if (success) {
       _startCountdown();
+      if (widget.channel == ForgotPasswordChannel.mobile) _smsListener.restart();
       CustomSnackbar.success(context, 'OTP resent successfully');
     } else {
       CustomSnackbar.error(
@@ -243,6 +261,7 @@ class _ForgotPasswordVerifyOtpScreenState extends State<ForgotPasswordVerifyOtpS
                               opacity: otpT.clamp(0.0, 1.0),
                               child: OtpInputBoxes(
                                 length: _otpLength,
+                                controller: _otpController,
                                 onChanged: (code) => setState(() => _otpCode = code),
                                 onCompleted: (code) => setState(() => _otpCode = code),
                               ),
