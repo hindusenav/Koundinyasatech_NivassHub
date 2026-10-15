@@ -8,6 +8,8 @@ import 'package:flutter_nivasshub/routes/auth_router.dart';
 import 'package:flutter_nivasshub/screens/auth/auth_entry_screen.dart';
 import 'package:flutter_nivasshub/screens/auth/enter_password_screen.dart';
 import 'package:flutter_nivasshub/screens/auth/otp_mobile_email_verification_screen.dart';
+import 'package:flutter_nivasshub/screens/auth/select_city_screen.dart';
+import 'package:flutter_nivasshub/screens/auth/select_country_screen.dart';
 import 'package:flutter_nivasshub/screens/auth/user_details_screen.dart';
 import 'package:flutter_nivasshub/screens/kyc/kyc_documents_screen.dart';
 import 'package:flutter_nivasshub/services/auth/auth_entry_service_base.dart';
@@ -171,7 +173,39 @@ void main() {
     expect(find.text('98*****211'), findsOneWidget);
   });
 
-  testWidgets('the user details screen builds the profile screen',
+  testWidgets('the select country screen builds popular and all countries',
+      (tester) async {
+    await pumpRoute(
+      tester,
+      AppRoutes.selectCountry,
+      arguments: const SelectCountryScreenArgs(identifier: identifier),
+    );
+
+    expectSettled(tester);
+    expect(find.byType(SelectCountryScreen), findsOneWidget);
+    expect(find.text('Select Country'), findsOneWidget);
+    expect(find.text('POPULAR COUNTRIES'), findsOneWidget);
+    expect(find.text('ALL COUNTRIES'), findsOneWidget);
+    expect(find.text('India'), findsOneWidget);
+  });
+
+  testWidgets('the select city screen builds popular grid cities and all cities',
+      (tester) async {
+    await pumpRoute(
+      tester,
+      AppRoutes.selectCity,
+      arguments: const SelectCityScreenArgs(identifier: identifier),
+    );
+
+    expectSettled(tester);
+    expect(find.byType(SelectCityScreen), findsOneWidget);
+    expect(find.text('Select City'), findsOneWidget);
+    expect(find.text('POPULAR CITIES'), findsOneWidget);
+    expect(find.text('ALL CITIES'), findsOneWidget);
+    expect(find.text('Bangalore'), findsOneWidget);
+  });
+
+  testWidgets('the user details screen builds Complete Your Profile screen',
       (tester) async {
     await pumpRoute(
       tester,
@@ -181,10 +215,11 @@ void main() {
 
     expectSettled(tester);
     expect(find.byType(UserDetailsScreen), findsOneWidget);
-    expect(find.text('Create Your Profile'), findsOneWidget);
-    expect(find.text('Name'), findsOneWidget);
-    expect(find.text('Email ID'), findsOneWidget);
-    expect(find.text('Create Password'), findsOneWidget);
+    expect(find.text('Complete Your Profile'), findsOneWidget);
+    expect(find.text('PERSONAL DETAILS'), findsOneWidget);
+    expect(find.text('LOCATION DETAILS'), findsOneWidget);
+    expect(find.text('PROPERTY DETAILS'), findsOneWidget);
+    expect(find.text('Submit Details'), findsOneWidget);
   });
 
   testWidgets(

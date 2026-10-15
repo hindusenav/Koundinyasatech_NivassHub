@@ -26,6 +26,8 @@ class AppRoutes {
   /// registered so the previous screens still resolve if reached.
   static const String authEntry = '/auth/entry';
   static const String enterPassword = '/auth/password';
+  static const String selectCountry = '/auth/select-country';
+  static const String selectCity = '/auth/select-city';
   static const String userDetails = '/auth/user-details';
   static const String otpMobileEmailVerification = '/auth/otp-verification';
 

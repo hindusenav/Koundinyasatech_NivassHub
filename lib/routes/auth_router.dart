@@ -15,6 +15,8 @@ import 'package:flutter_nivasshub/providers/society/society_details_provider.dar
 import 'package:flutter_nivasshub/screens/auth/auth_entry_screen.dart';
 import 'package:flutter_nivasshub/screens/auth/enter_password_screen.dart';
 import 'package:flutter_nivasshub/screens/auth/otp_mobile_email_verification_screen.dart';
+import 'package:flutter_nivasshub/screens/auth/select_city_screen.dart';
+import 'package:flutter_nivasshub/screens/auth/select_country_screen.dart';
 import 'package:flutter_nivasshub/screens/auth/user_details_screen.dart';
 import 'package:flutter_nivasshub/screens/kyc/kyc_documents_screen.dart';
 import 'package:flutter_nivasshub/screens/kyc/kyc_in_progress_screen.dart';
@@ -135,7 +137,39 @@ class AuthRouter {
         );
 
       // ========================================================
-      // USER DETAILS (new user registration)
+      // SELECT COUNTRY (Screen 1)
+      // ========================================================
+
+      case AppRoutes.selectCountry:
+        final args = settings.arguments;
+
+        if (args is! SelectCountryScreenArgs) {
+          return _unknownRoute(settings);
+        }
+
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => SelectCountryScreen(args: args),
+        );
+
+      // ========================================================
+      // SELECT CITY (Screen 2 & 3)
+      // ========================================================
+
+      case AppRoutes.selectCity:
+        final args = settings.arguments;
+
+        if (args is! SelectCityScreenArgs) {
+          return _unknownRoute(settings);
+        }
+
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => SelectCityScreen(args: args),
+        );
+
+      // ========================================================
+      // USER DETAILS (new user registration - Screen 4)
       // ========================================================
 
       case AppRoutes.userDetails:

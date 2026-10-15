@@ -17,6 +17,7 @@ import 'package:flutter_nivasshub/routes/app_routes.dart';
 import 'package:flutter_nivasshub/screens/kyc/kyc_documents_screen.dart';
 import 'package:flutter_nivasshub/services/auth/sms_otp_listener.dart';
 import 'package:flutter_nivasshub/constants/asset_constants.dart';
+import 'package:flutter_nivasshub/screens/auth/select_country_screen.dart';
 import 'package:flutter_nivasshub/screens/auth/user_details_screen.dart';
 import 'package:flutter_nivasshub/widgets/auth/auth_shield_badge.dart';
 import 'package:flutter_nivasshub/widgets/auth/auth_skyline_painter.dart';
@@ -148,8 +149,8 @@ class _OtpMobileEmailVerificationScreenState
     if (!mounted) return;
 
     Navigator.of(context).pushReplacementNamed(
-      AppRoutes.userDetails,
-      arguments: UserDetailsScreenArgs(identifier: identifier),
+      AppRoutes.selectCountry,
+      arguments: SelectCountryScreenArgs(identifier: identifier),
     );
   }
 
