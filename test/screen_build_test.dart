@@ -11,6 +11,9 @@ import 'package:flutter_nivasshub/screens/auth/otp_mobile_email_verification_scr
 import 'package:flutter_nivasshub/screens/auth/select_city_screen.dart';
 import 'package:flutter_nivasshub/screens/auth/select_country_screen.dart';
 import 'package:flutter_nivasshub/screens/auth/user_details_screen.dart';
+import 'package:flutter_nivasshub/screens/auth/create_profile_screen.dart';
+import 'package:flutter_nivasshub/widgets/auth/otp_success_badge.dart';
+import 'package:flutter_nivasshub/widgets/auth/nivass_stacked_logo.dart';
 import 'package:flutter_nivasshub/screens/kyc/kyc_documents_screen.dart';
 import 'package:flutter_nivasshub/services/auth/auth_entry_service_base.dart';
 import 'package:flutter_nivasshub/services/auth/mock_auth_entry_service.dart';
@@ -282,5 +285,62 @@ void main() {
     expect(find.text('Address Proof 1'), findsOneWidget);
     expect(find.text('Address Proof 2'), findsOneWidget);
     expect(find.text('Ownership Proof'), findsOneWidget);
+  });
+
+  testWidgets('OtpSuccessBadge paints with custom painter without errors',
+      (tester) async {
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: Scaffold(
+          body: Center(
+            child: OtpSuccessBadge(size: 280),
+          ),
+        ),
+      ),
+    );
+    expect(find.byType(OtpSuccessBadge), findsOneWidget);
+    expect(find.byType(CustomPaint), findsWidgets);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('NivassStackedLogo renders brand logo without errors',
+      (tester) async {
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: Scaffold(
+          body: Center(
+            child: NivassStackedLogo(width: 238),
+          ),
+        ),
+      ),
+    );
+    expect(find.byType(NivassStackedLogo), findsOneWidget);
+    expect(find.text('nivaashub'), findsNothing); // It's RichText with spans
+    expect(find.text('ONE COMMUNITY · ONE PLATFORM'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('CreateProfileScreen builds and mounts all fields',
+      (tester) async {
+    const identifier = AuthIdentifier(
+      raw: '+919876543210',
+      channel: AuthChannel.mobile,
+      countryCode: '+91',
+    );
+    await pumpRoute(
+      tester,
+      AppRoutes.createProfile,
+      arguments: const CreateProfileScreenArgs(identifier: identifier),
+    );
+    expectSettled(tester);
+    expect(find.byType(CreateProfileScreen), findsOneWidget);
+    expect(find.text('Create Your Profile'), findsOneWidget);
+    expect(find.text('Enter your details'), findsOneWidget);
+    expect(find.text('Name'), findsOneWidget);
+    expect(find.text('Email ID'), findsOneWidget);
+    expect(find.text('Create Password'), findsOneWidget);
+    expect(find.text('Confirm Password'), findsOneWidget);
+    expect(find.text('Continue'), findsOneWidget);
+    expect(tester.takeException(), isNull);
   });
 }

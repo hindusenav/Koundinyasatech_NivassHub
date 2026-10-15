@@ -18,11 +18,13 @@ import 'package:flutter_nivasshub/screens/kyc/kyc_documents_screen.dart';
 import 'package:flutter_nivasshub/services/auth/sms_otp_listener.dart';
 import 'package:flutter_nivasshub/constants/asset_constants.dart';
 import 'package:flutter_nivasshub/screens/auth/select_country_screen.dart';
+import 'package:flutter_nivasshub/screens/auth/create_profile_screen.dart';
 import 'package:flutter_nivasshub/screens/auth/user_details_screen.dart';
 import 'package:flutter_nivasshub/widgets/auth/auth_shield_badge.dart';
 import 'package:flutter_nivasshub/widgets/auth/auth_skyline_painter.dart';
 import 'package:flutter_nivasshub/widgets/auth/otp_input_boxes.dart';
 import 'package:flutter_nivasshub/widgets/auth/otp_success_badge.dart';
+import 'package:flutter_nivasshub/widgets/auth/nivass_stacked_logo.dart';
 import 'package:flutter_nivasshub/widgets/shared/brand/nivass_logo_mark.dart';
 import 'package:flutter_nivasshub/widgets/shared/feedback/custom_snackbar.dart';
 import 'package:provider/provider.dart';
@@ -149,8 +151,8 @@ class _OtpMobileEmailVerificationScreenState
     if (!mounted) return;
 
     Navigator.of(context).pushReplacementNamed(
-      AppRoutes.selectCountry,
-      arguments: SelectCountryScreenArgs(identifier: identifier),
+      AppRoutes.createProfile,
+      arguments: CreateProfileScreenArgs(identifier: identifier),
     );
   }
 
@@ -186,46 +188,69 @@ class _OtpMobileEmailVerificationScreenState
     final pending = widget.args.pendingChannels;
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    return Scaffold(
-      backgroundColor: isDark ? AppColors.backgroundDark : const Color(0xFFF4F7FC),
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: Container(
-          margin: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: Colors.white,
-            border: Border.all(color: const Color(0xFFE2E8F0)),
-          ),
-          child: IconButton(
-            icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 16, color: AuthColors.blueNh),
-            onPressed: () {
-              if (_isSuccessView) {
-                setState(() => _isSuccessView = false);
-              } else {
-                Navigator.maybePop(context);
-              }
-            },
-          ),
-        ),
-      ),
-      body: Stack(
-        children: [
-          // Background Skyline Painting
-          Positioned.fill(
-            child: IgnorePointer(
-              child: CustomPaint(
-                painter: AuthSkylinePainter(progress: 1.0),
+    return PopScope(
+      canPop: !_isSuccessView,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop && _isSuccessView) {
+          setState(() => _isSuccessView = false);
+        }
+      },
+      child: Scaffold(
+        backgroundColor: isDark ? AppColors.backgroundDark : const Color(0xFFF4F7FC),
+        appBar: _isSuccessView
+            ? null
+            : AppBar(
+                backgroundColor: Colors.transparent,
+                elevation: 0,
+                leading: Container(
+                  margin: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.white,
+                    border: Border.all(color: const Color(0xFFE2E8F0)),
+                  ),
+                  child: IconButton(
+                    icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 16, color: AuthColors.blueNh),
+                    onPressed: () {
+                      if (_isSuccessView) {
+                        setState(() => _isSuccessView = false);
+                      } else {
+                        Navigator.maybePop(context);
+                      }
+                    },
+                  ),
+                ),
+              ),
+        body: Stack(
+          children: [
+            // Background Image matching Figma Dev Mode specs (Verification Screen):
+            // Image: bg img 2.png, Scale: Crop, Opacity: 70%, Layout: Width 442px, Height 616px, Top 340px, Left -1px
+            Positioned(
+              left: -1,
+              right: -1,
+              bottom: 0,
+              height: 616,
+              child: IgnorePointer(
+                child: Opacity(
+                  opacity: 0.70,
+                  child: Image.asset(
+                    AppAssets.authBackground,
+                    fit: BoxFit.cover,
+                    alignment: Alignment.bottomCenter,
+                    errorBuilder: (_, __, ___) => CustomPaint(
+                      painter: AuthSkylinePainter(progress: 1.0),
+                    ),
+                  ),
+                ),
               ),
             ),
-          ),
-          SafeArea(
-            child: _isSuccessView
-                ? _buildSuccessView(context)
-                : _buildVerificationView(context, provider, pending),
-          ),
-        ],
+            SafeArea(
+              child: _isSuccessView
+                  ? _buildSuccessView(context)
+                  : _buildVerificationView(context, provider, pending),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -245,61 +270,70 @@ class _OtpMobileEmailVerificationScreenState
     }
 
     return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          const AuthShieldBadge(size: 64),
-          const SizedBox(height: 12),
-          const Text(
-            'Verify Your Mobile Number',
-            style: TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.w700,
-              color: AuthColors.graysBlack,
-              height: 34 / 28,
-              letterSpacing: 0,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 12),
-          // Pill info box: Enter the 4 digit code sent to +91 9*******12
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            decoration: BoxDecoration(
-              color: const Color(0xFFF1F5F9),
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: const Color(0xFFE2E8F0)),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
+          // Page header / Header container (Figma: Padding: 16 top/bottom, 8 left/right, Gap: 12px)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const Icon(Icons.chat_bubble_outline_rounded, size: 15, color: AuthColors.blueNh),
-                const SizedBox(width: 8),
-                Text(
-                  'Enter the 4 digit code sent to $mobileNum',
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: AuthColors.blueNh,
-                    fontWeight: FontWeight.w500,
+                const AuthShieldBadge(size: 64, iconSize: 28),
+                const SizedBox(height: 12),
+                const Text(
+                  'Verify Your Mobile Number',
+                  style: TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.w700,
+                    color: AuthColors.graysBlack,
+                    height: 34 / 28,
+                    letterSpacing: 0,
                   ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 12),
+                // Pill info box: Enter the 4 digit code sent to +91 9*******12
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF1F5F9),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: const Color(0xFFE2E8F0)),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.chat_bubble_outline_rounded, size: 15, color: AuthColors.blueNh),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Enter the 4 digit code sent to $mobileNum',
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: AuthColors.blueNh,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 12),
+                const Text(
+                  'We sent a 4-digit code via SMS. This helps keep your account secure.',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: AuthColors.gray1,
+                    height: 1.5,
+                    letterSpacing: 0,
+                  ),
+                  textAlign: TextAlign.center,
                 ),
               ],
             ),
           ),
-          const SizedBox(height: 10),
-          const Text(
-            'We sent a 4-digit code via SMS. This helps keep your account secure.',
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-              color: AuthColors.gray1,
-              height: 1.5,
-              letterSpacing: 0,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 21), // Figma Gap: 21px to form card
           // White Elevated Form Card Container (Radius 24px, Border 0.5px #9AA7B5, Padding 24px)
           Container(
             decoration: BoxDecoration(
@@ -498,86 +532,196 @@ class _OtpMobileEmailVerificationScreenState
     );
   }
 
-  /// Screen 3: OTP Verification Success Screen
+  /// Screen 3: OTP Verification Success Screen matching Figma specs
   Widget _buildSuccessView(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          const SizedBox(height: 10),
-          // Brand Logo
-          Image.asset(
-            AppAssets.logo,
-            height: 54,
-            fit: BoxFit.contain,
-            errorBuilder: (_, __, ___) => const NivassLogoMark(size: 80),
-          ),
-          const Spacer(),
-          // Success Checkmark Badge
-          const OtpSuccessBadge(size: 130),
-          const SizedBox(height: 36),
-          const Text(
-            'OTP Successfully Verified!',
-            style: TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
-              color: AuthColors.blueNh,
+    final mediaQuery = MediaQuery.of(context);
+    final screenHeight = mediaQuery.size.height;
+    final screenWidth = mediaQuery.size.width;
+
+    // Responsive scaling adhering to Figma dimensions (Logo: 238x238, Badge: 374x374)
+    final logoScale = (screenWidth / 440.0).clamp(0.75, 1.0);
+    final badgeSize = (screenWidth * 0.85).clamp(260.0, 374.0);
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return SingleChildScrollView(
+          physics: const ClampingScrollPhysics(),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              minHeight: constraints.maxHeight,
             ),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 8),
-          const Text(
-            'Your mobile number has been verified successfully.',
-            style: TextStyle(
-              fontSize: 13,
-              color: Color(0xFF64748B),
-            ),
-            textAlign: TextAlign.center,
-          ),
-          const Spacer(),
-          // Dark Navy Continue Button
-          SizedBox(
-            width: double.infinity,
-            height: 52,
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AuthColors.navyButton,
-                foregroundColor: Colors.white,
-                elevation: 0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-              onPressed: _continueToProfile,
-              child: const Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Text(
-                    'Continue',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      SizedBox(height: screenHeight > 800 ? 20 : 8),
+                      // Brand Logo (Figma: nivaashub-logo-stacked.png, 238x238 fit, Top 58px)
+                      Image.asset(
+                        AppAssets.stackedLogo,
+                        width: 238 * logoScale,
+                        fit: BoxFit.contain,
+                        errorBuilder: (_, __, ___) => NivassStackedLogo(
+                          width: 238,
+                          scale: logoScale,
+                        ),
+                      ),
+                      SizedBox(height: screenHeight > 800 ? 24 : 16),
+                      // Verification Icon (Figma: 35e12406-d922-452e-8a76-4f0d175558e8.png, 374x374, Top 251px)
+                      Image.asset(
+                        AppAssets.verificationIcon,
+                        width: badgeSize,
+                        height: badgeSize,
+                        fit: BoxFit.contain,
+                        errorBuilder: (_, __, ___) => OtpSuccessBadge(size: badgeSize),
+                      ),
+                      SizedBox(height: screenHeight > 800 ? 28 : 18),
+                      // Verification Info (Figma: 380px fixed width, Top 618px, Gap: 36px, Hug 172px)
+                      ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 380),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            // Verification Message (Figma: Fixed 322px width, Hug 81px, Gap: 14px)
+                            ConstrainedBox(
+                              constraints: const BoxConstraints(maxWidth: 322),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  // Text Header Title (Figma: 322x31, DM Sans 600 SemiBold 24px, 100% height, Center)
+                                  RichText(
+                                    textAlign: TextAlign.center,
+                                    text: const TextSpan(
+                                      text: 'OTP Successfully ',
+                                      style: TextStyle(
+                                        fontFamily: 'DM Sans',
+                                        fontSize: 24,
+                                        fontWeight: FontWeight.w600,
+                                        color: Color(0xFF10213D),
+                                        height: 31 / 24,
+                                        letterSpacing: 0,
+                                      ),
+                                      children: [
+                                        TextSpan(
+                                          text: 'Verified!',
+                                          style: TextStyle(
+                                            fontFamily: 'DM Sans',
+                                            fontSize: 24,
+                                            fontWeight: FontWeight.w600,
+                                            color: Color(0xFF1A4789),
+                                            height: 31 / 24,
+                                            letterSpacing: 0,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(height: 14), // Exact Figma Gap: 14px
+                                  // Text Verification Description (Figma: 322x36, DM Sans 500 Medium 14px, Color #10213D Blue 2)
+                                  const Text(
+                                    'Your mobile number has been verified\nsuccessfully.',
+                                    style: TextStyle(
+                                      fontFamily: 'DM Sans',
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w500,
+                                      color: Color(0xFF10213D),
+                                      height: 18 / 14,
+                                      letterSpacing: 0,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 36), // Exact Figma Gap: 36px
+                            // Login Button (Figma: Fill 380px, Fixed 55px, Radius 12px, Border 1px #0E2543, Fill #0E2543, Padding 20px)
+                            SizedBox(
+                              width: double.infinity,
+                              height: 55, // Exact Figma Fixed: 55px
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AuthColors.navyButton, // #0E2543 (BLUE NH)
+                                  foregroundColor: Colors.white,
+                                  elevation: 0,
+                                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    side: const BorderSide(color: AuthColors.navyButton, width: 1),
+                                  ),
+                                ),
+                                onPressed: _continueToProfile,
+                                child: Stack(
+                                  alignment: Alignment.center,
+                                  children: const [
+                                    Center(
+                                      child: Text(
+                                        'Continue',
+                                        style: TextStyle(
+                                          fontFamily: 'DM Sans',
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.white,
+                                          height: 1.0,
+                                          letterSpacing: 0,
+                                        ),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                    Align(
+                                      alignment: Alignment.centerRight,
+                                      child: Icon(Icons.arrow_forward_rounded, size: 20, color: Colors.white),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  // Security Info pinned to bottom (Figma: Top 893px, Fixed 148px width, Hug 16px)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 24, bottom: 8),
+                    child: SizedBox(
+                      width: 148,
+                      height: 16,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: const [
+                          Icon(Icons.shield_outlined, size: 14, color: Color(0xFF414141)),
+                          SizedBox(width: 7), // Exact Figma Gap: 7px
+                          SizedBox(
+                            width: 75,
+                            height: 16,
+                            child: Text(
+                              '100% Secure',
+                              style: TextStyle(
+                                fontFamily: 'DM Sans',
+                                fontSize: 12,
+                                fontWeight: FontWeight.w400,
+                                color: Color(0xFF414141), // Grey 1: #414141
+                                height: 1.0, // 100% line height
+                                letterSpacing: 0,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                  SizedBox(width: 8),
-                  Icon(Icons.arrow_forward_rounded, size: 18),
                 ],
               ),
             ),
           ),
-          const SizedBox(height: 20),
-          const Text(
-            '100% Secure',
-            style: TextStyle(
-              fontSize: 11,
-              color: Color(0xFF94A3B8),
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          const SizedBox(height: 12),
-        ],
-      ),
+        );
+      },
     );
   }
 }

@@ -30,6 +30,7 @@ class AppRoutes {
   static const String selectCity = '/auth/select-city';
   static const String userDetails = '/auth/user-details';
   static const String otpMobileEmailVerification = '/auth/otp-verification';
+  static const String createProfile = '/auth/create-profile';
 
   static const String forgotPassword = '/auth/forgot-password';
   static const String forgotPasswordMobile = '/auth/forgot-password/mobile';

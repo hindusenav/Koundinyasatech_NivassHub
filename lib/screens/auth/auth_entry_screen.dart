@@ -18,6 +18,7 @@ import 'package:flutter_nivasshub/screens/kyc/kyc_documents_screen.dart';
 import 'package:flutter_nivasshub/utils/form_validators.dart';
 import 'package:flutter_nivasshub/widgets/auth/auth_shield_badge.dart';
 import 'package:flutter_nivasshub/widgets/auth/auth_skyline_painter.dart';
+import 'package:flutter_nivasshub/constants/asset_constants.dart';
 import 'package:flutter_nivasshub/widgets/auth/identifier_input_field.dart';
 import 'package:flutter_nivasshub/widgets/shared/app_bar/custom_app_bar.dart';
 import 'package:provider/provider.dart';
@@ -203,52 +204,74 @@ class _AuthEntryScreenState extends State<AuthEntryScreen> {
       ),
       body: Stack(
         children: [
-          // Background Skyline Painting
-          Positioned.fill(
+          // Background Image matching Figma Dev Mode specs (Registration-New Users):
+          // Image: bg img 2.png, Scale: Crop, Opacity: 70%, Layout: Width 442px, Height 616px, Top 340px, Left -1px
+          Positioned(
+            left: -1,
+            right: -1,
+            bottom: 0,
+            height: 616,
             child: IgnorePointer(
-              child: CustomPaint(
-                painter: AuthSkylinePainter(progress: 1.0),
+              child: Opacity(
+                opacity: 0.70,
+                child: Image.asset(
+                  AppAssets.authBackground,
+                  fit: BoxFit.cover,
+                  alignment: Alignment.bottomCenter,
+                  errorBuilder: (_, __, ___) => CustomPaint(
+                    painter: AuthSkylinePainter(progress: 1.0),
+                  ),
+                ),
               ),
             ),
           ),
           SafeArea(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: Form(
                 key: _formKey,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    const AuthShieldBadge(size: 64),
-                    const SizedBox(height: 12),
-                    Text(
-                      provider.isMobileMode
-                          ? 'Enter Your Mobile Number'
-                          : 'Enter Your Email Address',
-                      style: const TextStyle(
-                        fontSize: 28,
-                        fontWeight: FontWeight.w700,
-                        color: AuthColors.graysBlack,
-                        height: 34 / 28,
-                        letterSpacing: 0,
+                    // Page header / Header container (Figma: Padding: 16 top/bottom, 8 left/right, Gap: 12px)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          const AuthShieldBadge(size: 64, iconSize: 28),
+                          const SizedBox(height: 12),
+                          Text(
+                            provider.isMobileMode
+                                ? 'Enter Your Mobile Number'
+                                : 'Enter Your Email Address',
+                            style: const TextStyle(
+                              fontSize: 28,
+                              fontWeight: FontWeight.w700,
+                              color: AuthColors.graysBlack,
+                              height: 34 / 28,
+                              letterSpacing: 0,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 12),
+                          Text(
+                            provider.isMobileMode
+                                ? 'We will send a one-time password to verify your mobile number. This helps keep your account secure.'
+                                : 'We will send a one-time password to verify your email. This helps keep your account secure.',
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                              color: AuthColors.gray1,
+                              height: 1.5,
+                              letterSpacing: 0,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
                       ),
-                      textAlign: TextAlign.center,
                     ),
-                    const SizedBox(height: 10),
-                    Text(
-                      provider.isMobileMode
-                          ? 'We will send a one-time password to verify your mobile number. This helps keep your account secure.'
-                          : 'We will send a one-time password to verify your email. This helps keep your account secure.',
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                        color: AuthColors.gray1,
-                        height: 1.5,
-                        letterSpacing: 0,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 21), // Figma Gap: 21px to form card
                     // White Elevated Form Card Container (Radius 24px, Border 0.5px #9AA7B5, Padding 24px)
                     Container(
                       decoration: BoxDecoration(

@@ -18,6 +18,7 @@ import 'package:flutter_nivasshub/screens/auth/otp_mobile_email_verification_scr
 import 'package:flutter_nivasshub/screens/auth/select_city_screen.dart';
 import 'package:flutter_nivasshub/screens/auth/select_country_screen.dart';
 import 'package:flutter_nivasshub/screens/auth/user_details_screen.dart';
+import 'package:flutter_nivasshub/screens/auth/create_profile_screen.dart';
 import 'package:flutter_nivasshub/screens/kyc/kyc_documents_screen.dart';
 import 'package:flutter_nivasshub/screens/kyc/kyc_in_progress_screen.dart';
 import 'package:flutter_nivasshub/screens/kyc/kyc_verification_status_screen.dart';
@@ -239,6 +240,22 @@ class AuthRouter {
             ),
             child: OtpMobileEmailVerificationScreen(args: args),
           ),
+        );
+
+      // ========================================================
+      // CREATE PROFILE ("Create Your Profile")
+      // ========================================================
+
+      case AppRoutes.createProfile:
+        final args = settings.arguments;
+
+        if (args is! CreateProfileScreenArgs) {
+          return _unknownRoute(settings);
+        }
+
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (context) => CreateProfileScreen(args: args),
         );
 
       // ========================================================

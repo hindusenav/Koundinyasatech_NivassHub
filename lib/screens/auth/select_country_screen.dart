@@ -4,6 +4,7 @@ import 'package:flutter_nivasshub/models/auth/auth_identifier.dart';
 import 'package:flutter_nivasshub/routes/app_routes.dart';
 import 'package:flutter_nivasshub/screens/auth/select_city_screen.dart';
 import 'package:flutter_nivasshub/utils/flag_emoji.dart';
+import 'package:flutter_nivasshub/constants/asset_constants.dart';
 import 'package:flutter_nivasshub/widgets/auth/auth_curved_app_bar.dart';
 import 'package:flutter_nivasshub/widgets/auth/auth_skyline_painter.dart';
 import 'package:flutter_nivasshub/widgets/auth/section_header_badge.dart';
@@ -83,11 +84,20 @@ class _SelectCountryScreenState extends State<SelectCountryScreen> {
       appBar: const AuthCurvedAppBar(title: 'Select Country'),
       body: Stack(
         children: [
-          // Background Skyline Painting
+          // Background Image matching Figma Dev Mode specs:
+          // Image: bg img 2.png, Scale: Crop, Opacity: 70%, pinned to bottom
           Positioned.fill(
             child: IgnorePointer(
-              child: CustomPaint(
-                painter: AuthSkylinePainter(progress: 1.0),
+              child: Opacity(
+                opacity: 0.70,
+                child: Image.asset(
+                  AppAssets.authBackground,
+                  fit: BoxFit.cover,
+                  alignment: Alignment.bottomCenter,
+                  errorBuilder: (_, __, ___) => CustomPaint(
+                    painter: AuthSkylinePainter(progress: 1.0),
+                  ),
+                ),
               ),
             ),
           ),
