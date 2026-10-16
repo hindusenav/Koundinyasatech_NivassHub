@@ -34,6 +34,21 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Start decoding the illustration immediately so it's ready by first paint.
+    final dpr = MediaQuery.devicePixelRatioOf(context);
+    final width = MediaQuery.sizeOf(context).width;
+    precacheImage(
+      ResizeImage(
+        const AssetImage(AppAssets.welcomeBackground),
+        width: (width * dpr).round(),
+      ),
+      context,
+    );
+  }
+
+  @override
   void dispose() {
     _timer?.cancel();
     super.dispose();
@@ -56,7 +71,9 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   Widget build(BuildContext context) {
     final contentWidth = context.isDesktop
         ? AppDimensions.maxContentWidth * 0.4
-        : (context.isTablet ? AppDimensions.maxContentWidth * 0.6 : double.infinity);
+        : (context.isTablet
+              ? AppDimensions.maxContentWidth * 0.6
+              : double.infinity);
     final wide = context.isDesktop || context.isTablet;
 
     return Scaffold(
@@ -69,8 +86,10 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
               builder: (context, box) {
                 final h = box.maxHeight;
                 final markSize = (h * 0.13).clamp(48.0, wide ? 120.0 : 90.0);
-                final wordmarkWidth =
-                    (box.maxWidth * 0.55).clamp(120.0, wide ? 300.0 : 220.0);
+                final wordmarkWidth = (box.maxWidth * 0.55).clamp(
+                  120.0,
+                  wide ? 300.0 : 220.0,
+                );
                 return Column(
                   children: [
                     SizedBox(height: h * 0.08),
@@ -100,11 +119,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                     Expanded(
                       child: Align(
                         alignment: Alignment.bottomCenter,
-                        child: Image.asset(
-                          AppAssets.welcomeBackground,
-                          width: double.infinity,
-                          fit: BoxFit.fitWidth,
-                          alignment: Alignment.bottomCenter,
+                        child: RepaintBoundary(
+                          child: _illustration(context, box.maxWidth),
                         ),
                       ),
                     ),
@@ -118,13 +134,47 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     );
   }
 
+  /// Neighbourhood illustration, blended into the page instead of sitting on
+  /// it like a pasted rectangle: the top edge fades into the page colour and
+  /// the image fades in once decoded. Decoded at screen width (the source is
+  /// 4096px wide) so the transition from splash doesn't stall on a ~55MB decode.
+  Widget _illustration(BuildContext context, double width) {
+    final dpr = MediaQuery.devicePixelRatioOf(context);
+    return ShaderMask(
+      blendMode: BlendMode.dstIn,
+      shaderCallback: (rect) => const LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: [Colors.transparent, Colors.black],
+        stops: [0.0, 0.28],
+      ).createShader(rect),
+      child: Image.asset(
+        AppAssets.welcomeBackground,
+        width: double.infinity,
+        fit: BoxFit.fitWidth,
+        alignment: Alignment.bottomCenter,
+        cacheWidth: (width * dpr).round(),
+        filterQuality: FilterQuality.medium,
+        frameBuilder: (context, child, frame, wasSyncLoaded) {
+          if (wasSyncLoaded) return child;
+          return AnimatedOpacity(
+            opacity: frame == null ? 0 : 1,
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeOut,
+            child: child,
+          );
+        },
+      ),
+    );
+  }
+
   Widget _title(String text, {bool large = false}) => Text(
-        text,
-        textAlign: TextAlign.center,
-        style: AppTextStyles.titleLarge.copyWith(
-          color: AppColors.primaryDark,
-          fontWeight: FontWeight.w700,
-          fontSize: large ? 26 : null,
-        ),
-      );
+    text,
+    textAlign: TextAlign.center,
+    style: AppTextStyles.titleLarge.copyWith(
+      color: AppColors.primaryDark,
+      fontWeight: FontWeight.w700,
+      fontSize: large ? 26 : null,
+    ),
+  );
 }

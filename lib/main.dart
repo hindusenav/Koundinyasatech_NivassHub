@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_nivasshub/app.dart';
@@ -65,8 +66,39 @@ import 'package:flutter_nivasshub/services/registration/registration_service_bas
 import 'package:flutter_nivasshub/services/society/society_service.dart';
 import 'package:flutter_nivasshub/services/society/society_service_base.dart';
 
+/// Last-resort error hooks so an uncaught framework or async error never
+/// takes the app down in release. Debug builds keep the default red-screen /
+/// console behaviour; release builds swallow (and can later forward to a
+/// crash reporter such as Crashlytics/Sentry from [_reportError]).
+void _installGlobalErrorHandlers() {
+  final defaultOnError = FlutterError.onError;
+  FlutterError.onError = (details) {
+    if (kDebugMode) {
+      defaultOnError?.call(details);
+    } else {
+      _reportError(details.exception, details.stack);
+    }
+  };
+
+  PlatformDispatcher.instance.onError = (error, stack) {
+    _reportError(error, stack);
+    return true;
+  };
+
+  if (!kDebugMode) {
+    // Replace the grey/red build-error box with an empty widget in release.
+    ErrorWidget.builder = (_) => const SizedBox.shrink();
+  }
+}
+
+void _reportError(Object error, StackTrace? stack) {
+  // Hook point for a crash reporter. Intentionally silent in release.
+  if (kDebugMode) debugPrint('[UncaughtError] $error\n$stack');
+}
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  _installGlobalErrorHandlers();
   debugPrint('[App] Startup begin');
 
   // ============================================================

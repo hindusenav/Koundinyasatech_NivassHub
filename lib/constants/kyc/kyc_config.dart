@@ -1,5 +1,3 @@
-import 'package:flutter_nivasshub/constants/app_constants.dart';
-
 /// Feature flag + tunable constants for the KYC / auth-entry flow.
 ///
 /// Mirrors `constants/auth/auth_config.dart` — flipping [useMockKycApi] to
@@ -17,7 +15,9 @@ class KycConfig {
   // Deliberately NOT `AppConstants.allowedDocumentExtensions`, which is
   // `['pdf','doc','docx']` — a general contract with other consumers. KYC
   // accepts images and rejects Word documents, so it keeps its own list.
-  // The size limit *is* shared, so 5 MB stays defined in one place.
+  // KYC also has its own size limit: a file must be STRICTLY smaller than
+  // this (exactly 100 KB is rejected). The upload API is only called once
+  // [isWithinSizeLimit] passes.
   // ---------------------------------------------------------------------
   static const List<String> allowedKycExtensions = [
     'pdf',
@@ -25,7 +25,11 @@ class KycConfig {
     'jpeg',
     'png',
   ];
-  static const int maxKycFileSizeBytes = AppConstants.maxUploadSizeBytes;
+  static const int maxKycFileSizeBytes = 100 * 1024;
+
+  /// `true` only when [sizeBytes] is below [maxKycFileSizeBytes].
+  static bool isWithinSizeLimit(int sizeBytes) =>
+      sizeBytes < maxKycFileSizeBytes;
 
   // ---------------------------------------------------------------------
   // Mock timing

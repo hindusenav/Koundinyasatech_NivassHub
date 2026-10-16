@@ -12,7 +12,7 @@ import 'package:flutter_nivasshub/services/file/file_picker_service_base.dart';
 class MockFilePickerService implements FilePickerServiceBase {
   MockFilePickerService({
     this.fileName = 'address_proof.pdf',
-    this.sizeBytes = 240 * 1024,
+    this.sizeBytes = 80 * 1024,
   });
 
   final String fileName;

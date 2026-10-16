@@ -17,59 +17,65 @@ class DashboardBottomNavigation extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final activeIndex = selectedIndex ?? provider.selectedIndex;
 
-    return SafeArea(
-      top: false,
-      child: Container(
-        height: 84,
-        decoration: BoxDecoration(
-          color: isDark ? const Color(0xFF0E1A33) : FigmaColors.navy,
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(24),
-            topRight: Radius.circular(24),
+    // Cap the system font scale so the bar keeps a fixed, compact height on
+    // phones with large accessibility text.
+    final mq = MediaQuery.of(context);
+    return MediaQuery(
+      data: mq.copyWith(textScaler: mq.textScaler.clamp(maxScaleFactor: 1.1)),
+      child: SafeArea(
+        top: false,
+        child: Container(
+          height: 62,
+          decoration: BoxDecoration(
+            color: isDark ? const Color(0xFF0E1A33) : FigmaColors.navy,
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(24),
+              topRight: Radius.circular(24),
+            ),
           ),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _item(
-                context,
-                provider,
-                activeIndex,
-                0,
-                "assets/icons/home.svg.png",
-                "Home",
-                isDark,
-              ),
-              _item(
-                context,
-                provider,
-                activeIndex,
-                1,
-                "assets/icons/visitors.svg.png",
-                "Visitors",
-                isDark,
-              ),
-              _item(
-                context,
-                provider,
-                activeIndex,
-                2,
-                "assets/icons/community.svg.png",
-                "Community",
-                isDark,
-              ),
-              _item(
-                context,
-                provider,
-                activeIndex,
-                3,
-                "assets/icons/payments.svg.png",
-                "Payments",
-                isDark,
-              ),
-            ],
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                _item(
+                  context,
+                  provider,
+                  activeIndex,
+                  0,
+                  "assets/icons/home.svg.png",
+                  "Home",
+                  isDark,
+                ),
+                _item(
+                  context,
+                  provider,
+                  activeIndex,
+                  1,
+                  "assets/icons/visitors.svg.png",
+                  "Visitors",
+                  isDark,
+                ),
+                _item(
+                  context,
+                  provider,
+                  activeIndex,
+                  2,
+                  "assets/icons/community.svg.png",
+                  "Community",
+                  isDark,
+                ),
+                _item(
+                  context,
+                  provider,
+                  activeIndex,
+                  3,
+                  "assets/icons/payments.svg.png",
+                  "Payments",
+                  isDark,
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -134,8 +140,8 @@ class DashboardBottomNavigation extends StatelessWidget {
             /// ICON BACKGROUND
             AnimatedContainer(
               duration: const Duration(milliseconds: 200),
-              height: 40,
-              width: 40,
+              height: 30,
+              width: 30,
               decoration: BoxDecoration(
                 color: selected ? activeBlue : Colors.transparent,
                 shape: BoxShape.circle,
@@ -143,31 +149,29 @@ class DashboardBottomNavigation extends StatelessWidget {
               child: Center(
                 child: Image.asset(
                   image,
-                  width: 22,
-                  height: 22,
+                  width: 18,
+                  height: 18,
                   fit: BoxFit.contain,
-                  color: selected
-                      ? Colors.white
-                      : Colors.white70,
+                  color: selected ? Colors.white : Colors.white70,
                   filterQuality: FilterQuality.high,
                   isAntiAlias: true,
                   errorBuilder: (_, _, _) {
                     return Icon(
                       Icons.circle_outlined,
-                      size: 22,
+                      size: 18,
                       color: selected ? Colors.white : Colors.white70,
                     );
                   },
                 ),
               ),
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: 3),
             Text(
               title,
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontFamily: 'DM Sans',
-                fontSize: 11,
+                fontSize: 10.5,
                 fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
                 color: selected ? activeBlue : Colors.white70,
                 letterSpacing: 0.2,

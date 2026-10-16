@@ -14,31 +14,34 @@ class NavigationService {
   static BuildContext? get context => navigatorKey.currentContext;
 
   static Future<T?> pushNamed<T>(String routeName, {Object? arguments}) {
-    return navigatorKey.currentState!.pushNamed<T>(
-      routeName,
-      arguments: arguments,
-    );
+    return navigatorKey.currentState?.pushNamed<T>(
+          routeName,
+          arguments: arguments,
+        ) ??
+        Future<T?>.value();
   }
 
   static Future<T?> pushReplacementNamed<T, TO>(
     String routeName, {
     Object? arguments,
   }) {
-    return navigatorKey.currentState!.pushReplacementNamed<T, TO>(
-      routeName,
-      arguments: arguments,
-    );
+    return navigatorKey.currentState?.pushReplacementNamed<T, TO>(
+          routeName,
+          arguments: arguments,
+        ) ??
+        Future<T?>.value();
   }
 
   static Future<T?> pushNamedAndRemoveUntil<T>(
     String routeName, {
     Object? arguments,
   }) {
-    return navigatorKey.currentState!.pushNamedAndRemoveUntil<T>(
-      routeName,
-      (route) => false,
-      arguments: arguments,
-    );
+    return navigatorKey.currentState?.pushNamedAndRemoveUntil<T>(
+          routeName,
+          (route) => false,
+          arguments: arguments,
+        ) ??
+        Future<T?>.value();
   }
 
   static void pop<T>([T? result]) {

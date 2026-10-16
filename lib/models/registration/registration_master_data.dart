@@ -10,8 +10,8 @@ class RegistrationState {
   factory RegistrationState.fromJson(Map<String, dynamic> json) {
     final lookup = _CaseInsensitiveLookup(json);
     return RegistrationState(
-      provinceId: lookup.string(['province_id']) ?? '',
-      provinceName: lookup.string(['province_name']) ?? '',
+      provinceId: lookup.string(['province_id', 'provinceId']) ?? '',
+      provinceName: lookup.string(['province_name', 'provinceName']) ?? '',
     );
   }
 }
@@ -36,9 +36,10 @@ class RegistrationCountry {
     final lookup = _CaseInsensitiveLookup(json);
     final rawStates = lookup.raw(['States', 'states']);
     return RegistrationCountry(
-      countryCode: lookup.string(['country_code']) ?? '',
-      callingCode: lookup.string(['country_calling_code']) ?? '',
-      name: lookup.string(['country_name']) ?? '',
+      countryCode: lookup.string(['country_code', 'countryCode']) ?? '',
+      callingCode:
+          lookup.string(['country_calling_code', 'countryCallingCode']) ?? '',
+      name: lookup.string(['country_name', 'countryName']) ?? '',
       states: rawStates is List
           ? rawStates
                 .whereType<Map>()
@@ -68,12 +69,50 @@ class RegistrationSociety {
 
   factory RegistrationSociety.fromJson(Map<String, dynamic> json) {
     final lookup = _CaseInsensitiveLookup(json);
+
+    // `/society/add-master-data` doesn't use the registration endpoint's
+    // key names, so after the known spellings, fall back to scanning for a
+    // key that looks like the society id / name.
+    String? scan(bool Function(String key) match) {
+      for (final entry in json.entries) {
+        final value = entry.value;
+        if (value == null || value is Map || value is List) continue;
+        if (match(entry.key.toLowerCase().replaceAll('_', ''))) {
+          return value.toString();
+        }
+      }
+      return null;
+    }
+
+    final socId =
+        lookup.string([
+          'soc_id',
+          'socId',
+          'socid',
+          'society_id',
+          'societyId',
+          'id',
+        ]) ??
+        scan((k) => k.contains('soc') && k.endsWith('id')) ??
+        '';
+    final name =
+        lookup.string([
+          'Society_Name',
+          'society_name',
+          'societyName',
+          'socName',
+          'soc_name',
+          'name',
+        ]) ??
+        scan((k) => k.contains('soc') && k.contains('name')) ??
+        '';
+
     return RegistrationSociety(
-      socId: lookup.string(['soc_id']) ?? '',
-      societyName: lookup.string(['Society_Name', 'society_name']) ?? '',
-      city: lookup.string(['city']) ?? '',
-      state: lookup.string(['state']) ?? '',
-      country: lookup.string(['country']) ?? '',
+      socId: socId,
+      societyName: name,
+      city: lookup.string(['city', 'cityName', 'city_name']) ?? '',
+      state: lookup.string(['state', 'stateName', 'state_name']) ?? '',
+      country: lookup.string(['country', 'countryName', 'country_name']) ?? '',
     );
   }
 
@@ -109,10 +148,14 @@ class RegistrationCategory {
 
   factory RegistrationCategory.fromJson(Map<String, dynamic> json) {
     final lookup = _CaseInsensitiveLookup(json);
+    final name = lookup.string(['name', 'categoryName', 'category_name']) ?? '';
     return RegistrationCategory(
-      categoryId: lookup.string(['category_id']) ?? '',
-      name: lookup.string(['name']) ?? '',
-      description: lookup.string(['description']) ?? '',
+      categoryId:
+          lookup.string(['category_id', 'categoryId', 'id']) ??
+          lookup.scan((k) => k.endsWith('id')) ??
+          '',
+      name: name,
+      description: lookup.string(['description']) ?? name,
     );
   }
 }
@@ -134,15 +177,18 @@ class RegistrationSubRole {
 
   factory RegistrationSubRole.fromJson(Map<String, dynamic> json) {
     final lookup = _CaseInsensitiveLookup(json);
+    final name = lookup.string(['name', 'subRoleName', 'sub_role_name']) ?? '';
     return RegistrationSubRole(
-      subRoleId: lookup.string(['sub_role_id']) ?? '',
-      name: lookup.string(['name']) ?? '',
-      description: lookup.string(['description']) ?? '',
-      categories: _parseNested(
-        lookup,
-        ['Categories'],
-        RegistrationCategory.fromJson,
-      ),
+      subRoleId:
+          lookup.string(['sub_role_id', 'subRoleId', 'id']) ??
+          lookup.scan((k) => k.endsWith('id')) ??
+          '',
+      name: name,
+      description: lookup.string(['description']) ?? name,
+      categories: _parseNested(lookup, [
+        'Categories',
+        'categories',
+      ], RegistrationCategory.fromJson),
     );
   }
 }
@@ -172,15 +218,75 @@ class RegistrationRole {
 
   factory RegistrationRole.fromJson(Map<String, dynamic> json) {
     final lookup = _CaseInsensitiveLookup(json);
+    final name = lookup.string(['name', 'roleName', 'role_name']) ?? '';
+    // Sub-roles: known spellings first, else the first list-of-maps field.
+    var subRoles = _parseNested(lookup, [
+      'Sub_Role',
+      'Sub_Roles',
+      'subRoles',
+      'subRole',
+      'sub_roles',
+      'sub_role',
+    ], RegistrationSubRole.fromJson);
+    if (subRoles.isEmpty) {
+      for (final value in json.values) {
+        if (value is List && value.isNotEmpty && value.first is Map) {
+          subRoles = value
+              .whereType<Map>()
+              .map(
+                (e) => RegistrationSubRole.fromJson(
+                  Map<String, dynamic>.from(e),
+                ),
+              )
+              .toList(growable: false);
+          break;
+        }
+      }
+    }
     return RegistrationRole(
-      roleId: lookup.string(['role_id']) ?? '',
-      name: lookup.string(['name']) ?? '',
-      description: lookup.string(['description']) ?? '',
-      subRoles: _parseNested(
-        lookup,
-        ['Sub_Role'],
-        RegistrationSubRole.fromJson,
-      ),
+      roleId:
+          lookup.string(['role_id', 'roleId', 'id']) ??
+          lookup.scan((k) => k.contains('role') && k.endsWith('id')) ??
+          lookup.scan((k) => k.endsWith('id')) ??
+          '',
+      name: name,
+      description: lookup.string(['description']) ?? name,
+      subRoles: subRoles,
+    );
+  }
+}
+
+/// One `kycDocuments[]` entry from `GET /society/add-master-data`; [id] is
+/// sent as `documentid` on `POST /society/add-user`. Keys are matched
+/// loosely since the field names aren't documented.
+class RegistrationKycDocument {
+  const RegistrationKycDocument({required this.id, required this.name});
+
+  final String id;
+  final String name;
+
+  factory RegistrationKycDocument.fromJson(Map<String, dynamic> json) {
+    final lookup = _CaseInsensitiveLookup(json);
+    return RegistrationKycDocument(
+      id:
+          lookup.string([
+            'documentId',
+            'document_id',
+            'documentNameId',
+            'document_name_id',
+            'docId',
+            'doc_id',
+            'id',
+          ]) ??
+          '',
+      name:
+          lookup.string([
+            'documentName',
+            'document_name',
+            'name',
+            'description',
+          ]) ??
+          '',
     );
   }
 }
@@ -192,11 +298,15 @@ class RegistrationMasterData {
     required this.countries,
     required this.societies,
     required this.roles,
+    this.kycDocuments = const [],
   });
 
   final List<RegistrationCountry> countries;
   final List<RegistrationSociety> societies;
   final List<RegistrationRole> roles;
+
+  /// Only present on the add-society master data.
+  final List<RegistrationKycDocument> kycDocuments;
 
   static const empty = RegistrationMasterData(
     countries: [],
@@ -220,9 +330,16 @@ class RegistrationMasterData {
     }
 
     return RegistrationMasterData(
-      countries: parseList(['ActiveCountries'], RegistrationCountry.fromJson),
+      countries: parseList([
+        'ActiveCountries',
+        'countries',
+      ], RegistrationCountry.fromJson),
       societies: parseList(['Societies'], RegistrationSociety.fromJson),
       roles: parseList(['Roles'], RegistrationRole.fromJson),
+      kycDocuments: parseList([
+        'kycDocuments',
+        'KycDocuments',
+      ], RegistrationKycDocument.fromJson),
     );
   }
 }
@@ -244,6 +361,19 @@ class _CaseInsensitiveLookup {
     final lowerCandidates = candidateKeys.map((k) => k.toLowerCase()).toSet();
     for (final entry in _map.entries) {
       if (lowerCandidates.contains(entry.key.toLowerCase())) return entry.value;
+    }
+    return null;
+  }
+
+  /// First scalar value whose key (lower-cased, underscores removed) passes
+  /// [match] — a last resort for keys that aren't documented.
+  String? scan(bool Function(String key) match) {
+    for (final entry in _map.entries) {
+      final value = entry.value;
+      if (value == null || value is Map || value is List) continue;
+      if (match(entry.key.toLowerCase().replaceAll('_', ''))) {
+        return value.toString();
+      }
     }
     return null;
   }

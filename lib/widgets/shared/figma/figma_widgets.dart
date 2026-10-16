@@ -23,7 +23,13 @@ class FigmaCard extends StatelessWidget {
         color: t.card,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: t.cardBorder),
-        boxShadow: [BoxShadow(color: t.shadow, blurRadius: 18, offset: const Offset(0, 6))],
+        boxShadow: [
+          BoxShadow(
+            color: t.shadow,
+            blurRadius: 18,
+            offset: const Offset(0, 6),
+          ),
+        ],
       ),
       child: child,
     );
@@ -77,7 +83,8 @@ class FigmaButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = navy ? FigmaColors.of(context).cta : FigmaColors.orange;
+    // Every CTA is orange now; `navy` is kept so call sites don't change.
+    const color = FigmaColors.orange;
     return SizedBox(
       width: double.infinity,
       height: 50,
@@ -89,18 +96,29 @@ class FigmaButton extends StatelessWidget {
           disabledBackgroundColor: color.withValues(alpha: 0.45),
           disabledForegroundColor: Colors.white,
           elevation: 0,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
         ),
         child: isLoading
             ? const SizedBox(
                 width: 20,
                 height: 20,
-                child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: Colors.white,
+                ),
               )
             : Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(label, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
+                  Text(
+                    label,
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                   if (showArrow) ...[
                     const SizedBox(width: 8),
                     const Icon(Icons.arrow_forward, size: 18),
@@ -114,7 +132,11 @@ class FigmaButton extends StatelessWidget {
 
 /// Round navy badge with an icon, shown above the entry/OTP titles.
 class FigmaBadge extends StatelessWidget {
-  const FigmaBadge({super.key, this.icon = Icons.shield_outlined, this.size = 56});
+  const FigmaBadge({
+    super.key,
+    this.icon = Icons.shield_outlined,
+    this.size = 56,
+  });
 
   final IconData icon;
   final double size;
@@ -124,7 +146,10 @@ class FigmaBadge extends StatelessWidget {
     return Container(
       width: size,
       height: size,
-      decoration: BoxDecoration(shape: BoxShape.circle, color: FigmaColors.of(context).header),
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: FigmaColors.of(context).header,
+      ),
       child: Icon(icon, color: Colors.white, size: size * 0.45),
     );
   }
@@ -145,7 +170,11 @@ class FigmaTitleBlock extends StatelessWidget {
         Text(
           title,
           textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700, color: t.heading),
+          style: TextStyle(
+            fontSize: 22,
+            fontWeight: FontWeight.w700,
+            color: t.heading,
+          ),
         ),
         if (subtitle != null) ...[
           const SizedBox(height: 8),
@@ -183,7 +212,10 @@ class FigmaProgressStrip extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(label, style: TextStyle(fontSize: 11, color: t.body)),
-            Text('Step $current of $total', style: TextStyle(fontSize: 11, color: t.body)),
+            Text(
+              'Step $current of $total',
+              style: TextStyle(fontSize: 11, color: t.body),
+            ),
           ],
         ),
         const SizedBox(height: 6),

@@ -11,20 +11,12 @@ import 'package:flutter_nivasshub/widgets/dashboard/otp/generate_otp_banner.dart
 import 'package:flutter_nivasshub/widgets/dashboard/panic/panic_sos_banner.dart';
 import 'package:flutter_nivasshub/widgets/dashboard/quick_actions/quick_actions_grid.dart';
 import 'package:flutter_nivasshub/widgets/dashboard/add_property/add_proper_section.dart';
-import 'package:flutter_nivasshub/widgets/shared/feedback/custom_snackbar.dart';
-
-// KYC Update Card
-import 'package:flutter_nivasshub/widgets/dashboard/kyc_update_card/kyc_update_card_section.dart';
 
 class DashboardBody extends StatefulWidget {
-  const DashboardBody({
-    super.key,
-    required this.showKycCard,
-  });
+  const DashboardBody({super.key, required this.showKycCard});
 
-  /// Whether the floating "KYC Update" card should be shown. `false` once
-  /// the user's KYC has been approved (Scenario 1); `true` while it's
-  /// still incomplete (Scenario 2).
+  /// Kept for call-site compatibility; the floating "KYC Update" card has
+  /// been removed from Home, so this no longer affects rendering.
   final bool showKycCard;
 
   @override
@@ -33,15 +25,6 @@ class DashboardBody extends StatefulWidget {
 
 class _DashboardBodyState extends State<DashboardBody> {
   static final LayerLink _headerAnchor = LayerLink();
-
-  // ============================================================
-  // KYC CARD HEIGHT
-  //
-  // Space reserved at the bottom of the scrollable dashboard
-  // so the floating KYC card does not cover the last content.
-  // ============================================================
-
-  static const double _kycCardAreaHeight = 150.0;
 
   // ============================================================
   // ADD PROPERTY PANEL
@@ -58,18 +41,6 @@ class _DashboardBodyState extends State<DashboardBody> {
     });
   }
 
-  // ============================================================
-  // KYC UPDATE ACTION
-  // ============================================================
-
-  void _openKycFlow(BuildContext context) {
-    // MISSING API CONTRACT: updating/adding property KYC for an
-    // already-authenticated account has no documented backend flow (the
-    // geography screens this used to reuse were dummy UI with no service
-    // layer, and have been removed). Re-wire once that contract exists.
-    CustomSnackbar.info(context, 'KYC update is coming soon.');
-  }
-
   @override
   Widget build(BuildContext context) {
     const double horizontalPadding = 16.0;
@@ -83,14 +54,10 @@ class _DashboardBodyState extends State<DashboardBody> {
           // ========================================================
           // SCROLLABLE DASHBOARD
           // ========================================================
-
           SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
 
-            // Extra space at bottom for the floating KYC card
-            padding: const EdgeInsets.only(
-              bottom: _kycCardAreaHeight + 20,
-            ),
+            padding: const EdgeInsets.only(bottom: 24),
 
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -98,7 +65,6 @@ class _DashboardBodyState extends State<DashboardBody> {
                 // ==================================================
                 // HEADER
                 // ==================================================
-
                 CompositedTransformTarget(
                   link: _headerAnchor,
                   child: DashboardHeader(
@@ -111,21 +77,17 @@ class _DashboardBodyState extends State<DashboardBody> {
                 // ADD PROPERTY — hidden until the header's "B-402 ▾"
                 // row is tapped.
                 // ==================================================
-
-               AnimatedSize(
-  duration: const Duration(milliseconds: 200),
-  curve: Curves.easeInOut,
-  child: _showPropertyPanel
-      ? AddPropertySection(
-          isExpanded: _showPropertyPanel,
-        )
-      : const SizedBox(width: double.infinity),
-),
+                AnimatedSize(
+                  duration: const Duration(milliseconds: 200),
+                  curve: Curves.easeInOut,
+                  child: _showPropertyPanel
+                      ? AddPropertySection(isExpanded: _showPropertyPanel)
+                      : const SizedBox(width: double.infinity),
+                ),
 
                 // ==================================================
                 // DASHBOARD CONTENT
                 // ==================================================
-
                 Padding(
                   padding: const EdgeInsets.fromLTRB(
                     horizontalPadding,
@@ -140,7 +102,6 @@ class _DashboardBodyState extends State<DashboardBody> {
                       // =================================================
                       // ONLINE ADVERTISEMENT
                       // =================================================
-
                       const BannerSlider(),
 
                       const SizedBox(height: 16),
@@ -148,7 +109,6 @@ class _DashboardBodyState extends State<DashboardBody> {
                       // =================================================
                       // QUICK ACTIONS
                       // =================================================
-
                       const QuickActionsGrid(),
 
                       const SizedBox(height: 16),
@@ -156,7 +116,6 @@ class _DashboardBodyState extends State<DashboardBody> {
                       // =================================================
                       // MAINTENANCE
                       // =================================================
-
                       const MaintenanceCard(),
 
                       const SizedBox(height: 16),
@@ -164,7 +123,6 @@ class _DashboardBodyState extends State<DashboardBody> {
                       // =================================================
                       // APPROVAL QUEUE
                       // =================================================
-
                       const ApprovalQueueSection(),
 
                       const SizedBox(height: 16),
@@ -172,7 +130,6 @@ class _DashboardBodyState extends State<DashboardBody> {
                       // =================================================
                       // PANIC SOS
                       // =================================================
-
                       const PanicSosBanner(),
 
                       const SizedBox(height: 16),
@@ -180,7 +137,6 @@ class _DashboardBodyState extends State<DashboardBody> {
                       // =================================================
                       // OTP
                       // =================================================
-
                       const GenerateOtpBanner(),
 
                       const SizedBox(height: 16),
@@ -188,7 +144,6 @@ class _DashboardBodyState extends State<DashboardBody> {
                       // =================================================
                       // COMMUNITY
                       // =================================================
-
                       const CommunityPostsSection(),
 
                       const SizedBox(height: 20),
@@ -202,7 +157,6 @@ class _DashboardBodyState extends State<DashboardBody> {
           // ========================================================
           // VISITOR APPROVAL POPUP
           // ========================================================
-
           CompositedTransformFollower(
             link: _headerAnchor,
             showWhenUnlinked: false,
@@ -210,50 +164,7 @@ class _DashboardBodyState extends State<DashboardBody> {
               horizontalPadding: horizontalPadding,
             ),
           ),
-
-          // ========================================================
-          // KYC UPDATE POPUP / FLOATING CARD
-          // ========================================================
-          //
-          // This is outside SingleChildScrollView.
-          //
-          // Therefore it:
-          //   - stays at the bottom of Home
-          //   - floats over the dashboard
-          //   - does not scroll with dashboard content
-          //   - does not push the dashboard content down
-          //
-          // This matches Scenario 2 in your flow.
-          // ========================================================
-
-          if (widget.showKycCard)
-            Positioned(
-              left: 12,
-              right: 12,
-              bottom: 8,
-
-              child: SafeArea(
-                top: false,
-                child: _buildKycUpdateCard(context),
-              ),
-            ),
         ],
-      ),
-    );
-  }
-
-  // ============================================================
-  // KYC UPDATE CARD
-  // ============================================================
-
-  Widget _buildKycUpdateCard(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-
-      child: KycUpdateCardSection(
-        onUpdatePressed: () {
-          _openKycFlow(context);
-        },
       ),
     );
   }

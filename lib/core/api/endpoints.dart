@@ -2,7 +2,7 @@
 class ApiEndpoints {
   ApiEndpoints._();
 
-  static const String baseUrl = 'http://10.10.10.10:3004';
+  static const String baseUrl = 'http://192.168.0.236:3004';
 
   // ---------------------------------------------------------------------
   // 1b. Identifier-first authentication entry (mobile OR email)
@@ -39,6 +39,21 @@ class ApiEndpoints {
   /// `GET ?socid=<id>` returns one society's full Tower→Floor→Unit tree.
   /// See `SocietyService`.
   static const String societyDetails = '/society/details';
+
+  /// `GET ?user_token=<session-token>` — master data for the Add User to
+  /// Society form. See `AddSocietyService`.
+  static const String addSocietyMasterData = '/society/add-master-data';
+
+  /// `POST` JSON body (see `AddUserToSocietyRequest`) — adds the signed-in
+  /// user to another society unit; the unit starts pending approval.
+  static const String addUserToSociety = '/society/add-user';
+
+  /// `GET` — vehicle brands grouped under `2W` and `4W`. See `VehicleService`.
+  static const String vehicleBrands = '/vehicle-brands';
+
+  /// `POST` JSON body (see `AddVehicleRequest`) — registers a vehicle and
+  /// returns its allotted parking slot. See `VehicleService`.
+  static const String addVehicle = '/vehicle/add';
 
   /// `POST` verifies the OTP sent after registration (`userId`, `otp`,
   /// `identifier` = `"M"`/`"E"`, `otpType` = `"UR"`). See

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter_nivasshub/constants/kyc/kyc_config.dart';
 import 'package:flutter_nivasshub/constants/kyc/kyc_strings.dart';
 import 'package:flutter_nivasshub/models/auth/auth_flow_state.dart';
 import 'package:flutter_nivasshub/models/auth/user_role.dart';
@@ -257,6 +258,22 @@ class KycProvider extends ChangeNotifier {
     // fire a duplicate upload.
     if (previous.status == KycUploadStatus.uploading) return;
 
+    // Size gate: the upload API is only triggered for files below 100 KB.
+    // Covers camera captures too, which bypass the file picker's own check.
+    if (!KycConfig.isWithinSizeLimit(file.sizeBytes)) {
+      final message = KycStrings.fileTooLarge(KycConfig.maxKycFileSizeBytes);
+      _update(
+        documentId,
+        previous.isSatisfied
+            ? previous.copyWith(errorMessage: message)
+            : previous.copyWith(
+                status: KycUploadStatus.failed,
+                errorMessage: message,
+              ),
+      );
+      return;
+    }
+
     _update(
       documentId,
       previous.copyWith(status: KycUploadStatus.uploading, clearError: true),
@@ -423,6 +440,9 @@ class KycProvider extends ChangeNotifier {
   ) async {
     final id = doc.documentNameId;
     if (_reuploadingIds.contains(id)) return null;
+    if (!KycConfig.isWithinSizeLimit(file.sizeBytes)) {
+      return KycStrings.fileTooLarge(KycConfig.maxKycFileSizeBytes);
+    }
     _reuploadingIds.add(id);
     notifyListeners();
 

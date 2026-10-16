@@ -21,34 +21,45 @@ class SearchResultTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final titleColor = isDark ? Colors.white : FigmaColors.navy;
     return InkWell(
       onTap: onTap,
       child: Padding(
-        padding: AppSpacing.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.sm),
+        padding: AppSpacing.symmetric(
+          horizontal: AppSpacing.md,
+          vertical: AppSpacing.sm,
+        ),
         child: Row(
           children: [
             Container(
               width: AppDimensions.avatarSm,
               height: AppDimensions.avatarSm,
               decoration: BoxDecoration(
-                color: const Color(0xFFEAF1FF),
+                color: isDark
+                    ? const Color(0xFF1B2A47)
+                    : const Color(0xFFEAF1FF),
                 borderRadius: AppRadius.radiusSm,
               ),
               alignment: Alignment.center,
               child: Icon(
                 AppFeatureIcons.icon(item.iconKey),
                 size: AppDimensions.iconSm,
-                color: FigmaColors.navy,
+                color: titleColor,
               ),
             ),
             AppSpacing.gapWMd,
             Expanded(
               child: Text(
                 item.title,
-                style: AppTextStyles.bodyLarge.copyWith(color: FigmaColors.navy),
+                style: AppTextStyles.bodyLarge.copyWith(color: titleColor),
               ),
             ),
-            Icon(Icons.chevron_right_rounded, color: AppColors.grey400, size: AppDimensions.iconMd),
+            Icon(
+              Icons.chevron_right_rounded,
+              color: AppColors.grey400,
+              size: AppDimensions.iconMd,
+            ),
           ],
         ),
       ),

@@ -4,6 +4,7 @@ import 'package:flutter_nivasshub/constants/app_dimensions.dart';
 import 'package:flutter_nivasshub/constants/app_radius.dart';
 import 'package:flutter_nivasshub/constants/app_spacing.dart';
 import 'package:flutter_nivasshub/constants/app_text_styles.dart';
+import 'package:flutter_nivasshub/constants/figma_colors.dart';
 
 /// Assembles [AppColors], [AppTextStyles], [AppSpacing], [AppRadius], and
 /// [AppDimensions] into the two [ThemeData] instances the app runs on.
@@ -18,34 +19,40 @@ class AppTheme {
   static ThemeData _build({required Brightness brightness}) {
     final isDark = brightness == Brightness.dark;
 
-    final backgroundColor =
-        isDark ? AppColors.backgroundDark : AppColors.backgroundLight;
-    final surfaceColor =
-        isDark ? AppColors.surfaceDark : AppColors.surfaceLight;
-    final textPrimary =
-        isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight;
-    final textSecondary =
-        isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight;
+    final backgroundColor = isDark
+        ? AppColors.backgroundDark
+        : AppColors.backgroundLight;
+    final surfaceColor = isDark
+        ? AppColors.surfaceDark
+        : AppColors.surfaceLight;
+    final textPrimary = isDark
+        ? AppColors.textPrimaryDark
+        : AppColors.textPrimaryLight;
+    final textSecondary = isDark
+        ? AppColors.textSecondaryDark
+        : AppColors.textSecondaryLight;
     final borderColor = isDark ? AppColors.borderDark : AppColors.borderLight;
-    final dividerColor = isDark ? AppColors.dividerDark : AppColors.dividerLight;
-    final disabledBorderColor =
-        isDark ? AppColors.grey700 : AppColors.grey200;
+    final dividerColor = isDark
+        ? AppColors.dividerDark
+        : AppColors.dividerLight;
+    final disabledBorderColor = isDark ? AppColors.grey700 : AppColors.grey200;
 
-    final colorScheme = ColorScheme.fromSeed(
-      seedColor: AppColors.primary,
-      brightness: brightness,
-    ).copyWith(
-      primary: AppColors.primary,
-      onPrimary: AppColors.white,
-      secondary: AppColors.secondary,
-      onSecondary: AppColors.white,
-      tertiary: AppColors.tertiary,
-      error: AppColors.error,
-      onError: AppColors.white,
-      surface: surfaceColor,
-      onSurface: textPrimary,
-      outline: borderColor,
-    );
+    final colorScheme =
+        ColorScheme.fromSeed(
+          seedColor: AppColors.primary,
+          brightness: brightness,
+        ).copyWith(
+          primary: AppColors.primary,
+          onPrimary: AppColors.white,
+          secondary: AppColors.secondary,
+          onSecondary: AppColors.white,
+          tertiary: AppColors.tertiary,
+          error: AppColors.error,
+          onError: AppColors.white,
+          surface: surfaceColor,
+          onSurface: textPrimary,
+          outline: borderColor,
+        );
 
     return ThemeData(
       useMaterial3: true,
@@ -62,7 +69,10 @@ class AppTheme {
         centerTitle: true,
         surfaceTintColor: Colors.transparent,
         titleTextStyle: AppTextStyles.titleLarge.copyWith(color: textPrimary),
-        iconTheme: IconThemeData(color: textPrimary, size: AppDimensions.iconMd),
+        iconTheme: IconThemeData(
+          color: textPrimary,
+          size: AppDimensions.iconMd,
+        ),
       ),
       cardTheme: CardThemeData(
         color: surfaceColor,
@@ -75,13 +85,26 @@ class AppTheme {
         thickness: AppDimensions.dividerThickness,
         space: AppSpacing.md,
       ),
+      filledButtonTheme: FilledButtonThemeData(
+        style: FilledButton.styleFrom(
+          backgroundColor: FigmaColors.orange,
+          foregroundColor: AppColors.white,
+          disabledBackgroundColor: isDark
+              ? AppColors.grey700
+              : AppColors.grey300,
+        ),
+      ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.primary,
+          backgroundColor: FigmaColors.orange,
           foregroundColor: AppColors.white,
-          disabledBackgroundColor:
-              isDark ? AppColors.grey700 : AppColors.grey300,
-          minimumSize: const Size(double.infinity, AppDimensions.buttonHeightMd),
+          disabledBackgroundColor: isDark
+              ? AppColors.grey700
+              : AppColors.grey300,
+          minimumSize: const Size(
+            double.infinity,
+            AppDimensions.buttonHeightMd,
+          ),
           shape: RoundedRectangleBorder(borderRadius: AppRadius.radiusSm),
           textStyle: AppTextStyles.labelLarge,
           elevation: 0,
@@ -91,7 +114,10 @@ class AppTheme {
         style: OutlinedButton.styleFrom(
           foregroundColor: AppColors.primary,
           side: const BorderSide(color: AppColors.primary),
-          minimumSize: const Size(double.infinity, AppDimensions.buttonHeightMd),
+          minimumSize: const Size(
+            double.infinity,
+            AppDimensions.buttonHeightMd,
+          ),
           shape: RoundedRectangleBorder(borderRadius: AppRadius.radiusSm),
           textStyle: AppTextStyles.labelLarge,
         ),
@@ -147,12 +173,15 @@ class AppTheme {
         backgroundColor: surfaceColor,
         shape: RoundedRectangleBorder(borderRadius: AppRadius.radiusMd),
         titleTextStyle: AppTextStyles.titleLarge.copyWith(color: textPrimary),
-        contentTextStyle: AppTextStyles.bodyMedium.copyWith(color: textSecondary),
+        contentTextStyle: AppTextStyles.bodyMedium.copyWith(
+          color: textSecondary,
+        ),
       ),
       snackBarTheme: SnackBarThemeData(
         backgroundColor: isDark ? AppColors.grey700 : AppColors.grey900,
-        contentTextStyle:
-            AppTextStyles.bodyMedium.copyWith(color: AppColors.white),
+        contentTextStyle: AppTextStyles.bodyMedium.copyWith(
+          color: AppColors.white,
+        ),
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: AppRadius.radiusSm),
       ),
@@ -174,8 +203,9 @@ class AppTheme {
       displayMedium: AppTextStyles.displayMedium.copyWith(color: primaryColor),
       displaySmall: AppTextStyles.displaySmall.copyWith(color: primaryColor),
       headlineLarge: AppTextStyles.headlineLarge.copyWith(color: primaryColor),
-      headlineMedium:
-          AppTextStyles.headlineMedium.copyWith(color: primaryColor),
+      headlineMedium: AppTextStyles.headlineMedium.copyWith(
+        color: primaryColor,
+      ),
       headlineSmall: AppTextStyles.headlineSmall.copyWith(color: primaryColor),
       titleLarge: AppTextStyles.titleLarge.copyWith(color: primaryColor),
       titleMedium: AppTextStyles.titleMedium.copyWith(color: primaryColor),

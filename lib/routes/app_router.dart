@@ -7,8 +7,10 @@ import 'package:flutter_nivasshub/screens/notices/notices_screen.dart';
 import 'package:flutter_nivasshub/screens/notifications/delivery_details_screen.dart';
 import 'package:flutter_nivasshub/screens/profile/add_address_details_screen.dart';
 import 'package:flutter_nivasshub/screens/profile/profile_screen.dart';
+import 'package:flutter_nivasshub/screens/profile/vehicles_screen.dart';
 import 'package:flutter_nivasshub/screens/quick_actions/quick_actions_screen.dart';
 import 'package:flutter_nivasshub/screens/search/search_screen.dart';
+import 'package:flutter_nivasshub/screens/society/add_property_screen.dart';
 import 'package:flutter_nivasshub/screens/settings/help_support_screen.dart';
 import 'package:flutter_nivasshub/screens/settings/settings_screen.dart';
 import 'package:flutter_nivasshub/screens/visitor/activities_screen.dart';
@@ -52,6 +54,26 @@ class AppRouter {
         return MaterialPageRoute(
           settings: settings,
           builder: (_) => const AddAddressDetailsScreen(address: null),
+        );
+
+      // ========================================================
+      // VEHICLES
+      // ========================================================
+
+      case AppRoutes.vehicles:
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => const VehiclesScreen(),
+        );
+
+      // ========================================================
+      // ADD PROPERTY (flat / villa / office)
+      // ========================================================
+
+      case AppRoutes.addProperty:
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => const AddPropertyScreen(),
         );
 
       // ========================================================

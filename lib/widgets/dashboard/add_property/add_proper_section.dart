@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 
-import 'package:flutter_nivasshub/widgets/shared/feedback/custom_snackbar.dart';
+import 'package:flutter_nivasshub/routes/app_routes.dart';
 
 class AddPropertySection extends StatelessWidget {
-  const AddPropertySection({
-    super.key,
-    required this.isExpanded,
-  });
+  const AddPropertySection({super.key, required this.isExpanded});
 
   final bool isExpanded;
 
@@ -28,6 +25,10 @@ class AddPropertySection extends StatelessWidget {
       return const SizedBox.shrink();
     }
 
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final panelColor = isDark ? const Color(0xFF1B2A47) : _headerBlue;
+    final textColor = isDark ? Colors.white : _textColor;
+
     final screenWidth = MediaQuery.sizeOf(context).width;
 
     // ============================================================
@@ -37,8 +38,8 @@ class AddPropertySection extends StatelessWidget {
     final horizontalPadding = screenWidth < 360
         ? 14.0
         : screenWidth < 600
-            ? 16.0
-            : 22.0;
+        ? 16.0
+        : 22.0;
 
     final titleFontSize = screenWidth < 360 ? 14.0 : 15.0;
 
@@ -48,7 +49,7 @@ class AddPropertySection extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      color: _headerBlue,
+      color: panelColor,
       child: Padding(
         padding: EdgeInsets.fromLTRB(
           horizontalPadding,
@@ -62,7 +63,6 @@ class AddPropertySection extends StatelessWidget {
             // ======================================================
             // PROPERTY NAME
             // ======================================================
-
             Text(
               'B - 402 Golden Residency',
               maxLines: 1,
@@ -70,7 +70,7 @@ class AddPropertySection extends StatelessWidget {
               style: TextStyle(
                 fontSize: titleFontSize,
                 fontWeight: FontWeight.w600,
-                color: _textColor,
+                color: textColor,
                 height: 1.2,
               ),
             ),
@@ -78,35 +78,20 @@ class AddPropertySection extends StatelessWidget {
             // ======================================================
             // ORANGE DIVIDER
             // ======================================================
-
             const SizedBox(height: 9),
 
-            Container(
-              width: double.infinity,
-              height: 1.2,
-              color: _orange,
-            ),
+            Container(width: double.infinity, height: 1.2, color: _orange),
 
             // ======================================================
             // ADD PROPERTY ROW
             // ======================================================
-
             const SizedBox(height: 10),
 
             SizedBox(
               height: 42,
               child: InkWell(
-                onTap: () {
-                  // MISSING API CONTRACT: adding a second property to an
-                  // already-authenticated account has no documented
-                  // backend flow (the geography screens this used to
-                  // reuse were dummy UI with no service layer, and have
-                  // been removed). Re-wire once that contract exists.
-                  CustomSnackbar.info(
-                    context,
-                    'Adding another property is coming soon.',
-                  );
-                },
+                onTap: () =>
+                    Navigator.pushNamed(context, AppRoutes.addProperty),
                 borderRadius: BorderRadius.circular(24),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -114,34 +99,24 @@ class AddPropertySection extends StatelessWidget {
                     // ==================================================
                     // PLUS CIRCLE
                     // ==================================================
-
                     Container(
                       width: addCircleSize,
                       height: addCircleSize,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        border: Border.all(
-                          color: _textColor,
-                          width: 1.2,
-                        ),
+                        border: Border.all(color: textColor, width: 1.2),
                       ),
-                      child: const Icon(
-                        Icons.add,
-                        color: _textColor,
-                        size: 28,
-                      ),
+                      child: Icon(Icons.add, color: textColor, size: 28),
                     ),
 
                     // ==================================================
                     // SPACE
                     // ==================================================
-
                     const SizedBox(width: 14),
 
                     // ==================================================
                     // ADD PROPERTY TEXT
                     // ==================================================
-
                     Expanded(
                       child: Text(
                         'Add Flat/Villa/Office',
@@ -150,7 +125,7 @@ class AddPropertySection extends StatelessWidget {
                         style: TextStyle(
                           fontSize: addTextFontSize,
                           fontWeight: FontWeight.w500,
-                          color: _textColor,
+                          color: textColor,
                           height: 1.2,
                         ),
                       ),

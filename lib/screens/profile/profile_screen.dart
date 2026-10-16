@@ -6,6 +6,7 @@ import 'package:flutter_nivasshub/providers/profile/profile_provider.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart' as ph;
 import 'package:provider/provider.dart';
+import 'package:flutter_nivasshub/routes/app_routes.dart';
 import 'package:flutter_nivasshub/screens/profile/add_address_details_screen.dart';
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -428,6 +429,10 @@ void _openAddress() {
   );
 }
 
+  void _openVehicles() {
+    Navigator.pushNamed(context, AppRoutes.vehicles);
+  }
+
   // ============================================================
   // SAVE PROFILE
   // ============================================================
@@ -563,6 +568,19 @@ void _openAddress() {
                         title: 'Add Address',
                         subtitle: 'Add Address details',
                         onTap: _openAddress,
+                      ),
+
+                      const SizedBox(height: 8),
+
+                      // ============================================
+                      // VEHICLES
+                      // ============================================
+
+                      _buildDetailCard(
+                        icon: Icons.directions_car_filled_rounded,
+                        title: 'Add Vehicles',
+                        subtitle: 'Add your bikes & cars',
+                        onTap: _openVehicles,
                       ),
 
                       const SizedBox(height: 10),
@@ -1021,7 +1039,8 @@ void _openAddress() {
   // ============================================================
 
   Widget _buildDetailCard({
-    required String assetPath,
+    String? assetPath,
+    IconData? icon,
     required String title,
     required String subtitle,
     required VoidCallback onTap,
@@ -1046,16 +1065,18 @@ void _openAddress() {
             Container(
               width: 44,
               height: 44,
-              padding: const EdgeInsets.all(11),
+              padding: EdgeInsets.all(icon != null ? 0 : 11),
               decoration: BoxDecoration(
                 color: _lightBlue,
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Image.asset(
-                assetPath,
-                fit: BoxFit.contain,
-                filterQuality: FilterQuality.high,
-              ),
+              child: icon != null
+                  ? Icon(icon, color: _primaryBlue, size: 22)
+                  : Image.asset(
+                      assetPath!,
+                      fit: BoxFit.contain,
+                      filterQuality: FilterQuality.high,
+                    ),
             ),
 
             const SizedBox(width: 12),

@@ -91,8 +91,8 @@ class DashboardHeader extends StatelessWidget {
             padding: const EdgeInsets.only(
               left: 20,
               right: 16,
-              top: 20,
-              bottom: 18,
+              top: 10,
+              bottom: 12,
             ),
 
             child: Row(
@@ -125,7 +125,7 @@ class DashboardHeader extends StatelessWidget {
                         ),
                       ),
 
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 4),
 
                       // =============================================
                       // FLAT NUMBER

@@ -163,7 +163,7 @@ class FilePickerService implements FilePickerServiceBase {
       );
     }
 
-    if (file.sizeBytes > maxSizeBytes) {
+    if (file.sizeBytes >= maxSizeBytes) {
       return ApiResponse.failure(
         ApiException(
           message: KycStrings.fileTooLarge(maxSizeBytes),

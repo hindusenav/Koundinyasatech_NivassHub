@@ -235,7 +235,7 @@ class KycStrings {
       'Unsupported file type. Allowed: ${allowed.join(', ').toUpperCase()}.';
 
   static String fileTooLarge(int maxBytes) =>
-      'File is too large. Maximum size is ${maxBytes ~/ (1024 * 1024)} MB.';
+      'Document must be less than ${maxBytes ~/ 1024} KB.';
 
   // ---------------------------------------------------------------------
   // Mock email notifications (spec §16)
