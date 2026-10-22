@@ -170,7 +170,8 @@ void main() {
     expect(find.text('98*****211'), findsOneWidget);
   });
 
-  testWidgets('the user details screen builds with the whole cascade',
+  testWidgets(
+      'a new user walks Country → State → City, then lands on the form with those fields locked',
       (tester) async {
     await pumpRoute(
       tester,
@@ -178,16 +179,46 @@ void main() {
       arguments: const UserDetailsScreenArgs(identifier: identifier),
     );
 
-    // This is the regression: the cascade fields watch LocationProvider,
-    // RegistrationMasterDataProvider and SocietyDetailsProvider in the
-    // same frame, which previously notified during `initState` (illegal
-    // once siblings are already watching it) and marked them dirty
-    // mid-build.
+    Future<void> settle() async {
+      await tester.pump();
+      await tester.pump(const Duration(seconds: 1));
+    }
+
+    // The cascade providers all notify in the same frame the screen mounts;
+    // that must not throw.
+    expectSettled(tester);
+
+    expect(find.text('Select Country'), findsOneWidget);
+    await tester.tap(find.text('India'));
+    await settle();
+
+    expect(find.text('Select State'), findsOneWidget);
+    await tester.tap(find.text('Telangana'));
+    await settle();
+
+    expect(find.text('Select City'), findsOneWidget);
+    await tester.tap(find.text('Hyderabad'));
+    await settle();
+
+    expect(find.text('Confirm City'), findsOneWidget);
+    await tester.tap(find.text('Confirm City'));
+    await settle();
+    await tester.pump(const Duration(seconds: 1));
+
     expectSettled(tester);
     expect(find.byType(UserDetailsScreen), findsOneWidget);
+    expect(find.text('Select Country'), findsNothing);
     expect(find.text('Country'), findsOneWidget);
     expect(find.text('Tower / Block'), findsOneWidget);
     expect(find.text('Unit Sub-Branch'), findsOneWidget);
+
+    // Country, State and City are filled in and no longer editable.
+    for (final value in ['India', 'Telangana', 'Hyderabad']) {
+      final field = tester.widget<TextField>(
+        find.widgetWithText(TextField, value),
+      );
+      expect(field.enabled, isFalse, reason: '$value should be locked');
+    }
   });
 
   testWidgets(

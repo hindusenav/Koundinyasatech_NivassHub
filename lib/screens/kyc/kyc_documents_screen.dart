@@ -252,8 +252,26 @@ class _KycDocumentsScreenState extends State<KycDocumentsScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const Center(child: FigmaBadge(size: 52)),
+                    const FigmaProgressStrip(
+                      label: 'Onboarding Progress',
+                      current: 2,
+                      total: 3,
+                    ),
+                    AppSpacing.gapLg,
+                    const Center(child: FigmaBadge(size: 64, light: true)),
                     AppSpacing.gapMd,
+                    if (args.role != null) ...[
+                      Text(
+                        'Upload ${args.role!.label} Documents',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
+                          color: t.heading,
+                        ),
+                      ),
+                      AppSpacing.gapSm,
+                    ],
                     Text(
                       args.isResubmission
                           ? KycStrings.kycResubmitSubtitle

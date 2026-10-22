@@ -240,7 +240,7 @@ class _AuthEntryScreenState extends State<AuthEntryScreen> {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      const Center(child: FigmaBadge()),
+                      const Center(child: FigmaBadge(size: 64)),
                       const SizedBox(height: 20),
                       const FigmaTitleBlock(
                         title: KycStrings.authEntryTitle,
@@ -248,7 +248,7 @@ class _AuthEntryScreenState extends State<AuthEntryScreen> {
                       ),
                       const SizedBox(height: 28),
                       FigmaCard(
-                        padding: const EdgeInsets.all(18),
+                        padding: const EdgeInsets.all(20),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [

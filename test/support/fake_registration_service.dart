@@ -22,6 +22,7 @@ class FakeRegistrationService implements RegistrationServiceBase {
         name: 'India',
         states: [
           RegistrationState(provinceId: '4328', provinceName: 'Chhattisgarh'),
+          RegistrationState(provinceId: '4329', provinceName: 'Telangana'),
         ],
       ),
     ],

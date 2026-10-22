@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_nivasshub/constants/app_icons.dart';
@@ -20,10 +21,12 @@ import 'package:flutter_nivasshub/providers/registration/registration_master_dat
 import 'package:flutter_nivasshub/providers/society/society_details_provider.dart';
 import 'package:flutter_nivasshub/routes/app_routes.dart';
 import 'package:flutter_nivasshub/screens/auth/otp_mobile_email_verification_screen.dart';
+import 'package:flutter_nivasshub/screens/kyc/kyc_residence_role_screen.dart';
 import 'package:flutter_nivasshub/utils/form_validators.dart';
 import 'package:flutter_nivasshub/constants/figma_colors.dart';
 import 'package:flutter_nivasshub/widgets/shared/figma/figma_scaffold.dart';
 import 'package:flutter_nivasshub/widgets/shared/figma/figma_widgets.dart';
+import 'package:flutter_nivasshub/widgets/location/figma_place_picker.dart';
 import 'package:flutter_nivasshub/widgets/shared/feedback/custom_snackbar.dart';
 import 'package:flutter_nivasshub/widgets/shared/inputs/custom_text_field.dart';
 import 'package:flutter_nivasshub/widgets/shared/inputs/selection_bottom_sheet.dart';
@@ -55,6 +58,14 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
   late final TextEditingController _mobileController;
   late final TextEditingController _emailController;
 
+  /// `false` until the Country → State → City pages have been walked.
+  bool _locationReady = false;
+
+  /// Country, state and city are fixed once chosen on those pages.
+  bool _locationLocked = false;
+
+  Route<dynamic>? _route;
+
   @override
   void initState() {
     super.initState();
@@ -74,6 +85,7 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
       text: identifier.channel == AuthChannel.email ? identifier.raw : '',
     );
 
+    WidgetsBinding.instance.addPostFrameCallback((_) => _startLocationFlow());
   }
 
   @override
@@ -84,27 +96,157 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
     super.dispose();
   }
 
+  /// New-user entry: Select Country → Select State → Select City pages, then
+  /// the form below with those three fields filled and locked.
+  ///
+  /// Selections go through the same provider calls the old pickers made.
+  /// If the country list cannot be loaded the form is shown with its
+  /// ordinary editable pickers, as before.
+  Future<void> _startLocationFlow() async {
+    final location = context.read<LocationProvider>();
+    final master = context.read<RegistrationMasterDataProvider>();
+    final society = context.read<SocietyDetailsProvider>();
+
+    if (location.stateFor(LocationLevel.country) == LocationLoadState.initial) {
+      await location.load(LocationLevel.country);
+      if (!mounted) return;
+    }
+
+    // The route starts both fetches when it is created, so wait for them.
+    await _untilLoaded(location, master);
+    if (!mounted) return;
+
+    final countries = location.optionsFor(LocationLevel.country);
+    if (countries.isEmpty) {
+      setState(() => _locationReady = true);
+      return;
+    }
+
+    final done = await FigmaPlacePicker.locationFlow<LocationNode, RegistrationState>(
+      context,
+      countries: countries,
+      countryLabel: (c) => c.name,
+      countryFlag: (c) => c.flagEmoji,
+      onCountry: (c) {
+        // The selection is recorded synchronously; the follow-up fetch of the
+        // next level runs on its own, so the State page need not wait for it.
+        unawaited(location.select(LocationLevel.country, c));
+        master.selectCountry(c.id);
+        society.reset();
+      },
+      states: () => master.statesForSelectedCountry,
+      stateLabel: (s) => s.provinceName,
+      onState: (s) {
+        master.selectState(s);
+        society.reset();
+      },
+      cities: () => master.citiesForSelectedState,
+      onCity: (c) {
+        master.selectCity(c);
+        society.reset();
+      },
+      citySubtitle: () => [
+        master.selectedState?.provinceName,
+        location.selectedFor(LocationLevel.country)?.name,
+      ].whereType<String>().join(', '),
+    );
+    if (!mounted) return;
+
+    if (!done) {
+      Navigator.of(context).maybePop();
+      return;
+    }
+    setState(() {
+      _locationReady = true;
+      _locationLocked = true;
+    });
+  }
+
+  /// Completes once the country list and the master data have finished loading.
+  Future<void> _untilLoaded(
+    LocationProvider location,
+    RegistrationMasterDataProvider master,
+  ) {
+    bool busy() => location.isLoading(LocationLevel.country) || master.isLoading;
+    if (!busy()) return Future.value();
+
+    final done = Completer<void>();
+    void check() {
+      if (busy()) return;
+      location.removeListener(check);
+      master.removeListener(check);
+      done.complete();
+    }
+
+    location.addListener(check);
+    master.addListener(check);
+    return done.future;
+  }
+
   String get _countryCode =>
       context.read<LocationProvider>().selectedFor(LocationLevel.country)?.dialCode ??
       widget.args.identifier.countryCode ??
       '+91';
 
+  /// "Submit Details": validates the form, then opens the final role step.
+  /// The account is created from that step, with the same request as before.
   Future<void> _handleSubmit() async {
+    final location = context.read<LocationProvider>();
+    final master = context.read<RegistrationMasterDataProvider>();
+    final society = context.read<SocietyDetailsProvider>();
+
+    final isFormValid = _formKey.currentState?.validate() ?? false;
+    if (!isFormValid) return;
+
+    if (location.selectedFor(LocationLevel.country) == null ||
+        master.selectedState == null ||
+        master.selectedCity == null) {
+      CustomSnackbar.warning(
+        context,
+        'Please select your country, state and city.',
+      );
+      return;
+    }
+
+    if (society.selectedTower == null ||
+        society.selectedFloor == null ||
+        society.selectedUnit == null) {
+      CustomSnackbar.warning(context, KycStrings.propertySelectionIncomplete);
+      return;
+    }
+
+    _route = ModalRoute.of(context);
+    final details = context.read<UserDetailsProvider>();
+    await Navigator.of(context).push<void>(
+      MaterialPageRoute<void>(
+        builder: (_) => MultiProvider(
+          providers: [
+            ChangeNotifierProvider<RegistrationMasterDataProvider>.value(
+              value: master,
+            ),
+            ChangeNotifierProvider<UserDetailsProvider>.value(value: details),
+          ],
+          child: _RoleStepPage(onSubmit: _submitRegistration),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _submitRegistration() async {
     final details = context.read<UserDetailsProvider>();
     final location = context.read<LocationProvider>();
     final master = context.read<RegistrationMasterDataProvider>();
     final society = context.read<SocietyDetailsProvider>();
 
-    // Turn on the picker-level errors before validating, so the role
-    // message appears in the same pass as the field ones.
+    // Turn on the role error before validating the role choice.
     details.markValidationVisible();
-
-    final isFormValid = _formKey.currentState?.validate() ?? false;
-    if (!isFormValid) return;
 
     final selectedRole = master.selectedRole;
     final selectedSubRole = master.selectedSubRole;
-    if (selectedRole == null || details.role == null) return;
+    if (selectedRole == null || details.role == null) {
+      CustomSnackbar.warning(context, KycStrings.roleRequired);
+      return;
+    }
     if (selectedSubRole == null) {
       CustomSnackbar.warning(context, KycStrings.subRoleRequired);
       return;
@@ -178,6 +320,9 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
     );
     if (!mounted) return;
 
+    // Close the role step so the OTP screen replaces the form, not that page.
+    if (_route != null) Navigator.of(context).popUntil((r) => r == _route);
+
     // `pushReplacement` so a resubmit loop does not grow the stack by two
     // routes per attempt.
     Navigator.of(context).pushReplacementNamed(
@@ -207,6 +352,15 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
   Widget build(BuildContext context) {
     final details = context.watch<UserDetailsProvider>();
     final t = FigmaColors.of(context);
+
+    // Blank while the country / state / city pages are on top.
+    if (!_locationReady) {
+      return Scaffold(
+        backgroundColor: t.page,
+        body: const Center(child: CircularProgressIndicator()),
+      );
+    }
+
 
     return FigmaHeaderScaffold(
       title: KycStrings.userDetailsTitle,
@@ -285,11 +439,11 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
                         KycStrings.sectionLocationDetails,
                       ),
                       AppSpacing.gapMd,
-                      const _CountryField(),
+                      _CountryField(locked: _locationLocked),
                       AppSpacing.gapMd,
-                      const _StateField(),
+                      _StateField(locked: _locationLocked),
                       AppSpacing.gapMd,
-                      const _CityField(),
+                      _CityField(locked: _locationLocked),
                     ],
                   ),
                 ),
@@ -317,31 +471,6 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
                 ),
                 const SizedBox(height: 16),
 
-                FigmaCard(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      const FigmaSectionLabel(KycStrings.sectionRole),
-                      AppSpacing.gapMd,
-                      const _RoleField(),
-                      if (details.roleError != null) ...[
-                        AppSpacing.gapXs,
-                        Text(
-                          details.roleError!,
-                          style: AppTextStyles.errorText,
-                        ),
-                      ],
-                      AppSpacing.gapMd,
-                      const _SubRoleField(),
-                      if (context
-                          .watch<RegistrationMasterDataProvider>()
-                          .needsCategory) ...[
-                        AppSpacing.gapMd,
-                        const _CategoryField(),
-                      ],
-                    ],
-                  ),
-                ),
                 const SizedBox(height: 24),
 
                 FigmaButton(
@@ -365,7 +494,9 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
 /// `RegistrationMasterDataProvider` so the State picker can read that
 /// country's nested states.
 class _CountryField extends StatelessWidget {
-  const _CountryField();
+  const _CountryField({this.locked = false});
+
+  final bool locked;
 
   @override
   Widget build(BuildContext context) {
@@ -378,8 +509,9 @@ class _CountryField extends StatelessWidget {
           ? null
           : [selected.flagEmoji, selected.name].whereType<String>().join(' '),
       hint: LocationLevel.country.hint,
+      prefixIcon: Icons.public_outlined,
       isLoading: location.isLoading(LocationLevel.country),
-      onTap: () => _openPicker(context, location),
+      onTap: locked ? null : () => _openPicker(context, location),
     );
   }
 
@@ -389,20 +521,13 @@ class _CountryField extends StatelessWidget {
       if (!context.mounted) return;
     }
 
-    final choice = await SelectionBottomSheet.show<LocationNode>(
+    final choice = await FigmaPlacePicker.country<LocationNode>(
       context,
-      title: LocationLevel.country.sheetTitle,
       items: location.optionsFor(LocationLevel.country),
-      selected: location.selectedFor(LocationLevel.country),
       labelOf: (node) => node.name,
-      leadingOf: (node) => node.flagEmoji == null
-          ? null
-          : Text(node.flagEmoji!, style: AppTextStyles.titleMedium),
-      searchHint: 'Search country',
+      flagOf: (node) => node.flagEmoji,
       isLoading: location.isLoading(LocationLevel.country),
       errorMessage: location.errorFor(LocationLevel.country),
-      emptyTitle: KycStrings.noOptionsAvailable,
-      emptyMessage: KycStrings.noOptionsMessage,
       onRetry: () => location.retry(LocationLevel.country),
     );
 
@@ -418,7 +543,9 @@ class _CountryField extends StatelessWidget {
 /// states already cached by `RegistrationMasterDataProvider`; no network
 /// call happens here.
 class _StateField extends StatelessWidget {
-  const _StateField();
+  const _StateField({this.locked = false});
+
+  final bool locked;
 
   @override
   Widget build(BuildContext context) {
@@ -431,7 +558,10 @@ class _StateField extends StatelessWidget {
       label: KycStrings.stateLabel,
       value: master.selectedState?.provinceName,
       hint: countrySelected ? KycStrings.stateHint : KycStrings.selectCountryFirst,
-      onTap: countrySelected ? () => _openPicker(context, master) : null,
+      prefixIcon: Icons.map_outlined,
+      onTap: countrySelected && !locked
+          ? () => _openPicker(context, master)
+          : null,
     );
   }
 
@@ -439,15 +569,10 @@ class _StateField extends StatelessWidget {
     BuildContext context,
     RegistrationMasterDataProvider master,
   ) async {
-    final choice = await SelectionBottomSheet.show<RegistrationState>(
+    final choice = await FigmaPlacePicker.state<RegistrationState>(
       context,
-      title: 'Select ${KycStrings.stateLabel}',
       items: master.statesForSelectedCountry,
-      selected: master.selectedState,
       labelOf: (state) => state.provinceName,
-      searchHint: 'Search state',
-      emptyTitle: KycStrings.noOptionsAvailable,
-      emptyMessage: KycStrings.noOptionsMessage,
     );
     if (choice == null || !context.mounted) return;
     master.selectState(choice);
@@ -460,7 +585,9 @@ class _StateField extends StatelessWidget {
 /// list endpoint). Selecting a city narrows the Society picker below to
 /// that city.
 class _CityField extends StatelessWidget {
-  const _CityField();
+  const _CityField({this.locked = false});
+
+  final bool locked;
 
   @override
   Widget build(BuildContext context) {
@@ -471,7 +598,10 @@ class _CityField extends StatelessWidget {
       label: KycStrings.cityLabel,
       value: master.selectedCity,
       hint: stateSelected ? KycStrings.cityHint : KycStrings.selectStateFirst,
-      onTap: stateSelected ? () => _openPicker(context, master) : null,
+      prefixIcon: Icons.location_city_outlined,
+      onTap: stateSelected && !locked
+          ? () => _openPicker(context, master)
+          : null,
     );
   }
 
@@ -479,15 +609,17 @@ class _CityField extends StatelessWidget {
     BuildContext context,
     RegistrationMasterDataProvider master,
   ) async {
-    final choice = await SelectionBottomSheet.show<String>(
+    final country = context
+        .read<LocationProvider>()
+        .selectedFor(LocationLevel.country);
+    final choice = await FigmaPlacePicker.city<String>(
       context,
-      title: 'Select ${KycStrings.cityLabel}',
       items: master.citiesForSelectedState,
-      selected: master.selectedCity,
       labelOf: (city) => city,
-      searchHint: 'Search city',
-      emptyTitle: KycStrings.noOptionsAvailable,
-      emptyMessage: KycStrings.noOptionsMessage,
+      subtitle: [
+        master.selectedState?.provinceName,
+        country?.name,
+      ].whereType<String>().join(', '),
     );
     if (choice == null || !context.mounted) return;
     master.selectCity(choice);
@@ -672,115 +804,66 @@ class _UnitBranchField extends StatelessWidget {
   }
 }
 
-/// Role picker — options come from `Roles[]` in the master-data response
-/// (User / Tenant). The choice also decides which documents KYC asks for,
-/// so it is mapped onto [UserRole] via `RegistrationRole.userRole`.
-class _RoleField extends StatelessWidget {
-  const _RoleField();
+/// Final registration step: Owner / Tenant, sub-role (and category when the
+/// sub-role has one) and the move-in rules. Reads and writes the same
+/// `RegistrationMasterDataProvider` / `UserDetailsProvider` state the old
+/// Role card did; [onSubmit] runs the unchanged registration request.
+class _RoleStepPage extends StatelessWidget {
+  const _RoleStepPage({required this.onSubmit});
+
+  final VoidCallback onSubmit;
 
   @override
   Widget build(BuildContext context) {
     final master = context.watch<RegistrationMasterDataProvider>();
+    final details = context.watch<UserDetailsProvider>();
 
-    return SelectionField(
-      label: KycStrings.roleLabel,
-      value: master.selectedRole?.description,
-      hint: KycStrings.roleHint,
-      isLoading: master.isLoading,
-      onTap: () => _openPicker(context, master),
-    );
-  }
-
-  Future<void> _openPicker(
-    BuildContext context,
-    RegistrationMasterDataProvider master,
-  ) async {
-    final choice = await SelectionBottomSheet.show<RegistrationRole>(
-      context,
-      title: 'Select ${KycStrings.roleLabel}',
-      items: master.roles,
-      selected: master.selectedRole,
-      labelOf: (role) => role.description,
-      isLoading: master.isLoading,
-      errorMessage: master.errorMessage,
-      emptyTitle: KycStrings.noOptionsAvailable,
-      emptyMessage: KycStrings.noOptionsMessage,
-      onRetry: master.retry,
-    );
-    if (choice == null || !context.mounted) return;
-    master.selectRole(choice);
-    final userRole = choice.userRole;
-    if (userRole != null) context.read<UserDetailsProvider>().setRole(userRole);
-  }
-}
-
-/// Sub-role picker — the selected role's `Sub_Role[]`.
-class _SubRoleField extends StatelessWidget {
-  const _SubRoleField();
-
-  @override
-  Widget build(BuildContext context) {
-    final master = context.watch<RegistrationMasterDataProvider>();
+    final subRoles = master.subRolesForSelectedRole;
+    final categories = master.categoriesForSelectedSubRole;
     final roleSelected = master.selectedRole != null;
 
-    return SelectionField(
-      label: KycStrings.subRoleLabel,
-      value: master.selectedSubRole?.description,
-      hint: roleSelected ? KycStrings.subRoleHint : KycStrings.selectRoleFirst,
-      onTap: roleSelected ? () => _openPicker(context, master) : null,
+    return KycResidenceRoleScreen(
+      isLoading: master.isLoading,
+      isSubmitting: details.isSubmitting,
+      selectedRoleId: master.selectedRole?.roleId,
+      roles: [
+        for (final role in master.roles)
+          ResidenceRoleChoice(
+            id: role.roleId,
+            title: role.userRole?.label ?? role.description,
+            subtitle: role.userRole?.description ?? '',
+            icon: switch (role.userRole) {
+              UserRole.owner => Icons.home_outlined,
+              UserRole.tenant => Icons.vpn_key_outlined,
+              null => Icons.person_outline,
+            },
+          ),
+      ],
+      onRoleChanged: (id) {
+        final role = master.roles.firstWhere((r) => r.roleId == id);
+        master.selectRole(role);
+        final userRole = role.userRole;
+        if (userRole != null) details.setRole(userRole);
+      },
+      dropdowns: [
+        ResidenceRoleDropdown(
+          label: KycStrings.subRoleLabel,
+          hint: roleSelected ? KycStrings.subRoleHint : KycStrings.selectRoleFirst,
+          value: master.selectedSubRole?.description,
+          items: [for (final s in subRoles) s.description],
+          enabled: roleSelected,
+          onChanged: (i) => master.selectSubRole(subRoles[i]),
+        ),
+        if (master.needsCategory)
+          ResidenceRoleDropdown(
+            label: KycStrings.categoryLabel,
+            hint: KycStrings.categoryHint,
+            value: master.selectedCategory?.description,
+            items: [for (final c in categories) c.description],
+            onChanged: (i) => master.selectCategory(categories[i]),
+          ),
+      ],
+      onContinue: onSubmit,
     );
-  }
-
-  Future<void> _openPicker(
-    BuildContext context,
-    RegistrationMasterDataProvider master,
-  ) async {
-    final choice = await SelectionBottomSheet.show<RegistrationSubRole>(
-      context,
-      title: 'Select ${KycStrings.subRoleLabel}',
-      items: master.subRolesForSelectedRole,
-      selected: master.selectedSubRole,
-      labelOf: (subRole) => subRole.description,
-      emptyTitle: KycStrings.noOptionsAvailable,
-      emptyMessage: KycStrings.noOptionsMessage,
-    );
-    if (choice != null) master.selectSubRole(choice);
-  }
-}
-
-/// Category picker — shown only when the selected sub-role has
-/// `Categories[]`; sent as `sub_role_cat`.
-class _CategoryField extends StatelessWidget {
-  const _CategoryField();
-
-  @override
-  Widget build(BuildContext context) {
-    final master = context.watch<RegistrationMasterDataProvider>();
-    final subRoleSelected = master.selectedSubRole != null;
-
-    return SelectionField(
-      label: KycStrings.categoryLabel,
-      value: master.selectedCategory?.description,
-      hint: subRoleSelected
-          ? KycStrings.categoryHint
-          : KycStrings.selectSubRoleFirst,
-      onTap: subRoleSelected ? () => _openPicker(context, master) : null,
-    );
-  }
-
-  Future<void> _openPicker(
-    BuildContext context,
-    RegistrationMasterDataProvider master,
-  ) async {
-    final choice = await SelectionBottomSheet.show<RegistrationCategory>(
-      context,
-      title: 'Select ${KycStrings.categoryLabel}',
-      items: master.categoriesForSelectedSubRole,
-      selected: master.selectedCategory,
-      labelOf: (category) => category.description,
-      emptyTitle: KycStrings.noOptionsAvailable,
-      emptyMessage: KycStrings.noOptionsMessage,
-    );
-    if (choice != null) master.selectCategory(choice);
   }
 }

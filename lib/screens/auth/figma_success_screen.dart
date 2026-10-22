@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_nivasshub/constants/figma_colors.dart';
 import 'package:flutter_nivasshub/widgets/auth/success_check_icon.dart';
 import 'package:flutter_nivasshub/widgets/shared/brand/nivass_logo_mark.dart';
+import 'package:flutter_nivasshub/widgets/shared/figma/figma_scaffold.dart';
 import 'package:flutter_nivasshub/widgets/shared/figma/figma_widgets.dart';
 
 /// Shared layout for the Figma success screens: optional logo, animated
@@ -32,7 +33,8 @@ class FigmaSuccessScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: t.page,
-      body: SafeArea(
+      body: FigmaBackground(
+        child: SafeArea(
         child: Padding(
           padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
           child: Column(
@@ -56,16 +58,21 @@ class FigmaSuccessScreen extends StatelessWidget {
                           title,
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                            fontSize: 22,
+                            fontSize: 24,
+                            height: 1.3,
                             fontWeight: FontWeight.w700,
                             color: t.heading,
                           ),
                         ),
-                        const SizedBox(height: 8),
+                        const SizedBox(height: 12),
                         Text(
                           message,
                           textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 13, height: 1.4, color: t.body),
+                          style: TextStyle(
+                            fontSize: 14,
+                            height: 1.5,
+                            color: t.heading,
+                          ),
                         ),
                       ],
                     ),
@@ -80,7 +87,8 @@ class FigmaSuccessScreen extends StatelessWidget {
             ],
           ),
         ),
-      ),
+        ),
+        ),
     );
   }
 }
@@ -113,8 +121,9 @@ class ProfileVerifiedScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FigmaSuccessScreen(
-      title: 'Profile Successfully Verified',
-      message: 'Your residence has now been verified. Welcome to the residential community.',
+      title: 'Profile Successfully Verified!',
+      message:
+          'Your resident identity has been validated.\nWelcome to the NivaasHub family.',
       buttonLabel: 'Continue to Dashboard',
       onContinue: onContinue,
     );

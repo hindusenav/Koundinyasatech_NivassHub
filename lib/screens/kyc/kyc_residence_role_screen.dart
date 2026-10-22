@@ -1,92 +1,149 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_nivasshub/constants/figma_colors.dart';
+import 'package:flutter_nivasshub/models/auth/user_role.dart';
+import 'package:flutter_nivasshub/models/registration/registration_master_data.dart';
 import 'package:flutter_nivasshub/widgets/kyc/move_in_rules_dialog.dart';
+import 'package:flutter_nivasshub/widgets/shared/feedback/custom_snackbar.dart';
 import 'package:flutter_nivasshub/widgets/shared/figma/figma_scaffold.dart';
 import 'package:flutter_nivasshub/widgets/shared/figma/figma_widgets.dart';
 
-enum ResidenceRole { owner, tenant }
+/// Society move-in rules shown by the "I Agree to Move-in Rules" dialog.
+const List<String> kDefaultMoveInRules = [
+  'Usage of Lifts is Restricted while shifting heavy items/Furniture',
+  'Do not litter garbage in corridors, staircase, lifts and any common '
+      'area. Dump you garbage in designated garbage area.',
+  'Submit all the required Documents before Moving In (ID Proof, NOC, '
+      'Sales/Rental agreement)',
+];
 
-/// The values the user chose on the Residence Role step.
-class ResidenceRoleSelection {
-  const ResidenceRoleSelection({
-    required this.role,
-    required this.block,
-    required this.occupancyStatus,
-    required this.moveInDate,
+/// One Owner / Tenant style card.
+class ResidenceRoleChoice {
+  const ResidenceRoleChoice({
+    required this.id,
+    required this.title,
+    required this.subtitle,
+    required this.icon,
   });
 
-  final ResidenceRole role;
-  final String block;
-  final String occupancyStatus;
-  final DateTime moveInDate;
+  final String id;
+  final String title;
+  final String subtitle;
+  final IconData icon;
 }
 
-/// Figma "KYC Step 1": progress strip, Owner/Tenant cards, block and
-/// occupancy dropdowns, move-in rules agreement, move-in date, Continue.
+/// Maps an API role onto an Owner / Tenant style card.
+ResidenceRoleChoice residenceRoleChoice(RegistrationRole role) {
+  return ResidenceRoleChoice(
+    id: role.roleId,
+    title: role.userRole?.label ?? role.description,
+    subtitle: role.userRole?.description ?? '',
+    icon: switch (role.userRole) {
+      UserRole.owner => Icons.home_outlined,
+      UserRole.tenant => Icons.vpn_key_outlined,
+      null => Icons.person_outline,
+    },
+  );
+}
+
+/// One dropdown under the role cards (sub-role, category, …).
+class ResidenceRoleDropdown {
+  const ResidenceRoleDropdown({
+    required this.label,
+    required this.hint,
+    required this.items,
+    required this.onChanged,
+    this.value,
+    this.enabled = true,
+  });
+
+  final String label;
+  final String hint;
+  final String? value;
+  final List<String> items;
+
+  /// Receives the index into [items].
+  final ValueChanged<int> onChanged;
+  final bool enabled;
+}
+
+/// Figma "Choose Residence Role": progress strip, Owner/Tenant cards,
+/// dropdowns, the move-in rules agreement and a Continue button.
 ///
-/// Options and the rules text come from the caller; the screen reports the
-/// final choice through [onContinue].
+/// Presentation only. The role cards and dropdowns are supplied by the
+/// caller (registration and Add Property each feed their own provider
+/// data), the screen reports taps through callbacks, and [onContinue]
+/// fires once the move-in rules have been agreed. Whatever validation or
+/// submission follows stays with the caller.
 class KycResidenceRoleScreen extends StatefulWidget {
   const KycResidenceRoleScreen({
     super.key,
-    required this.blocks,
-    required this.occupancyStatuses,
-    required this.moveInRules,
+    required this.roles,
+    required this.selectedRoleId,
+    required this.onRoleChanged,
     required this.onContinue,
+    this.dropdowns = const [],
+    this.moveInRules = kDefaultMoveInRules,
+    this.isLoading = false,
+    this.isSubmitting = false,
+    this.showProgress = true,
     this.currentStep = 1,
     this.totalSteps = 3,
+    this.title = 'Complete Your Profile',
+    this.continueLabel = 'Continue',
+    this.extra,
   });
 
-  final List<String> blocks;
-  final List<String> occupancyStatuses;
+  final List<ResidenceRoleChoice> roles;
+  final String? selectedRoleId;
+  final ValueChanged<String> onRoleChanged;
+  final List<ResidenceRoleDropdown> dropdowns;
   final List<String> moveInRules;
-  final ValueChanged<ResidenceRoleSelection> onContinue;
+  final VoidCallback onContinue;
+
+  /// Role options are still being fetched.
+  final bool isLoading;
+  final bool isSubmitting;
+  final bool showProgress;
   final int currentStep;
   final int totalSteps;
+  final String title;
+  final String continueLabel;
+
+  /// Optional extra widget placed above the rules checkbox.
+  final Widget? extra;
 
   @override
   State<KycResidenceRoleScreen> createState() => _KycResidenceRoleScreenState();
 }
 
 class _KycResidenceRoleScreenState extends State<KycResidenceRoleScreen> {
-  ResidenceRole _role = ResidenceRole.owner;
-  String? _block;
-  String? _occupancy;
   bool _agreed = false;
-  DateTime? _moveIn;
-
-  bool get _canContinue => _block != null && _occupancy != null && _agreed && _moveIn != null;
 
   Future<void> _openRules() async {
-    final agreed = await MoveInRulesDialog.show(context, rules: widget.moveInRules);
+    final agreed = await MoveInRulesDialog.show(
+      context,
+      rules: widget.moveInRules,
+    );
     if (agreed == true && mounted) setState(() => _agreed = true);
   }
 
-  Future<void> _pickDate() async {
-    final now = DateTime.now();
-    final picked = await showDatePicker(
-      context: context,
-      initialDate: _moveIn ?? now,
-      firstDate: DateTime(now.year - 1),
-      lastDate: DateTime(now.year + 2),
-    );
-    if (picked != null && mounted) setState(() => _moveIn = picked);
+  void _continue() {
+    if (!_agreed) {
+      CustomSnackbar.warning(
+        context,
+        'Please agree to the Move-in Rules to continue.',
+      );
+      return;
+    }
+    widget.onContinue();
   }
-
-  static const _months = [
-    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
-  ];
-
-  String _format(DateTime d) =>
-      '${d.day.toString().padLeft(2, '0')} ${_months[d.month - 1]} ${d.year}';
 
   @override
   Widget build(BuildContext context) {
     final t = FigmaColors.of(context);
 
     return FigmaHeaderScaffold(
-      title: 'Complete Your Profile',
+      title: widget.title,
       body: SafeArea(
         top: false,
         child: SingleChildScrollView(
@@ -94,62 +151,49 @@ class _KycResidenceRoleScreenState extends State<KycResidenceRoleScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              FigmaProgressStrip(
-                label: 'Onboarding Progress',
-                current: widget.currentStep,
-                total: widget.totalSteps,
-              ),
-              const SizedBox(height: 20),
+              if (widget.showProgress) ...[
+                FigmaProgressStrip(
+                  label: 'Onboarding Progress',
+                  current: widget.currentStep,
+                  total: widget.totalSteps,
+                ),
+                const SizedBox(height: 20),
+              ],
               Text(
                 'Choose Residence Role',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: t.heading),
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w700,
+                  color: t.heading,
+                ),
               ),
               const SizedBox(height: 4),
               Text(
                 'Are you a property Owner or a Tenant in this community?',
-                style: TextStyle(fontSize: 12, color: t.body),
+                style: TextStyle(fontSize: 14, color: t.heading),
               ),
-              const SizedBox(height: 14),
-              Row(
-                children: [
-                  Expanded(
-                    child: _RoleCard(
-                      icon: Icons.home_outlined,
-                      title: 'Owner',
-                      subtitle: 'I own this property',
-                      selected: _role == ResidenceRole.owner,
-                      onTap: () => setState(() => _role = ResidenceRole.owner),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: _RoleCard(
-                      icon: Icons.vpn_key_outlined,
-                      title: 'Tenant',
-                      subtitle: 'I rent this property',
-                      selected: _role == ResidenceRole.tenant,
-                      onTap: () => setState(() => _role = ResidenceRole.tenant),
-                    ),
-                  ),
-                ],
-              ),
+              const SizedBox(height: 24),
+              if (widget.isLoading && widget.roles.isEmpty)
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 24),
+                  child: Center(child: CircularProgressIndicator()),
+                )
+              else
+                _RoleGrid(
+                  roles: widget.roles,
+                  selectedId: widget.selectedRoleId,
+                  onChanged: widget.onRoleChanged,
+                ),
+              for (final dropdown in widget.dropdowns) ...[
+                const SizedBox(height: 18),
+                _FieldLabel(dropdown.label),
+                _Dropdown(spec: dropdown),
+              ],
+              if (widget.extra != null) ...[
+                const SizedBox(height: 14),
+                widget.extra!,
+              ],
               const SizedBox(height: 18),
-              _FieldLabel('Select Block / Sub-Branch'),
-              _Dropdown(
-                value: _block,
-                hint: 'Select block',
-                items: widget.blocks,
-                onChanged: (v) => setState(() => _block = v),
-              ),
-              const SizedBox(height: 14),
-              _FieldLabel('Occupancy Status'),
-              _Dropdown(
-                value: _occupancy,
-                hint: 'Select status',
-                items: widget.occupancyStatuses,
-                onChanged: (v) => setState(() => _occupancy = v),
-              ),
-              const SizedBox(height: 14),
               Row(
                 children: [
                   SizedBox(
@@ -173,56 +217,72 @@ class _KycResidenceRoleScreenState extends State<KycResidenceRoleScreen> {
                     child: Text(
                       'I Agree to Move-in Rules',
                       style: TextStyle(
-                        fontSize: 12,
-                        color: FigmaColors.accentBlue,
+                        fontSize: 14,
+                        color: t.heading,
                         decoration: TextDecoration.underline,
                       ),
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 14),
-              _FieldLabel('Move - In Date'),
-              InkWell(
-                borderRadius: BorderRadius.circular(12),
-                onTap: _pickDate,
-                child: _FieldBox(
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          _moveIn == null ? 'Select date' : _format(_moveIn!),
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: _moveIn == null ? t.body : t.heading,
-                          ),
-                        ),
-                      ),
-                      Icon(Icons.calendar_today_outlined, size: 18, color: t.body),
-                    ],
-                  ),
-                ),
-              ),
               const SizedBox(height: 28),
               FigmaButton(
-                label: 'Continue',
+                label: widget.continueLabel,
                 navy: true,
-                onPressed: _canContinue
-                    ? () => widget.onContinue(
-                        ResidenceRoleSelection(
-                          role: _role,
-                          block: _block!,
-                          occupancyStatus: _occupancy!,
-                          moveInDate: _moveIn!,
-                        ),
-                      )
-                    : null,
+                isLoading: widget.isSubmitting,
+                onPressed: widget.isSubmitting ? null : _continue,
               ),
             ],
           ),
         ),
       ),
     );
+  }
+}
+
+class _RoleGrid extends StatelessWidget {
+  const _RoleGrid({
+    required this.roles,
+    required this.selectedId,
+    required this.onChanged,
+  });
+
+  final List<ResidenceRoleChoice> roles;
+  final String? selectedId;
+  final ValueChanged<String> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    // Two cards per row, as in the Figma; a third role simply wraps.
+    final rows = <Widget>[];
+    for (var i = 0; i < roles.length; i += 2) {
+      final pair = roles.skip(i).take(2).toList();
+      rows.add(
+        Padding(
+          padding: EdgeInsets.only(top: i == 0 ? 0 : 12),
+          child: IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                for (var j = 0; j < 2; j++) ...[
+                  if (j == 1) const SizedBox(width: 12),
+                  Expanded(
+                    child: j < pair.length
+                        ? _RoleCard(
+                            choice: pair[j],
+                            selected: pair[j].id == selectedId,
+                            onTap: () => onChanged(pair[j].id),
+                          )
+                        : const SizedBox.shrink(),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+    return Column(children: rows);
   }
 }
 
@@ -238,7 +298,7 @@ class _FieldLabel extends StatelessWidget {
       child: Text(
         text,
         style: TextStyle(
-          fontSize: 12,
+          fontSize: 13,
           fontWeight: FontWeight.w600,
           color: FigmaColors.of(context).heading,
         ),
@@ -247,47 +307,19 @@ class _FieldLabel extends StatelessWidget {
   }
 }
 
-class _FieldBox extends StatelessWidget {
-  const _FieldBox({required this.child});
-
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = FigmaColors.of(context);
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-      decoration: BoxDecoration(
-        color: t.card,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: t.fieldBorder),
-      ),
-      child: child,
-    );
-  }
-}
-
 class _Dropdown extends StatelessWidget {
-  const _Dropdown({
-    required this.value,
-    required this.hint,
-    required this.items,
-    required this.onChanged,
-  });
+  const _Dropdown({required this.spec});
 
-  final String? value;
-  final String hint;
-  final List<String> items;
-  final ValueChanged<String?> onChanged;
+  final ResidenceRoleDropdown spec;
 
   @override
   Widget build(BuildContext context) {
     final t = FigmaColors.of(context);
+    final value = spec.items.contains(spec.value) ? spec.value : null;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14),
       decoration: BoxDecoration(
-        color: t.card,
+        color: spec.enabled ? t.card : t.field,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: t.fieldBorder),
       ),
@@ -295,12 +327,20 @@ class _Dropdown extends StatelessWidget {
         child: DropdownButton<String>(
           value: value,
           isExpanded: true,
-          hint: Text(hint, style: TextStyle(fontSize: 14, color: t.body)),
+          hint: Text(spec.hint, style: TextStyle(fontSize: 14, color: t.body)),
           dropdownColor: t.card,
           icon: Icon(Icons.keyboard_arrow_down, color: t.body),
           style: TextStyle(fontSize: 14, color: t.heading),
-          items: [for (final i in items) DropdownMenuItem(value: i, child: Text(i))],
-          onChanged: onChanged,
+          items: [
+            for (final i in spec.items)
+              DropdownMenuItem(value: i, child: Text(i)),
+          ],
+          onChanged: spec.enabled
+              ? (v) {
+                  if (v == null) return;
+                  spec.onChanged(spec.items.indexOf(v));
+                }
+              : null,
         ),
       ),
     );
@@ -309,44 +349,60 @@ class _Dropdown extends StatelessWidget {
 
 class _RoleCard extends StatelessWidget {
   const _RoleCard({
-    required this.icon,
-    required this.title,
-    required this.subtitle,
+    required this.choice,
     required this.selected,
     required this.onTap,
   });
 
-  final IconData icon;
-  final String title;
-  final String subtitle;
+  final ResidenceRoleChoice choice;
   final bool selected;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     final t = FigmaColors.of(context);
-    final accent = selected ? FigmaColors.orange : t.fieldBorder;
+    const teal = Color(0xFF12A28F);
+    final accent = selected ? teal : t.fieldBorder;
 
     return InkWell(
       borderRadius: BorderRadius.circular(14),
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(14),
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: t.card,
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: accent, width: selected ? 1.6 : 1),
+          border: Border.all(color: accent, width: selected ? 2 : 1.5),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(icon, size: 22, color: selected ? FigmaColors.orange : t.body),
-            const SizedBox(height: 10),
-            Text(
-              title,
-              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: t.heading),
+            Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: selected
+                    ? FigmaColors.orange.withValues(alpha: 0.12)
+                    : t.fieldBorder.withValues(alpha: 0.5),
+              ),
+              child: Icon(
+                choice.icon,
+                size: 22,
+                color: selected ? FigmaColors.orange : t.heading,
+              ),
             ),
-            Text(subtitle, style: TextStyle(fontSize: 11, color: t.body)),
+            const SizedBox(height: 14),
+            Text(
+              choice.title,
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+                color: t.heading,
+              ),
+            ),
+            const SizedBox(height: 2),
+            Text(choice.subtitle, style: TextStyle(fontSize: 12, color: t.body)),
           ],
         ),
       ),

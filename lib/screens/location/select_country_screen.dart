@@ -5,7 +5,13 @@ import 'package:flutter_nivasshub/widgets/shared/figma/figma_widgets.dart';
 
 /// One selectable place (country or city) in the Figma pickers.
 class FigmaPlace {
-  const FigmaPlace({required this.id, required this.name, this.leading, this.subtitle});
+  const FigmaPlace({
+    required this.id,
+    required this.name,
+    this.leading,
+    this.subtitle,
+    this.image,
+  });
 
   final String id;
   final String name;
@@ -13,6 +19,9 @@ class FigmaPlace {
   /// Flag emoji for countries.
   final String? leading;
   final String? subtitle;
+
+  /// Asset path of a landmark illustration (popular cities).
+  final String? image;
 }
 
 /// Figma "Select Country": search box, a "Popular countries" card and an
@@ -129,6 +138,7 @@ class FigmaPlaceList extends StatelessWidget {
     required this.places,
     required this.onTap,
     this.icon = Icons.public,
+    this.showSubtitle = true,
   });
 
   final List<FigmaPlace> places;
@@ -136,6 +146,8 @@ class FigmaPlaceList extends StatelessWidget {
 
   /// Shown when a place has no [FigmaPlace.leading] emoji.
   final IconData icon;
+
+  final bool showSubtitle;
 
   @override
   Widget build(BuildContext context) {
@@ -152,13 +164,20 @@ class FigmaPlaceList extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
                 child: Row(
                   children: [
-                    SizedBox(
-                      width: 28,
+                    Container(
+                      width: 34,
+                      height: 34,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: FigmaColors.accentBlue.withValues(alpha: 0.10),
+                        shape: places[i].leading != null ? BoxShape.rectangle : BoxShape.circle,
+                        borderRadius: places[i].leading != null ? BorderRadius.circular(8) : null,
+                      ),
                       child: places[i].leading != null
-                          ? Text(places[i].leading!, style: const TextStyle(fontSize: 20))
+                          ? Text(places[i].leading!, style: const TextStyle(fontSize: 18))
                           : Icon(icon, size: 20, color: FigmaColors.accentBlue),
                     ),
-                    const SizedBox(width: 10),
+                    const SizedBox(width: 12),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -166,12 +185,12 @@ class FigmaPlaceList extends StatelessWidget {
                           Text(
                             places[i].name,
                             style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
+                              fontSize: 15,
+                              fontWeight: FontWeight.w700,
                               color: t.heading,
                             ),
                           ),
-                          if (places[i].subtitle != null)
+                          if (showSubtitle && places[i].subtitle != null)
                             Text(
                               places[i].subtitle!,
                               style: TextStyle(fontSize: 11, color: t.body),

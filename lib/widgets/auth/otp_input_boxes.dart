@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_nivasshub/constants/figma_colors.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter_nivasshub/constants/app_radius.dart';
@@ -123,7 +124,7 @@ class _OtpInputBoxesState extends State<OtpInputBoxes> {
                                 color: boxBackground,
                                 borderRadius: AppRadius.radiusMd,
                                 border: Border.all(
-                                  color: isNextToFill ? primaryBlue : border,
+                                  color: isNextToFill ? FigmaColors.navy : border,
                                   width: isNextToFill ? 2 : 1,
                                 ),
                                 boxShadow: isNextToFill

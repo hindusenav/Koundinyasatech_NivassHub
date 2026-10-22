@@ -38,12 +38,29 @@ class FigmaHeaderScaffold extends StatelessWidget {
             children: [
               ClipRRect(
                 borderRadius: const BorderRadius.vertical(
-                  bottom: Radius.circular(28),
+                  bottom: Radius.circular(32),
                 ),
                 child: Container(
                   width: double.infinity,
                   color: t.header,
-                  child: SafeArea(
+                  child: Stack(
+                    children: [
+                      // Soft lighter circle bleeding off the top-right corner.
+                      Positioned(
+                        right: -70,
+                        bottom: -90,
+                        child: IgnorePointer(
+                          child: Container(
+                            width: 200,
+                            height: 200,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.white.withValues(alpha: 0.05),
+                            ),
+                          ),
+                        ),
+                      ),
+                      SafeArea(
                     bottom: false,
                     child: SizedBox(
                       height: 60,
@@ -79,6 +96,8 @@ class FigmaHeaderScaffold extends StatelessWidget {
                         ],
                       ),
                     ),
+                  ),
+                    ],
                   ),
                 ),
               ),

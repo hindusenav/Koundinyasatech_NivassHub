@@ -6,6 +6,9 @@ import 'package:flutter_nivasshub/constants/app_spacing.dart';
 import 'package:flutter_nivasshub/constants/app_text_styles.dart';
 import 'package:flutter_nivasshub/models/kyc/kyc_status.dart';
 
+const Color _done = Color(0xFF16A34A);
+const Color _current = Color(0xFFEF4444);
+
 /// Submitted → Under Review → Admin Review → Processing (spec §12).
 ///
 /// A terminal verdict lights every step, because review is then finished
@@ -41,7 +44,7 @@ class KycStageIndicator extends StatelessWidget {
                   child: Container(
                     height: 2,
                     color: (isComplete || i < activeIndex)
-                        ? AppColors.primary
+                        ? _done
                         : AppColors.grey300,
                   ),
                 ),
@@ -61,8 +64,10 @@ class KycStageIndicator extends StatelessWidget {
                       ? TextAlign.end
                       : TextAlign.center,
                   style: AppTextStyles.labelSmall.copyWith(
-                    color: (isComplete || i <= activeIndex)
-                        ? AppColors.primary
+                    color: (isComplete || i < activeIndex)
+                        ? _done
+                        : i == activeIndex
+                        ? _current
                         : AppColors.grey500,
                     fontWeight: (!isComplete && i == activeIndex)
                         ? FontWeight.w700
@@ -85,16 +90,22 @@ class _Dot extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isActive = isDone || isCurrent;
-
     return Container(
       width: AppDimensions.iconSm,
       height: AppDimensions.iconSm,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: isDone ? AppColors.primary : Colors.transparent,
+        color: isDone
+            ? _done
+            : isCurrent
+            ? _current
+            : AppColors.grey300.withValues(alpha: 0.6),
         border: Border.all(
-          color: isActive ? AppColors.primary : AppColors.grey300,
+          color: isDone
+              ? _done
+              : isCurrent
+              ? _current
+              : AppColors.grey300,
           width: 2,
         ),
       ),

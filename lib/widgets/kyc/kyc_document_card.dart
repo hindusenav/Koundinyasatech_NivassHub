@@ -202,10 +202,10 @@ class _IconTile extends StatelessWidget {
       width: AppDimensions.avatarMd,
       height: AppDimensions.avatarMd,
       decoration: BoxDecoration(
-        color: AppColors.primary.withValues(alpha: 0.10),
+        color: _uploadBlue.withValues(alpha: 0.10),
         borderRadius: AppRadius.radiusSm,
       ),
-      child: Icon(icon, size: AppDimensions.iconMd, color: AppColors.primary),
+      child: Icon(icon, size: AppDimensions.iconMd, color: _uploadBlue),
     );
   }
 }
@@ -228,46 +228,85 @@ class _UploadTarget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = FigmaColors.of(context);
-    final borderColor = isAttention ? AppColors.warning : t.fieldBorder;
-
     return InkWell(
       onTap: onTap,
       borderRadius: AppRadius.radiusMd,
-      child: Container(
-        width: double.infinity,
-        padding: AppSpacing.symmetric(
-          horizontal: AppSpacing.md,
-          vertical: AppSpacing.md,
+      child: CustomPaint(
+        foregroundPainter: _DashedBorderPainter(
+          color: isAttention ? AppColors.warning : AppColors.grey400,
+          radius: 12,
         ),
-        decoration: BoxDecoration(
-          color: t.field,
-          borderRadius: AppRadius.radiusMd,
-          border: Border.all(color: borderColor),
-        ),
-        child: Column(
-          children: [
-            Icon(
-              AppIcons.upload,
-              size: AppDimensions.iconMd,
-              color: AppColors.primary,
-            ),
-            AppSpacing.gapXs,
-            Text(
-              label,
-              style: AppTextStyles.labelLarge.copyWith(
-                color: AppColors.primary,
+        child: Container(
+          width: double.infinity,
+          padding: AppSpacing.symmetric(
+            horizontal: AppSpacing.md,
+            vertical: AppSpacing.md,
+          ),
+          decoration: BoxDecoration(
+            color: t.field,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Column(
+            children: [
+              Icon(
+                AppIcons.upload,
+                size: AppDimensions.iconMd,
+                color: _uploadBlue,
               ),
-            ),
-            AppSpacing.gapXs,
-            Text(
-              KycStrings.fileSizeHint,
-              style: AppTextStyles.bodySmall.copyWith(color: AppColors.grey500),
-            ),
-          ],
+              AppSpacing.gapXs,
+              Text(
+                '+  $label',
+                style: AppTextStyles.labelLarge.copyWith(color: _uploadBlue),
+              ),
+              AppSpacing.gapXs,
+              Text(
+                KycStrings.fileSizeHint,
+                style: AppTextStyles.bodySmall.copyWith(
+                  color: AppColors.grey500,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
+}
+
+const Color _uploadBlue = Color(0xFF1769C2);
+
+/// Dashed rounded-rectangle outline for the upload drop area.
+class _DashedBorderPainter extends CustomPainter {
+  const _DashedBorderPainter({required this.color, required this.radius});
+
+  final Color color;
+  final double radius;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.2;
+    final path = Path()
+      ..addRRect(
+        RRect.fromRectAndRadius(
+          Offset.zero & size,
+          Radius.circular(radius),
+        ),
+      );
+    for (final metric in path.computeMetrics()) {
+      var distance = 0.0;
+      while (distance < metric.length) {
+        canvas.drawPath(metric.extractPath(distance, distance + 5), paint);
+        distance += 9;
+      }
+    }
+  }
+
+  @override
+  bool shouldRepaint(_DashedBorderPainter old) =>
+      old.color != color || old.radius != radius;
 }
 
 /// Inline validation / objection line under a card.

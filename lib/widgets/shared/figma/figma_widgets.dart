@@ -83,11 +83,12 @@ class FigmaButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Every CTA is orange now; `navy` is kept so call sites don't change.
-    const color = FigmaColors.orange;
+    // Orange for the in-card actions ("Send OTP", "Verify OTP", "Confirm
+    // City"); navy for the bottom "Continue" / "Submit" buttons.
+    final color = navy ? FigmaColors.of(context).cta : FigmaColors.orange;
     return SizedBox(
       width: double.infinity,
-      height: 50,
+      height: 52,
       child: ElevatedButton(
         onPressed: isLoading ? null : onPressed,
         style: ElevatedButton.styleFrom(
@@ -112,17 +113,18 @@ class FigmaButton extends StatelessWidget {
             : Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
-                    label,
-                    style: const TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
+                  if (showArrow) const SizedBox(width: 26),
+                  Expanded(
+                    child: Text(
+                      label,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
-                  if (showArrow) ...[
-                    const SizedBox(width: 8),
-                    const Icon(Icons.arrow_forward, size: 18),
-                  ],
+                  if (showArrow) const Icon(Icons.arrow_forward, size: 18),
                 ],
               ),
       ),
@@ -136,10 +138,14 @@ class FigmaBadge extends StatelessWidget {
     super.key,
     this.icon = Icons.shield_outlined,
     this.size = 56,
+    this.light = false,
   });
 
   final IconData icon;
   final double size;
+
+  /// White disc with a navy glyph (KYC document step) instead of navy/white.
+  final bool light;
 
   @override
   Widget build(BuildContext context) {
@@ -148,9 +154,22 @@ class FigmaBadge extends StatelessWidget {
       height: size,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: FigmaColors.of(context).header,
+        color: light
+            ? FigmaColors.of(context).card
+            : FigmaColors.of(context).header,
+        boxShadow: [
+          BoxShadow(
+            color: FigmaColors.of(context).shadow,
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
-      child: Icon(icon, color: Colors.white, size: size * 0.45),
+      child: Icon(
+        icon,
+        color: light ? FigmaColors.of(context).heading : Colors.white,
+        size: size * 0.45,
+      ),
     );
   }
 }
@@ -211,14 +230,25 @@ class FigmaProgressStrip extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(label, style: TextStyle(fontSize: 11, color: t.body)),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: t.heading,
+              ),
+            ),
             Text(
               'Step $current of $total',
-              style: TextStyle(fontSize: 11, color: t.body),
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: t.heading,
+              ),
             ),
           ],
         ),
-        const SizedBox(height: 6),
+        const SizedBox(height: 8),
         ClipRRect(
           borderRadius: BorderRadius.circular(4),
           child: LinearProgressIndicator(

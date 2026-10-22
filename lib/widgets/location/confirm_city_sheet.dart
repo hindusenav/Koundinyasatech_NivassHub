@@ -24,9 +24,9 @@ class ConfirmCitySheet extends StatelessWidget {
     return Container(
       decoration: const BoxDecoration(
         color: FigmaColors.navy,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
       ),
-      padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
+      padding: const EdgeInsets.fromLTRB(24, 14, 24, 24),
       child: SafeArea(
         top: false,
         child: Column(
@@ -46,14 +46,14 @@ class ConfirmCitySheet extends StatelessWidget {
             const SizedBox(height: 16),
             const Text(
               'Select City',
-              textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w700),
+              textAlign: TextAlign.start,
+              style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w700),
             ),
             const SizedBox(height: 4),
             const Text(
               'Confirm the selected region to continue',
-              textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.white70, fontSize: 12),
+              textAlign: TextAlign.start,
+              style: TextStyle(color: Colors.white70, fontSize: 13),
             ),
             const SizedBox(height: 16),
             Container(

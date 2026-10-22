@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter_nivasshub/constants/app_spacing.dart';
 import 'package:flutter_nivasshub/constants/app_text_styles.dart';
+import 'package:flutter_nivasshub/constants/figma_colors.dart';
 import 'package:flutter_nivasshub/constants/kyc/kyc_strings.dart';
 import 'package:flutter_nivasshub/constants/string_constants.dart';
 import 'package:flutter_nivasshub/models/auth/user_role.dart';
@@ -153,7 +154,13 @@ class _KycVerificationStatusScreenState
         if (shouldExit && context.mounted) await _backToUserCheck();
       },
       child: FigmaHeaderScaffold(
-        title: KycStrings.kycTitle,
+        title:
+            provider.status == KycVerificationStatus.rejected ||
+                provider.status == KycVerificationStatus.correctionRequired
+            ? 'Resubmission Required'
+            : provider.isTerminal
+            ? KycStrings.kycTitle
+            : 'Verification Progress',
         showBackButton: false,
         body: SafeArea(top: false, child: _buildBody(context, provider)),
       ),
@@ -176,9 +183,6 @@ class _KycVerificationStatusScreenState
     final textPrimary = isDark
         ? AppColors.textPrimaryDark
         : AppColors.textPrimaryLight;
-    final textSecondary = isDark
-        ? AppColors.textSecondaryDark
-        : AppColors.textSecondaryLight;
 
     final isRejected =
         provider.status == KycVerificationStatus.rejected ||
@@ -192,70 +196,82 @@ class _KycVerificationStatusScreenState
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            AppSpacing.gapMd,
+            if (!isRejected) ...[
+              const FigmaProgressStrip(
+                label: 'Onboarding Progress',
+                current: 3,
+                total: 3,
+              ),
+              AppSpacing.gapMd,
+            ],
             AnimatedSwitcher(
               duration: const Duration(milliseconds: 300),
-              child: Column(
-                key: ValueKey(isRejected),
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    isRejected
-                        ? KycStrings.verificationActionRequiredTitle
-                        : provider.isTerminal
-                        ? KycStrings.verificationTitle
-                        : KycStrings.verificationUnderReviewTitle,
-                    style: AppTextStyles.headlineSmall.copyWith(
-                      color: textPrimary,
-                    ),
-                  ),
-                  AppSpacing.gapSm,
-                  Text(
-                    isRejected
-                        ? KycStrings.verificationActionRequiredBody
-                        : KycStrings.verificationBody,
-                    style: AppTextStyles.bodyMedium.copyWith(
-                      color: textSecondary,
-                    ),
-                  ),
-                ],
-              ),
+              child: isRejected
+                  ? Column(
+                      key: const ValueKey(true),
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        _ActionRequiredAlert(
+                          title: KycStrings.verificationActionRequiredTitle,
+                          body: KycStrings.verificationActionRequiredBody,
+                        ),
+                        AppSpacing.gapMd,
+                        const _HowToCorrectCard(),
+                      ],
+                    )
+                  : const SizedBox.shrink(key: ValueKey(false)),
             ),
-            AppSpacing.gapLg,
-            FigmaCard(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        KycStrings.verificationStatusLabel,
-                        style: AppTextStyles.labelMedium.copyWith(
-                          color: textSecondary,
+            if (isRejected) AppSpacing.gapLg,
+            if (!isRejected)
+              FigmaCard(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          provider.isTerminal
+                              ? KycStrings.verificationTitle
+                              : 'KYC Processing',
+                          style: AppTextStyles.titleMedium.copyWith(
+                            color: textPrimary,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        StatusChip(
+                          label: _statusLabel(provider.status).toUpperCase(),
+                          type: _statusChipType(provider.status),
+                        ),
+                      ],
+                    ),
+                    AppSpacing.gapSm,
+                    Text(
+                      KycStrings.verificationBody,
+                      style: AppTextStyles.bodyMedium.copyWith(
+                        color: textPrimary,
+                      ),
+                    ),
+                    AppSpacing.gapMd,
+                    KycStageIndicator(
+                      stage: provider.stage,
+                      isComplete: provider.isTerminal,
+                    ),
+                    AppSpacing.gapMd,
+                    Divider(height: 1, color: FigmaColors.of(context).cardBorder),
+                    AppSpacing.gapMd,
+                    Center(
+                      child: Text(
+                        'Reference ID: ${widget.args.kycId}',
+                        style: AppTextStyles.bodyMedium.copyWith(
+                          color: textPrimary,
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
-                      StatusChip(
-                        label: _statusLabel(provider.status),
-                        type: _statusChipType(provider.status),
-                      ),
-                    ],
-                  ),
-                  AppSpacing.gapMd,
-                  KycStageIndicator(
-                    stage: provider.stage,
-                    isComplete: provider.isTerminal,
-                  ),
-                  AppSpacing.gapSm,
-                  Text(
-                    'Reference: ${widget.args.kycId}',
-                    style: AppTextStyles.bodySmall.copyWith(
-                      color: textSecondary,
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
             AppSpacing.gapLg,
             _SubmittedDocumentsSection(onReupload: _reuploadDocument),
             if (provider.status == KycVerificationStatus.approved) ...[
@@ -275,6 +291,25 @@ class _KycVerificationStatusScreenState
             ] else if (!isRejected) ...[
               AppSpacing.gapLg,
               const _ReviewHint(),
+            ] else ...[
+              AppSpacing.gapLg,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.mail_outline,
+                    size: 18,
+                    color: FigmaColors.of(context).heading,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Support desk is active at support@nivasshub.com',
+                    style: AppTextStyles.bodySmall.copyWith(
+                      color: FigmaColors.of(context).heading,
+                    ),
+                  ),
+                ],
+              ),
             ],
             AppSpacing.gapLg,
           ],
@@ -302,6 +337,107 @@ class _KycVerificationStatusScreenState
       };
 }
 
+/// Red "Action Required" banner shown when documents need resubmission.
+class _ActionRequiredAlert extends StatelessWidget {
+  const _ActionRequiredAlert({required this.title, required this.body});
+
+  final String title;
+  final String body;
+
+  @override
+  Widget build(BuildContext context) {
+    const red = Color(0xFFEF4444);
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: red.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: red.withValues(alpha: 0.7)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.info_outline, color: red, size: 20),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  title,
+                  style: AppTextStyles.titleSmall.copyWith(
+                    color: red,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 6),
+          Text(
+            body,
+            style: AppTextStyles.bodySmall.copyWith(
+              color: const Color(0xFF991B1B),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Numbered capture tips shown under the rejection banner.
+class _HowToCorrectCard extends StatelessWidget {
+  const _HowToCorrectCard();
+
+  static const _tips = [
+    'Ensure bright daylight and flat positioning before capturing.',
+    'Upload direct PDF generated from registry portal if available.',
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    final t = FigmaColors.of(context);
+    return FigmaCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'How to correct:',
+            style: AppTextStyles.titleSmall.copyWith(
+              color: t.heading,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const SizedBox(height: 10),
+          for (var i = 0; i < _tips.length; i++)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '${i + 1}.',
+                    style: AppTextStyles.bodySmall.copyWith(
+                      color: FigmaColors.orange,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      _tips[i],
+                      style: AppTextStyles.bodySmall.copyWith(color: t.body),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
 /// Soft banner shown while the review is in progress.
 class _ReviewHint extends StatelessWidget {
   const _ReviewHint();
@@ -311,9 +447,9 @@ class _ReviewHint extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: AppColors.warning.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.warning.withValues(alpha: 0.3)),
+        color: AppColors.error.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.error.withValues(alpha: 0.6)),
       ),
       child: Row(
         children: [

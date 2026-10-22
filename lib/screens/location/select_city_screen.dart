@@ -60,14 +60,14 @@ class _SelectCityScreenState extends State<SelectCityScreen> {
                 if (popular.isNotEmpty) ...[
                   const SizedBox(height: 16),
                   FigmaCard(
-                    padding: const EdgeInsets.all(12),
+                    padding: EdgeInsets.zero,
                     child: GridView.count(
                       crossAxisCount: 3,
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
-                      mainAxisSpacing: 8,
-                      crossAxisSpacing: 8,
-                      childAspectRatio: 1.05,
+                      mainAxisSpacing: 0,
+                      crossAxisSpacing: 0,
+                      childAspectRatio: 1.15,
                       children: [
                         for (final city in popular) _CityTile(city: city, onTap: () => _pick(city)),
                       ],
@@ -81,6 +81,7 @@ class _SelectCityScreenState extends State<SelectCityScreen> {
                   FigmaPlaceList(
                     places: all,
                     icon: Icons.location_on_outlined,
+                    showSubtitle: false,
                     onTap: _pick,
                   ),
                 ],
@@ -107,18 +108,20 @@ class _CityTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = FigmaColors.of(context);
     return InkWell(
-      borderRadius: BorderRadius.circular(12),
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
-          color: t.field,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: t.fieldBorder),
+          border: Border(
+            right: BorderSide(color: t.cardBorder),
+            bottom: BorderSide(color: t.cardBorder),
+          ),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.location_city_outlined, size: 28, color: FigmaColors.accentBlue),
+            city.image == null
+                ? Icon(Icons.location_city_outlined, size: 28, color: FigmaColors.accentBlue)
+                : Image.asset(city.image!, height: 34, fit: BoxFit.contain),
             const SizedBox(height: 8),
             Text(
               city.name,

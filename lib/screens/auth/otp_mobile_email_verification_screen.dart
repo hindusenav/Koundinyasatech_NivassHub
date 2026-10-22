@@ -397,12 +397,22 @@ class _ResendRow extends StatelessWidget {
       );
     }
 
-    return CustomButton(
-      label: 'Resend OTP',
-      onPressed: onResend,
-      variant: CustomButtonVariant.text,
-      isFullWidth: false,
-      size: CustomButtonSize.small,
+    final t = FigmaColors.of(context);
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: t.field,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: t.fieldBorder),
+      ),
+      alignment: Alignment.center,
+      child: CustomButton(
+        label: 'Resend OTP',
+        onPressed: onResend,
+        variant: CustomButtonVariant.text,
+        isFullWidth: false,
+        size: CustomButtonSize.small,
+      ),
     );
   }
 }
