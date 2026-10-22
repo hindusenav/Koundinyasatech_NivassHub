@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_nivasshub/constants/asset_constants.dart';
 import 'package:flutter_nivasshub/constants/app_text_styles.dart';
 import 'package:flutter_nivasshub/constants/figma_colors.dart';
 import 'package:flutter_nivasshub/constants/kyc/kyc_strings.dart';
@@ -240,7 +242,23 @@ class _AuthEntryScreenState extends State<AuthEntryScreen> {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      const Center(child: FigmaBadge(size: 64)),
+                      Center(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            SvgPicture.asset(
+                              AppAssets.splashMark,
+                              width: 44,
+                              height: 44,
+                            ),
+                            const SizedBox(height: 8),
+                            SvgPicture.asset(
+                              AppAssets.splashWordmark,
+                              width: 140,
+                            ),
+                          ],
+                        ),
+                      ),
                       const SizedBox(height: 20),
                       const FigmaTitleBlock(
                         title: KycStrings.authEntryTitle,
