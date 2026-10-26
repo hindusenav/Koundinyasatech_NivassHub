@@ -74,9 +74,15 @@ class DashboardProvider extends ChangeNotifier {
 
   Future<void> loadDashboard() async {
     debugPrint('[Dashboard] loadDashboard() start');
-    _state = DashboardState.loading;
+    // Only blank the screen with the loader when there is nothing to show
+    // yet. A refresh with data already on screen updates it in place, so
+    // the dashboard never flashes a loader after login/pull-to-refresh.
+    final hasCachedData = _home != null && _state == DashboardState.success;
     _errorMessage = '';
-    notifyListeners();
+    if (!hasCachedData) {
+      _state = DashboardState.loading;
+      notifyListeners();
+    }
 
     try {
       final results = await Future.wait([
@@ -111,7 +117,8 @@ class DashboardProvider extends ChangeNotifier {
           : DashboardState.empty;
     } catch (e) {
       _errorMessage = e.toString();
-      _state = DashboardState.error;
+      // A failed background refresh keeps the data already on screen.
+      if (!hasCachedData) _state = DashboardState.error;
     }
 
     debugPrint('[Dashboard] loadDashboard() complete, state=$_state');

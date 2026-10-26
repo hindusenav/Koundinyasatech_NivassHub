@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter_nivasshub/routes/app_routes.dart';
 import 'package:flutter_nivasshub/providers/dashboard/dashboard_navigation_provider.dart';
-import 'package:flutter_nivasshub/widgets/shared/feedback/custom_snackbar.dart';
 
 class DashboardBottomNavigation extends StatelessWidget {
   const DashboardBottomNavigation({super.key, this.selectedIndex});
@@ -17,59 +17,81 @@ class DashboardBottomNavigation extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final activeIndex = selectedIndex ?? provider.selectedIndex;
 
-    return SafeArea(
-      top: false,
-      child: Container(
-        height: 84,
-        decoration: BoxDecoration(
-          color: isDark ? const Color(0xFF1E293B) : const Color(0xFFC7E3FF),
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(24),
-            topRight: Radius.circular(24),
-          ),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _item(
-                context,
-                provider,
-                activeIndex,
-                0,
-                "assets/icons/home.svg.png",
-                "Home",
-                isDark,
-              ),
-              _item(
-                context,
-                provider,
-                activeIndex,
-                1,
-                "assets/icons/visitors.svg.png",
-                "Visitors",
-                isDark,
-              ),
-              _item(
-                context,
-                provider,
-                activeIndex,
-                2,
-                "assets/icons/community.svg.png",
-                "Community",
-                isDark,
-              ),
-              _item(
-                context,
-                provider,
-                activeIndex,
-                3,
-                "assets/icons/payments.svg.png",
-                "Payments",
-                isDark,
+    // Cap the system font scale so the bar keeps a fixed, compact height on
+    // phones with large accessibility text.
+    final mq = MediaQuery.of(context);
+    return MediaQuery(
+      data: mq.copyWith(textScaler: mq.textScaler.clamp(maxScaleFactor: 1.1)),
+      child: SafeArea(
+        top: false,
+        child: Container(
+          height: 68,
+          decoration: BoxDecoration(
+            gradient: AppColors.navGradient,
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(24),
+              topRight: Radius.circular(24),
+            ),
+            boxShadow: const [
+              BoxShadow(
+                color: AppColors.shadowSoft,
+                blurRadius: 12,
+                offset: Offset(0, -2),
               ),
             ],
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                _item(
+                  context,
+                  provider,
+                  activeIndex,
+                  0,
+                  "assets/icons/home.svg.png",
+                  "Home",
+                  isDark,
+                ),
+                _item(
+                  context,
+                  provider,
+                  activeIndex,
+                  1,
+                  "assets/icons/visitors.svg.png",
+                  "Visitors",
+                  isDark,
+                ),
+                _item(
+                  context,
+                  provider,
+                  activeIndex,
+                  2,
+                  "assets/icons/community.svg.png",
+                  "Community",
+                  isDark,
+                ),
+                _item(
+                  context,
+                  provider,
+                  activeIndex,
+                  3,
+                  "assets/icons/payments.svg.png",
+                  "Payments",
+                  isDark,
+                ),
+                _item(
+                  context,
+                  provider,
+                  activeIndex,
+                  4,
+                  "assets/icons/more.svg.png",
+                  "More",
+                  isDark,
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -86,9 +108,8 @@ class DashboardBottomNavigation extends StatelessWidget {
     bool isDark,
   ) {
     final bool selected = activeIndex == index;
-    final activeBlue = isDark
-        ? AppColors.noticesAccentBlueDark
-        : const Color(0xFF0060BD);
+    final activeBlue = AppColors.primaryOrange;
+    final inactiveColor = selected ? AppColors.primaryOrange : AppColors.cardBorder.withValues(alpha: 0.6);
 
     return Expanded(
       child: InkWell(
@@ -100,8 +121,19 @@ class DashboardBottomNavigation extends StatelessWidget {
           provider.changeIndex(index);
 
           if (index == 3) {
-            // Payments screen is not available yet.
-            CustomSnackbar.info(context, '$title coming soon.');
+            // Payments — open the Payments Center.
+            if (ModalRoute.of(context)?.settings.name != AppRoutes.payments) {
+              Navigator.pushNamed(context, AppRoutes.payments);
+            }
+            return;
+          }
+
+          if (index == 4) {
+            // More — open the Quick Actions screen.
+            if (ModalRoute.of(context)?.settings.name !=
+                AppRoutes.quickActions) {
+              Navigator.pushNamed(context, AppRoutes.quickActions);
+            }
             return;
           }
 
@@ -136,47 +168,48 @@ class DashboardBottomNavigation extends StatelessWidget {
             /// ICON BACKGROUND
             AnimatedContainer(
               duration: const Duration(milliseconds: 200),
-              height: 40,
-              width: 40,
+              height: 30,
+              width: 30,
               decoration: BoxDecoration(
-                color: selected ? activeBlue : Colors.transparent,
+                color: selected ? activeBlue.withValues(alpha: 0.16) : Colors.transparent,
+                boxShadow: selected
+                    ? [
+                        BoxShadow(
+                          color: activeBlue.withValues(alpha: 0.35),
+                          blurRadius: 12,
+                          spreadRadius: 1,
+                        ),
+                      ]
+                    : null,
                 shape: BoxShape.circle,
               ),
               child: Center(
                 child: Image.asset(
                   image,
-                  width: 22,
-                  height: 22,
+                  width: 18,
+                  height: 18,
                   fit: BoxFit.contain,
-                  color: selected
-                      ? Colors.white
-                      : (isDark ? Colors.white70 : const Color(0xFF475569)),
+                  color: inactiveColor,
                   filterQuality: FilterQuality.high,
                   isAntiAlias: true,
                   errorBuilder: (_, _, _) {
                     return Icon(
                       Icons.circle_outlined,
-                      size: 22,
-                      color: selected ? Colors.white : const Color(0xFF475569),
+                      size: 18,
+                      color: inactiveColor,
                     );
                   },
                 ),
               ),
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: 3),
             Text(
               title,
               textAlign: TextAlign.center,
-              style: TextStyle(
-                fontFamily: 'DM Sans',
+              style: GoogleFonts.inter(
                 fontSize: 11,
                 fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
-                color: selected
-                    ? activeBlue
-                    : (isDark
-                          ? AppColors.textSecondaryDark
-                          : const Color(0xFF475569)),
-                letterSpacing: 0.2,
+                color: inactiveColor,
                 height: 1.1,
               ),
             ),

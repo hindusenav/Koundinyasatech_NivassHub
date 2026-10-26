@@ -22,6 +22,11 @@ class CustomErrorWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final messageColor = isDark
+        ? AppColors.textPrimaryDark
+        : AppColors.textPrimaryLight;
+
     return Center(
       child: Padding(
         padding: AppSpacing.screenPadding,
@@ -32,7 +37,7 @@ class CustomErrorWidget extends StatelessWidget {
             AppSpacing.gapMd,
             Text(
               message,
-              style: AppTextStyles.bodyMedium.copyWith(color: AppColors.grey600),
+              style: AppTextStyles.bodyMedium.copyWith(color: messageColor),
               textAlign: TextAlign.center,
             ),
             if (onRetry != null) ...[

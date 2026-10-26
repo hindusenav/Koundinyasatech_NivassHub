@@ -2,19 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'package:flutter_nivasshub/core/api/base_api.dart';
-
 import 'package:flutter_nivasshub/screens/dashboard/home_dashboard_screen.dart';
-import 'package:flutter_nivasshub/screens/kyc/city_confirmation_screen.dart';
-import 'package:flutter_nivasshub/screens/kyc/select_city_screen.dart';
-import 'package:flutter_nivasshub/screens/kyc/select_country_screen.dart';
 import 'package:flutter_nivasshub/screens/notices/notices_screen.dart';
 import 'package:flutter_nivasshub/screens/notifications/delivery_details_screen.dart';
 import 'package:flutter_nivasshub/screens/profile/add_address_details_screen.dart';
-import 'package:flutter_nivasshub/screens/profile/profile_screen.dart';
+import 'package:flutter_nivasshub/screens/profile/vehicles_screen.dart';
 import 'package:flutter_nivasshub/screens/quick_actions/quick_actions_screen.dart';
 import 'package:flutter_nivasshub/screens/search/search_screen.dart';
+import 'package:flutter_nivasshub/screens/society/add_property_screen.dart';
 import 'package:flutter_nivasshub/screens/settings/help_support_screen.dart';
 import 'package:flutter_nivasshub/screens/settings/settings_screen.dart';
+import 'package:flutter_nivasshub/screens/payments/payments_screen.dart';
 import 'package:flutter_nivasshub/screens/visitor/activities_screen.dart';
 
 import 'package:flutter_nivasshub/routes/app_routes.dart';
@@ -38,15 +36,6 @@ class AppRouter {
           builder: (_) => const HomeDashboardScreen(),
         );
 
-      // ========================================================
-      // PROFILE
-      // ========================================================
-
-      case AppRoutes.profile:
-        return MaterialPageRoute(
-          settings: settings,
-          builder: (_) => const ProfileScreen(),
-        );
 
       // ========================================================
       // ADD ADDRESS DETAILS
@@ -56,6 +45,26 @@ class AppRouter {
         return MaterialPageRoute(
           settings: settings,
           builder: (_) => const AddAddressDetailsScreen(address: null),
+        );
+
+      // ========================================================
+      // VEHICLES
+      // ========================================================
+
+      case AppRoutes.vehicles:
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => const VehiclesScreen(),
+        );
+
+      // ========================================================
+      // ADD PROPERTY (flat / villa / office)
+      // ========================================================
+
+      case AppRoutes.addProperty:
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => const AddPropertyScreen(),
         );
 
       // ========================================================
@@ -118,6 +127,12 @@ class AppRouter {
           builder: (_) => const ActivitiesScreen(),
         );
 
+      case AppRoutes.payments:
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => const PaymentsScreen(),
+        );
+
       case AppRoutes.visitorDetail:
         final args = settings.arguments;
         if (args is! DeliveryDetailsScreenArgs) return _unknownRoute(settings);
@@ -145,29 +160,6 @@ class AppRouter {
             } catch (_) {}
             return NoticesScreen(apiClient: apiClient ?? ApiClient());
           },
-        );
-
-      // ========================================================
-      // KYC
-      // ========================================================
-
-      case AppRoutes.selectCountry:
-        return MaterialPageRoute(
-          settings: settings,
-          builder: (_) => const SelectCountryScreen(),
-        );
-
-      case AppRoutes.selectCity:
-        final countryName = settings.arguments as String?;
-        return MaterialPageRoute(
-          settings: settings,
-          builder: (_) => SelectCityScreen(countryName: countryName),
-        );
-
-      case AppRoutes.cityConfirmation:
-        return MaterialPageRoute(
-          settings: settings,
-          builder: (_) => const CityConfirmationScreen(),
         );
 
       // ========================================================

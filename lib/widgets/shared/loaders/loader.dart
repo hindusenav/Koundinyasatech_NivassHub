@@ -15,6 +15,11 @@ class Loader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textColor = isDark
+        ? AppColors.textSecondaryDark
+        : AppColors.textSecondaryLight;
+
     return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -28,7 +33,7 @@ class Loader extends StatelessWidget {
             AppSpacing.gapMd,
             Text(
               message!,
-              style: AppTextStyles.bodyMedium.copyWith(color: AppColors.grey500),
+              style: AppTextStyles.bodyMedium.copyWith(color: textColor),
             ),
           ],
         ],

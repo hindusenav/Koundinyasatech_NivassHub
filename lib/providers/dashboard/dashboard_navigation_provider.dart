@@ -38,9 +38,8 @@ class DashboardNavObserver extends NavigatorObserver {
       case AppRoutes.noticeList:
         _navigationProvider.changeIndex(2);
         break;
+      case AppRoutes.quickActions:
       case AppRoutes.settings:
-      case AppRoutes.profile:
-      case AppRoutes.editProfile:
       case AppRoutes.helpSupport:
         _navigationProvider.changeIndex(4);
         break;

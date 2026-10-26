@@ -30,7 +30,18 @@ class AuthInterceptor extends Interceptor {
 
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) async {
-    if (err.response?.statusCode == 401) {
+    // A 401 only means "the session expired" when the failed request was
+    // actually carrying our bearer token. Pre-auth endpoints (login itself,
+    // registration-check, forgot-password) never attach one and can return
+    // their own documented 401 for business reasons (wrong password, OTP
+    // mismatch) — forcing a logout/redirect for those disposes whatever
+    // screen is mid-request and crashes it, and hijacks a login/forgot-
+    // password error the screen already knows how to show inline.
+    final hadAuthHeader =
+        (err.requestOptions.headers['Authorization'] as String?)
+            ?.isNotEmpty ??
+        false;
+    if (err.response?.statusCode == 401 && hadAuthHeader) {
       await onUnauthorized?.call();
     }
     handler.next(err);

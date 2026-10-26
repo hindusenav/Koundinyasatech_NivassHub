@@ -20,7 +20,7 @@ class AppDecoration {
     final isDark = _isDark(context);
     return BoxDecoration(
       color: isDark ? AppColors.surfaceDark : AppColors.surfaceLight,
-      borderRadius: AppRadius.radiusMd,
+      borderRadius: BorderRadius.circular(AppColors.cardRadius),
       border: Border.all(
         color: isDark ? AppColors.borderDark : AppColors.borderLight,
         width: 1,
@@ -34,7 +34,7 @@ class AppDecoration {
     final isDark = _isDark(context);
     return BoxDecoration(
       color: isDark ? AppColors.surfaceDark : AppColors.surfaceLight,
-      borderRadius: AppRadius.radiusMd,
+      borderRadius: BorderRadius.circular(AppColors.cardRadius),
       boxShadow: isDark ? AppShadows.darkMd : AppShadows.md,
     );
   }

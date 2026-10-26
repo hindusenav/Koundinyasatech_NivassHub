@@ -3,14 +3,20 @@ import 'dart:io';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 
+import 'package:flutter_nivasshub/core/api/endpoints.dart';
+
 /// Wraps [Connectivity] to expose a simple `bool` connectivity signal
 /// instead of the raw platform result list — feature code shouldn't need
 /// to know about [ConnectivityResult] at all.
 class ConnectivityService {
-  ConnectivityService({Connectivity? connectivity})
-      : _connectivity = connectivity ?? Connectivity();
+  ConnectivityService({
+    Connectivity? connectivity,
+    Future<bool> Function(Duration timeout)? probe,
+  }) : _connectivity = connectivity ?? Connectivity(),
+       _probe = probe ?? _defaultProbe;
 
   final Connectivity _connectivity;
+  final Future<bool> Function(Duration timeout) _probe;
 
   Future<bool> get isConnected async {
     final results = await _connectivity.checkConnectivity();
@@ -26,21 +32,68 @@ class ConnectivityService {
     return results.any((result) => result != ConnectivityResult.none);
   }
 
-  /// Performs a genuine internet-reachability probe (a DNS lookup), rather
-  /// than trusting adapter/radio status alone — a device can be connected to
-  /// Wi-Fi/mobile data (so [isConnected] reports `true`) while still having
-  /// no real internet access (e.g. a captive portal or a dead router).
+  /// A genuine reachability probe rather than adapter/radio status alone — a
+  /// device can be on Wi-Fi/mobile data while having no real internet access
+  /// (captive portal, dead router).
+  ///
+  /// Succeeds as soon as *any* target answers: the app's own backend (TCP
+  /// connect) or a public DNS name. A single blocked host (a network that
+  /// filters Google, a LAN-only dev server) therefore never reads as offline.
   Future<bool> hasInternetAccess({
-    Duration timeout = const Duration(seconds: 5),
-  }) async {
+    Duration timeout = const Duration(seconds: 4),
+  }) => _probe(timeout);
+
+  static Future<bool> _defaultProbe(Duration timeout) {
+    final backend = Uri.tryParse(ApiEndpoints.baseUrl);
+    final probes = <Future<bool> Function()>[
+      if (backend != null && backend.host.isNotEmpty)
+        () => _canConnect(
+          backend.host,
+          backend.hasPort
+              ? backend.port
+              : (backend.scheme == 'https' ? 443 : 80),
+          timeout,
+        ),
+      () => _canResolve('google.com', timeout),
+      () => _canResolve('cloudflare.com', timeout),
+    ];
+    return _anySucceeds(probes);
+  }
+
+  /// Runs every probe concurrently; completes `true` on the first success,
+  /// or `false` once all have failed.
+  static Future<bool> _anySucceeds(List<Future<bool> Function()> probes) {
+    final completer = Completer<bool>();
+    var pending = probes.length;
+    for (final run in probes) {
+      run().then<void>((ok) {
+        if (ok && !completer.isCompleted) completer.complete(true);
+      }).whenComplete(() {
+        pending--;
+        if (pending == 0 && !completer.isCompleted) completer.complete(false);
+      });
+    }
+    return completer.future;
+  }
+
+  static Future<bool> _canConnect(
+    String host,
+    int port,
+    Duration timeout,
+  ) async {
     try {
-      final result =
-          await InternetAddress.lookup('google.com').timeout(timeout);
+      final socket = await Socket.connect(host, port, timeout: timeout);
+      socket.destroy();
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  static Future<bool> _canResolve(String host, Duration timeout) async {
+    try {
+      final result = await InternetAddress.lookup(host).timeout(timeout);
       return result.isNotEmpty && result.first.rawAddress.isNotEmpty;
-    } on SocketException {
-      return false;
-    } on TimeoutException {
-      return false;
     } catch (_) {
       return false;
     }

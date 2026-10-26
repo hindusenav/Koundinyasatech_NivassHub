@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'package:flutter_nivasshub/constants/app_colors.dart';
-import 'package:flutter_nivasshub/providers/auth/auth_provider.dart';
+import 'package:flutter_nivasshub/widgets/household/household_sections.dart';
 import 'package:flutter_nivasshub/providers/dashboard/dashboard_provider.dart';
 import 'package:flutter_nivasshub/providers/theme/theme_mode_provider.dart';
 import 'package:flutter_nivasshub/routes/app_routes.dart';
 import 'package:flutter_nivasshub/routes/navigation_service.dart';
-import 'package:flutter_nivasshub/storage/secure_storage_service.dart';
+import 'package:flutter_nivasshub/providers/auth/auth_state_provider.dart';
+import 'package:flutter_nivasshub/providers/kyc/kyc_provider.dart';
+import 'package:flutter_nivasshub/providers/notifications/mock_notification_provider.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -17,17 +19,28 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // The KYC flow writes to the mock notification log without anyone
+    // having read it, so load it here — otherwise the unread badge below
+    // stays at zero until the log screen is opened, which is exactly when
+    // the badge stops being useful.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      context.read<MockNotificationProvider>().load();
+    });
+  }
+
   // ============================================================
   // THEME
   // ============================================================
 
   bool get _isDark => Theme.of(context).brightness == Brightness.dark;
 
-  Color get backgroundColor => _isDark
-      ? AppColors.settingsBackgroundDark
-      : AppColors.settingsBackgroundLight;
-  Color get headerColor =>
-      _isDark ? AppColors.settingsHeaderDark : AppColors.settingsHeaderLight;
+  // White page; blue accents (orange is reserved for buttons).
+  Color get backgroundColor =>
+      _isDark ? AppColors.settingsBackgroundDark : AppColors.background;
   Color get primaryBlue => _isDark
       ? AppColors.settingsPrimaryBlueDark
       : AppColors.settingsPrimaryBlueLight;
@@ -42,16 +55,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Color get borderColor =>
       _isDark ? AppColors.borderDark : AppColors.settingsBorderLight;
   Color get sheetBackgroundColor =>
-      _isDark ? AppColors.surfaceDark : Colors.white;
+      _isDark ? AppColors.surfaceDark : AppColors.cardBg;
 
   // ============================================================
   // LOCAL VALUES
   // ============================================================
 
-  int familyCount = 1;
-  int dailyHelpCount = 0;
-  int vehicleCount = 0;
-  int petCount = 0;
+  /// 0 = Household Hub, 1 = Account Settings.
+  int _tab = 0;
 
   String selectedPlan = 'Ad-Supported';
 
@@ -81,20 +92,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  // ============================================================
-  // PROFILE
-  // ============================================================
-
-  void _openProfile() {
-    Navigator.pushNamed(context, AppRoutes.profile);
-  }
-
-  // ============================================================
   // HELP & SUPPORT
   // ============================================================
 
   void _openHelpSupport() {
     Navigator.pushNamed(context, AppRoutes.helpSupport);
+  }
+
+  // ============================================================
+  // MOCK NOTIFICATION LOG
+  // ============================================================
+
+  /// The KYC status emails from spec §16 are not actually sent — the mail
+  /// service is not connected — so they are logged to the console and
+  /// listed here instead.
+  void _openNotificationLog() {
+    Navigator.pushNamed(context, AppRoutes.mockNotificationLog);
   }
 
   // ============================================================
@@ -549,7 +562,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: primaryBlue,
-                foregroundColor: Colors.white,
+                foregroundColor: AppColors.white,
               ),
               onPressed: () {
                 final value = controller.text.trim();
@@ -588,32 +601,37 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red,
-                foregroundColor: Colors.white,
+                backgroundColor: AppColors.error,
+                foregroundColor: AppColors.white,
               ),
               onPressed: () async {
                 // Read providers before the first `await` — avoids using
                 // `context` across an async gap.
-                final storage = context.read<SecureStorageService>();
-                final auth = context.read<AuthProvider>();
+                final authState = context.read<AuthStateProvider>();
+                final kyc = context.read<KycProvider>();
                 final dashboard = context.read<DashboardProvider>();
 
                 Navigator.pop(dialogContext);
                 debugPrint('[Session] Logout initiated by user');
 
-                // Clear the persisted session (tokens + isLoggedIn flag) so
-                // a relaunch/force-restart doesn't auto-navigate back to
-                // Dashboard — this is the fix for that exact bug.
-                await storage.clearSession();
+                // `AuthStateProvider.clear()` rather than
+                // `SecureStorageService.clearSession()` directly: the
+                // latter predates the KYC flow and knows nothing about
+                // the auth-flow state, the kycToken or the uploaded
+                // documents, so a second user on this device would
+                // otherwise inherit the first user's half-finished
+                // application and land mid-flow. `clear()` calls
+                // `clearSession()` itself and drops the rest with it.
+                await authState.clear();
+                await kyc.reset();
                 debugPrint(
-                  '[Session] Storage cleared (tokens + isLoggedIn removed)',
+                  '[Session] Storage cleared (tokens, session and KYC state)',
                 );
 
                 if (!mounted) return;
 
                 // Reset in-memory state so a subsequent login doesn't
-                // inherit stale auth/dashboard data from this session.
-                auth.logout();
+                // inherit stale dashboard data from this session.
                 dashboard.reset();
 
                 debugPrint(
@@ -631,30 +649,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   // ============================================================
-  // ADD HOUSEHOLD
-  // ============================================================
-
-  void _addHousehold(String type) {
-    setState(() {
-      switch (type) {
-        case 'Family':
-          familyCount++;
-          break;
-        case 'Daily Help':
-          dailyHelpCount++;
-          break;
-        case 'Vehicles':
-          vehicleCount++;
-          break;
-        case 'Pets':
-          petCount++;
-          break;
-      }
-    });
-    _message('$type added successfully');
-  }
-
-  // ============================================================
   // TEST NOTIFICATION
   // ============================================================
 
@@ -668,254 +662,166 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: backgroundColor,
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(56),
-        child: AppBar(
-          backgroundColor: headerColor,
-          elevation: 0,
-          scrolledUnderElevation: 0,
-          centerTitle: true,
-          leading: IconButton(
-            icon: Icon(
-              Icons.arrow_back,
-              color: _isDark ? AppColors.textPrimaryDark : Colors.black,
-              size: 22,
-            ),
-            onPressed: () {
-              Navigator.maybePop(context);
-            },
-          ),
-          title: Text(
-            'Settings',
-            style: TextStyle(
-              color: _isDark ? AppColors.textPrimaryDark : Colors.black,
-              fontSize: 16,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          actions: [
-            IconButton(
-              icon: Icon(
-                Icons.help_outline,
-                color: _isDark ? AppColors.textPrimaryDark : Colors.black,
-                size: 22,
-              ),
-              onPressed: _openHelpSupport,
-            ),
-          ],
-        ),
-      ),
-      body: SafeArea(
-        child: ListView(
-          physics: const BouncingScrollPhysics(),
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+    return HouseholdScope(
+      child: Scaffold(
+        backgroundColor: backgroundColor,
+        body: Column(
           children: [
-            // Profile
-            _profileCard(),
-            const SizedBox(height: 10),
+            _header(),
+            Expanded(
+              child: SafeArea(
+                top: false,
+                child: ListView(
+                  physics: const BouncingScrollPhysics(),
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
+                  children: [
+                    _tabSwitcher(),
+                    const SizedBox(height: 16),
 
-            // Complete Profile
-            _completeProfileCard(),
-            const SizedBox(height: 16),
+                    if (_tab == 0)
+                      // Family, pets, vehicles, daily help
+                      const HouseholdSections()
+                    else ...[
+                      // Address
+                      _addressCard(),
+                      const SizedBox(height: 12),
 
-            // Household
-            _sectionHeader('Household'),
-            const SizedBox(height: 10),
+                      // Notification Banner
+                      _notificationBanner(),
+                      const SizedBox(height: 16),
 
-            // Household Grid - 2 columns
-            GridView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: 5,
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 10,
-                mainAxisSpacing: 10,
+                      // Security & Notifications
+                      _sectionHeader('Security & Notifications'),
+                      const SizedBox(height: 6),
+                      _settingCard(
+                        icon: Icons.notifications_none,
+                        title: 'Notification Preferences',
+                        subtitle: 'Manage what alerts you receive',
+                        onTap: _notificationPreferences,
+                      ),
+                      _settingCard(
+                        icon: Icons.shield_outlined,
+                        title: 'Security Alert List',
+                        subtitle: 'View and manage security alerts',
+                        onTap: _securityAlerts,
+                      ),
+                      _settingCard(
+                        icon: Icons.article_outlined,
+                        title: 'Feed Settings',
+                        subtitle: 'Customize your community feed',
+                        onTap: _feedSettings,
+                      ),
+                      const SizedBox(height: 16),
 
-                // Screenshot card height ≈ 90 px
-                mainAxisExtent: 90,
+                      // Purchases
+                      _sectionHeader('Purchases'),
+                      const SizedBox(height: 6),
+                      _settingCard(
+                        icon: Icons.shopping_bag_outlined,
+                        title: 'My Orders',
+                        subtitle: 'Track your purchases',
+                        onTap: _myOrders,
+                      ),
+                      _settingCard(
+                        icon: Icons.credit_card_outlined,
+                        title: 'My Plans',
+                        subtitle: 'Ad-Supported Active',
+                        badge: selectedPlan,
+                        onTap: _myPlans,
+                      ),
+                      const SizedBox(height: 16),
+
+                      // Manage Flats
+                      _sectionHeader('Manage Flats'),
+                      const SizedBox(height: 6),
+                      ...properties.map((property) {
+                        return _settingCard(
+                          icon: Icons.home_outlined,
+                          title: property['name'] as String,
+                          badge: property['active'] == true ? 'Active' : null,
+                          badgeColor: AppColors.badgeGreen,
+                          onTap: () {
+                            setState(() {
+                              for (final item in properties) {
+                                item['active'] = false;
+                              }
+                              property['active'] = true;
+                            });
+                            _message('${property['name']} selected');
+                          },
+                        );
+                      }),
+                      _settingCard(
+                        icon: Icons.add_circle_outline,
+                        title: 'Add Flat/Villa/Office',
+                        subtitle: 'Link another property',
+                        onTap: _addProperty,
+                      ),
+                      const SizedBox(height: 16),
+
+                      // General Settings
+                      _sectionHeader('General Settings'),
+                      const SizedBox(height: 6),
+                      _settingCard(
+                        icon: Icons.help_outline,
+                        title: 'Support & Feedback',
+                        subtitle: 'Get help or share your thoughts',
+                        onTap: _openHelpSupport,
+                      ),
+                      _settingCard(
+                        icon: Icons.send_outlined,
+                        title: 'Tell a friend about mygate',
+                        subtitle: 'Invite your neighbours',
+                        onTap: () {
+                          _message('Share option opened');
+                        },
+                      ),
+                      _settingCard(
+                        icon: Icons.person_outline,
+                        title: 'Account Information',
+                        subtitle: 'Manage your personal details',
+                        onTap: () =>
+                            _message('Account details are coming soon'),
+                      ),
+                      Consumer<MockNotificationProvider>(
+                        builder: (context, notifications, _) {
+                          return _settingCard(
+                            icon: Icons.mark_email_unread_outlined,
+                            title: 'Notification Log (Mock)',
+                            subtitle: 'KYC emails that would have been sent',
+                            badge: notifications.unreadCount > 0
+                                ? '${notifications.unreadCount}'
+                                : null,
+                            onTap: _openNotificationLog,
+                          );
+                        },
+                      ),
+                      Consumer<ThemeModeProvider>(
+                        builder: (context, themeModeProvider, _) {
+                          return _settingCard(
+                            icon: Icons.brightness_6_outlined,
+                            title: 'Theme',
+                            subtitle:
+                                'Choose light, dark, or match your device',
+                            badge: _themeModeLabel(themeModeProvider.themeMode),
+                            onTap: _chooseTheme,
+                          );
+                        },
+                      ),
+                      _settingCard(
+                        icon: Icons.logout,
+                        title: 'Logout',
+                        subtitle: 'Sign-out of your account',
+                        iconColor: AppColors.error,
+                        titleColor: AppColors.error,
+                        onTap: _logout,
+                      ),
+                    ],
+                    const SizedBox(height: 20),
+                  ],
+                ),
               ),
-              itemBuilder: (context, index) {
-                switch (index) {
-                  case 0:
-                    return _householdCard(
-                      icon: Icons.face_outlined,
-                      title: 'InstaHelp',
-                      subtitle: '1 Mn+ houses',
-                      rating: '4.8',
-                      showRating: true,
-                    );
-
-                  case 1:
-                    return _householdCard(
-                      icon: Icons.person_outline,
-                      title: 'Family',
-                      subtitle: '$familyCount member',
-                      showAdd: true,
-                      onAdd: () => _addHousehold('Family'),
-                    );
-
-                  case 2:
-                    return _householdCard(
-                      icon: Icons.person_add_alt_1_outlined,
-                      title: 'Daily Help',
-                      subtitle: dailyHelpCount == 0
-                          ? 'Add helper'
-                          : '$dailyHelpCount added',
-                      showAdd: true,
-                      onAdd: () => _addHousehold('Daily Help'),
-                    );
-
-                  case 3:
-                    return _householdCard(
-                      icon: Icons.directions_car_outlined,
-                      title: 'Vehicles',
-                      subtitle: vehicleCount == 0
-                          ? 'Add vehicle'
-                          : '$vehicleCount added',
-                      showAdd: true,
-                      onAdd: () => _addHousehold('Vehicles'),
-                    );
-
-                  case 4:
-                    return _householdCard(
-                      icon: Icons.pets_outlined,
-                      title: 'Pets',
-                      subtitle: petCount == 0 ? 'Add pet' : '$petCount added',
-                      showAdd: true,
-                      onAdd: () => _addHousehold('Pets'),
-                    );
-
-                  default:
-                    return const SizedBox.shrink();
-                }
-              },
             ),
-
-            const SizedBox(height: 16),
-
-            // Address
-            _addressCard(),
-            const SizedBox(height: 12),
-
-            // Notification Banner
-            _notificationBanner(),
-            const SizedBox(height: 16),
-
-            // Security & Notifications
-            _sectionHeader('Security & Notifications'),
-            const SizedBox(height: 6),
-            _settingCard(
-              icon: Icons.notifications_none,
-              title: 'Notification Preferences',
-              subtitle: 'Manage what alerts you receive',
-              onTap: _notificationPreferences,
-            ),
-            _settingCard(
-              icon: Icons.shield_outlined,
-              title: 'Security Alert List',
-              subtitle: 'View and manage security alerts',
-              onTap: _securityAlerts,
-            ),
-            _settingCard(
-              icon: Icons.article_outlined,
-              title: 'Feed Settings',
-              subtitle: 'Customize your community feed',
-              onTap: _feedSettings,
-            ),
-            const SizedBox(height: 16),
-
-            // Purchases
-            _sectionHeader('Purchases'),
-            const SizedBox(height: 6),
-            _settingCard(
-              icon: Icons.shopping_bag_outlined,
-              title: 'My Orders',
-              subtitle: 'Track your purchases',
-              onTap: _myOrders,
-            ),
-            _settingCard(
-              icon: Icons.credit_card_outlined,
-              title: 'My Plans',
-              subtitle: 'Ad-Supported Active',
-              badge: selectedPlan,
-              onTap: _myPlans,
-            ),
-            const SizedBox(height: 16),
-
-            // Manage Flats
-            _sectionHeader('Manage Flats'),
-            const SizedBox(height: 6),
-            ...properties.map((property) {
-              return _settingCard(
-                icon: Icons.home_outlined,
-                title: property['name'] as String,
-                badge: property['active'] == true ? 'Active' : null,
-                badgeColor: Colors.green,
-                onTap: () {
-                  setState(() {
-                    for (final item in properties) {
-                      item['active'] = false;
-                    }
-                    property['active'] = true;
-                  });
-                  _message('${property['name']} selected');
-                },
-              );
-            }),
-            _settingCard(
-              icon: Icons.add_circle_outline,
-              title: 'Add Flat/Villa/Office',
-              subtitle: 'Link another property',
-              onTap: _addProperty,
-            ),
-            const SizedBox(height: 16),
-
-            // General Settings
-            _sectionHeader('General Settings'),
-            const SizedBox(height: 6),
-            _settingCard(
-              icon: Icons.help_outline,
-              title: 'Support & Feedback',
-              subtitle: 'Get help or share your thoughts',
-              onTap: _openHelpSupport,
-            ),
-            _settingCard(
-              icon: Icons.send_outlined,
-              title: 'Tell a friend about mygate',
-              subtitle: 'Invite your neighbours',
-              onTap: () {
-                _message('Share option opened');
-              },
-            ),
-            _settingCard(
-              icon: Icons.person_outline,
-              title: 'Account Information',
-              subtitle: 'Manage your personal details',
-              onTap: _openProfile,
-            ),
-            Consumer<ThemeModeProvider>(
-              builder: (context, themeModeProvider, _) {
-                return _settingCard(
-                  icon: Icons.brightness_6_outlined,
-                  title: 'Theme',
-                  subtitle: 'Choose light, dark, or match your device',
-                  badge: _themeModeLabel(themeModeProvider.themeMode),
-                  onTap: _chooseTheme,
-                );
-              },
-            ),
-            _settingCard(
-              icon: Icons.logout,
-              title: 'Logout',
-              subtitle: 'Sign-out of your account',
-              iconColor: Colors.red,
-              titleColor: Colors.red,
-              onTap: _logout,
-            ),
-            const SizedBox(height: 20),
           ],
         ),
       ),
@@ -926,69 +832,109 @@ class _SettingsScreenState extends State<SettingsScreen> {
   // PROFILE CARD
   // ============================================================
 
-  Widget _profileCard() {
+  Widget _header() {
+    final topPadding = MediaQuery.of(context).padding.top;
     return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: _isDark ? AppColors.surfaceDark : Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: borderColor, width: 0.5),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: _isDark ? 0.4 : 0.06),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
-        ],
+      padding: EdgeInsets.fromLTRB(20, topPadding + 12, 20, 24),
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [AppColors.headerStart, AppColors.headerEnd],
+        ),
+        borderRadius: BorderRadius.vertical(bottom: Radius.circular(28)),
       ),
-      child: Row(
+      child: Column(
         children: [
-          Container(
-            width: 48,
-            height: 48,
-            decoration: const BoxDecoration(
-              color: Color(0xFFFFA000),
-              shape: BoxShape.circle,
-            ),
-            alignment: Alignment.center,
-            child: Text(
-              'U',
-              style: const TextStyle(
-                color: Colors.black,
-                fontSize: 20,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'User Name',
+          Row(
+            children: [
+              if (Navigator.of(context).canPop())
+                IconButton(
+                  visualDensity: VisualDensity.compact,
+                  icon: const Icon(
+                    Icons.arrow_back_ios_new_rounded,
+                    color: AppColors.white,
+                    size: 18,
+                  ),
+                  onPressed: () => Navigator.of(context).maybePop(),
+                ),
+              const Expanded(
+                child: Text(
+                  'Settings',
+                  textAlign: TextAlign.center,
                   style: TextStyle(
-                    color: darkText,
-                    fontSize: 15,
+                    color: AppColors.white,
+                    fontSize: 18,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
-                const SizedBox(height: 2),
-                Text(
-                  'Nivaas Hub ID : 00000',
-                  style: TextStyle(color: greyText, fontSize: 12),
-                ),
-              ],
-            ),
+              ),
+              IconButton(
+                visualDensity: VisualDensity.compact,
+                icon: const Icon(Icons.help_outline, color: AppColors.white),
+                onPressed: _openHelpSupport,
+              ),
+            ],
           ),
-          Container(
-            width: 34,
-            height: 34,
-            decoration: BoxDecoration(
-              color: lightBlue,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Icon(Icons.qr_code_2, color: primaryBlue, size: 18),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Container(
+                width: 52,
+                height: 52,
+                decoration: BoxDecoration(
+                  color: AppColors.primaryOrange,
+                  shape: BoxShape.circle,
+                  border: Border.all(color: AppColors.white, width: 2),
+                ),
+                alignment: Alignment.center,
+                child: const Text(
+                  'U',
+                  style: TextStyle(
+                    color: AppColors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              const Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'User Name',
+                      style: TextStyle(
+                        color: AppColors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    SizedBox(height: 2),
+                    Text(
+                      'Nivaas Hub ID : 00000',
+                      style: TextStyle(color: AppColors.white, fontSize: 12),
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                width: 38,
+                height: 38,
+                decoration: BoxDecoration(
+                  color: AppColors.white.withValues(alpha: 0.2),
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(
+                    color: AppColors.white.withValues(alpha: 0.35),
+                  ),
+                ),
+                child: const Icon(
+                  Icons.qr_code_2,
+                  color: AppColors.white,
+                  size: 20,
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -996,77 +942,66 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   // ============================================================
-  // COMPLETE PROFILE
+  // TAB SWITCHER
   // ============================================================
 
-  Widget _completeProfileCard() {
+  Widget _tabSwitcher() {
+    Widget segment(int index, IconData icon, String label) {
+      final selected = _tab == index;
+      return Expanded(
+        child: GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: () => setState(() => _tab = index),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 180),
+            height: 42,
+            decoration: BoxDecoration(
+              color: selected ? AppColors.primaryOrange : Colors.transparent,
+              borderRadius: BorderRadius.circular(21),
+            ),
+            alignment: Alignment.center,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  icon,
+                  size: 16,
+                  color: selected ? AppColors.white : AppColors.textMuted,
+                ),
+                const SizedBox(width: 6),
+                Text(
+                  label,
+                  style: TextStyle(
+                    color: selected ? AppColors.white : AppColors.textMuted,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: _isDark ? AppColors.surfaceDark : Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: borderColor, width: 0.5),
-        boxShadow: [
+        color: AppColors.cardBg,
+        borderRadius: BorderRadius.circular(25),
+        border: Border.all(color: AppColors.cardBorder),
+        boxShadow: const [
           BoxShadow(
-            color: Colors.black.withValues(alpha: _isDark ? 0.4 : 0.06),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
+            color: AppColors.shadowSoft,
+            blurRadius: 8,
+            offset: Offset(0, 3),
           ),
         ],
       ),
       child: Row(
         children: [
-          Container(
-            width: 30,
-            height: 30,
-            decoration: BoxDecoration(
-              color: _isDark
-                  ? AppColors.settingsProfileBadgeBgDark
-                  : AppColors.settingsProfileBadgeBgLight,
-              shape: BoxShape.circle,
-            ),
-            alignment: Alignment.center,
-            child: Text(
-              '0%',
-              style: TextStyle(
-                color: _isDark ? AppColors.noticesDangerTextDark : Colors.red,
-                fontSize: 9,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Complete your profile',
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w700,
-                    color: darkText,
-                  ),
-                ),
-                const SizedBox(height: 1),
-                Text(
-                  'Let neighbours discover you!',
-                  style: TextStyle(fontSize: 11, color: greyText),
-                ),
-              ],
-            ),
-          ),
-          GestureDetector(
-            onTap: _openProfile,
-            child: Text(
-              'View Profile',
-              style: TextStyle(
-                color: primaryBlue,
-                fontSize: 12,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-          ),
+          segment(0, Icons.groups_2_outlined, 'Household Hub'),
+          segment(1, Icons.settings_outlined, 'Account Settings'),
         ],
       ),
     );
@@ -1103,135 +1038,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   // ============================================================
-  // HOUSEHOLD CARD
-  // ============================================================
-  Widget _householdCard({
-    required IconData icon,
-    required String title,
-    required String subtitle,
-    String? rating,
-    bool showRating = false,
-    bool showAdd = false,
-    VoidCallback? onAdd,
-  }) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 9),
-      decoration: BoxDecoration(
-        color: _isDark ? AppColors.surfaceDark : Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: borderColor, width: 0.5),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: _isDark ? 0.4 : 0.04),
-            blurRadius: 3,
-            offset: const Offset(0, 1),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // ───────── Top Row ─────────
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Icon
-              Container(
-                width: 34,
-                height: 34,
-                decoration: BoxDecoration(
-                  color: lightBlue,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Icon(icon, color: primaryBlue, size: 18),
-              ),
-
-              const Spacer(),
-
-              // Rating
-              if (showRating)
-                Padding(
-                  padding: const EdgeInsets.only(top: 5),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Icon(
-                        Icons.star,
-                        color: Color(0xFFFF9800),
-                        size: 12,
-                      ),
-                      const SizedBox(width: 2),
-                      Text(
-                        rating ?? '',
-                        style: TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.w700,
-                          color: darkText,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-              // + Add button
-              if (showAdd)
-                GestureDetector(
-                  onTap: onAdd,
-                  child: Container(
-                    height: 22,
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(6),
-                      border: Border.all(
-                        color: const Color(0xFFD9DDE3),
-                        width: 0.8,
-                      ),
-                    ),
-                    child: Text(
-                      '+ Add',
-                      style: TextStyle(
-                        color: primaryBlue,
-                        fontSize: 9,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ),
-            ],
-          ),
-
-          const SizedBox(height: 7),
-
-          // ───────── Title ─────────
-          Text(
-            title,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              color: darkText,
-              fontSize: 12,
-              fontWeight: FontWeight.w700,
-              height: 1.1,
-            ),
-          ),
-
-          const SizedBox(height: 2),
-
-          // ───────── Subtitle ─────────
-          Text(
-            subtitle,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(color: greyText, fontSize: 9.5, height: 1.1),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // ============================================================
   // ADDRESS CARD
   // ============================================================
 
@@ -1239,12 +1045,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       decoration: BoxDecoration(
-        color: _isDark ? AppColors.surfaceDark : Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: borderColor, width: 0.5),
+        color: _isDark ? AppColors.surfaceDark : AppColors.cardBg,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: borderColor, width: 1),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: _isDark ? 0.4 : 0.06),
+            color: _isDark
+                ? AppColors.black.withValues(alpha: 0.4)
+                : AppColors.shadowSoft,
             blurRadius: 3,
             offset: const Offset(0, 1),
           ),
@@ -1289,7 +1097,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         color: _isDark
             ? AppColors.settingsNotifyBgDark
             : AppColors.settingsNotifyBgLight,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: _isDark
               ? AppColors.settingsNotifyBorderDark
@@ -1316,8 +1124,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
             child: ElevatedButton(
               onPressed: _testNotification,
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFFF8A00),
-                foregroundColor: Colors.white,
+                backgroundColor: AppColors.primaryOrange,
+                foregroundColor: AppColors.white,
                 elevation: 0,
                 padding: const EdgeInsets.symmetric(horizontal: 14),
                 minimumSize: Size.zero,
@@ -1358,12 +1166,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       decoration: BoxDecoration(
-        color: _isDark ? AppColors.surfaceDark : Colors.white,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: borderColor, width: 0.5),
+        color: _isDark ? AppColors.surfaceDark : AppColors.cardBg,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: borderColor, width: 1),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: _isDark ? 0.4 : 0.04),
+            color: _isDark
+                ? AppColors.black.withValues(alpha: 0.4)
+                : AppColors.shadowSoft,
             blurRadius: 2,
             offset: const Offset(0, 1),
           ),
@@ -1373,7 +1183,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         color: Colors.transparent,
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(16),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
             child: Row(
@@ -1382,7 +1192,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   width: 34,
                   height: 34,
                   decoration: BoxDecoration(
-                    color: iconColor == Colors.red
+                    color: iconColor == AppColors.error
                         ? (_isDark
                               ? AppColors.settingsDangerIconBgDark
                               : AppColors.settingsDangerIconBgLight)
@@ -1391,10 +1201,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ),
                   child: Icon(
                     icon,
-                    color: iconColor == Colors.red
+                    color: iconColor == AppColors.error
                         ? (_isDark
                               ? AppColors.noticesDangerTextDark
-                              : Colors.red)
+                              : AppColors.error)
                         : (iconColor ?? primaryBlue),
                     size: 17,
                   ),
@@ -1409,10 +1219,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
-                          color: titleColor == Colors.red
+                          color: titleColor == AppColors.error
                               ? (_isDark
                                     ? AppColors.noticesDangerTextDark
-                                    : Colors.red)
+                                    : AppColors.error)
                               : (titleColor ?? darkText),
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
@@ -1476,7 +1286,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       width: 38,
       height: 4,
       decoration: BoxDecoration(
-        color: _isDark ? AppColors.borderDark : Colors.grey.shade300,
+        color: _isDark ? AppColors.borderDark : AppColors.cardBorder,
         borderRadius: BorderRadius.circular(10),
       ),
     );

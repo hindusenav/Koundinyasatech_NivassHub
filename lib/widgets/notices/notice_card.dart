@@ -69,10 +69,10 @@ class NoticeCard extends StatelessWidget {
     }
 
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        color: isDark ? AppColors.surfaceDark : AppColors.surfaceLight,
-        borderRadius: BorderRadius.circular(16),
+        color: isDark ? AppColors.surfaceDark : AppColors.cardBg,
+        borderRadius: BorderRadius.circular(20),
         border: Border.all(
           color: (isDark ? AppColors.noticesTealAccentDark : AppColors.noticesTealAccentLight)
               .withValues(alpha: .5),
@@ -88,7 +88,7 @@ class NoticeCard extends StatelessWidget {
       ),
       child: Material(
         color: Colors.transparent,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(20),
         child: InkWell(
           onTap: () {
             Navigator.of(context).push(
@@ -97,7 +97,7 @@ class NoticeCard extends StatelessWidget {
               ),
             );
           },
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(20),
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -153,7 +153,7 @@ class NoticeCard extends StatelessWidget {
                                   vertical: 3,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: const Color(0xFF0F172A),
+                                  color: AppColors.textPrimary,
                                   borderRadius: BorderRadius.circular(6),
                                 ),
                                 child: Text(
@@ -220,7 +220,7 @@ class NoticeCard extends StatelessWidget {
 
                 // Download Button Badge
                 Material(
-                  color: const Color(0xFFC7F9CC),
+                  color: AppColors.badgeGreenBg,
                   borderRadius: BorderRadius.circular(8),
                   child: InkWell(
                     onTap: () {
@@ -245,14 +245,14 @@ class NoticeCard extends StatelessWidget {
                               Icon(
                                 Icons.article_outlined,
                                 size: 20,
-                                color: Color(0xFF0F172A),
+                                color: AppColors.textPrimary,
                               ),
                               Padding(
                                 padding: EdgeInsets.only(top: 4),
                                 child: Icon(
                                   Icons.arrow_downward,
                                   size: 10,
-                                  color: Color(0xFF0F172A),
+                                  color: AppColors.textPrimary,
                                 ),
                               ),
                             ],
@@ -261,7 +261,7 @@ class NoticeCard extends StatelessWidget {
                           Text(
                             downloadLabel,
                             style: const TextStyle(
-                              color: Color(0xFF0F172A),
+                              color: AppColors.textPrimary,
                               fontSize: 13,
                               fontWeight: FontWeight.bold,
                             ),

@@ -46,6 +46,7 @@ class AppDimensions {
   // -----------------------------------------------------------------------
   // Responsive breakpoints (max width, in logical pixels, for each class)
   // -----------------------------------------------------------------------
+  static const double breakpointCompact = 360;
   static const double breakpointMobile = 600;
   static const double breakpointTablet = 1024;
   static const double breakpointDesktop = 1440;
@@ -53,4 +54,8 @@ class AppDimensions {
   /// Content is capped at this width on large screens (web/desktop) so
   /// text and forms don't stretch edge-to-edge.
   static const double maxContentWidth = 1080;
+
+  /// The app is a phone-style column: on tablets/iPads (and foldables
+  /// unfolded) it is centred at this width instead of stretched.
+  static const double appMaxWidth = 600;
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 import 'package:flutter_nivasshub/constants/app_colors.dart';
@@ -11,7 +12,6 @@ class MaintenanceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final provider = context.watch<DashboardProvider>();
 
     final message = provider.home?.data.maintenanceMessage ??
@@ -24,33 +24,30 @@ class MaintenanceCard extends StatelessWidget {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(
-        horizontal: 14,
-        vertical: 10,
+        horizontal: 16,
+        vertical: 12,
       ),
       decoration: BoxDecoration(
-        color: isDark ? AppColors.dashboardHeaderDark : const Color(0xFFF0F9FF),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: isDark ? AppColors.borderDark : const Color(0xFFBAE6FD),
-        ),
+        color: AppColors.alertBannerBg,
+        borderRadius: BorderRadius.circular(16),
       ),
       child: Row(
         children: [
           Icon(
-            Icons.info_outline_rounded,
-            color: isDark ? AppColors.info : const Color(0xFF0284C7),
-            size: 18,
+            Icons.warning_amber_rounded,
+            color: Colors.white,
+            size: 20,
           ),
 
-          const SizedBox(width: 10),
+          const SizedBox(width: 12),
 
           Expanded(
             child: Text(
               message,
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-                color: isDark ? AppColors.info : const Color(0xFF0284C7),
+              style: GoogleFonts.inter(
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+                color: Colors.white,
               ),
             ),
           ),

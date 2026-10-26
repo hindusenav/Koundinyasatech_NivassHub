@@ -19,15 +19,21 @@ class AppRoutes {
   // ---------------------------------------------------------------------
   // Auth
   // ---------------------------------------------------------------------
-  static const String login = '/auth/login';
-  static const String register = '/auth/register';
-  static const String otpVerification = '/auth/otp-verification';
-  static const String otpVerificationSuccess = '/auth/otp-verification-success';
-  static const String createProfile = '/auth/create-profile';
+  /// The app's front door: one identifier (mobile or email) is checked,
+  /// then the user branches to [enterPassword] or [userDetails].
+  ///
+  /// Supersedes [login]/[register] and the OTP chain below, which remain
+  /// registered so the previous screens still resolve if reached.
+  static const String authEntry = '/auth/entry';
+  static const String enterPassword = '/auth/password';
+  static const String userDetails = '/auth/user-details';
+  static const String otpMobileEmailVerification = '/auth/otp-verification';
+
   static const String forgotPassword = '/auth/forgot-password';
   static const String forgotPasswordMobile = '/auth/forgot-password/mobile';
   static const String forgotPasswordEmail = '/auth/forgot-password/email';
-  static const String forgotPasswordVerifyOtp = '/auth/forgot-password/verify-otp';
+  static const String forgotPasswordVerifyOtp =
+      '/auth/forgot-password/verify-otp';
   static const String updatePassword = '/auth/forgot-password/update-password';
 
   // ---------------------------------------------------------------------
@@ -74,6 +80,9 @@ class AppRoutes {
   /// "View all" link (NivasHub API Contract §6.2 — `GET /api/v1/approvals`).
   static const String activities = '/visitor/activities';
 
+  /// Payments Center (dues, month status, payment history).
+  static const String payments = '/payments';
+
   // ---------------------------------------------------------------------
   // Complaints
   // ---------------------------------------------------------------------
@@ -91,9 +100,9 @@ class AppRoutes {
   // ---------------------------------------------------------------------
   // Profile / settings
   // ---------------------------------------------------------------------
-  static const String profile = '/profile';
-  static const String editProfile = '/profile/edit';
   static const String addAddressDetails = '/profile/add-address-details';
+  static const String addProperty = '/society/add-property';
+  static const String vehicles = '/profile/vehicles';
   static const String settings = '/settings';
   static const String helpSupport = '/settings/help-support';
 
@@ -104,9 +113,21 @@ class AppRoutes {
   static const String quickActions = '/quick-actions';
 
   // ---------------------------------------------------------------------
-  // KYC
+  // KYC — role-based documents
+  //
+  // These gate the Dashboard rather than following it, so unlike the
+  // geography-based routes above they are registered in `AuthRouter`.
   // ---------------------------------------------------------------------
-  static const String selectCountry = '/kyc/select-country';
-  static const String selectCity = '/kyc/select-city';
-  static const String cityConfirmation = '/kyc/city-confirmation';
+  static const String kycDocuments = '/kyc/documents';
+  static const String kycVerificationStatus = '/kyc/verification-status';
+  static const String kycInProgress = '/kyc/in-progress';
+
+  // ---------------------------------------------------------------------
+  // Mock notification inbox
+  //
+  // Stands in for the unconnected email service. Reachable from the KYC
+  // screens (pre-auth) and from Settings (post-auth), so it is registered
+  // in `AuthRouter`, which is tried first.
+  // ---------------------------------------------------------------------
+  static const String mockNotificationLog = '/mock/notifications';
 }

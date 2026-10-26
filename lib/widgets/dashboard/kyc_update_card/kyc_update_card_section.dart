@@ -1,3 +1,4 @@
+import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter/material.dart';
 
 class KycUpdateCardSection extends StatelessWidget {
@@ -15,10 +16,10 @@ class KycUpdateCardSection extends StatelessWidget {
   // ============================================================
 
   static const Color _cardColor = Colors.white;
-  static const Color _titleColor = Color(0xFF111111);
-  static const Color _bodyColor = Color(0xFF555555);
-  static const Color _buttonBlue = Color(0xFF0066CC);
-  static const Color _borderColor = Color(0xFFE2E8F0);
+  static const Color _titleColor = AppColors.textDark;
+  static const Color _bodyColor = AppColors.textMuted;
+  static const Color _buttonBlue = AppColors.primaryOrange;
+  static const Color _borderColor = AppColors.cardBorder;
 
   @override
   Widget build(BuildContext context) {

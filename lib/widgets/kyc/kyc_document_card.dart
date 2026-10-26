@@ -1,0 +1,357 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_nivasshub/constants/app_colors.dart';
+import 'package:flutter_nivasshub/constants/app_dimensions.dart';
+import 'package:flutter_nivasshub/constants/app_icons.dart';
+import 'package:flutter_nivasshub/constants/app_spacing.dart';
+import 'package:flutter_nivasshub/constants/app_text_styles.dart';
+import 'package:flutter_nivasshub/constants/kyc/kyc_strings.dart';
+import 'package:flutter_nivasshub/models/kyc/kyc_document_slot.dart';
+import 'package:flutter_nivasshub/widgets/shared/figma/figma_widgets.dart';
+import 'package:flutter_nivasshub/widgets/shared/feedback/status_chip.dart';
+
+/// One document requirement: what it is, its upload state, the chosen
+/// file, and the actions available on it.
+///
+/// Built from `CustomCard` + `StatusChip` + `AppColors.status*` rather
+/// than the hand-rolled hex values of the previous KYC screen, so it
+/// works in both themes.
+class KycDocumentCard extends StatelessWidget {
+  const KycDocumentCard({
+    super.key,
+    required this.slot,
+    required this.onUpload,
+    required this.onRemove,
+  });
+
+  final KycDocumentSlot slot;
+
+  /// Opens the source sheet. Disabled while the slot is busy.
+  final VoidCallback onUpload;
+
+  final VoidCallback onRemove;
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textPrimary = isDark
+        ? AppColors.textPrimaryDark
+        : AppColors.textPrimaryLight;
+    final textSecondary = isDark
+        ? AppColors.textSecondaryDark
+        : AppColors.textSecondaryLight;
+
+    return Padding(
+      padding: AppSpacing.vertical(AppSpacing.sm),
+      child: FigmaCard(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const _IconTile(icon: AppIcons.attach),
+                AppSpacing.gapWSm,
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        // Always the backend's own `documentName` — the
+                        // card never invents or looks up a title locally.
+                        slot.document.documentName,
+                        style: AppTextStyles.titleSmall.copyWith(
+                          color: textPrimary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                AppSpacing.gapWSm,
+                _StatusPill(label: _statusLabel, type: _statusType),
+              ],
+            ),
+            AppSpacing.gapMd,
+            _buildBody(context, textPrimary, textSecondary),
+            if (slot.errorMessage != null) ...[
+              AppSpacing.gapSm,
+              _Message(text: slot.errorMessage!, color: AppColors.error),
+            ],
+            // The reviewer's objection stays visible until a replacement
+            // has actually been uploaded, so the user can see what they
+            // are fixing while they fix it.
+            if (slot.issueReason != null && !slot.isSatisfied) ...[
+              AppSpacing.gapSm,
+              _Message(text: slot.issueReason!, color: AppColors.warning),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBody(
+    BuildContext context,
+    Color textPrimary,
+    Color textSecondary,
+  ) {
+    if (slot.status.isBusy) {
+      return Row(
+        children: [
+          const SizedBox(
+            width: AppDimensions.iconSm,
+            height: AppDimensions.iconSm,
+            child: CircularProgressIndicator(strokeWidth: 2),
+          ),
+          AppSpacing.gapWSm,
+          Text(
+            KycStrings.uploading,
+            style: AppTextStyles.bodyMedium.copyWith(color: textSecondary),
+          ),
+        ],
+      );
+    }
+
+    final uploaded = slot.uploaded;
+    if (slot.isSatisfied && uploaded != null) {
+      final size = uploaded.displaySize;
+      return Row(
+        children: [
+          Icon(
+            AppIcons.checkCircle,
+            size: AppDimensions.iconSm,
+            color: AppColors.badgeGreen,
+          ),
+          AppSpacing.gapWSm,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  uploaded.fileName,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTextStyles.bodyMedium.copyWith(color: textPrimary),
+                ),
+                Text(
+                  size.isEmpty
+                      ? uploaded.displayType
+                      : '${uploaded.displayType} · $size',
+                  style: AppTextStyles.bodySmall.copyWith(color: textSecondary),
+                ),
+              ],
+            ),
+          ),
+          // No "Replace" here: an uploaded or preserved document is never
+          // re-uploaded by the user's own choice. Re-upload is offered only
+          // when the admin rejects it — the resubmit flow then clears that
+          // one card back to the upload target above. Before submission the
+          // user can still remove a just-uploaded file; carried-forward
+          // (preserved) documents have no actions at all.
+          if (slot.status == KycUploadStatus.uploaded)
+            IconButton(
+              tooltip: KycStrings.removeDocument,
+              icon: const Icon(AppIcons.delete, size: AppDimensions.iconSm),
+              onPressed: onRemove,
+            ),
+        ],
+      );
+    }
+
+    return _UploadTarget(
+      onTap: onUpload,
+      label: slot.status == KycUploadStatus.failed
+          ? KycStrings.retryUpload
+          : KycStrings.uploadDocument,
+      isAttention: slot.needsReplacement,
+    );
+  }
+
+  String get _statusLabel => switch (slot.status) {
+    KycUploadStatus.uploaded => KycStrings.statusUploaded,
+    KycUploadStatus.preserved => KycStrings.statusPreserved,
+    KycUploadStatus.failed => KycStrings.statusFailed,
+    KycUploadStatus.picking ||
+    KycUploadStatus.uploading => KycStrings.uploading,
+    KycUploadStatus.empty =>
+      slot.needsReplacement
+          ? KycStrings.statusNeedsReplacement
+          : KycStrings.statusPending,
+  };
+
+  StatusChipType get _statusType => switch (slot.status) {
+    KycUploadStatus.uploaded ||
+    KycUploadStatus.preserved => StatusChipType.approved,
+    KycUploadStatus.failed => StatusChipType.rejected,
+    KycUploadStatus.empty =>
+      slot.needsReplacement ? StatusChipType.rejected : StatusChipType.pending,
+    _ => StatusChipType.pending,
+  };
+}
+
+/// Tinted square holding the document type's icon.
+class _IconTile extends StatelessWidget {
+  const _IconTile({required this.icon});
+
+  final IconData icon;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: AppDimensions.avatarMd,
+      height: AppDimensions.avatarMd,
+      decoration: BoxDecoration(
+        color: AppColors.accentTint,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Icon(icon, size: AppDimensions.iconMd, color: _uploadBlue),
+    );
+  }
+}
+
+/// The dashed-feel tap target shown before a document has been supplied.
+class _UploadTarget extends StatelessWidget {
+  const _UploadTarget({
+    required this.onTap,
+    required this.label,
+    required this.isAttention,
+  });
+
+  final VoidCallback onTap;
+  final String label;
+
+  /// Flagged by the reviewer — bordered in the warning colour so the card
+  /// that needs work stands out among preserved ones.
+  final bool isAttention;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(14),
+      child: CustomPaint(
+        foregroundPainter: _DashedBorderPainter(
+          color: isAttention ? AppColors.error : AppColors.primaryOrange,
+          radius: 14,
+        ),
+        child: Container(
+          width: double.infinity,
+          padding: AppSpacing.symmetric(
+            horizontal: AppSpacing.md,
+            vertical: AppSpacing.md,
+          ),
+          decoration: BoxDecoration(
+            color: AppColors.accentTint.withValues(alpha: 0.5),
+            borderRadius: BorderRadius.circular(14),
+          ),
+          child: Column(
+            children: [
+              Icon(
+                AppIcons.upload,
+                size: AppDimensions.iconMd,
+                color: _uploadBlue,
+              ),
+              AppSpacing.gapXs,
+              Text(
+                '+  $label',
+                style: AppTextStyles.labelLarge.copyWith(color: _uploadBlue),
+              ),
+              AppSpacing.gapXs,
+              Text(
+                KycStrings.fileSizeHint,
+                style: AppTextStyles.bodySmall.copyWith(
+                  color: AppColors.textMuted,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Soft pill: Pending (orange tint), uploaded (green), failed (red).
+class _StatusPill extends StatelessWidget {
+  const _StatusPill({required this.label, required this.type});
+
+  final String label;
+  final StatusChipType type;
+
+  @override
+  Widget build(BuildContext context) {
+    final (bg, fg) = switch (type) {
+      StatusChipType.approved => (AppColors.badgeGreenBg, AppColors.badgeGreen),
+      StatusChipType.rejected => (AppColors.errorLight, AppColors.error),
+      _ => (AppColors.accentTint, AppColors.primaryOrangeDark),
+    };
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(
+        color: bg,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Text(
+        label,
+        style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: fg),
+      ),
+    );
+  }
+}
+
+const Color _uploadBlue = AppColors.primaryOrange;
+
+/// Dashed rounded-rectangle outline for the upload drop area.
+class _DashedBorderPainter extends CustomPainter {
+  const _DashedBorderPainter({required this.color, required this.radius});
+
+  final Color color;
+  final double radius;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.2;
+    final path = Path()
+      ..addRRect(
+        RRect.fromRectAndRadius(Offset.zero & size, Radius.circular(radius)),
+      );
+    for (final metric in path.computeMetrics()) {
+      var distance = 0.0;
+      while (distance < metric.length) {
+        canvas.drawPath(metric.extractPath(distance, distance + 5), paint);
+        distance += 9;
+      }
+    }
+  }
+
+  @override
+  bool shouldRepaint(_DashedBorderPainter old) =>
+      old.color != color || old.radius != radius;
+}
+
+/// Inline validation / objection line under a card.
+class _Message extends StatelessWidget {
+  const _Message({required this.text, required this.color});
+
+  final String text;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(AppIcons.info, size: AppDimensions.iconXs, color: color),
+        AppSpacing.gapWXs,
+        Expanded(
+          child: Text(
+            text,
+            style: AppTextStyles.bodySmall.copyWith(color: color),
+          ),
+        ),
+      ],
+    );
+  }
+}

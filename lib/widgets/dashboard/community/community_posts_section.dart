@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
-import 'package:flutter_nivasshub/constants/app_colors.dart';
+import 'package:flutter_nivasshub/constants/figma_colors.dart';
 import 'package:flutter_nivasshub/core/api/base_api.dart';
 import 'package:flutter_nivasshub/screens/notices/community_posts_selection_screen.dart';
 import 'package:flutter_nivasshub/screens/notices/notice_details_screen.dart';
@@ -26,7 +27,8 @@ class CommunityPostsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final t = FigmaColors.of(context);
+    final accent = t.accent;
     final provider = context.watch<DashboardProvider>();
 
     final meeting = provider.communityMeeting;
@@ -44,13 +46,11 @@ class CommunityPostsSection extends StatelessWidget {
           children: [
             Text(
               'Community Posts',
-              style: TextStyle(
-                fontFamily: 'DM Sans',
-                fontSize: 18,
+              style: GoogleFonts.inter(
+                fontSize: 20,
                 fontWeight: FontWeight.w600,
                 height: 1.0,
-                letterSpacing: 0,
-                color: isDark ? AppColors.textPrimaryDark : const Color(0xFF000000),
+                color: t.heading,
               ),
             ),
             InkWell(
@@ -59,10 +59,10 @@ class CommunityPostsSection extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                 decoration: BoxDecoration(
-                  color: isDark ? const Color(0xFF123B2E) : const Color(0xFFECFDF5),
+                  color: t.iconBg,
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(
-                    color: isDark ? const Color(0xFF10B981) : const Color(0xFF6EE7B7),
+                    color: accent,
                   ),
                 ),
                 child: Row(
@@ -71,14 +71,14 @@ class CommunityPostsSection extends StatelessWidget {
                     Icon(
                       Icons.edit_note,
                       size: 16,
-                      color: isDark ? const Color(0xFF34D399) : const Color(0xFF059669),
+                      color: accent,
                     ),
                     const SizedBox(width: 4),
                     Text(
                       'New Posts',
-                      style: TextStyle(
-                        color: isDark ? const Color(0xFF34D399) : const Color(0xFF059669),
-                        fontWeight: FontWeight.bold,
+                      style: GoogleFonts.inter(
+                        color: accent,
+                        fontWeight: FontWeight.w600,
                         fontSize: 12,
                       ),
                     ),
@@ -120,10 +120,10 @@ class CommunityPostsSection extends StatelessWidget {
             children: [
               Text(
                 'Notice Board',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: isDark ? AppColors.textPrimaryDark : const Color(0xFF0F172A),
+                style: GoogleFonts.inter(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                  color: t.heading,
                 ),
               ),
               Row(
@@ -131,17 +131,17 @@ class CommunityPostsSection extends StatelessWidget {
                 children: [
                   Text(
                     'View All',
-                    style: TextStyle(
-                      color: isDark ? AppColors.info : const Color(0xFF0284C7),
-                      fontWeight: FontWeight.bold,
-                      fontSize: 12.5,
+                    style: GoogleFonts.inter(
+                      color: accent,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 13,
                     ),
                   ),
                   const SizedBox(width: 2),
                   Icon(
                     Icons.chevron_right,
                     size: 16,
-                    color: isDark ? AppColors.info : const Color(0xFF0284C7),
+                    color: accent,
                   ),
                 ],
               ),

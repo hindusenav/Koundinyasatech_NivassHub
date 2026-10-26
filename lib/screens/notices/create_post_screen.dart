@@ -81,9 +81,9 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final headerColor =
-        isDark ? AppColors.dashboardHeaderDark : const Color(0xFFC7E3FF);
+        isDark ? AppColors.dashboardHeaderDark : AppColors.background;
     final titleColor =
-        isDark ? AppColors.noticesHeadingDark : const Color(0xFF05234D);
+        isDark ? AppColors.noticesHeadingDark : AppColors.textPrimary;
     final mutedColor = isDark ? AppColors.noticesMutedDark : AppColors.noticesMutedLight;
 
     return Scaffold(
@@ -117,7 +117,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
               color: isDark ? AppColors.noticesBlueTintBgDark : const Color(0xFFFFFFFF),
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
-                color: isDark ? AppColors.noticesBlueBorderDark : const Color(0xFFCCDFF2),
+                color: isDark ? AppColors.noticesBlueBorderDark : AppColors.border,
               ),
             ),
             child: Material(
@@ -135,7 +135,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                         size: 14,
                         color: isDark
                             ? AppColors.noticesAccentBlueDark
-                            : const Color(0xFF0060BD),
+                            : AppColors.accent,
                       ),
                       const SizedBox(width: 4),
                       Text(
@@ -143,7 +143,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                         style: TextStyle(
                           color: isDark
                               ? AppColors.noticesAccentBlueDark
-                              : const Color(0xFF0060BD),
+                              : AppColors.accent,
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
                         ),
@@ -170,7 +170,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                       CircleAvatar(
                         radius: 20,
                         backgroundColor:
-                            isDark ? AppColors.noticesAccentAmberDark : const Color(0xFFEC9211),
+                            isDark ? AppColors.noticesAccentAmberDark : AppColors.accent,
                         child: const Text(
                           'A',
                           style: TextStyle(
@@ -190,24 +190,22 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                           Text(
                             'User Name',
                             style: TextStyle(
-                              fontFamily: 'DM Sans',
                               fontWeight: FontWeight.w600,
                               fontSize: 15,
                               height: 1.0,
                               letterSpacing: 0,
-                              color: isDark ? AppColors.noticesHeadingDark : const Color(0xFF0F172A),
+                              color: isDark ? AppColors.noticesHeadingDark : AppColors.textPrimary,
                             ),
                           ),
                           const SizedBox(height: 2),
                           Text(
                             'Apartment B 402',
                             style: TextStyle(
-                              fontFamily: 'DM Sans',
                               fontSize: 12,
                               fontWeight: FontWeight.w500,
                               height: 1.0,
                               letterSpacing: 0,
-                              color: isDark ? AppColors.textSecondaryDark : const Color(0xFF05234D),
+                              color: isDark ? AppColors.textSecondaryDark : AppColors.textPrimary,
                             ),
                           ),
                         ],
@@ -222,7 +220,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                     decoration: BoxDecoration(
                       color: isDark ? AppColors.surfaceDark : const Color(0xFFFFFFFF),
                       border: Border.all(
-                        color: isDark ? AppColors.noticesBorderDark : const Color(0xFFE2E8F0),
+                        color: isDark ? AppColors.noticesBorderDark : AppColors.border,
                       ),
                       borderRadius: BorderRadius.circular(8),
                     ),
@@ -232,19 +230,18 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                         Text(
                           _selectedVisibility,
                           style: TextStyle(
-                            fontFamily: 'DM Sans',
                             fontSize: 13,
                             fontWeight: FontWeight.w500,
                             height: 1.0,
                             letterSpacing: 0,
-                            color: isDark ? titleColor : const Color(0xFF475569),
+                            color: isDark ? titleColor : AppColors.textBody,
                           ),
                         ),
                         const SizedBox(width: 6),
                         Icon(
                           Icons.keyboard_arrow_down,
                           size: 16,
-                          color: isDark ? titleColor : const Color(0xFF475569),
+                          color: isDark ? titleColor : AppColors.textBody,
                         ),
                       ],
                     ),
@@ -258,7 +255,6 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                 controller: _contentController,
                 maxLines: 8,
                 style: TextStyle(
-                  fontFamily: 'DM Sans',
                   fontSize: 16,
                   fontWeight: FontWeight.w400,
                   height: 1.0,
@@ -268,12 +264,11 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                 decoration: InputDecoration(
                   hintText: 'What do you want to talk about?',
                   hintStyle: TextStyle(
-                    fontFamily: 'DM Sans',
                     fontSize: 16,
                     fontWeight: FontWeight.w400,
                     height: 1.0,
                     letterSpacing: 0,
-                    color: isDark ? mutedColor : const Color(0xFF3E3E3E),
+                    color: isDark ? mutedColor : AppColors.textBody,
                   ),
                   border: InputBorder.none,
                   focusedBorder: InputBorder.none,

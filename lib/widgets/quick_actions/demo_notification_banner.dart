@@ -16,7 +16,7 @@ class DemoNotificationBanner {
 
   static void show(
     BuildContext context, {
-    String title = 'NivasHub',
+    String title = 'Nivaas Hub',
     String message = 'Visitor Ramesh Kumar is at the gate.',
   }) {
     final overlay = Overlay.of(context);

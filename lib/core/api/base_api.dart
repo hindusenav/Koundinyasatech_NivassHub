@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_nivasshub/core/api/endpoints.dart';
 import 'package:flutter_nivasshub/core/api/api_exception.dart';
 import 'package:flutter_nivasshub/core/api/interceptors/auth_interceptor.dart';
@@ -135,6 +136,13 @@ class ApiClient {
     try {
       return await request();
     } on DioException catch (e) {
+      if (kDebugMode) {
+        debugPrint(
+          '[ApiClient] ${e.type.name} ${e.requestOptions.method} '
+          '${e.requestOptions.uri} status=${e.response?.statusCode} '
+          'error=${e.error} body=${e.response?.data}',
+        );
+      }
       if (e.error is ApiException) throw e.error as ApiException;
       throw ApiException.fromDioException(e);
     }

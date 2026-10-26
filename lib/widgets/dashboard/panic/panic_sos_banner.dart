@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
+import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter_nivasshub/providers/dashboard/dashboard_provider.dart';
 
 class PanicSosBanner extends StatefulWidget {
@@ -43,16 +45,22 @@ class _PanicSosBannerState extends State<PanicSosBanner> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Material(
       color: Colors.transparent,
-      borderRadius: BorderRadius.circular(14),
+      borderRadius: BorderRadius.circular(12),
       child: InkWell(
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(12),
         onTap: _handleTap,
         child: Container(
           height: 72,
           width: double.infinity,
           padding: const EdgeInsets.symmetric(horizontal: 14),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(12),
+            // Light mode: soft emergency tint (FDEDED) with a red hairline;
+            // dark mode keeps the original alarm gradient.
+            color: isDark ? null : AppColors.errorLight,
+            border: isDark
+                ? null
+                : Border.all(color: AppColors.error.withValues(alpha: 0.25)),
             // This banner uses ~4 distinct reds for the gradient stops and
             // the two icon circles below. Each plays a different visual
             // role (gradient depth vs. action-icon circle vs. alert-icon
@@ -63,19 +71,23 @@ class _PanicSosBannerState extends State<PanicSosBanner> {
             // both themes and are intentionally left unchanged here. Only
             // the drop shadow (a depth cue, not a brand color) is branched
             // for dark mode below.
-            gradient: const LinearGradient(
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
-              colors: [
-                Color.fromARGB(255, 238, 30, 26),
-                Color(0xFFFF3B30),
-              ],
-            ),
+            gradient: isDark
+                ? const LinearGradient(
+                    begin: Alignment.centerLeft,
+                    end: Alignment.centerRight,
+                    colors: [
+                      Color.fromARGB(255, 238, 30, 26),
+                      AppColors.error,
+                    ],
+                  )
+                : null,
             boxShadow: [
               BoxShadow(
-                color: Colors.redAccent.withValues(alpha: isDark ? 0.35 : 0.20),
-                blurRadius: 10,
-                offset: const Offset(0, 4),
+                color: isDark
+                    ? Colors.redAccent.withValues(alpha: 0.35)
+                    : AppColors.shadowSoft,
+                blurRadius: isDark ? 10 : 12,
+                offset: Offset(0, isDark ? 4 : 2),
               ),
             ],
           ),
@@ -86,7 +98,7 @@ class _PanicSosBannerState extends State<PanicSosBanner> {
                 width: 54,
                 height: 54,
                 decoration: const BoxDecoration(
-                  color: Color(0xFFE53935),
+                  color: AppColors.error,
                   shape: BoxShape.circle,
                 ),
                 child: Center(
@@ -103,29 +115,28 @@ class _PanicSosBannerState extends State<PanicSosBanner> {
 
               const SizedBox(width: 12),
 
-              const Expanded(
+              Expanded(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       'Slide for PANIC / SOS',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w700,
-                        fontSize: 13.5,
-                        letterSpacing: 0.2,
+                      style: GoogleFonts.inter(
+                        color: isDark ? Colors.white : AppColors.error,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
                       ),
                     ),
-                    SizedBox(height: 2),
+                    const SizedBox(height: 2),
                     Text(
                       'Loud alarm & emergency alerts will be triggered',
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        color: Colors.white70,
-                        fontSize: 10.5,
-                        fontWeight: FontWeight.w500,
+                      style: GoogleFonts.inter(
+                        color: isDark ? Colors.white70 : AppColors.error,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w400,
                       ),
                     ),
                   ],

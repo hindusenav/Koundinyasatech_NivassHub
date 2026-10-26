@@ -1,5 +1,6 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_nivasshub/utils/responsive.dart';
 import 'package:provider/provider.dart';
 
 import 'package:flutter_nivasshub/providers/dashboard/dashboard_provider.dart';
@@ -40,7 +41,7 @@ class _BannerSliderState extends State<BannerSlider> {
             );
           },
           options: CarouselOptions(
-            height: 200,
+            height: context.rs(200),
             viewportFraction: 1.0,
             enlargeCenterPage: false,
             enableInfiniteScroll: bannerTitles.length > 1,

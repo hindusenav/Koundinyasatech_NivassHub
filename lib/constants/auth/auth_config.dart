@@ -1,4 +1,6 @@
-/// Flip to `false` once the real `/auth/*` backend endpoints are ready —
-/// `main.dart` will automatically construct the real `AuthService` instead
-/// of `MockAuthService`. No other code needs to change.
-const bool useMockApi = true;
+/// `checkUserExists`/`loginUser` (via `PartialRealAuthEntryService`) and the
+/// forgot-password flow now call the real, documented backend endpoints.
+/// `createUser`/`generateAccessToken` stay mocked regardless of this flag —
+/// see `PartialRealAuthEntryService` — since no backend contract exists for
+/// registration submit or the KYC-approval access token.
+const bool useMockApi = false;

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter_nivasshub/constants/app_dimensions.dart';
 import 'package:flutter_nivasshub/constants/app_icons.dart';
 
@@ -31,7 +32,18 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      title: Text(title),
+      title: Text(
+        title,
+        style: const TextStyle(
+          color: AppColors.white,
+          fontSize: 22,
+          fontWeight: FontWeight.w700,
+        ),
+      ),
+      clipBehavior: Clip.antiAlias,
+      flexibleSpace: const DecoratedBox(
+        decoration: BoxDecoration(gradient: AppColors.headerGradient),
+      ),
       centerTitle: centerTitle,
       automaticallyImplyLeading: false,
       leading: showBackButton && Navigator.of(context).canPop()

@@ -19,17 +19,20 @@ class CreateAccountButton extends StatelessWidget {
     // onto — `Ink` decorations can fail to composite through the several
     // Transform/Opacity layers this button sits under (entrance + float
     // animations) on some renderer/device combinations.
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final start = isDark ? OnboardingColors.primaryBlue : OnboardingColors.accentOrangeLight;
+    final end = isDark ? OnboardingColors.primaryBlueDark : OnboardingColors.accentOrange;
     return DecoratedBox(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(18),
-        gradient: const LinearGradient(
+        gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [OnboardingColors.primaryBlue, OnboardingColors.primaryBlueDark],
+          colors: [start, end],
         ),
         boxShadow: [
           BoxShadow(
-            color: OnboardingColors.primaryBlue.withValues(alpha: 0.25),
+            color: end.withValues(alpha: 0.30),
             blurRadius: 25,
             offset: const Offset(0, 10),
           ),
@@ -66,11 +69,7 @@ class CreateAccountButton extends StatelessWidget {
                     width: 36,
                     height: 36,
                     decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
-                    child: const Icon(
-                      Icons.arrow_forward,
-                      size: 18,
-                      color: OnboardingColors.primaryBlue,
-                    ),
+                    child: Icon(Icons.arrow_forward, size: 18, color: end),
                   ),
                 ],
               ),
@@ -97,10 +96,10 @@ class OnboardingLoginButton extends StatelessWidget {
         backgroundColor: isDark ? AppColors.surfaceDark : Colors.white,
         foregroundColor: isDark
             ? OnboardingColors.primaryBlueDarkMode
-            : OnboardingColors.primaryBlue,
+            : OnboardingColors.accentOrange,
         side: BorderSide(
-          color: isDark ? AppColors.borderDark : const Color(0xFFD7E3F5),
-          width: 2,
+          color: isDark ? AppColors.borderDark : OnboardingColors.accentOrange,
+          width: isDark ? 2 : 1.5,
         ),
         minimumSize: const Size(double.infinity, AppDimensions.buttonHeightLg),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),

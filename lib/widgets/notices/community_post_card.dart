@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_nivasshub/utils/responsive.dart';
 import 'package:provider/provider.dart';
 
 import 'package:flutter_nivasshub/constants/app_colors.dart';
@@ -28,20 +29,20 @@ class CommunityPostCard extends StatelessWidget {
     final dividerColor = isDark ? AppColors.noticesDividerDark : AppColors.noticesDividerLight;
 
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
         color: isEvent
             ? (isDark ? AppColors.noticesBlueTintBgDark : AppColors.noticesBlueTintBgLight)
             : isPoll
             ? (isDark ? AppColors.noticesBackgroundDark : AppColors.noticesBackgroundLight)
-            : (isDark ? AppColors.surfaceDark : AppColors.surfaceLight),
-        borderRadius: BorderRadius.circular(16),
+            : (isDark ? AppColors.surfaceDark : AppColors.cardBg),
+        borderRadius: BorderRadius.circular(20),
         border: Border.all(
           color: isEvent
               ? (isDark ? AppColors.noticesBlueBorderDark : AppColors.noticesBlueBorderLight)
               : isPoll
               ? (isDark ? AppColors.noticesCardBorderDark : AppColors.noticesCardBorderLight)
-              : dividerColor,
+              : (isDark ? dividerColor : AppColors.cardBorder),
         ),
         boxShadow: [
           BoxShadow(
@@ -139,6 +140,31 @@ class CommunityPostCard extends StatelessWidget {
                   ],
                 ),
               ),
+              if (post.type.isNotEmpty) ...[
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: isDark
+                        ? AppColors.noticesBlueTintBgDark
+                        : AppColors.accentTint,
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                  child: Text(
+                    post.type,
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                      color: isDark
+                          ? AppColors.communityAccentBlueDark
+                          : AppColors.primaryOrangeDark,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 6),
+              ],
               IconButton(
                 padding: EdgeInsets.zero,
                 constraints: const BoxConstraints(),
@@ -224,21 +250,21 @@ class CommunityPostCard extends StatelessWidget {
           if ((post.imageUrl ?? "").isNotEmpty) ...[
             const SizedBox(height: 12),
             ClipRRect(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(16),
               child: CachedNetworkImage(
                 imageUrl: post.imageUrl!,
-                height: 180,
+                height: context.rs(180),
                 width: double.infinity,
                 fit: BoxFit.cover,
                 placeholder: (_, _) => Container(
-                  height: 180,
+                  height: context.rs(180),
                   color: dividerColor,
                   child: const Center(
                     child: CircularProgressIndicator(strokeWidth: 2),
                   ),
                 ),
                 errorWidget: (_, _, _) => Container(
-                  height: 180,
+                  height: context.rs(180),
                   color: dividerColor,
                   child: Icon(
                     Icons.broken_image,
@@ -273,7 +299,7 @@ class CommunityPostCard extends StatelessWidget {
                     children: [
                       Icon(
                         post.isLiked ? Icons.favorite : Icons.favorite_border,
-                        color: post.isLiked ? Colors.red : secondaryColor,
+                        color: post.isLiked ? AppColors.error : secondaryColor,
                         size: 20,
                       ),
                       const SizedBox(width: 4),
@@ -282,7 +308,7 @@ class CommunityPostCard extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
-                          color: post.isLiked ? Colors.red : secondaryColor,
+                          color: post.isLiked ? AppColors.error : secondaryColor,
                         ),
                       ),
                     ],
@@ -315,6 +341,22 @@ class CommunityPostCard extends StatelessWidget {
                         ),
                       ),
                     ],
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              InkWell(
+                onTap: () {},
+                borderRadius: BorderRadius.circular(20),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
+                  child: Icon(
+                    Icons.share_outlined,
+                    color: secondaryColor,
+                    size: 19,
                   ),
                 ),
               ),

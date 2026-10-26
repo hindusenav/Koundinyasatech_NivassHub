@@ -1,18 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_nivasshub/routes/app_routes.dart';
-import 'package:flutter_nivasshub/routes/navigation_service.dart';
-import 'package:flutter_nivasshub/storage/secure_storage_service.dart';
 import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter_nivasshub/constants/asset_constants.dart';
-import 'package:flutter_nivasshub/utils/extensions/context_extensions.dart';
-import 'package:flutter_nivasshub/widgets/shared/brand/nivass_logo_mark.dart';
+import 'package:flutter_nivasshub/providers/auth/auth_state_provider.dart';
+import 'package:flutter_nivasshub/routes/app_routes.dart';
+import 'package:flutter_nivasshub/routes/navigation_service.dart';
 import 'package:flutter_nivasshub/screens/welcome/welcome_screen.dart';
-import 'package:flutter_nivasshub/widgets/splash/animated_ring_painter.dart';
-import 'package:flutter_nivasshub/widgets/splash/animated_wordmark.dart';
-import 'package:flutter_nivasshub/widgets/splash/converging_house_painter.dart';
-import 'package:flutter_nivasshub/widgets/splash/floating_particles.dart';
-
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -21,314 +16,197 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMixin {
-  static const double _logoSize = 156;
+class _SplashScreenState extends State<SplashScreen>
+    with SingleTickerProviderStateMixin {
+  // Flow (2800ms): the logo card fades/scales in on the bronze gradient,
+  // the title follows, then the app navigates to the resolved destination.
+  static const Duration _duration = Duration(milliseconds: 2800);
+  static const Interval _logoInterval = Interval(
+    0.0,
+    0.45,
+    curve: Curves.easeOutBack,
+  );
+  static const Interval _titleInterval = Interval(
+    0.25,
+    0.7,
+    curve: Curves.easeOut,
+  );
+  static const double _logoCardSize = 112;
+  static const double _logoCardRadius = 24;
+  static const String _appTitle = 'NivassHub';
+  static const String _appSubtitle = 'Your gated community, simplified';
 
   late final AnimationController _controller;
-  late final AnimationController _exitController;
-  bool _backgroundPrecached = false;
+  late final Animation<double> _logo;
+  late final Animation<double> _title;
+  late final Future<AuthStartDestination> _destinationFuture;
+
+  bool _navigated = false;
 
   @override
   void initState() {
     super.initState();
 
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 3800),
-    );
-    _exitController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 400),
-    );
+    _controller = AnimationController(vsync: this, duration: _duration);
+    _logo = CurvedAnimation(parent: _controller, curve: _logoInterval);
+    _title = CurvedAnimation(parent: _controller, curve: _titleInterval);
 
-    _controller.forward().whenComplete(() async {
-      await Future.delayed(const Duration(milliseconds: 300));
-      if (!mounted) return;
-      await _exitController.forward();
-      if (!mounted) return;
+    // Resolve the destination while the animation plays.
+    _destinationFuture = context
+        .read<AuthStateProvider>()
+        .resolveStartDestination();
 
-      // Auto-login: a persisted session means the user already
-      // authenticated in a previous app run, so skip Welcome/Login
-      // entirely and land straight on the Dashboard.
-      final storage = context.read<SecureStorageService>();
-      final hasSession = await storage.hasValidSession();
-      debugPrint('[Session] hasValidSession=$hasSession');
-      if (!mounted) return;
-      if (hasSession) {
-        debugPrint('[Nav] Splash -> Dashboard (existing session)');
-        NavigationService.pushNamedAndRemoveUntil(AppRoutes.dashboard);
-        return;
-      }
-
-      // This device has logged out before — go straight to the Login
-      // screen (not Onboarding/Welcome) so the existing Login → OTP
-      // Verification flow continues from there.
-      final hasLoggedOut = await storage.hasLoggedOutBefore();
-      debugPrint('[Session] hasLoggedOutBefore=$hasLoggedOut');
-      if (!mounted) return;
-      if (hasLoggedOut) {
-        debugPrint('[Nav] Splash -> Login (no session, previously logged out)');
-        NavigationService.pushNamedAndRemoveUntil(AppRoutes.login);
-      } else {
-        debugPrint('[Nav] Splash -> Welcome (first-ever launch)');
-        _goToWelcome();
-      }
+    _controller.addStatusListener((status) {
+      if (status == AnimationStatus.completed) _navigate();
     });
+
+    _start();
   }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-
-    // Warm the image cache for the Welcome screen's background during the
-    // splash animation so it's already decoded by the time we navigate
-    // there, avoiding a visible blank/pop-in background on first paint.
-    if (!_backgroundPrecached) {
-      _backgroundPrecached = true;
-      precacheImage(const AssetImage(AppAssets.welcomeBackground), context);
+  /// Warms the SVG cache so the first frame already has the logo, then plays
+  /// the animation once. Falls back to playing immediately if warming fails.
+  Future<void> _start() async {
+    try {
+      await _warm(AppAssets.splashMark);
+    } catch (e) {
+      debugPrint('[Splash] SVG warm-up failed: $e');
     }
+    if (mounted) _controller.forward();
+  }
+
+  Future<void> _warm(String asset) {
+    final loader = SvgAssetLoader(asset);
+    return svg.cache.putIfAbsent(
+      loader.cacheKey(null),
+      () => loader.loadBytes(null),
+    );
+  }
+
+  Future<void> _navigate() async {
+    if (_navigated || !mounted) return;
+    _navigated = true;
+
+    final destination = await _destinationFuture;
+    if (!mounted) return;
+
+    debugPrint('[Nav] Splash -> ${destination.routeName}');
+
+    // First-time unauthenticated users: once the splash animation completes
+    // (this runs only once, guarded by `_navigated`), open the first
+    // onboarding screen automatically. Replacing the splash keeps it out of
+    // the back stack so the user can't return to it.
+    if (destination.routeName == AppRoutes.welcome) {
+      Navigator.of(context).pushReplacement(
+        PageRouteBuilder<void>(
+          settings: const RouteSettings(name: AppRoutes.welcome),
+          transitionDuration: const Duration(milliseconds: 550),
+          pageBuilder: (context, animation, secondaryAnimation) =>
+              const WelcomeScreen(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(
+              opacity: CurvedAnimation(
+                parent: animation,
+                curve: Curves.easeOut,
+              ),
+              child: child,
+            );
+          },
+        ),
+      );
+      return;
+    }
+
+    NavigationService.pushNamedAndRemoveUntil(
+      destination.routeName,
+      arguments: destination.arguments,
+    );
   }
 
   @override
   void dispose() {
     _controller.dispose();
-    _exitController.dispose();
     super.dispose();
-  }
-
-  void _goToWelcome() {
-    Navigator.of(context).pushReplacement(
-      PageRouteBuilder<void>(
-        settings: const RouteSettings(name: AppRoutes.welcome),
-        transitionDuration: const Duration(milliseconds: 550),
-        pageBuilder: (context, animation, secondaryAnimation) => const WelcomeScreen(),
-        transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          return FadeTransition(
-            opacity: CurvedAnimation(parent: animation, curve: Curves.easeOut),
-            child: child,
-          );
-        },
-      ),
-    );
   }
 
   @override
   Widget build(BuildContext context) {
-    final size = context.screenSize;
-    final cardCenter = Offset(size.width / 2, size.height * 0.38);
-
-    return Scaffold(
-      body: AnimatedBuilder(
-        animation: Listenable.merge([_controller, _exitController]),
-        builder: (context, _) {
-          final t = _controller.value;
-
-          final backgroundOpacity =
-              const Interval(0.0, 0.05, curve: Curves.easeOut).transform(t);
-          final centerGlowProgress =
-              const Interval(0.0, 0.14, curve: Curves.easeOut).transform(t);
-          final dotProgress =
-              const Interval(0.08, 0.30, curve: Curves.easeInOutCubic).transform(t);
-          final outlineProgress =
-              const Interval(0.28, 0.34, curve: Curves.easeOut).transform(t);
-          final fillProgress =
-              const Interval(0.31, 0.40, curve: Curves.easeOut).transform(t);
-          final dotFadeProgress =
-              const Interval(0.36, 0.44, curve: Curves.easeIn).transform(t);
-          final roughOpacity =
-              1 - const Interval(0.58, 0.66, curve: Curves.easeIn).transform(t);
-          final ringProgress =
-              const Interval(0.42, 0.62, curve: Curves.easeInOutCubic).transform(t);
-          final crispEntrance =
-              const Interval(0.60, 0.70, curve: Curves.easeOutCubic).transform(t);
-          final crispScale = 0.94 + crispEntrance * 0.06;
-          final spacingProgress =
-              const Interval(0.70, 0.84, curve: Curves.easeOutCubic).transform(t);
-          final subtitleProgress =
-              const Interval(0.82, 0.90, curve: Curves.easeOut).transform(t);
-          final shimmerProgress =
-              const Interval(0.88, 1.0, curve: Curves.easeInOut).transform(t);
-          final backgroundZoom =
-              1.0 + const Interval(0.86, 1.0, curve: Curves.easeOut).transform(t) * 0.03;
-
-          final exitT = Curves.easeInCubic.transform(_exitController.value);
-          final exitOpacity = 1.0 - exitT;
-          final exitScale = 1.0 - exitT * 0.06;
-
-          return Opacity(
-            opacity: backgroundOpacity,
-            child: Stack(
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle.light,
+      child: Scaffold(
+        body: Container(
+          width: double.infinity,
+          height: double.infinity,
+          decoration: const BoxDecoration(gradient: AppColors.headerGradient),
+          child: SafeArea(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Positioned.fill(
-                  child: Opacity(
-                    opacity: exitOpacity,
-                    child: Transform.scale(
-                      scale: backgroundZoom,
-                      child: DecoratedBox(
-                        decoration: const BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                            colors: [
-                              AppColors.splashGradientTop,
-                              AppColors.splashGradientBottom,
-                            ],
-                          ),
-                        ),
-                        child: const FloatingParticles(),
-                      ),
-                    ),
-                  ),
-                ),
-                Positioned.fill(
-                  child: Opacity(
-                    opacity: exitOpacity,
-                    child: Transform.scale(
-                      scale: exitScale,
-                      child: Stack(
-                        children: [
-                          Positioned.fill(
-                            child: IgnorePointer(
-                              child: Center(
-                                child: Opacity(
-                                  opacity: centerGlowProgress * 0.16,
-                                  child: Container(
-                                    width: 260,
-                                    height: 260,
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      gradient: RadialGradient(
-                                        colors: [
-                                          AppColors.white.withValues(alpha: 0.9),
-                                          AppColors.white.withValues(alpha: 0.0),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                          Positioned.fill(
-                            child: CustomPaint(
-                              painter: ConvergingHousePainter(
-                                center: cardCenter,
-                                radius: _logoSize / 2,
-                                dotProgress: dotProgress,
-                                outlineProgress: outlineProgress,
-                                fillProgress: fillProgress,
-                                dotFadeProgress: dotFadeProgress,
-                                roughOpacity: roughOpacity,
-                              ),
-                            ),
-                          ),
-                          Positioned(
-                            left: cardCenter.dx - _logoSize / 2,
-                            top: cardCenter.dy - _logoSize / 2,
-                            width: _logoSize,
-                            height: _logoSize,
-                            child: Stack(
-                              alignment: Alignment.center,
-                              children: [
-                                CustomPaint(
-                                  size: Size.square(_logoSize),
-                                  painter: AnimatedRingPainter(progress: ringProgress),
-                                ),
-                                if (shimmerProgress > 0 && shimmerProgress < 1)
-                                  IgnorePointer(
-                                    child: _ShimmerSweep(
-                                      size: _logoSize * 0.86,
-                                      progress: shimmerProgress,
-                                    ),
-                                  ),
-                              ],
-                            ),
-                          ),
-                          Positioned(
-                            left: 0,
-                            right: 0,
-                            top: cardCenter.dy + _logoSize / 2 + 24,
-                            child: Column(
-                              children: [
-                                AnimatedWordmark(progress: t, spacingProgress: spacingProgress),
-                                const SizedBox(height: 8),
-                                Opacity(
-                                  opacity: subtitleProgress.clamp(0.0, 1.0) * 0.75,
-                                  child: Transform.translate(
-                                    offset:
-                                        Offset(0, (1 - subtitleProgress).clamp(0.0, 1.0) * 10),
-                                    child: const Text(
-                                      'Smart Society Management',
-                                      style: TextStyle(
-                                        color: AppColors.white,
-                                        fontSize: 13,
-                                        letterSpacing: 1,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
+                ScaleTransition(
+                  scale: _logo.drive(Tween<double>(begin: 0.8, end: 1.0)),
+                  child: FadeTransition(
+                    opacity: _logo,
+                    child: Container(
+                      width: _logoCardSize,
+                      height: _logoCardSize,
+                      padding: const EdgeInsets.all(24),
+                      decoration: BoxDecoration(
+                        color: AppColors.white,
+                        borderRadius: BorderRadius.circular(_logoCardRadius),
+                        boxShadow: const [
+                          BoxShadow(
+                            color: AppColors.overlay,
+                            blurRadius: 24,
+                            offset: Offset(0, 10),
                           ),
                         ],
                       ),
+                      child: SvgPicture.asset(AppAssets.splashMark),
                     ),
                   ),
                 ),
-                Positioned(
-                  left: cardCenter.dx - _logoSize / 2,
-                  top: cardCenter.dy - _logoSize / 2,
-                  width: _logoSize,
-                  height: _logoSize,
-                  child: Center(
-                    child: Opacity(
-                      opacity: crispEntrance.clamp(0.0, 1.0),
-                      child: Transform.scale(
-                        scale: crispScale,
-                        child: NivassLogoMark(size: _logoSize * 0.86),
+                const SizedBox(height: 24),
+                FadeTransition(
+                  opacity: _title,
+                  child: const Text(
+                    _appTitle,
+                    style: TextStyle(
+                      color: AppColors.white,
+                      fontSize: 28,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 0.4,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 6),
+                FadeTransition(
+                  opacity: _title,
+                  child: Text(
+                    _appSubtitle,
+                    style: TextStyle(
+                      color: AppColors.cardBorder.withValues(alpha: 0.9),
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 32),
+                FadeTransition(
+                  opacity: _title,
+                  child: const SizedBox(
+                    width: 28,
+                    height: 28,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 3,
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        AppColors.primaryOrange,
                       ),
+                      backgroundColor: AppColors.white,
                     ),
                   ),
                 ),
               ],
             ),
-          );
-        },
-      ),
-    );
-  }
-}
-
-class _ShimmerSweep extends StatelessWidget {
-  const _ShimmerSweep({required this.size, required this.progress});
-
-  final double size;
-  final double progress;
-
-  @override
-  Widget build(BuildContext context) {
-    const band = 0.35;
-    final start = -band + (1 + 2 * band) * progress;
-
-    return ClipOval(
-      child: ShaderMask(
-        blendMode: BlendMode.plus,
-        shaderCallback: (bounds) {
-          return LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: const [Colors.transparent, Colors.white, Colors.transparent],
-            stops: [
-              (start - band).clamp(0.0, 1.0),
-              start.clamp(0.0, 1.0),
-              (start + band).clamp(0.0, 1.0),
-            ],
-          ).createShader(bounds);
-        },
-        child: Container(
-          width: size,
-          height: size,
-          color: AppColors.splashGlow.withValues(alpha: 0.25),
+          ),
         ),
       ),
     );

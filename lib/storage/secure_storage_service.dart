@@ -56,8 +56,22 @@ class SecureStorageService {
     // skips the first-run Welcome screen and goes straight to Onboarding
     // Step Two (Create Account / Login) on every future launch.
     await write(StorageKeys.hasLoggedOut, 'true');
+    // Don't let a different account logging in on this device inherit a
+    // stale approved status from whoever was last signed in.
+    await delete(StorageKeys.kycApproved);
   }
 
   Future<bool> hasLoggedOutBefore() async =>
       (await read(StorageKeys.hasLoggedOut)) == 'true';
+
+  // ---------------------------------------------------------------------
+  // KYC status flag — set once the user completes the KYC flow
+  // (KycStatusScreen's "Continue"). Absent/false means "not completed",
+  // which is the default for a new device/account and gates whether Home
+  // shows the KYC Update card.
+  // ---------------------------------------------------------------------
+  Future<void> saveKycApproved() => write(StorageKeys.kycApproved, 'true');
+
+  Future<bool> isKycApproved() async =>
+      (await read(StorageKeys.kycApproved)) == 'true';
 }

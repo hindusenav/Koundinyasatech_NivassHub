@@ -4,13 +4,17 @@
 class FormValidators {
   FormValidators._();
 
-  static final RegExp _emailRegex =
-      RegExp(r'^[\w\.\-]+@([\w\-]+\.)+[\w\-]{2,4}$');
+  static final RegExp _emailRegex = RegExp(
+    r'^[\w\.\-]+@([\w\-]+\.)+[\w\-]{2,4}$',
+  );
   static final RegExp _phoneRegex = RegExp(r'^\+?[0-9]{10,15}$');
   static final RegExp _mobileNumberRegex = RegExp(r'^[6-9]\d{9}$');
   static final RegExp _fullNameRegex = RegExp(r'^[A-Za-z]+(?: [A-Za-z]+)*$');
 
-  static String? required(String? value, {String message = 'This field is required'}) {
+  static String? required(
+    String? value, {
+    String message = 'This field is required',
+  }) {
     if (value == null || value.trim().isEmpty) return message;
     return null;
   }
@@ -48,6 +52,29 @@ class FormValidators {
       return 'Please enter a valid mobile number';
     }
     return null;
+  }
+
+  /// Country-aware mobile validation, for screens with a dial-code picker.
+  ///
+  /// [mobileNumber] above is India-only (`^[6-9]\d{9}$`) and the previous
+  /// auth screens depend on exactly that, so this is a separate validator
+  /// rather than a change to it. Returns a validator, following the
+  /// [confirmPassword] precedent.
+  ///
+  /// `+91` keeps the strict Indian rule; every other dial code falls back
+  /// to a generic 6-14 digit check, since per-country numbering plans are
+  /// a backend concern and rejecting a valid foreign number is worse than
+  /// accepting a malformed one the server will reject anyway.
+  static String? Function(String?) mobileNumberForDialCode(String? dialCode) {
+    return (String? value) {
+      final trimmed = value?.trim() ?? '';
+      if (trimmed.isEmpty) return 'Mobile number is required';
+      if (dialCode == '+91') return mobileNumber(trimmed);
+      if (!RegExp(r'^\d{6,14}$').hasMatch(trimmed)) {
+        return 'Please enter a valid mobile number';
+      }
+      return null;
+    };
   }
 
   static String? fullName(String? value) {

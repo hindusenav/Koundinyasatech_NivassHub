@@ -1,31 +1,48 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+
+import 'package:flutter_nivasshub/constants/app_colors.dart';
+import 'package:flutter_nivasshub/routes/app_routes.dart';
 
 class AddPropertySection extends StatelessWidget {
-  const AddPropertySection({
-    super.key,
-  });
+  const AddPropertySection({super.key, required this.isExpanded});
+
+  final bool isExpanded;
 
   // ============================================================
   // COLORS
   // ============================================================
 
-  static const Color _headerBlue = Color(0xFFC6E1FA);
-  static const Color _textColor = Color(0xFF111111);
-  static const Color _orange = Color(0xFFFF9800);
+  static const Color _panelLight = Colors.white;
+  static const Color _textColor = AppColors.textPrimaryLight;
+  static const Color _divider = AppColors.borderLight;
+  static const Color _accent = AppColors.primary;
 
   @override
   Widget build(BuildContext context) {
+    // ============================================================
+    // HIDE SECTION WHEN DROPDOWN IS CLOSED
+    // ============================================================
+
+    if (!isExpanded) {
+      return const SizedBox.shrink();
+    }
+
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final panelColor = isDark ? AppColors.surfaceDark : _panelLight;
+    final textColor = isDark ? Colors.white : _textColor;
+
     final screenWidth = MediaQuery.sizeOf(context).width;
 
-    // ==========================================================
+    // ============================================================
     // RESPONSIVE VALUES
-    // ==========================================================
+    // ============================================================
 
     final horizontalPadding = screenWidth < 360
         ? 14.0
         : screenWidth < 600
-            ? 16.0
-            : 22.0;
+        ? 16.0
+        : 22.0;
 
     final titleFontSize = screenWidth < 360 ? 14.0 : 15.0;
 
@@ -35,11 +52,7 @@ class AddPropertySection extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-
-      // Same blue as the header so there is no visible
-      // background break between the header and property section.
-      color: _headerBlue,
-
+      color: panelColor,
       child: Padding(
         padding: EdgeInsets.fromLTRB(
           horizontalPadding,
@@ -53,93 +66,80 @@ class AddPropertySection extends StatelessWidget {
             // ======================================================
             // PROPERTY NAME
             // ======================================================
-
             Text(
               'B - 402 Golden Residency',
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: TextStyle(
+              style: GoogleFonts.inter(
                 fontSize: titleFontSize,
                 fontWeight: FontWeight.w600,
-                color: _textColor,
+                color: textColor,
                 height: 1.2,
               ),
             ),
 
             // ======================================================
             // ORANGE DIVIDER
-            // ====================================================== 
-
-            const SizedBox(
-              height: 9,
-            ),
+            // ======================================================
+            const SizedBox(height: 9),
 
             Container(
               width: double.infinity,
-              height: 1.2,
-              color: _orange,
+              height: 1,
+              color: isDark ? AppColors.borderDark : _divider,
             ),
 
             // ======================================================
             // ADD PROPERTY ROW
             // ======================================================
-
-            const SizedBox(
-              height: 10,
-            ),
+            const SizedBox(height: 10),
 
             SizedBox(
               height: 42,
               child: InkWell(
-                onTap: () {
-                  // Add Flat / Villa / Office navigation here.
-                },
+                onTap: () =>
+                    Navigator.pushNamed(context, AppRoutes.addProperty),
                 borderRadius: BorderRadius.circular(24),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    // ============================================
+                    // ==================================================
                     // PLUS CIRCLE
-                    // ============================================
-
+                    // ==================================================
                     Container(
                       width: addCircleSize,
                       height: addCircleSize,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         border: Border.all(
-                          color: _textColor,
+                          color: isDark ? AppColors.iconDark : _accent,
                           width: 1.2,
                         ),
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.add,
-                        color: _textColor,
+                        color: isDark ? AppColors.iconDark : _accent,
                         size: 28,
                       ),
                     ),
 
-                    // ============================================
+                    // ==================================================
                     // SPACE
-                    // ============================================
+                    // ==================================================
+                    const SizedBox(width: 14),
 
-                    const SizedBox(
-                      width: 14,
-                    ),
-
-                    // ============================================
+                    // ==================================================
                     // ADD PROPERTY TEXT
-                    // ============================================
-
+                    // ==================================================
                     Expanded(
                       child: Text(
                         'Add Flat/Villa/Office',
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
+                        style: GoogleFonts.inter(
                           fontSize: addTextFontSize,
                           fontWeight: FontWeight.w500,
-                          color: _textColor,
+                          color: textColor,
                           height: 1.2,
                         ),
                       ),

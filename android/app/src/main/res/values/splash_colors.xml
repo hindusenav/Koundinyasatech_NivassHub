@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Matches AppColors.splashBackgroundNavy so the native launch window and
+         the first Flutter frame are the same colour (no flash). -->
+    <color name="splash_background">#0F2A4A</color>
+</resources>

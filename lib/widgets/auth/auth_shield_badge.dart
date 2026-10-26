@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_nivasshub/constants/app_icons.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_nivasshub/constants/asset_constants.dart';
 import 'package:flutter_nivasshub/constants/auth/auth_colors.dart';
 
-/// Blue-tinted circular badge with a shield/checkmark icon — the security
+/// Blue-tinted circular badge with the Nivaas Hub brand mark — the
 /// assurance mark shown near the top of the registration flow's
 /// mobile-entry (`RegisterScreen`) and OTP-verification (registration mode)
-/// screens, in place of the brand logo mark used elsewhere.
+/// screens.
 class AuthShieldBadge extends StatelessWidget {
   const AuthShieldBadge({super.key, this.size = 72});
 
@@ -17,9 +18,6 @@ class AuthShieldBadge extends StatelessWidget {
     final lightBlue = isDark
         ? AuthColors.lightBlueDarkMode
         : AuthColors.lightBlue;
-    final primaryBlue = isDark
-        ? AuthColors.primaryBlueDarkMode
-        : AuthColors.primaryBlue;
     return Container(
       width: size,
       height: size,
@@ -27,7 +25,13 @@ class AuthShieldBadge extends StatelessWidget {
         shape: BoxShape.circle,
         color: lightBlue.withValues(alpha: 0.14),
       ),
-      child: Icon(AppIcons.shield, size: size * 0.5, color: primaryBlue),
+      child: Center(
+        child: SvgPicture.asset(
+          AppAssets.splashMark,
+          width: size * 0.55,
+          height: size * 0.55,
+        ),
+      ),
     );
   }
 }

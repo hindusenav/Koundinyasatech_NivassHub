@@ -182,7 +182,7 @@ class NoticesProvider extends ChangeNotifier {
     if (response.isSuccess) {
       final newPost = CommunityPostModel(
         id: 'POST_${DateTime.now().millisecondsSinceEpoch}',
-        userName: 'Hindu',
+        userName: 'Saran',
         userFlat: 'C 104',
         profileImage: 'https://dummyimage.com/profile.png',
         content: content,
@@ -220,7 +220,7 @@ class NoticesProvider extends ChangeNotifier {
       final newPoll = CommunityPostModel(
         id: 'POLL_${DateTime.now().millisecondsSinceEpoch}',
         title: question,
-        userName: 'Hindu',
+        userName: 'Saran',
         userFlat: 'C 104',
         profileImage: 'https://dummyimage.com/profile.png',
         content: question,
@@ -257,7 +257,7 @@ class NoticesProvider extends ChangeNotifier {
       'endDateTime': endDateTime,
       'venue': {
         'name': venueName,
-        'address': '$venueName, NivaasaHub',
+        'address': '$venueName, Nivaas Hub',
       },
       'attachments': [],
     };
@@ -268,7 +268,7 @@ class NoticesProvider extends ChangeNotifier {
         id: 'EVENT_${DateTime.now().millisecondsSinceEpoch}',
         title: title,
         description: description,
-        userName: 'Hindu',
+        userName: 'Saran',
         userFlat: 'C 104',
         profileImage: 'https://dummyimage.com/profile.png',
         content: description,

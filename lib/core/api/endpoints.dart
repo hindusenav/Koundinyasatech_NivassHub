@@ -1,17 +1,114 @@
-/// Centralized API endpoint paths matching NivaasHub API Contract (Sections 1 to 10).
+/// Centralized API endpoint paths matching Nivaas Hub API Contract (Sections 1 to 10).
 class ApiEndpoints {
   ApiEndpoints._();
 
-  static const String baseUrl = 'http://localhost:3001';
+  static const String baseUrl = 'http://192.168.0.104:3004';
+//   static const String baseUrl = 'http://10.10.10.66:3000';
+
 
   // ---------------------------------------------------------------------
-  // 1. Authentication Screens
+  // 1b. Identifier-first authentication entry (mobile OR email)
+  //
+  // Replaces the OTP entry above as the app's front door: one identifier
+  // is checked, then the user is routed to password login or registration.
+  //
+  // `checkUserExists`/`loginUser` match the documented NivaasHub contract
+  // exactly (`POST /country-codes/registration-check`, `POST /auth/login`
+  // — neither uses the `/api/v1` prefix). `createUser`/`accessToken` do
+  // NOT correspond to any documented endpoint — MISSING API CONTRACT.
+  // `AuthEntryService` must never call them; `MockAuthEntryService`
+  // continues to back those two methods even once the others go real.
+  // See `PartialRealAuthEntryService`.
   // ---------------------------------------------------------------------
-  static const String login = '/api/v1/auth/login';
-  static const String register = '/api/v1/auth/register';
-  static const String verifyOtp = '/api/v1/auth/verify-otp';
-  static const String sendOtp = '/api/v1/auth/login';
-  static const String resendOtp = '/api/v1/auth/login';
+  static const String checkUserExists = '/country-codes/registration-check';
+  static const String loginUser = '/auth/login';
+  static const String createUser = '/api/v1/auth/users'; // MISSING API CONTRACT
+  static const String accessToken =
+      '/api/v1/auth/access-token'; // MISSING API CONTRACT
+
+  // ---------------------------------------------------------------------
+  // 1c. Country list / registration master data (documented)
+  // ---------------------------------------------------------------------
+  static const String countryCodes = '/country-codes';
+
+  /// `GET` returns registration master data — countries (with each
+  /// country's states nested inside), societies, and roles, all in one
+  /// response (`ActiveCountries`/`Societies`/`Roles`; confirmed against a
+  /// live response, not just the doc). `POST` submits the registration.
+  /// See `RegistrationService`.
+  static const String userRegistration = '/country-codes/user-registration';
+
+  /// `GET ?socid=<id>` returns one society's full Tower→Floor→Unit tree.
+  /// See `SocietyService`.
+  static const String societyDetails = '/society/details';
+
+  /// `GET ?user_token=<session-token>` — master data for the Add User to
+  /// Society form. See `AddSocietyService`.
+  static const String addSocietyMasterData = '/society/add-master-data';
+
+  /// `POST` JSON body (see `AddUserToSocietyRequest`) — adds the signed-in
+  /// user to another society unit; the unit starts pending approval.
+  static const String addUserToSociety = '/society/add-user';
+
+  /// `GET` — vehicle brands grouped under `2W` and `4W`. See `VehicleService`.
+  static const String vehicleBrands = '/vehicle-brands';
+
+  /// `POST` JSON body (see `AddVehicleRequest`) — registers a vehicle and
+  /// returns its allotted parking slot. See `VehicleService`.
+  static const String addVehicle = '/vehicle/add';
+
+  /// `GET` — family relation categories and options. See `FamilyService`.
+  static const String getFamily = '/get-family';
+
+  /// `GET ?user_token=<session-token>` — pet types and their breeds for the
+  /// Add Pet form. See `PetService`.
+  static const String addPet = '/pet/add-pet';
+
+  /// `POST` JSON body (see `AddFamilyRequest`) — adds a family member for the
+  /// signed-in user. See `FamilyService`.
+  static const String addFamily = '/get-family/add-family';
+
+  /// `POST` verifies the OTP sent after registration (`userId`, `otp`,
+  /// `identifier` = `"M"`/`"E"`, `otpType` = `"UR"`). See
+  /// `OtpVerificationService`.
+  static const String userRegistrationVerifyOtp =
+      '/country-codes/user-registration/verify-otp';
+
+  // ---------------------------------------------------------------------
+  // 2. Cascading property location master data
+  //
+  // One endpoint for all seven levels — `?level=city&parentId=IN-KA`.
+  // See `LocationServiceBase` for why this is not seven endpoints.
+  //
+  // MISSING API CONTRACT for every level except `country` (served for real
+  // via `countryCodes`/`CountryService` instead) — state/city/society/
+  // tower/floor/flat have no documented endpoint, so `LocationService`
+  // stays mocked for those levels regardless of `KycConfig.useMockKycApi`.
+  // ---------------------------------------------------------------------
+  static const String locations = '/api/v1/locations';
+
+  // ---------------------------------------------------------------------
+  // 2b. KYC (role-based documents)
+  //
+  // `kycDocuments` (`GET ?user_token=<encrypted-user-token>`) returns the
+  // backend-configured document list for the caller's role — the frontend
+  // never hardcodes which documents to ask for. `kycUpload` is the
+  // per-document multipart upload (`user_id`, `doc_id`, plus the file),
+  // called once per document, same as `kycDocuments` returns them.
+  // Neither carries the `/api/v1` prefix, matching every other documented,
+  // real (non-`/api/v1`) endpoint in this contract.
+  // ---------------------------------------------------------------------
+  static const String kycDocuments = '/kyc/documents';
+  static const String kycUpload = '/kyc/upload';
+  static const String kycReUpload = '/kyc/re-upload';
+
+  /// `GET ?user_token=<session-token>` — the user's stored KYC documents
+  /// (distinct from `kycDocuments`, which lists applicable document types).
+  static const String kycUserDocuments = '/kyc/user-documents';
+  static const String kycSubmit = '/api/v1/kyc/submit';
+  static String kycStatus(String kycId) => '/api/v1/kyc/$kycId/status';
+  static String kycDocumentById(String documentId) =>
+      '/api/v1/kyc/documents/$documentId';
 
   // ---------------------------------------------------------------------
   // 3. Society Management (Admin) Screens
@@ -73,11 +170,12 @@ class ApiEndpoints {
   static const String communityCreateEvent = '/api/v1/community/events';
 
   /// Approve/reject a visitor from the Home screen's gate-arrival banner
-  /// (NivasHub API Contract §6.3 — `POST /api/v1/visitors/{visitorId}/action`).
+  /// (Nivaas Hub API Contract §6.3 — `POST /api/v1/visitors/{visitorId}/action`).
   /// Still mock-only — see `MockVisitorNotificationService`.
-  static String visitorAction(String visitorId) => '/api/v1/visitors/$visitorId/action';
+  static String visitorAction(String visitorId) =>
+      '/api/v1/visitors/$visitorId/action';
 
-  /// Activities screen's gate/delivery log (NivasHub API Contract §6.2).
+  /// Activities screen's gate/delivery log (Nivaas Hub API Contract §6.2).
   /// Still mock-only — see `MockVisitorActivityService`.
   static const String approvals = '/api/v1/approvals';
 
@@ -108,7 +206,7 @@ class ApiEndpoints {
   static String markNoticeRead(String id) => '/api/v1/notice-board/$id/read';
 
   // ---------------------------------------------------------------------
-  // Profile / Active Society (NivasHub Mobile App API Contract v1.0, §2)
+  // Profile / Active Society (Nivaas Hub Mobile App API Contract v1.0, §2)
   // ---------------------------------------------------------------------
   static const String userProfile = '/api/v1/users/profile';
   static const String activeSociety = '/api/v1/users/active-society';
@@ -116,25 +214,20 @@ class ApiEndpoints {
   // ---------------------------------------------------------------------
   // Forgot Password
   //
-  // NOTE: per the published Forgot Password API contract these live on a
-  // base URL of `http://localhost:3000` with no `/api/v1` prefix, unlike
-  // every other endpoint above (currently `baseUrl` is
-  // `http://localhost:3001`). Deliberately NOT changing the shared
-  // `baseUrl` for this alone since every other endpoint depends on it.
-  // TODO(backend): confirm the real shared host before `useMockApi` is
-  // flipped to false for this feature — `ForgotPasswordService` may need
-  // an absolute URL override on these three calls instead of relying on
-  // `ApiClient`'s configured `baseUrl`.
+  // No `/api/v1` prefix on these three, matching the documented contract.
+  // The doc's sample requests show `localhost:3000` purely as an example
+  // dev host for these calls, same as every other documented endpoint —
+  // not a second production host, so no `baseUrl` override is needed.
   // ---------------------------------------------------------------------
   static const String forgotPassword = '/auth/forgot-password';
-  static const String forgotPasswordVerifyOtp = '/auth/forgot-password/verify-otp';
-  static const String forgotPasswordUpdatePassword = '/auth/forgot-password/update-password';
+  static const String forgotPasswordVerifyOtp =
+      '/auth/forgot-password/verify-otp';
+  static const String forgotPasswordUpdatePassword =
+      '/auth/forgot-password/update-password';
 
   // ---------------------------------------------------------------------
   // Shared
   // ---------------------------------------------------------------------
-  static const String uploadFile = '/upload';
-
   // Legacy / fallback banner endpoint
   static const String banners = '/banners';
 }

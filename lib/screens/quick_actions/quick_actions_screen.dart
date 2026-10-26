@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter_nivasshub/constants/app_icons.dart';
+import 'package:flutter_nivasshub/constants/figma_colors.dart';
 import 'package:flutter_nivasshub/utils/responsive.dart';
 import 'package:flutter_nivasshub/models/shared/app_feature_model.dart';
 import 'package:flutter_nivasshub/widgets/shared/feedback/custom_snackbar.dart';
@@ -66,20 +66,20 @@ class _QuickActionsScreenState extends State<QuickActionsScreen> {
   // CARD STYLE
   // ============================================================
 
-  static const double _kCardRadius = 10;
+  static const double _kCardRadius = 14;
 
   static const TextStyle _kCardLabelStyle = TextStyle(
     fontSize: 8.5,
     height: 1.15,
     fontWeight: FontWeight.w500,
-    color: Color(0xFF374151),
+    color: FigmaColors.navy,
   );
 
   static const TextStyle _kSectionActionStyle = TextStyle(
     fontSize: 9.5,
     height: 1.1,
     fontWeight: FontWeight.w600,
-    color: Color(0xFF2563EB),
+    color: FigmaColors.orange,
   );
 
   @override
@@ -130,15 +130,13 @@ class _QuickActionsScreenState extends State<QuickActionsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark =
-        Theme.of(context).brightness == Brightness.dark;
-
     return Scaffold(
       backgroundColor:
-          isDark ? AppColors.infoDark : AppColors.infoLight,
+          FigmaColors.of(context).page,
       appBar: AppBar(
         backgroundColor:
-            isDark ? AppColors.infoDark : AppColors.infoLight,
+            FigmaColors.navy,
+        foregroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
           icon: Icon(AppIcons.close),
@@ -881,6 +879,7 @@ class _QuickActionsScreenState extends State<QuickActionsScreen> {
       padding: padding,
       decoration: BoxDecoration(
         color: Colors.white,
+        border: Border.all(color: const Color(0xFFEFE7DA)),
         borderRadius:
             BorderRadius.circular(
           _kCardRadius,

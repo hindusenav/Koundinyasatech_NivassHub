@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+
+import 'package:flutter_nivasshub/constants/app_colors.dart';
 
 import 'package:flutter_nivasshub/routes/app_routes.dart';
 import 'package:flutter_nivasshub/providers/dashboard/dashboard_provider.dart';
@@ -22,7 +25,22 @@ class QuickActionsGrid extends StatelessWidget {
       );
     }
 
-    return Column(
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.cardBg,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.cardBorder),
+        boxShadow: const [
+          BoxShadow(
+            color: AppColors.shadowSoft,
+            blurRadius: 12,
+            offset: Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         /// HEADER
@@ -30,43 +48,38 @@ class QuickActionsGrid extends StatelessWidget {
           children: [
             Expanded(
               child: Text(
-                "Quick Actions",
-                style: TextStyle(
+                "Quick actions",
+                style: GoogleFonts.inter(
                   fontSize: 16,
-                  fontWeight: FontWeight.w700, // Thicker
-                  color: Color(0xFF0F172A),
-                  letterSpacing: 0.3,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.textDark,
                 ),
               ),
             ),
-            Icon(
-              Icons.settings_outlined,
-              size: 14,
-              color: Color(0xFF000000),
-              weight: 600, // Thicker icon
-            ),
-            const SizedBox(width: 4),
-            Text(
-              "Customize",
-              style: TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.w700, // Thicker
-                color: Color(0xFF000000),
-                letterSpacing: 0.3,
+            InkWell(
+              onTap: () => Navigator.pushNamed(context, AppRoutes.quickActions),
+              borderRadius: BorderRadius.circular(4),
+              child: Text(
+                "Customize",
+                style: GoogleFonts.inter(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.primaryOrange,
+                ),
               ),
             ),
           ],
         ),
-        const SizedBox(height: 10),
+        const SizedBox(height: 12),
         GridView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           itemCount: actions.length,
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 4,
-            crossAxisSpacing: 2,
-            mainAxisSpacing: 8,
-            mainAxisExtent: 94,
+            crossAxisSpacing: 12,
+            mainAxisSpacing: 12,
+            mainAxisExtent: 98,
           ),
           itemBuilder: (context, index) {
             return QuickActionCard(
@@ -78,6 +91,7 @@ class QuickActionsGrid extends StatelessWidget {
           },
         ),
       ],
+      ),
     );
   }
 
@@ -88,6 +102,7 @@ class QuickActionsGrid extends StatelessWidget {
 
         break;
       case 'Payments':
+        Navigator.pushNamed(context, AppRoutes.payments);
         break;
       case 'Posts':
         break;

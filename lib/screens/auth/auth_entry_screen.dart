@@ -1,0 +1,352 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_nivasshub/constants/app_text_styles.dart';
+import 'package:flutter_nivasshub/constants/app_colors.dart';
+import 'package:flutter_nivasshub/utils/responsive.dart';
+import 'package:flutter_nivasshub/constants/kyc/kyc_strings.dart';
+import 'package:flutter_nivasshub/models/auth/auth_flow_state.dart';
+import 'package:flutter_nivasshub/models/auth/auth_identifier.dart';
+import 'package:flutter_nivasshub/models/auth/check_user_exists_response_data.dart';
+import 'package:flutter_nivasshub/providers/auth/auth_entry_provider.dart';
+import 'package:flutter_nivasshub/providers/auth/otp_mobile_email_verification_provider.dart';
+import 'package:flutter_nivasshub/screens/auth/otp_mobile_email_verification_screen.dart';
+import 'package:flutter_nivasshub/providers/auth/auth_state_provider.dart';
+import 'package:flutter_nivasshub/routes/app_routes.dart';
+import 'package:flutter_nivasshub/screens/auth/enter_password_screen.dart';
+import 'package:flutter_nivasshub/screens/auth/user_details_screen.dart';
+import 'package:flutter_nivasshub/models/auth/user_role.dart';
+import 'package:flutter_nivasshub/screens/kyc/kyc_documents_screen.dart';
+import 'package:flutter_nivasshub/screens/kyc/kyc_verification_status_screen.dart';
+import 'package:flutter_nivasshub/services/kyc/document_service_base.dart';
+import 'package:flutter_nivasshub/utils/form_validators.dart';
+import 'package:flutter_nivasshub/widgets/auth/auth_brand_logo.dart';
+import 'package:flutter_nivasshub/widgets/auth/identifier_input_field.dart';
+import 'package:flutter_nivasshub/widgets/shared/figma/figma_scaffold.dart';
+import 'package:flutter_nivasshub/widgets/shared/figma/figma_widgets.dart';
+import 'package:provider/provider.dart';
+
+/// Route arguments for [AuthEntryScreen]. Every field is optional — the
+/// router substitutes a default instance when the route is pushed with no
+/// arguments, which is the common case.
+class AuthEntryScreenArgs {
+  const AuthEntryScreenArgs({this.prefillIdentifier, this.prefillChannel});
+
+  final String? prefillIdentifier;
+  final AuthChannel? prefillChannel;
+}
+
+/// The app's front door (spec §1).
+///
+/// One identifier — mobile or email — plus a country code, validated and
+/// checked against the backend, then routed to password login or to
+/// registration.
+class AuthEntryScreen extends StatefulWidget {
+  const AuthEntryScreen({super.key, this.args = const AuthEntryScreenArgs()});
+
+  final AuthEntryScreenArgs args;
+
+  @override
+  State<AuthEntryScreen> createState() => _AuthEntryScreenState();
+}
+
+class _AuthEntryScreenState extends State<AuthEntryScreen> {
+  final _formKey = GlobalKey<FormState>();
+  late final TextEditingController _identifierController =
+      TextEditingController(text: widget.args.prefillIdentifier ?? '');
+
+  // No `initState` provider work on purpose. Both the initial channel and
+  // the dial-code fetch are handled where the provider is created (see
+  // `AuthRouter`), because `loadCountryCodes` notifies listeners before
+  // its first `await` — doing that from `initState` marks widgets dirty
+  // mid-build and trips framework's `!_dirty` assertion.
+
+  @override
+  void dispose() {
+    _identifierController.dispose();
+    super.dispose();
+  }
+
+  void _toggleChannel() {
+    final provider = context.read<AuthEntryProvider>();
+    provider.setChannel(
+      provider.isMobileMode ? AuthChannel.email : AuthChannel.mobile,
+    );
+    // The two channels accept different characters, so carrying the text
+    // across would leave a value its own validator rejects.
+    _identifierController.clear();
+  }
+
+  /// Compares `GET /kyc/documents` against what is uploaded: if a mandatory
+  /// document is missing or a document was rejected, only those go to the
+  /// upload screen; otherwise everything required is in and the user sees
+  /// the KYC status screen.
+  Future<void> _routeKyc(String token) async {
+    final response = await context
+        .read<DocumentServiceBase>()
+        .getApplicableDocuments(userToken: token);
+    if (!mounted) return;
+
+    if (!response.isSuccess || response.data == null) {
+      _showMessage(response.message ?? KycStrings.genericError);
+      return;
+    }
+
+    final outstanding = {
+      for (final d in response.data!)
+        if (d.needsUpload) d.documentId,
+    };
+
+    // Only rejected documents left: the status screen shows them with a
+    // per-document Re-upload button, so there is no upload screen detour.
+    final hasMissing = response.data!.any(
+      (d) => d.needsUpload && !d.alreadyUploaded,
+    );
+
+    if (outstanding.isEmpty || !hasMissing) {
+      await Navigator.of(context).pushNamed(
+        AppRoutes.kycVerificationStatus,
+        arguments: KycVerificationStatusScreenArgs(
+          kycId: token,
+          userId: token,
+          role: UserRole.owner,
+        ),
+      );
+      return;
+    }
+
+    await Navigator.of(context).pushNamed(
+      AppRoutes.kycDocuments,
+      arguments: KycDocumentsScreenArgs(
+        userId: token,
+        onlyDocumentIds: outstanding,
+      ),
+    );
+  }
+
+  Future<void> _handleContinue() async {
+    final provider = context.read<AuthEntryProvider>();
+
+    if (!(_formKey.currentState?.validate() ?? false)) return;
+
+    // Validated here rather than in the field's validator: the country
+    // code lives in a sibling widget with no `FormField` of its own.
+    if (provider.isMobileMode && provider.countryCode == null) {
+      _showMessage(KycStrings.countryCodeRequired);
+      return;
+    }
+
+    final identifier = await provider.checkUserExists(
+      _identifierController.text.trim(),
+    );
+    if (!mounted || identifier == null) return;
+
+    final authState = context.read<AuthStateProvider>();
+
+    // 424 (KYC pending) and 423 (KYC in progress) both resolve the same
+    // way: ask the backend what is uploaded and route on that.
+    if (provider.status == AuthEntryStatus.kycPending ||
+        provider.status == AuthEntryStatus.kycInProgress) {
+      final token = provider.registrationToken ?? provider.pendingKycUserId;
+      if (token == null || token.isEmpty) {
+        _showMessage(KycStrings.genericError);
+        return;
+      }
+      await _routeKyc(token);
+      return;
+    }
+
+    if (provider.status == AuthEntryStatus.resumeOtp) {
+      final token = provider.registrationToken;
+      if (token == null || token.isEmpty) {
+        _showMessage(KycStrings.genericError);
+        return;
+      }
+      // Registered but OTP verification is unfinished: skip the profile
+      // form and reuse the OTP screen for just the pending channel(s).
+      final outcome = provider.outcome;
+      final pending = switch (outcome) {
+        RegistrationCheckOutcome.mobileNotVerified => {OtpChannel.mobile},
+        RegistrationCheckOutcome.emailNotVerified => {OtpChannel.email},
+        _ => {OtpChannel.mobile, OtpChannel.email},
+      };
+      await authState.saveRegistrationToken(token);
+      await authState.moveTo(
+        AuthFlowState.otpPending,
+        context: authState.context.copyWith(identifier: identifier),
+      );
+      if (!mounted) return;
+      await Navigator.of(context).pushNamed(
+        AppRoutes.otpMobileEmailVerification,
+        arguments: OtpMobileEmailVerificationScreenArgs(
+          userId: token,
+          mobileNumber: identifier.channel == AuthChannel.mobile
+              ? identifier.masked
+              : null,
+          email: identifier.channel == AuthChannel.email
+              ? identifier.masked
+              : null,
+          pendingChannels: pending,
+          otpJustSent: false,
+          resendIdentifier: identifier,
+        ),
+      );
+      return;
+    }
+
+    if (provider.status == AuthEntryStatus.existingUser) {
+      await Navigator.of(context).pushNamed(
+        AppRoutes.enterPassword,
+        arguments: EnterPasswordScreenArgs(
+          identifier: identifier,
+          maskedIdentifier: provider.maskedIdentifier ?? identifier.masked,
+        ),
+      );
+      return;
+    }
+
+    // New user: record the identifier before leaving, so a restart on the
+    // User Details screen resumes with the field already filled in.
+    await authState.moveTo(
+      AuthFlowState.registration,
+      context: authState.context.copyWith(identifier: identifier),
+    );
+    if (!mounted) return;
+
+    await Navigator.of(context).pushNamed(
+      AppRoutes.userDetails,
+      arguments: UserDetailsScreenArgs(identifier: identifier),
+    );
+  }
+
+  void _showMessage(String message) {
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final provider = context.watch<AuthEntryProvider>();
+
+    return FigmaLightScaffold(
+      body: LayoutBuilder(
+        builder: (context, constraints) => SingleChildScrollView(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(minHeight: constraints.maxHeight),
+            child: Center(
+              child: Padding(
+                padding: context.pageInsets,
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      const AuthBrandLogo(),
+                      context.gapLg,
+                      const Text(
+                        KycStrings.authEntryTitle,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.textDark,
+                        ),
+                      ),
+                      context.gapSm,
+                      const Text(
+                        KycStrings.authEntrySubtitle,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 13,
+                          height: 1.4,
+                          color: AppColors.textMuted,
+                        ),
+                      ),
+                      SizedBox(height: context.rs(28)),
+                      Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: AppColors.cardBg,
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(color: AppColors.cardBorder),
+                          boxShadow: const [
+                            BoxShadow(
+                              color: AppColors.shadowSoft,
+                              blurRadius: 18,
+                              offset: Offset(0, 6),
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            IdentifierInputField(
+                              controller: _identifierController,
+                              channel: provider.channel,
+                              countries: provider.dialCodes,
+                              selectedCountry: provider.selectedCountry,
+                              isLoadingCountries: provider.isLoadingDialCodes,
+                              enabled: !provider.isChecking,
+                              onCountrySelected: provider.setCountry,
+                              onRetryCountries: provider.loadCountryCodes,
+                              onChanged: (_) => provider.clearError(),
+                              onSubmitted: (_) => _handleContinue(),
+                              validator: _validateIdentifier,
+                            ),
+                            if (provider.errorMessage != null) ...[
+                              context.gapSm,
+                              Text(
+                                provider.errorMessage!,
+                                style: AppTextStyles.errorText,
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+                      SizedBox(height: context.rs(20)),
+                      FigmaButton(
+                        label: KycStrings.continueLabel,
+                        isLoading: provider.isChecking,
+                        onPressed: provider.isChecking ? null : _handleContinue,
+                      ),
+                      SizedBox(height: context.rs(12)),
+                      TextButton(
+                        onPressed: provider.isChecking ? null : _toggleChannel,
+                        child: Text(
+                          provider.isMobileMode
+                              ? KycStrings.useEmailInstead
+                              : KycStrings.useMobileInstead,
+                          style: const TextStyle(
+                            color: AppColors.primaryOrangeDark,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Delegates to the shared validators so the rules match the rest of the
+  /// app. Mobile length is country-aware, since a `+44` number is not ten
+  /// digits starting 6-9.
+  String? _validateIdentifier(String? value) {
+    final provider = context.read<AuthEntryProvider>();
+    final trimmed = value?.trim() ?? '';
+
+    if (trimmed.isEmpty) return KycStrings.identifierRequired;
+
+    if (provider.isMobileMode) {
+      return FormValidators.mobileNumberForDialCode(provider.countryCode)(
+        trimmed,
+      );
+    }
+    return FormValidators.email(trimmed);
+  }
+}

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter_nivasshub/constants/app_icons.dart';
+import 'package:flutter_nivasshub/constants/figma_colors.dart';
 import 'package:flutter_nivasshub/constants/app_spacing.dart';
 import 'package:flutter_nivasshub/utils/responsive.dart';
 import 'package:flutter_nivasshub/models/shared/app_feature_model.dart';
@@ -71,24 +71,31 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   Widget _buildHeader() {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
-      color: isDark ? AppColors.infoDark : AppColors.infoLight,
+      color: FigmaColors.navy,
       padding: AppSpacing.symmetric(horizontal: AppSpacing.sm, vertical: AppSpacing.sm),
       child: Row(
         children: [
           IconButton(
-            icon: Icon(AppIcons.back),
+            icon: Icon(AppIcons.back, color: Colors.white),
             onPressed: () => Navigator.of(context).pop(),
           ),
           Expanded(
-            child: TextField(
-              controller: _controller,
-              autofocus: true,
-              onChanged: (value) => context.read<SearchProvider>().onQueryChanged(value),
-              decoration: const InputDecoration(
-                hintText: 'Search',
-                border: InputBorder.none,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(24),
+              ),
+              child: TextField(
+                controller: _controller,
+                autofocus: true,
+                onChanged: (value) => context.read<SearchProvider>().onQueryChanged(value),
+                decoration: const InputDecoration(
+                  hintText: 'Search',
+                  border: InputBorder.none,
+                  icon: Icon(Icons.search_rounded, size: 20),
+                ),
               ),
             ),
           ),

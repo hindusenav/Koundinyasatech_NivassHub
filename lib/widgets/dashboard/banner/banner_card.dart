@@ -1,7 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_nivasshub/utils/responsive.dart';
 
 import 'package:flutter_nivasshub/constants/app_colors.dart';
+import 'package:flutter_nivasshub/constants/figma_colors.dart';
 import 'package:flutter_nivasshub/screens/notices/advertisement_details_screen.dart';
 import 'package:flutter_nivasshub/models/dashboard/banner_model.dart';
 
@@ -18,6 +20,7 @@ class BannerCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final t = FigmaColors.of(context);
     final title = banner.title.isNotEmpty ? banner.title : 'Century Bliss';
     final isNikoo = title.toLowerCase().contains('nikoo') ||
         title.toLowerCase().contains('nikaa') ||
@@ -33,12 +36,12 @@ class BannerCard extends StatelessWidget {
     return Container(
       margin: margin,
       decoration: BoxDecoration(
-        color: isDark ? AppColors.surfaceDark : Colors.white,
+        color: t.card,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
           // Teal accent border reads clearly against both a light and a
           // dark card surface, so it's kept as-is in both themes.
-          color: const Color(0xFF2DD4BF).withValues(alpha: .5),
+          color: t.cardBorder,
           width: 1,
         ),
         boxShadow: [
@@ -68,19 +71,19 @@ class BannerCard extends StatelessWidget {
               ClipRRect(
                 borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
                 child: SizedBox(
-                  height: 165,
+                  height: context.rs(165),
                   width: double.infinity,
                   child: CachedNetworkImage(
                     imageUrl: imageUrl,
                     fit: BoxFit.cover,
                     placeholder: (context, url) => Container(
-                      color: isDark ? AppColors.grey800 : const Color(0xFFF1F5F9),
+                      color: isDark ? AppColors.grey800 : AppColors.background,
                       child: const Center(
                         child: CircularProgressIndicator(strokeWidth: 2),
                       ),
                     ),
                     errorWidget: (context, url, error) => Container(
-                      color: const Color(0xFF0F172A),
+                      color: AppColors.textPrimary,
                       child: const Icon(
                         Icons.apartment_rounded,
                         color: Colors.white70,
@@ -104,14 +107,14 @@ class BannerCard extends StatelessWidget {
                             Icon(
                               Icons.calendar_today_outlined,
                               size: 14,
-                              color: isDark ? AppColors.textSecondaryDark : const Color(0xFF64748B),
+                              color: t.body,
                             ),
                             const SizedBox(width: 6),
                             Text(
                               dateStr,
                               style: TextStyle(
                                 fontSize: 11.5,
-                                color: isDark ? AppColors.textSecondaryDark : const Color(0xFF64748B),
+                                color: t.body,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
@@ -120,7 +123,7 @@ class BannerCard extends StatelessWidget {
                         Icon(
                           Icons.bookmark_border_outlined,
                           size: 18,
-                          color: isDark ? AppColors.textSecondaryDark : const Color(0xFF64748B),
+                          color: t.body,
                         ),
                       ],
                     ),
@@ -133,13 +136,13 @@ class BannerCard extends StatelessWidget {
                         vertical: 2,
                       ),
                       decoration: BoxDecoration(
-                        color: isDark ? AppColors.grey800 : const Color(0xFFF1F5F9),
+                        color: isDark ? AppColors.grey800 : AppColors.background,
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Text(
                         'AD',
                         style: TextStyle(
-                          color: isDark ? AppColors.textSecondaryDark : const Color(0xFF475569),
+                          color: t.body,
                           fontSize: 9.5,
                           fontWeight: FontWeight.bold,
                         ),
@@ -153,7 +156,7 @@ class BannerCard extends StatelessWidget {
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 15.5,
-                        color: isDark ? AppColors.textPrimaryDark : const Color(0xFF0F172A),
+                        color: t.heading,
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -163,7 +166,7 @@ class BannerCard extends StatelessWidget {
                       text: TextSpan(
                         style: TextStyle(
                           fontSize: 12,
-                          color: isDark ? AppColors.textSecondaryDark : const Color(0xFF475569),
+                          color: t.body,
                           height: 1.4,
                         ),
                         children: const [
@@ -174,7 +177,7 @@ class BannerCard extends StatelessWidget {
                           TextSpan(
                             text: 'Read More',
                             style: TextStyle(
-                              color: Color(0xFFEF4444),
+                              color: AppColors.error,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -186,7 +189,7 @@ class BannerCard extends StatelessWidget {
                     // Thin Horizontal Divider
                     Divider(
                       height: 1,
-                      color: isDark ? AppColors.grey800 : const Color(0xFFF1F5F9),
+                      color: isDark ? AppColors.grey800 : AppColors.background,
                     ),
                     const SizedBox(height: 10),
 
@@ -196,14 +199,14 @@ class BannerCard extends StatelessWidget {
                         Icon(
                           Icons.favorite_border_outlined,
                           size: 16,
-                          color: isDark ? AppColors.textSecondaryDark : const Color(0xFF64748B),
+                          color: t.body,
                         ),
                         const SizedBox(width: 4),
                         Text(
                           '$likesCount',
                           style: TextStyle(
                             fontSize: 12,
-                            color: isDark ? AppColors.textSecondaryDark : const Color(0xFF64748B),
+                            color: t.body,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
@@ -211,14 +214,14 @@ class BannerCard extends StatelessWidget {
                         Icon(
                           Icons.chat_bubble_outline_rounded,
                           size: 15,
-                          color: isDark ? AppColors.textSecondaryDark : const Color(0xFF64748B),
+                          color: t.body,
                         ),
                         const SizedBox(width: 4),
                         Text(
                           '$commentsCount',
                           style: TextStyle(
                             fontSize: 12,
-                            color: isDark ? AppColors.textSecondaryDark : const Color(0xFF64748B),
+                            color: t.body,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
@@ -226,7 +229,7 @@ class BannerCard extends StatelessWidget {
                         Icon(
                           Icons.share_outlined,
                           size: 16,
-                          color: isDark ? AppColors.textSecondaryDark : const Color(0xFF64748B),
+                          color: t.body,
                         ),
                       ],
                     ),

@@ -1,54 +1,46 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_nivasshub/constants/figma_colors.dart';
 
 import 'package:flutter_nivasshub/widgets/notifications/visitor_notification_section.dart';
 import 'package:flutter_nivasshub/widgets/dashboard/approval_queue/approval_queue_section.dart';
-import 'package:flutter_nivasshub/widgets/dashboard/banner/banner_slider.dart';
+import 'package:flutter_nivasshub/widgets/dashboard/resident/resident_summary_card.dart';
 import 'package:flutter_nivasshub/widgets/dashboard/community/community_posts_section.dart';
 import 'package:flutter_nivasshub/widgets/dashboard/header/dashboard_header.dart';
 import 'package:flutter_nivasshub/widgets/dashboard/maintenance/maintenance_card.dart';
 import 'package:flutter_nivasshub/widgets/dashboard/otp/generate_otp_banner.dart';
 import 'package:flutter_nivasshub/widgets/dashboard/panic/panic_sos_banner.dart';
 import 'package:flutter_nivasshub/widgets/dashboard/quick_actions/quick_actions_grid.dart';
-import 'package:flutter_nivasshub/widgets/dashboard/add_property/add_proper_section.dart';
 
-// KYC Update Card
-import 'package:flutter_nivasshub/widgets/dashboard/kyc_update_card/kyc_update_card_section.dart';
+class DashboardBody extends StatefulWidget {
+  const DashboardBody({super.key, required this.showKycCard});
 
-class DashboardBody extends StatelessWidget {
-  const DashboardBody({
-    super.key,
-  });
+  /// Kept for call-site compatibility; the floating "KYC Update" card has
+  /// been removed from Home, so this no longer affects rendering.
+  final bool showKycCard;
 
+  @override
+  State<DashboardBody> createState() => _DashboardBodyState();
+}
+
+class _DashboardBodyState extends State<DashboardBody> {
   static final LayerLink _headerAnchor = LayerLink();
 
+  /// How far the resident card overlaps the header's bottom edge.
+  static const double _cardOverlap = 20;
+
   // ============================================================
-  // KYC CARD HEIGHT
+  // ADD PROPERTY PANEL
   //
-  // Space reserved at the bottom of the scrollable dashboard
-  // so the floating KYC card does not cover the last content.
+  // Hidden by default; toggled open/closed by tapping the header's
+  // "B-402 ▾" row.
   // ============================================================
 
-  static const double _kycCardAreaHeight = 150.0;
+  bool _showPropertyPanel = false;
 
-  // ============================================================
-  // KYC UPDATE ACTION
-  // ============================================================
-
-  void _openKycFlow(BuildContext context) {
-    // ------------------------------------------------------------
-    // Your KYC navigation will be added here.
-    //
-    // Example when SelectCountryScreen is available:
-    //
-    // Navigator.push(
-    //   context,
-    //   MaterialPageRoute(
-    //     builder: (_) => const SelectCountryScreen(),
-    //   ),
-    // );
-    // ------------------------------------------------------------
-
-    debugPrint('KYC Update Now clicked');
+  void _togglePropertyPanel() {
+    setState(() {
+      _showPropertyPanel = !_showPropertyPanel;
+    });
   }
 
   @override
@@ -57,21 +49,17 @@ class DashboardBody extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      color: const Color(0xFFF7F8FC),
+      color: FigmaColors.of(context).page,
 
       child: Stack(
         children: [
           // ========================================================
           // SCROLLABLE DASHBOARD
           // ========================================================
-
           SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
 
-            // Extra space at bottom for the floating KYC card
-            padding: const EdgeInsets.only(
-              bottom: _kycCardAreaHeight + 20,
-            ),
+            padding: const EdgeInsets.only(bottom: 24),
 
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -79,26 +67,28 @@ class DashboardBody extends StatelessWidget {
                 // ==================================================
                 // HEADER
                 // ==================================================
-
                 CompositedTransformTarget(
                   link: _headerAnchor,
-                  child: const DashboardHeader(),
+                  child: DashboardHeader(
+                    isPropertyPanelExpanded: _showPropertyPanel,
+                    onTogglePropertyPanel: _togglePropertyPanel,
+                  ),
                 ),
 
                 // ==================================================
-                // ADD PROPERTY
+                // ADD PROPERTY — hidden until the header's "B-402 ▾"
+                // row is tapped.
                 // ==================================================
-
-                const AddPropertySection(),
+                // (the property name + "Add Flat/Villa/Office" now live in
+                // the resident card below)
 
                 // ==================================================
                 // DASHBOARD CONTENT
                 // ==================================================
-
                 Padding(
                   padding: const EdgeInsets.fromLTRB(
                     horizontalPadding,
-                    16,
+                    0,
                     horizontalPadding,
                     0,
                   ),
@@ -107,17 +97,24 @@ class DashboardBody extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // =================================================
-                      // ONLINE ADVERTISEMENT
+                      // RESIDENT CARD (tower, flat, add flat, stats)
                       // =================================================
+                      // Floats over the header's bottom edge.
+                      Transform.translate(
+                        offset: const Offset(0, -_cardOverlap),
+                        child: ResidentSummaryCard(
+                          isPropertyPanelExpanded: _showPropertyPanel,
+                          onTogglePropertyPanel: _togglePropertyPanel,
+                        ),
+                      ),
 
-                      const BannerSlider(),
-
-                      const SizedBox(height: 16),
+                      // The translate above does not shrink layout, so this
+                      // gap reads as ~_cardOverlap of visual space.
+                      const SizedBox(height: 0),
 
                       // =================================================
                       // QUICK ACTIONS
                       // =================================================
-
                       const QuickActionsGrid(),
 
                       const SizedBox(height: 16),
@@ -125,7 +122,6 @@ class DashboardBody extends StatelessWidget {
                       // =================================================
                       // MAINTENANCE
                       // =================================================
-
                       const MaintenanceCard(),
 
                       const SizedBox(height: 16),
@@ -133,31 +129,27 @@ class DashboardBody extends StatelessWidget {
                       // =================================================
                       // APPROVAL QUEUE
                       // =================================================
-
                       const ApprovalQueueSection(),
+
+                      const SizedBox(height: 16),
+
+                      // =================================================
+                      // OTP (Invite a guest)
+                      // =================================================
+                      const GenerateOtpBanner(),
 
                       const SizedBox(height: 16),
 
                       // =================================================
                       // PANIC SOS
                       // =================================================
-
                       const PanicSosBanner(),
-
-                      const SizedBox(height: 16),
-
-                      // =================================================
-                      // OTP
-                      // =================================================
-
-                      const GenerateOtpBanner(),
 
                       const SizedBox(height: 16),
 
                       // =================================================
                       // COMMUNITY
                       // =================================================
-
                       const CommunityPostsSection(),
 
                       const SizedBox(height: 20),
@@ -171,57 +163,16 @@ class DashboardBody extends StatelessWidget {
           // ========================================================
           // VISITOR APPROVAL POPUP
           // ========================================================
-
           CompositedTransformFollower(
+            targetAnchor: Alignment.bottomLeft,
+            followerAnchor: Alignment.topLeft,
             link: _headerAnchor,
             showWhenUnlinked: false,
             child: const VisitorNotificationSection(
               horizontalPadding: horizontalPadding,
             ),
           ),
-
-          // ========================================================
-          // KYC UPDATE POPUP / FLOATING CARD
-          // ========================================================
-          //
-          // This is outside SingleChildScrollView.
-          //
-          // Therefore it:
-          //   - stays at the bottom of Home
-          //   - floats over the dashboard
-          //   - does not scroll with dashboard content
-          //   - does not push the dashboard content down
-          //
-          // This matches Scenario 2 in your flow.
-          // ========================================================
-
-          Positioned(
-            left: 12,
-            right: 12,
-            bottom: 8,
-
-            child: SafeArea(
-              top: false,
-              child: _buildKycUpdateCard(context),
-            ),
-          ),
         ],
-      ),
-    );
-  }
-
-  // ============================================================
-  // KYC UPDATE CARD
-  // ============================================================
-
-  Widget _buildKycUpdateCard(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-
-      child: KycUpdateCardSection(
-        onUpdatePressed: () {
-          _openKycFlow(context);
-        },
       ),
     );
   }

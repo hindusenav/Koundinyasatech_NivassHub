@@ -64,7 +64,7 @@ class NoticeDetailsScreen extends StatelessWidget {
                   left: 20,
                 ),
                 decoration: BoxDecoration(
-                  color: isDark ? AppColors.dashboardHeaderDark : const Color(0xFFC7E3FF),
+                  color: isDark ? AppColors.dashboardHeaderDark : AppColors.background,
                 ),
               child: Row(
                 children: [
@@ -93,7 +93,7 @@ class NoticeDetailsScreen extends StatelessWidget {
                         border: Border.all(
                           color: isDark
                               ? AppColors.borderDark
-                              : const Color(0xFFCCDFF2),
+                              : AppColors.border,
                           width: 1,
                         ),
                       ),
@@ -102,7 +102,6 @@ class NoticeDetailsScreen extends StatelessWidget {
                         child: Text(
                           greetingTitle,
                           style: TextStyle(
-                            fontFamily: 'DM Sans',
                             color: isDark
                                 ? AppColors.noticesHeadingDark
                                 : const Color(0xFF000000),
@@ -167,7 +166,7 @@ class NoticeDetailsScreen extends StatelessWidget {
                           decoration: BoxDecoration(
                             color: isDark
                                 ? AppColors.noticesAppBarDark
-                                : const Color(0xFFE8F4FF),
+                                : AppColors.accentTint,
                             borderRadius: BorderRadius.circular(12),
                             boxShadow: [
                               BoxShadow(
@@ -182,7 +181,7 @@ class NoticeDetailsScreen extends StatelessWidget {
                             Icons.assignment_add,
                             color: isDark
                                 ? headingColor
-                                : const Color(0xFF05234D),
+                                : AppColors.textPrimary,
                             size: 24,
                           ),
                         ),
@@ -196,14 +195,13 @@ class NoticeDetailsScreen extends StatelessWidget {
                               Text(
                                 headerTitle,
                                 style: TextStyle(
-                                  fontFamily: 'DM Sans',
                                   fontWeight: FontWeight.w500,
                                   fontSize: 20,
                                   height: 1.2,
                                   letterSpacing: 0,
                                   color: isDark
                                       ? headingColor
-                                      : const Color(0xFF05234D),
+                                      : AppColors.textPrimary,
                                 ),
                               ),
                               const SizedBox(height: 4),
@@ -217,13 +215,12 @@ class NoticeDetailsScreen extends StatelessWidget {
                                       vertical: 4,
                                     ),
                                     decoration: BoxDecoration(
-                                      color: const Color(0xFF05234D),
+                                      color: AppColors.textPrimary,
                                       borderRadius: BorderRadius.circular(6),
                                     ),
                                     child: Text(
                                       notice.postedBy,
                                       style: const TextStyle(
-                                        fontFamily: 'DM Sans',
                                         color: Colors.white,
                                         fontSize: 10,
                                         fontWeight: FontWeight.w600,
@@ -235,10 +232,9 @@ class NoticeDetailsScreen extends StatelessWidget {
                                   Text(
                                     notice.date,
                                     style: TextStyle(
-                                      fontFamily: 'DM Sans',
                                       color: isDark
                                           ? mutedColor
-                                          : const Color(0xFF3D3D3D),
+                                          : AppColors.textBody,
                                       fontSize: 13,
                                       fontWeight: FontWeight.w400,
                                       height: 1.0,
@@ -262,7 +258,7 @@ class NoticeDetailsScreen extends StatelessWidget {
                             Icons.more_vert,
                             color: isDark
                                 ? headingColor
-                                : const Color(0xFF05234D),
+                                : AppColors.textPrimary,
                             size: 24,
                           ),
                         ),
@@ -278,7 +274,7 @@ class NoticeDetailsScreen extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: isDark
                           ? AppColors.noticesAmberDark
-                          : const Color(0xFFEC9211),
+                          : AppColors.accent,
                       borderRadius: BorderRadius.circular(16),
                     ),
                   ),
@@ -290,7 +286,6 @@ class NoticeDetailsScreen extends StatelessWidget {
                         ? 'Expense report for quarter ending on June 2026'
                         : notice.title,
                     style: TextStyle(
-                      fontFamily: 'DM Sans',
                       fontWeight: FontWeight.w500,
                       fontSize: 16,
                       height: 1.0,
@@ -305,7 +300,6 @@ class NoticeDetailsScreen extends StatelessWidget {
                   Text(
                     'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
                     style: TextStyle(
-                      fontFamily: 'DM Sans',
                       fontWeight: FontWeight.w400,
                       fontSize: 14,
                       height: 1.6,
@@ -319,7 +313,6 @@ class NoticeDetailsScreen extends StatelessWidget {
                   Text(
                     'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
                     style: TextStyle(
-                      fontFamily: 'DM Sans',
                       fontWeight: FontWeight.w400,
                       fontSize: 14,
                       height: 1.6,
@@ -333,7 +326,6 @@ class NoticeDetailsScreen extends StatelessWidget {
                   Text(
                     'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
                     style: TextStyle(
-                      fontFamily: 'DM Sans',
                       fontWeight: FontWeight.w400,
                       fontSize: 14,
                       height: 1.6,
@@ -360,7 +352,7 @@ class NoticeDetailsScreen extends StatelessWidget {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: isDark
                             ? AppColors.noticesAccentBlueDark
-                            : const Color(0xFF0060BD),
+                            : AppColors.accent,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -379,7 +371,6 @@ class NoticeDetailsScreen extends StatelessWidget {
                           Text(
                             'Download PDF',
                             style: TextStyle(
-                              fontFamily: 'DM Sans',
                               color: Colors.white,
                               fontWeight: FontWeight.w600,
                               fontSize: 14,

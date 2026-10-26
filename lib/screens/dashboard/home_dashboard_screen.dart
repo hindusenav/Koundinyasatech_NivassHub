@@ -1,11 +1,12 @@
+import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:flutter_nivasshub/constants/app_colors.dart';
+import 'package:flutter_nivasshub/constants/figma_colors.dart';
 import 'package:flutter_nivasshub/providers/dashboard/dashboard_provider.dart';
 import 'package:flutter_nivasshub/providers/dashboard/dashboard_state.dart';
+import 'package:flutter_nivasshub/storage/secure_storage_service.dart';
 import 'package:flutter_nivasshub/widgets/dashboard/dashboard_body.dart';
 import 'package:flutter_nivasshub/widgets/dashboard/loading/dashboard_loading_widget.dart';
 import 'package:flutter_nivasshub/widgets/dashboard/error/dashboard_error_widget.dart';
@@ -28,24 +29,19 @@ class _HomeDashboardScreenState
   // KYC STATUS
   // ============================================================
 
-  bool _kycCompleted = false;
   bool _kycStatusLoaded = false;
+  bool _kycApproved = false;
 
   // ============================================================
   // COLORS
   // ============================================================
 
-  static const Color _headerBlueLight =
-      AppColors.dashboardHeaderLight;
 
-  static const Color _headerBlueDark =
-      AppColors.dashboardHeaderDark;
+  static final Color _backgroundColorLight =
+      FigmaTheme.light.page;
 
-  static const Color _backgroundColorLight =
-      AppColors.dashboardBackgroundLight;
-
-  static const Color _backgroundColorDark =
-      AppColors.dashboardBackgroundDark;
+  static final Color _backgroundColorDark =
+      FigmaTheme.dark.page;
 
   // ============================================================
   // INIT
@@ -55,6 +51,13 @@ class _HomeDashboardScreenState
   void initState() {
     super.initState();
     _loadKycStatus();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final dashboard = context.read<DashboardProvider>();
+      if (dashboard.state == DashboardState.initial) {
+        dashboard.loadDashboard();
+      }
+    });
   }
 
   // ============================================================
@@ -62,15 +65,13 @@ class _HomeDashboardScreenState
   // ============================================================
 
   Future<void> _loadKycStatus() async {
-    final prefs = await SharedPreferences.getInstance();
-
-    final completed =
-        prefs.getBool('kyc_completed') ?? false;
+    final approved =
+        await context.read<SecureStorageService>().isKycApproved();
 
     if (!mounted) return;
 
     setState(() {
-      _kycCompleted = completed;
+      _kycApproved = approved;
       _kycStatusLoaded = true;
     });
   }
@@ -87,10 +88,6 @@ class _HomeDashboardScreenState
             Theme.of(context).brightness ==
                 Brightness.dark;
 
-        final headerBlue =
-            isDark
-                ? _headerBlueDark
-                : _headerBlueLight;
 
         final backgroundColor =
             isDark
@@ -99,21 +96,15 @@ class _HomeDashboardScreenState
 
         SystemChrome.setSystemUIOverlayStyle(
           SystemUiOverlayStyle(
-            statusBarColor: headerBlue,
+            statusBarColor: Colors.transparent,
+            // Sage header in light mode (dark icons), navy in dark mode.
             statusBarIconBrightness:
-                isDark
-                    ? Brightness.light
-                    : Brightness.dark,
+                Brightness.light,
             statusBarBrightness:
-                isDark
-                    ? Brightness.dark
-                    : Brightness.light,
+                Brightness.dark,
             systemNavigationBarColor:
-                backgroundColor,
-            systemNavigationBarIconBrightness:
-                isDark
-                    ? Brightness.light
-                    : Brightness.dark,
+                isDark ? backgroundColor : AppColors.navDark,
+            systemNavigationBarIconBrightness: Brightness.light,
           ),
         );
 
@@ -122,10 +113,10 @@ class _HomeDashboardScreenState
 
           body: Container(
             width: double.infinity,
-            color: headerBlue,
+            color: backgroundColor,
 
             child: SafeArea(
-              top: true,
+              top: false,
               left: false,
               right: false,
               bottom: false,
@@ -160,7 +151,7 @@ class _HomeDashboardScreenState
           return const DashboardLoadingWidget();
         }
 
-return const DashboardBody();
+return DashboardBody(showKycCard: !_kycApproved);
       case DashboardState.empty:
         return const DashboardEmptyWidget();
 

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter_nivasshub/constants/app_dimensions.dart';
+import 'package:flutter_nivasshub/constants/figma_colors.dart';
 import 'package:flutter_nivasshub/constants/app_radius.dart';
 import 'package:flutter_nivasshub/constants/app_spacing.dart';
 import 'package:flutter_nivasshub/constants/app_text_styles.dart';
@@ -20,34 +21,45 @@ class SearchResultTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final titleColor = isDark ? Colors.white : FigmaColors.navy;
     return InkWell(
       onTap: onTap,
       child: Padding(
-        padding: AppSpacing.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.sm),
+        padding: AppSpacing.symmetric(
+          horizontal: AppSpacing.md,
+          vertical: AppSpacing.sm,
+        ),
         child: Row(
           children: [
             Container(
               width: AppDimensions.avatarSm,
               height: AppDimensions.avatarSm,
               decoration: BoxDecoration(
-                color: AppColors.primary.withValues(alpha: 0.08),
+                color: isDark
+                    ? const Color(0xFF222528)
+                    : const Color(0xFFF9E8D8),
                 borderRadius: AppRadius.radiusSm,
               ),
               alignment: Alignment.center,
               child: Icon(
                 AppFeatureIcons.icon(item.iconKey),
                 size: AppDimensions.iconSm,
-                color: AppColors.primary,
+                color: titleColor,
               ),
             ),
             AppSpacing.gapWMd,
             Expanded(
               child: Text(
                 item.title,
-                style: AppTextStyles.bodyLarge.copyWith(color: AppColors.grey800),
+                style: AppTextStyles.bodyLarge.copyWith(color: titleColor),
               ),
             ),
-            Icon(Icons.chevron_right_rounded, color: AppColors.grey400, size: AppDimensions.iconMd),
+            Icon(
+              Icons.chevron_right_rounded,
+              color: AppColors.grey400,
+              size: AppDimensions.iconMd,
+            ),
           ],
         ),
       ),

@@ -1,8 +1,9 @@
+import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_nivasshub/constants/app_dimensions.dart';
 import 'package:flutter_nivasshub/constants/app_radius.dart';
 import 'package:flutter_nivasshub/constants/app_text_styles.dart';
-import 'package:flutter_nivasshub/constants/auth/auth_colors.dart';
+import 'package:flutter_nivasshub/constants/figma_colors.dart';
 
 /// Shared gradient CTA for the auth flow's "Login with OTP", "Verify OTP",
 /// and "Continue" buttons — a `Container` decoration (not `Ink`) behind a
@@ -46,11 +47,11 @@ class AuthGradientButton extends StatelessWidget {
           gradient: const LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [AuthColors.primaryBlue, AuthColors.primaryBlueDark],
+            colors: [FigmaColors.orange, AppColors.headerEnd],
           ),
           boxShadow: [
             BoxShadow(
-              color: AuthColors.primaryBlue.withValues(alpha: 0.35),
+              color: FigmaColors.orange.withValues(alpha: 0.35),
               blurRadius: 20,
               offset: const Offset(0, 8),
             ),
@@ -63,25 +64,39 @@ class AuthGradientButton extends StatelessWidget {
             shadowColor: Colors.transparent,
             disabledBackgroundColor: Colors.transparent,
             elevation: 0,
-            minimumSize: const Size(double.infinity, AppDimensions.buttonHeightLg),
+            minimumSize: const Size(
+              double.infinity,
+              AppDimensions.buttonHeightLg,
+            ),
             shape: RoundedRectangleBorder(borderRadius: AppRadius.radiusLg),
           ),
           child: isLoading
               ? const SizedBox(
                   height: AppDimensions.iconSm,
                   width: AppDimensions.iconSm,
-                  child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: Colors.white,
+                  ),
                 )
               : Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     if (icon != null) ...[
-                      Icon(icon, size: AppDimensions.iconSm, color: Colors.white),
+                      Icon(
+                        icon,
+                        size: AppDimensions.iconSm,
+                        color: Colors.white,
+                      ),
                       const SizedBox(width: 10),
                     ],
                     Text(label, style: AppTextStyles.buttonText),
                     const SizedBox(width: 10),
-                    const Icon(Icons.arrow_forward, size: AppDimensions.iconSm, color: Colors.white),
+                    const Icon(
+                      Icons.arrow_forward,
+                      size: AppDimensions.iconSm,
+                      color: Colors.white,
+                    ),
                   ],
                 ),
         ),

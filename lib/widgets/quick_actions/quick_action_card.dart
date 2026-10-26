@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter_nivasshub/constants/app_dimensions.dart';
+import 'package:flutter_nivasshub/constants/figma_colors.dart';
 import 'package:flutter_nivasshub/constants/app_radius.dart';
 import 'package:flutter_nivasshub/constants/app_spacing.dart';
 import 'package:flutter_nivasshub/constants/app_text_styles.dart';
@@ -53,19 +54,19 @@ class QuickActionCard extends StatelessWidget {
           decoration: BoxDecoration(
             color: AppColors.surfaceLight,
             borderRadius: AppRadius.radiusMd,
-            border: Border.all(color: AppColors.borderLight, width: 1),
+            border: Border.all(color: const Color(0xFFEFE7DA), width: 1),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              AppFeatureIcons.iconWidget(item.iconKey, size: iconSize, color: AppColors.primary),
+              AppFeatureIcons.iconWidget(item.iconKey, size: iconSize, color: FigmaColors.navy),
               AppSpacing.gapSm,
               Text(
                 item.title,
                 textAlign: TextAlign.center,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
-                style: AppTextStyles.labelLarge.copyWith(color: AppColors.grey800),
+                style: AppTextStyles.labelLarge.copyWith(color: FigmaColors.navy),
               ),
             ],
           ),

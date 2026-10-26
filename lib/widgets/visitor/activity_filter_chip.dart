@@ -37,9 +37,9 @@ class ActivityFilterChip extends StatelessWidget {
         duration: const Duration(milliseconds: 150),
         padding: AppSpacing.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.sm),
         decoration: BoxDecoration(
-          color: selected ? AppColors.tertiary : surfaceColor,
+          color: selected ? AppColors.primaryOrange : surfaceColor,
           borderRadius: AppRadius.radiusFull,
-          border: Border.all(color: selected ? AppColors.tertiary : borderColor),
+          border: Border.all(color: selected ? AppColors.primaryOrange : borderColor),
         ),
         child: Text(
           label,

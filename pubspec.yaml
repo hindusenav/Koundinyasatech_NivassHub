@@ -1,5 +1,5 @@
 name: flutter_nivasshub
-description: "NivassHub - Smart Gated Community Application"
+description: "Nivaas Hub - Smart Gated Community Application"
 publish_to: 'none'
 
 version: 1.0.0+1
@@ -10,7 +10,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
+  
   cupertino_icons: ^1.0.8
 
   # ---------------------------------------------------------------------------
@@ -18,6 +18,26 @@ dependencies:
   # ---------------------------------------------------------------------------
   image_picker: ^1.1.2
   share_plus: ^13.3.0
+  permission_handler: ^11.3.1
+
+  # In-app KYC camera capture: manual front/back switch plus an in-app
+  # preview/retake step, instead of delegating to the OS camera app.
+  #
+  # Pinned below 0.11 deliberately: `camera` 0.11.x defaults Android to
+  # `camera_android_camerax`, whose bundled camera-core 1.5.3 fails to
+  # compile against this project's Gradle/AGP toolchain ("class file for
+  # androidx.concurrent.futures.CallbackToFutureAdapter not found" in
+  # SurfaceRequest, verified independent of app-module dependencies). 0.10.x
+  # uses the older Camera2-based `camera_android`, which builds cleanly and
+  # exposes the exact same Dart API this screen uses.
+  camera: ^0.10.6
+
+  # `image_picker` can only return photos/videos — it physically cannot
+  # surface a PDF, which KYC document upload requires. Both plugins are
+  # hidden behind `FilePickerServiceBase` so no provider imports either.
+  # ^13 (not ^8) is required: file_picker 8.x pins win32 ^5.x while
+  # share_plus ^13.3.0 pins win32 ^6.0.1, and the two cannot co-resolve.
+  file_picker: ^13.1.0
 
   # ---------------------------------------------------------------------------
   # State Management
@@ -56,6 +76,9 @@ dependencies:
   # URL Launcher
   # ---------------------------------------------------------------------------
   url_launcher: ^6.3.2
+  flutter_local_notifications: ^22.3.1
+  smart_auth: ^3.2.0
+  google_fonts: ^8.2.1
 
 dev_dependencies:
   flutter_test:
@@ -66,16 +89,21 @@ dev_dependencies:
 
   flutter_lints: ^6.0.0
 
+  flutter_launcher_icons: ^0.14.4
+
 flutter:
   uses-material-design: true
 
   assets:
     - assets/images/
+    - assets/images/kyc/cities/
     - assets/icons/
     - assets/json/
+    - assets/icons/settings/
     - assets/icons/quick_actions/
     - assets/icons/quick_actions/homequick_actions/
     - assets/json/notices/
+    - assets/json/location/
     - assets/icons/profile/addbio.png
     - assets/icons/profile/address(profile).png
     - assets/icons/profile/area(addaddress).png
@@ -85,7 +113,7 @@ flutter:
     - assets/icons/profile/landmark(addaddress).png
     - assets/icons/profile/street(addaddress).png
     - assets/icons/profile/wing(addaddress).png
-  # fonts:
+  # 
   #   - family: Poppins
   #     fonts:
   #       - asset: assets/fonts/Poppins-Regular.ttf
@@ -95,3 +123,10 @@ flutter:
   #         weight: 600
   #       - asset: assets/fonts/Poppins-Bold.ttf
   #         weight: 700
+flutter_launcher_icons:
+  android: "ic_launcher"
+  ios: true
+  remove_alpha_ios: true
+  image_path: "assets/images/splash_icon.png"
+  adaptive_icon_background: "#FFFFFF"
+  adaptive_icon_foreground: "assets/images/splash_icon.png"

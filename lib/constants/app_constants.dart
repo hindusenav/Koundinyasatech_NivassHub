@@ -2,7 +2,7 @@
 class AppConstants {
   AppConstants._();
 
-  static const String appName = 'NivasHub';
+  static const String appName = 'Nivaas Hub';
 
   // ---------------------------------------------------------------------
   // Pagination
