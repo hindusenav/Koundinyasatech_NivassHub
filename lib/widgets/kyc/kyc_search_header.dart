@@ -24,7 +24,7 @@ class KycSearchHeader extends StatelessWidget {
 
     final headerBgColor = isDark
         ? AppColors.dashboardHeaderDark
-        : const Color(0xFFC7E3FF);
+        : const Color(0xFFF3E8D9);
     final textPrimary = isDark ? AppColors.textPrimaryDark : const Color(0xFF1F2937);
 
     return Container(
@@ -64,7 +64,7 @@ class KycSearchHeader extends StatelessWidget {
                       border: Border.all(
                         color: isDark
                             ? AppColors.borderDark
-                            : const Color(0xFFCCDFF2),
+                            : const Color(0xFFE8DCC8),
                         width: 1,
                       ),
                     ),
@@ -74,7 +74,6 @@ class KycSearchHeader extends StatelessWidget {
                         title,
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                          fontFamily: 'DM Sans',
                           fontWeight: FontWeight.w600,
                           fontSize: 18,
                           height: 1.0,

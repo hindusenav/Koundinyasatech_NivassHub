@@ -59,7 +59,7 @@
   ],
 
   "societies": [
-    { "id": "SOC-001", "parentId": "IN-KA-BLR", "name": "NivassHub Residency", "registrationNumber": "KA/BLR/2019/4471" },
+    { "id": "SOC-001", "parentId": "IN-KA-BLR", "name": "Nivaas Hub Residency", "registrationNumber": "KA/BLR/2019/4471" },
     { "id": "SOC-002", "parentId": "IN-KA-BLR", "name": "Golden Residency", "registrationNumber": "KA/BLR/2017/2290" },
     { "id": "SOC-EMPTY", "parentId": "IN-KA-BLR", "name": "Lakeview Enclave (under construction)", "registrationNumber": "KA/BLR/2024/9912" },
     { "id": "SOC-ERROR", "parentId": "IN-KA-BLR", "name": "Heritage Gardens (records syncing)", "registrationNumber": "KA/BLR/2021/5533" },

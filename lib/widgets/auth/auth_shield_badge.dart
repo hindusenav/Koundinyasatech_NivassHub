@@ -3,7 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_nivasshub/constants/asset_constants.dart';
 import 'package:flutter_nivasshub/constants/auth/auth_colors.dart';
 
-/// Blue-tinted circular badge with the NivaasHub brand mark — the
+/// Blue-tinted circular badge with the Nivaas Hub brand mark — the
 /// assurance mark shown near the top of the registration flow's
 /// mobile-entry (`RegisterScreen`) and OTP-verification (registration mode)
 /// screens.

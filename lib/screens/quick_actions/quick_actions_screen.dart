@@ -879,7 +879,7 @@ class _QuickActionsScreenState extends State<QuickActionsScreen> {
       padding: padding,
       decoration: BoxDecoration(
         color: Colors.white,
-        border: Border.all(color: const Color(0xFFE3ECFA)),
+        border: Border.all(color: const Color(0xFFE8DCC8)),
         borderRadius:
             BorderRadius.circular(
           _kCardRadius,

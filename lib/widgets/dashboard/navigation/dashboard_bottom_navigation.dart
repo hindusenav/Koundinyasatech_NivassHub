@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
-import 'package:flutter_nivasshub/constants/figma_colors.dart';
+import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter_nivasshub/routes/app_routes.dart';
 import 'package:flutter_nivasshub/providers/dashboard/dashboard_navigation_provider.dart';
 import 'package:flutter_nivasshub/widgets/shared/feedback/custom_snackbar.dart';
@@ -25,13 +26,22 @@ class DashboardBottomNavigation extends StatelessWidget {
       child: SafeArea(
         top: false,
         child: Container(
-          height: 62,
+          height: 64,
           decoration: BoxDecoration(
-            color: isDark ? const Color(0xFF0E1A33) : FigmaColors.navy,
+            gradient: isDark
+                ? AppColors.amberGradientDark
+                : AppColors.amberGradient,
             borderRadius: const BorderRadius.only(
               topLeft: Radius.circular(24),
               topRight: Radius.circular(24),
             ),
+            boxShadow: const [
+              BoxShadow(
+                color: Color(0x263E2F1C),
+                blurRadius: 12,
+                offset: Offset(0, -2),
+              ),
+            ],
           ),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
@@ -74,6 +84,15 @@ class DashboardBottomNavigation extends StatelessWidget {
                   "Payments",
                   isDark,
                 ),
+                _item(
+                  context,
+                  provider,
+                  activeIndex,
+                  4,
+                  "assets/icons/more.svg.png",
+                  "More",
+                  isDark,
+                ),
               ],
             ),
           ),
@@ -92,7 +111,8 @@ class DashboardBottomNavigation extends StatelessWidget {
     bool isDark,
   ) {
     final bool selected = activeIndex == index;
-    const activeBlue = FigmaColors.orange;
+    final activeBlue = AppColors.orange;
+    final inactiveColor = Colors.white;
 
     return Expanded(
       child: InkWell(
@@ -106,6 +126,15 @@ class DashboardBottomNavigation extends StatelessWidget {
           if (index == 3) {
             // Payments screen is not available yet.
             CustomSnackbar.info(context, '$title coming soon.');
+            return;
+          }
+
+          if (index == 4) {
+            // More — open the Quick Actions screen.
+            if (ModalRoute.of(context)?.settings.name !=
+                AppRoutes.quickActions) {
+              Navigator.pushNamed(context, AppRoutes.quickActions);
+            }
             return;
           }
 
@@ -152,14 +181,14 @@ class DashboardBottomNavigation extends StatelessWidget {
                   width: 18,
                   height: 18,
                   fit: BoxFit.contain,
-                  color: selected ? Colors.white : Colors.white70,
+                  color: Colors.white,
                   filterQuality: FilterQuality.high,
                   isAntiAlias: true,
                   errorBuilder: (_, _, _) {
-                    return Icon(
+                    return const Icon(
                       Icons.circle_outlined,
                       size: 18,
-                      color: selected ? Colors.white : Colors.white70,
+                      color: Colors.white,
                     );
                   },
                 ),
@@ -169,12 +198,10 @@ class DashboardBottomNavigation extends StatelessWidget {
             Text(
               title,
               textAlign: TextAlign.center,
-              style: TextStyle(
-                fontFamily: 'DM Sans',
-                fontSize: 10.5,
+              style: GoogleFonts.inter(
+                fontSize: 11,
                 fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
-                color: selected ? activeBlue : Colors.white70,
-                letterSpacing: 0.2,
+                color: inactiveColor,
                 height: 1.1,
               ),
             ),

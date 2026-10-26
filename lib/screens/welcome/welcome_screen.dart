@@ -115,7 +115,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                     ),
                     SizedBox(height: h * 0.07),
                     _title('Welcome!', large: true),
-                    _title('To NivaasHub'),
+                    _title('To Nivaas Hub'),
                     Expanded(
                       child: Align(
                         alignment: Alignment.bottomCenter,

@@ -82,7 +82,7 @@ class BannerCard extends StatelessWidget {
                       ),
                     ),
                     errorWidget: (context, url, error) => Container(
-                      color: const Color(0xFF0F172A),
+                      color: const Color(0xFF3E2F1C),
                       child: const Icon(
                         Icons.apartment_rounded,
                         color: Colors.white70,

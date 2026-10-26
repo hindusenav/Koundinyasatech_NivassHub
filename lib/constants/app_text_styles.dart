@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_nivasshub/constants/app_colors.dart';
 
 /// Central typography scale, aligned to the Material 3 type scale so it maps
@@ -11,25 +12,22 @@ import 'package:flutter_nivasshub/constants/app_colors.dart';
 class AppTextStyles {
   AppTextStyles._();
 
-  static const String fontFamily = 'Roboto';
+  static const String fontFamily = 'Inter';
 
   // ---------------------------------------------------------------------
   // Display — hero numbers, splash headlines
   // ---------------------------------------------------------------------
-  static const TextStyle displayLarge = TextStyle(
-    fontFamily: fontFamily,
+  static TextStyle get displayLarge => GoogleFonts.inter(
     fontSize: 57,
     fontWeight: FontWeight.w400,
     height: 1.12,
   );
-  static const TextStyle displayMedium = TextStyle(
-    fontFamily: fontFamily,
+  static TextStyle get displayMedium => GoogleFonts.inter(
     fontSize: 45,
     fontWeight: FontWeight.w400,
     height: 1.16,
   );
-  static const TextStyle displaySmall = TextStyle(
-    fontFamily: fontFamily,
+  static TextStyle get displaySmall => GoogleFonts.inter(
     fontSize: 36,
     fontWeight: FontWeight.w400,
     height: 1.22,
@@ -38,21 +36,18 @@ class AppTextStyles {
   // ---------------------------------------------------------------------
   // Headline — screen titles, dashboard section headers
   // ---------------------------------------------------------------------
-  static const TextStyle headlineLarge = TextStyle(
-    fontFamily: fontFamily,
+  static TextStyle get headlineLarge => GoogleFonts.inter(
     fontSize: 32,
     fontWeight: FontWeight.w600,
     height: 1.25,
   );
-  static const TextStyle headlineMedium = TextStyle(
-    fontFamily: fontFamily,
+  static TextStyle get headlineMedium => GoogleFonts.inter(
     fontSize: 28,
     fontWeight: FontWeight.w600,
     height: 1.29,
   );
-  static const TextStyle headlineSmall = TextStyle(
-    fontFamily: fontFamily,
-    fontSize: 24,
+  static TextStyle get headlineSmall => GoogleFonts.inter(
+    fontSize: 20,
     fontWeight: FontWeight.w600,
     height: 1.33,
   );
@@ -60,20 +55,17 @@ class AppTextStyles {
   // ---------------------------------------------------------------------
   // Title — app bar titles, card headers, list item titles
   // ---------------------------------------------------------------------
-  static const TextStyle titleLarge = TextStyle(
-    fontFamily: fontFamily,
+  static TextStyle get titleLarge => GoogleFonts.inter(
     fontSize: 22,
     fontWeight: FontWeight.w600,
     height: 1.27,
   );
-  static const TextStyle titleMedium = TextStyle(
-    fontFamily: fontFamily,
+  static TextStyle get titleMedium => GoogleFonts.inter(
     fontSize: 16,
     fontWeight: FontWeight.w600,
     height: 1.5,
   );
-  static const TextStyle titleSmall = TextStyle(
-    fontFamily: fontFamily,
+  static TextStyle get titleSmall => GoogleFonts.inter(
     fontSize: 14,
     fontWeight: FontWeight.w600,
     height: 1.43,
@@ -82,21 +74,18 @@ class AppTextStyles {
   // ---------------------------------------------------------------------
   // Body — default running text
   // ---------------------------------------------------------------------
-  static const TextStyle bodyLarge = TextStyle(
-    fontFamily: fontFamily,
+  static TextStyle get bodyLarge => GoogleFonts.inter(
     fontSize: 16,
     fontWeight: FontWeight.w400,
     height: 1.5,
   );
-  static const TextStyle bodyMedium = TextStyle(
-    fontFamily: fontFamily,
+  static TextStyle get bodyMedium => GoogleFonts.inter(
     fontSize: 14,
     fontWeight: FontWeight.w400,
     height: 1.43,
   );
-  static const TextStyle bodySmall = TextStyle(
-    fontFamily: fontFamily,
-    fontSize: 12,
+  static TextStyle get bodySmall => GoogleFonts.inter(
+    fontSize: 13,
     fontWeight: FontWeight.w400,
     height: 1.33,
   );
@@ -104,20 +93,17 @@ class AppTextStyles {
   // ---------------------------------------------------------------------
   // Label — buttons, chips, form field labels
   // ---------------------------------------------------------------------
-  static const TextStyle labelLarge = TextStyle(
-    fontFamily: fontFamily,
+  static TextStyle get labelLarge => GoogleFonts.inter(
     fontSize: 14,
     fontWeight: FontWeight.w500,
     height: 1.43,
   );
-  static const TextStyle labelMedium = TextStyle(
-    fontFamily: fontFamily,
+  static TextStyle get labelMedium => GoogleFonts.inter(
     fontSize: 12,
     fontWeight: FontWeight.w500,
     height: 1.33,
   );
-  static const TextStyle labelSmall = TextStyle(
-    fontFamily: fontFamily,
+  static TextStyle get labelSmall => GoogleFonts.inter(
     fontSize: 11,
     fontWeight: FontWeight.w500,
     height: 1.45,
@@ -126,7 +112,7 @@ class AppTextStyles {
   // ---------------------------------------------------------------------
   // Semantic helpers — the only styles that pin a color
   // ---------------------------------------------------------------------
-  static TextStyle get caption => bodySmall.copyWith(color: AppColors.grey500);
+  static TextStyle get caption => bodySmall.copyWith(color: AppColors.textSecondaryLight);
 
   static TextStyle get link => bodyMedium.copyWith(
         color: AppColors.primary,

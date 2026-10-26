@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
+import 'package:flutter_nivasshub/constants/app_colors.dart';
+import 'package:flutter_nivasshub/constants/app_shadows.dart';
 import 'package:flutter_nivasshub/constants/figma_colors.dart';
 import 'package:flutter_nivasshub/models/dashboard/community_meeting_model.dart';
 
@@ -17,20 +20,22 @@ class CommunityMeetingCard extends StatelessWidget {
     final t = FigmaColors.of(context);
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: t.card,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: t.cardBorder,
         ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: isDark ? .3 : .02),
-            blurRadius: 6,
-            offset: const Offset(0, 2),
-          ),
-        ],
+        boxShadow: isDark
+            ? [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: .3),
+                  blurRadius: 6,
+                  offset: const Offset(0, 2),
+                ),
+              ]
+            : AppShadows.card,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -39,16 +44,16 @@ class CommunityMeetingCard extends StatelessWidget {
             children: [
               Icon(
                 Icons.campaign_outlined,
-                color: FigmaColors.orange,
+                color: t.accent,
                 size: 20,
               ),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
                   meeting.title,
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
+                  style: GoogleFonts.inter(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
                     color: t.heading,
                   ),
                 ),
@@ -58,15 +63,15 @@ class CommunityMeetingCard extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             meeting.message,
-            style: TextStyle(
-              fontSize: 12.5,
+            style: GoogleFonts.inter(
+              fontSize: 13,
               height: 1.4,
               color: t.body,
             ),
           ),
           const SizedBox(height: 12),
           SizedBox(
-            height: 32,
+            height: 40,
             child: ElevatedButton(
               onPressed: () {
                 ScaffoldMessenger.of(context).showSnackBar(
@@ -78,19 +83,18 @@ class CommunityMeetingCard extends StatelessWidget {
               },
               style: ElevatedButton.styleFrom(
                 elevation: 0,
-                backgroundColor: FigmaColors.orange,
+                backgroundColor: AppColors.primary,
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(8),
                 ),
               ),
               child: Text(
                 meeting.ctaLabel.toUpperCase(),
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 11,
-                  letterSpacing: 0.5,
+                style: GoogleFonts.inter(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 13,
                 ),
               ),
             ),

@@ -1,17 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_nivasshub/constants/app_colors.dart';
 
-/// Palette for the redesigned (Figma) registration + KYC screens.
+/// Palette for the dashboard and the redesigned (Figma) registration + KYC
+/// screens, in the Scandinavian Minimal "Warm Amber" theme.
 ///
-/// Light mode is the Figma look: navy header, soft-blue page, orange CTA.
 /// Every themed token is resolved through [of] so each screen reads the same
-/// way in light and dark.
+/// way in light and dark. Prefer [FigmaTheme] over the constants below
+/// wherever a [BuildContext] is available; the constants are theme-agnostic
+/// fallbacks for call sites that cannot read the theme.
 class FigmaColors {
   FigmaColors._();
 
-  static const Color navy = Color(0xFF14284B);
-  static const Color orange = Color(0xFFF97316);
-  static const Color accentBlue = Color(0xFF2F6FED);
+  /// Deep navy used for solid header fills that carry white text. Name kept
+  /// from the old palette so existing call sites keep compiling.
+  static const Color navy = Color(0xFF8B6F47);
+
+  /// Primary accent (warm amber-brown). Name kept from the old orange
+  /// palette so existing call sites keep compiling.
+  static const Color orange = Color(0xFFFF8A00);
+
+  /// Warning / highlight accent.
+  static const Color warning = Color(0xFFD97706);
+
+  /// Info accent (follows the brand accent).
+  static const Color accentBlue = Color(0xFFFF8A00);
+
+  /// Top bar / header colour in dark mode.
+  static const Color darkBar = Color(0xFF222528);
+
+  /// Deep-navy text colour for headings.
+  static const Color ink = Color(0xFF3E2F1C);
 
   static FigmaTheme of(BuildContext context) =>
       Theme.of(context).brightness == Brightness.dark
@@ -31,6 +49,9 @@ class FigmaTheme {
     required this.body,
     required this.cta,
     required this.shadow,
+    required this.accent,
+    required this.iconBg,
+    required this.navInactive,
   });
 
   final Color page;
@@ -42,33 +63,48 @@ class FigmaTheme {
   final Color heading;
   final Color body;
 
-  /// Fill of the navy "Continue / Submit" buttons.
+  /// Fill of the "Continue / Submit" buttons.
   final Color cta;
   final Color shadow;
 
+  /// Primary icon / active-state colour (amber-brown light, warm amber dark).
+  final Color accent;
+
+  /// Tinted container behind a primary icon.
+  final Color iconBg;
+
+  /// Inactive bottom-navigation icon / label colour.
+  final Color navInactive;
+
   static const light = FigmaTheme(
-    page: Color(0xFFF1F6FF),
+    page: AppColors.backgroundLight,
     header: FigmaColors.navy,
-    card: Colors.white,
-    cardBorder: Color(0xFFE3ECFA),
-    field: Color(0xFFF7FAFF),
-    fieldBorder: Color(0xFFDCE6F5),
-    heading: Color(0xFF14284B),
-    body: Color(0xFF6B7280),
-    cta: FigmaColors.navy,
-    shadow: Color(0x1414284B),
+    card: AppColors.surfaceLight,
+    cardBorder: AppColors.borderLight,
+    field: AppColors.surfaceLight,
+    fieldBorder: AppColors.borderLight,
+    heading: AppColors.textPrimaryLight,
+    body: AppColors.textSecondaryLight,
+    cta: AppColors.primary,
+    shadow: Color(0x0D000000),
+    accent: AppColors.primary,
+    iconBg: AppColors.mint,
+    navInactive: AppColors.textSecondaryLight,
   );
 
   static const dark = FigmaTheme(
     page: AppColors.backgroundDark,
-    header: Color(0xFF14284B),
+    header: FigmaColors.darkBar,
     card: AppColors.surfaceDark,
     cardBorder: AppColors.borderDark,
-    field: Color(0xFF12151B),
+    field: Color(0xFF1B1D20),
     fieldBorder: AppColors.borderDark,
     heading: AppColors.textPrimaryDark,
     body: AppColors.textSecondaryDark,
-    cta: Color(0xFF1D3A6B),
+    cta: AppColors.primary,
     shadow: Color(0x00000000),
+    accent: AppColors.iconDark,
+    iconBg: AppColors.iconContainerDark,
+    navInactive: AppColors.textSecondaryDark,
   );
 }

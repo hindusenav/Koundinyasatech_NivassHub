@@ -13,25 +13,25 @@ import 'package:flutter_nivasshub/constants/app_colors.dart';
 class OnboardingColors {
   OnboardingColors._();
 
-  static const Color primaryBlue = Color(0xFF1565D8);
+  static const Color primaryBlue = Color(0xFFFF8A00);
   // Design darker-blue shade used for gradients (e.g. CreateAccountButton),
   // NOT a dark-theme variant of primaryBlue.
-  static const Color primaryBlueDark = Color(0xFF2563EB);
-  static const Color background = Color(0xFFF8FAFC);
-  static const Color heading = Color(0xFF0F274B);
-  static const Color bodyText = Color(0xFF6B7280);
+  static const Color primaryBlueDark = Color(0xFFE67600);
+  static const Color background = Color(0xFFF3E8D9);
+  static const Color heading = Color(0xFF3E2F1C);
+  static const Color bodyText = Color(0xFF8A7658);
 
   // Light-mode accent, mirroring the orange CTA of the navy design.
-  static const Color accentOrange = Color(0xFFF97316);
-  static const Color accentOrangeLight = Color(0xFFFB923C);
+  static const Color accentOrange = Color(0xFFFF8A00);
+  static const Color accentOrangeLight = Color(0xFFC58A4F);
   // Tint applied to the skyline line art on the light background.
-  static const Color skylineLine = Color(0xFF3B6EA8);
+  static const Color skylineLine = Color(0xFFFF8A00);
 
   // ---------------------------------------------------------------------
   // Dark-theme counterparts (used when Theme.of(context).brightness ==
   // Brightness.dark). Not to be confused with `primaryBlueDark` above.
   // ---------------------------------------------------------------------
-  static const Color primaryBlueDarkMode = Color(0xFF42A5F5);
+  static const Color primaryBlueDarkMode = Color(0xFFF2B66D);
   static const Color backgroundDarkMode = AppColors.backgroundDark;
   static const Color headingDarkMode = AppColors.textPrimaryDark;
   static const Color bodyTextDarkMode = AppColors.textSecondaryDark;

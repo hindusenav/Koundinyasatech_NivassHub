@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
-import 'package:flutter_nivasshub/constants/figma_colors.dart';
+import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter_nivasshub/routes/app_routes.dart';
-import 'package:flutter_nivasshub/widgets/shared/feedback/custom_snackbar.dart';
 import 'package:flutter_nivasshub/providers/dashboard/dashboard_provider.dart';
+import 'package:flutter_nivasshub/widgets/shared/glass/glass_widgets.dart';
 
 class DashboardHeader extends StatelessWidget {
   const DashboardHeader({
@@ -14,356 +15,149 @@ class DashboardHeader extends StatelessWidget {
     required this.onTogglePropertyPanel,
   });
 
-  /// Whether the "Add Property" panel (the "B - 402 Golden Residency" +
-  /// "Add Flat/Villa/Office" section) is currently shown below the header.
+  /// Kept for call-site compatibility: the flat selector (which toggles the
+  /// property panel) now lives in the resident card below the header.
   final bool isPropertyPanelExpanded;
-
-  /// Called when the "B-402 ▾" row is tapped, to show/hide that panel.
   final VoidCallback onTogglePropertyPanel;
-
-  // ============================================================
-  // COLORS
-  // ============================================================
-
-  static const Color _headerBlue = FigmaColors.navy;
 
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<DashboardProvider>();
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    const headerBlue = _headerBlue;
-    const headerTextColor = Colors.white;
-
     final user = provider.home?.data.user;
-    final addresses = provider.addresses;
-
-    // ============================================================
-    // FLAT NUMBER
-    // ============================================================
-
-    final defaultAddress = addresses.isNotEmpty
-        ? addresses.firstWhere(
-            (e) => e.isDefault,
-            orElse: () => addresses.first,
-          )
-        : null;
-
-    final flatLabel = defaultAddress?.flatNumber ?? (user?.flatNumber ?? 'B - 402');
-
-    // ============================================================
-    // HEADER
-    // ============================================================
+    const textColor = Colors.white;
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: const SystemUiOverlayStyle(
-        statusBarColor: headerBlue,
-        statusBarIconBrightness: Brightness.light,
-        statusBarBrightness: Brightness.dark,
-      ),
-
-      child: Container(
-        width: double.infinity,
-        clipBehavior: Clip.antiAlias,
-
-        decoration: BoxDecoration(
-          color: headerBlue,
-          borderRadius: const BorderRadius.only(
-            bottomLeft: Radius.circular(20),
-            bottomRight: Radius.circular(20),
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: isDark ? 0.32 : 0.12),
-              blurRadius: 8,
-              spreadRadius: 0,
-              offset: const Offset(0, 3),
-            ),
-          ],
+      value: AmberGradientBar.overlayStyle,
+      child: AmberGradientBar(
+        borderRadius: const BorderRadius.only(
+          bottomLeft: Radius.circular(24),
+          bottomRight: Radius.circular(24),
         ),
-
         child: SafeArea(
           top: true,
           left: false,
           right: false,
           bottom: false,
-
           child: Padding(
             padding: const EdgeInsets.only(
-              left: 20,
+              left: 16,
               right: 16,
-              top: 10,
-              bottom: 12,
+              top: 20,
+              bottom: 26,
             ),
-
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                // ==================================================
-                // USER INFORMATION
-                // ==================================================
-
                 Expanded(
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      // =============================================
-                      // HELLO USER WITH WAVE EMOJI
-                      // =============================================
-
                       Text(
-                        'Hello! ${user?.name ?? 'User name'} 👋',
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w800,
-                          color: headerTextColor,
+                        'Hello,',
+                        style: GoogleFonts.inter(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w400,
+                          color: textColor.withValues(alpha: 0.9),
                           height: 1.2,
-                          letterSpacing: 0.1,
                         ),
                       ),
-
-                      const SizedBox(height: 4),
-
-                      // =============================================
-                      // FLAT NUMBER
-                      // =============================================
-
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          // -----------------------------------------
-                          // CHAT IMAGE
-                          // -----------------------------------------
-
-                          GestureDetector(
-                            behavior: HitTestBehavior.opaque,
-                            onTap: () {
-                              Navigator.pushNamed(
-                                context,
-                                AppRoutes.profile,
-                              );
-                            },
-
-                            child: SizedBox(
-                              width: 24,
-                              height: 24,
-
-                              child: Image.asset(
-                                'assets/icons/chat.png',
-                                width: 24,
-                                height: 24,
-                                fit: BoxFit.contain,
-
-                                errorBuilder: (
-                                  context,
-                                  error,
-                                  stackTrace,
-                                ) {
-                                  return Icon(
-                                    Icons.chat_bubble_outline_rounded,
-                                    size: 20,
-                                    color: headerTextColor,
-                                  );
-                                },
-                              ),
-                            ),
-                          ),
-
-                          const SizedBox(width: 10),
-
-                          // -----------------------------------------
-                          // FLAT NUMBER — tap to show/hide the
-                          // "Add Property" panel below the header.
-                          // -----------------------------------------
-
-                          GestureDetector(
-                            behavior: HitTestBehavior.opaque,
-                            onTap: onTogglePropertyPanel,
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Text(
-                                  flatLabel.isNotEmpty
-                                      ? flatLabel
-                                      : 'B - 402',
-
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w700,
-                                    color: headerTextColor,
-                                    height: 1.2,
-                                    letterSpacing: 0.3,
-                                  ),
-                                ),
-
-                                const SizedBox(width: 4),
-
-                                Icon(
-                                  isPropertyPanelExpanded
-                                      ? Icons.keyboard_arrow_up_rounded
-                                      : Icons.keyboard_arrow_down_rounded,
-                                  size: 18,
-                                  color: headerTextColor,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
+                      const SizedBox(height: 2),
+                      Text(
+                        user?.name ?? 'User name',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: GoogleFonts.inter(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
+                          color: textColor,
+                          height: 1.2,
+                        ),
                       ),
                     ],
                   ),
                 ),
-
-                // ==================================================
-                // RIGHT SIDE ICONS - ALL EQUAL GAPS
-                // ==================================================
-
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    // ==============================================
-                    // SEARCH
-                    // ==============================================
-
-                    GestureDetector(
-                      behavior: HitTestBehavior.opaque,
-
-                      onTap: () {
-                        Navigator.pushNamed(
-                          context,
-                          AppRoutes.search,
-                        );
-                      },
-
-                      child: SizedBox(
-                        width: 34,
-                        height: 34,
-
-                        child: Center(
-                          child: Image.asset(
-                            'assets/icons/search.png',
-
-                            width: 22,
-                            height: 22,
-
-                            fit: BoxFit.contain,
-
-                            color: headerTextColor,
-
-                            errorBuilder: (
-                              context,
-                              error,
-                              stackTrace,
-                            ) {
-                              return Icon(
-                                Icons.search_rounded,
-                                size: 22,
-                                color: headerTextColor,
-                              );
-                            },
-                          ),
-                        ),
+                _CircleIconButton(
+                  onTap: () => Navigator.pushNamed(context, AppRoutes.search),
+                  child: Image.asset(
+                    'assets/icons/search.png',
+                    width: 20,
+                    height: 20,
+                    color: textColor,
+                    errorBuilder: (_, _, _) => const Icon(
+                      Icons.search_rounded,
+                      size: 20,
+                      color: textColor,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                _CircleIconButton(
+                  onTap: () => Navigator.pushNamed(context, AppRoutes.settings),
+                  child: Image.asset(
+                    'assets/icons/chat.png',
+                    width: 20,
+                    height: 20,
+                    color: textColor,
+                    errorBuilder: (_, _, _) => const Icon(
+                      Icons.chat_bubble_outline_rounded,
+                      size: 20,
+                      color: textColor,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () => Navigator.pushNamed(context, AppRoutes.settings),
+                  child: Container(
+                    width: 34,
+                    height: 34,
+                    alignment: Alignment.center,
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: AppColors.orange,
+                    ),
+                    child: const Text(
+                      'A',
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                        height: 1,
                       ),
                     ),
-
-                    const SizedBox(width: 8), // Gap 1
-
-                    // ==============================================
-                    // NOTIFICATION
-                    // ==============================================
-
-                    GestureDetector(
-                      behavior: HitTestBehavior.opaque,
-
-                      onTap: () {
-                        CustomSnackbar.info(
-                          context,
-                          'Notifications coming soon.',
-                        );
-                      },
-
-                      child: SizedBox(
-                        width: 34,
-                        height: 34,
-
-                        child: Center(
-                          child: Image.asset(
-                            'assets/icons/notification.png',
-
-                            width: 22,
-                            height: 22,
-
-                            fit: BoxFit.contain,
-
-                            color: headerTextColor,
-
-                            errorBuilder: (
-                              context,
-                              error,
-                              stackTrace,
-                            ) {
-                              return Icon(
-                                Icons.notifications_none_rounded,
-                                size: 22,
-                                color: headerTextColor,
-                              );
-                            },
-                          ),
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(width: 8), // Gap 2 - SAME GAP as between search and notification
-
-                    // ==============================================
-                    // RIGHT SIDE ORANGE PROFILE A
-                    // ==============================================
-
-                    GestureDetector(
-                      behavior: HitTestBehavior.opaque,
-
-                      onTap: () {
-                        Navigator.pushNamed(
-                          context,
-                          AppRoutes.profile,
-                        );
-                      },
-
-                      child: Container(
-                        width: 28,
-                        height: 28,
-
-                        alignment: Alignment.center,
-
-                        decoration: const BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: FigmaColors.orange,
-                        ),
-
-                        child: const Text(
-                          'A',
-
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w800,
-                            color: Colors.white,
-                            height: 1,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
               ],
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _CircleIconButton extends StatelessWidget {
+  const _CircleIconButton({required this.onTap, required this.child});
+
+  final VoidCallback onTap;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: onTap,
+      child: Container(
+        width: 34,
+        height: 34,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: Colors.white.withValues(alpha: 0.18),
+        ),
+        child: child,
       ),
     );
   }

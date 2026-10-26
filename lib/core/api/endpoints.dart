@@ -1,4 +1,4 @@
-/// Centralized API endpoint paths matching NivaasHub API Contract (Sections 1 to 10).
+/// Centralized API endpoint paths matching Nivaas Hub API Contract (Sections 1 to 10).
 class ApiEndpoints {
   ApiEndpoints._();
 
@@ -54,6 +54,13 @@ class ApiEndpoints {
   /// `POST` JSON body (see `AddVehicleRequest`) — registers a vehicle and
   /// returns its allotted parking slot. See `VehicleService`.
   static const String addVehicle = '/vehicle/add';
+
+  /// `GET` — family relation categories and options. See `FamilyService`.
+  static const String getFamily = '/get-family';
+
+  /// `POST` JSON body (see `AddFamilyRequest`) — adds a family member for the
+  /// signed-in user. See `FamilyService`.
+  static const String addFamily = '/get-family/add-family';
 
   /// `POST` verifies the OTP sent after registration (`userId`, `otp`,
   /// `identifier` = `"M"`/`"E"`, `otpType` = `"UR"`). See
@@ -157,12 +164,12 @@ class ApiEndpoints {
   static const String communityCreateEvent = '/api/v1/community/events';
 
   /// Approve/reject a visitor from the Home screen's gate-arrival banner
-  /// (NivasHub API Contract §6.3 — `POST /api/v1/visitors/{visitorId}/action`).
+  /// (Nivaas Hub API Contract §6.3 — `POST /api/v1/visitors/{visitorId}/action`).
   /// Still mock-only — see `MockVisitorNotificationService`.
   static String visitorAction(String visitorId) =>
       '/api/v1/visitors/$visitorId/action';
 
-  /// Activities screen's gate/delivery log (NivasHub API Contract §6.2).
+  /// Activities screen's gate/delivery log (Nivaas Hub API Contract §6.2).
   /// Still mock-only — see `MockVisitorActivityService`.
   static const String approvals = '/api/v1/approvals';
 
@@ -193,7 +200,7 @@ class ApiEndpoints {
   static String markNoticeRead(String id) => '/api/v1/notice-board/$id/read';
 
   // ---------------------------------------------------------------------
-  // Profile / Active Society (NivasHub Mobile App API Contract v1.0, §2)
+  // Profile / Active Society (Nivaas Hub Mobile App API Contract v1.0, §2)
   // ---------------------------------------------------------------------
   static const String userProfile = '/api/v1/users/profile';
   static const String activeSociety = '/api/v1/users/active-society';

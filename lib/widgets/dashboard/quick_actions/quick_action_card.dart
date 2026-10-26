@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import 'package:flutter_nivasshub/constants/figma_colors.dart';
 import 'package:flutter_nivasshub/models/dashboard/quick_action_model.dart';
@@ -13,28 +14,33 @@ class QuickActionCard extends StatelessWidget {
 
   bool get _isBookNow => action.name.toLowerCase() == "book now";
 
+  Color get _tint => switch (action.name.toLowerCase()) {
+    "pre-approve" => const Color(0xFFFFF0B8),
+    "payments" => const Color(0xFFDCD9FF),
+    "posts" => const Color(0xFFC9F5EE),
+    "security" => const Color(0xFFFFC9C5),
+    "book now" => const Color(0xFFE6D9FF),
+    "directory" => const Color(0xFFCDEBFF),
+    "free trial" => const Color(0xFFC9F5E0),
+    _ => const Color(0xFFE3E8F5),
+  };
+
   @override
   Widget build(BuildContext context) {
     final t = FigmaColors.of(context);
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(12),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            width: 58,
-            height: 58,
+            width: 48,
+            height: 48,
             decoration: BoxDecoration(
-              // "View More" uses the Figma orange; the rest are soft tinted tiles.
-              color: _isViewMore
-                  ? FigmaColors.orange
-                  : (isDark ? t.card : const Color(0xFFEAF1FF)),
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                color: _isViewMore ? Colors.transparent : t.cardBorder,
-              ),
+              // Every action shares the same champagne / dark-amber tile.
+              color: _tint,
+              shape: BoxShape.circle,
             ),
             child: Center(
               child: Image.asset(
@@ -50,7 +56,9 @@ class QuickActionCard extends StatelessWidget {
                     ? 36
                     : 28,
                 fit: BoxFit.contain,
-                color: _isViewMore ? Colors.white : null,
+                // Line icons take the theme accent; the "Book Now" artwork is
+                // a multi-colour illustration and keeps its own colours.
+                color: _isBookNow ? null : const Color(0xFF3E2F1C),
                 filterQuality: FilterQuality.high,
                 isAntiAlias: true,
                 errorBuilder: (_, _, _) {
@@ -71,10 +79,10 @@ class QuickActionCard extends StatelessWidget {
               textAlign: TextAlign.center,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                fontSize: 11,
+              style: GoogleFonts.inter(
+                fontSize: 12,
                 height: 1.25,
-                fontWeight: FontWeight.w600,
+                fontWeight: FontWeight.w500,
                 color: t.heading,
               ),
             ),

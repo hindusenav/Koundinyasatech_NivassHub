@@ -31,12 +31,12 @@ class _CommunityPostsSelectionView extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final statusBarHeight = MediaQuery.of(context).padding.top;
-    final headerColor = isDark ? AppColors.dashboardHeaderDark : const Color(0xFFC7E3FF);
-    final titleColor = isDark ? AppColors.noticesTitleTextDark : const Color(0xFF05234D);
+    final headerColor = isDark ? AppColors.dashboardHeaderDark : const Color(0xFFF3E8D9);
+    final titleColor = isDark ? AppColors.noticesTitleTextDark : const Color(0xFF3E2F1C);
 
     return Scaffold(
       backgroundColor:
-          isDark ? AppColors.noticesBackgroundDark : const Color(0xFFF8FAFC),
+          isDark ? AppColors.noticesBackgroundDark : const Color(0xFFFBF1E5),
       bottomNavigationBar: const DashboardBottomNavigation(selectedIndex: 2),
       body: AnnotatedRegion<SystemUiOverlayStyle>(
         value: SystemUiOverlayStyle(
@@ -83,7 +83,7 @@ class _CommunityPostsSelectionView extends StatelessWidget {
                           border: Border.all(
                             color: isDark
                                 ? AppColors.borderDark
-                                : const Color(0xFFCCDFF2),
+                                : const Color(0xFFE8DCC8),
                             width: 1,
                           ),
                         ),
@@ -93,7 +93,6 @@ class _CommunityPostsSelectionView extends StatelessWidget {
                             Text(
                               'Community Posts',
                               style: TextStyle(
-                                fontFamily: 'DM Sans',
                                 fontWeight: FontWeight.w600,
                                 fontSize: 18,
                                 height: 1.0,
@@ -137,7 +136,7 @@ class _CommunityPostsSelectionView extends StatelessWidget {
                       border: Border.all(
                         color: isDark
                             ? AppColors.noticesCardBorderDark
-                            : const Color(0xFFE5E7EB),
+                            : const Color(0xFFE8DCC8),
                       ),
                       boxShadow: [
                         BoxShadow(
@@ -159,10 +158,10 @@ class _CommunityPostsSelectionView extends StatelessWidget {
                               placeholder: (context, url) => Container(
                                 color: isDark
                                     ? AppColors.noticesCardBorderDark
-                                    : const Color(0xFFE2E8F0),
+                                    : const Color(0xFFE8DCC8),
                               ),
                               errorWidget: (context, url, err) => Container(
-                                color: const Color(0xFF0F172A),
+                                color: const Color(0xFF3E2F1C),
                                 child: const Icon(Icons.apartment,
                                     size: 50, color: Colors.white),
                               ),
@@ -192,7 +191,6 @@ class _CommunityPostsSelectionView extends StatelessWidget {
                               child: const Text(
                                 'Ad',
                                 style: TextStyle(
-                                  fontFamily: 'DM Sans',
                                   color: Colors.white,
                                   fontSize: 11,
                                   fontWeight: FontWeight.w600,
@@ -228,7 +226,7 @@ class _CommunityPostsSelectionView extends StatelessWidget {
                                       '2 & 3 BHK Homes',
                                       style: TextStyle(
                                         fontFamily: 'Inter',
-                                        color: Color(0xFFE5E7EB),
+                                        color: Color(0xFFE8DCC8),
                                         fontSize: 12,
                                         fontWeight: FontWeight.w500,
                                         height: 1.0,

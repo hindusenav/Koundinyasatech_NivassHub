@@ -109,12 +109,12 @@ class _CreatePollScreenState extends State<CreatePollScreen> {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final headerColor =
-        isDark ? AppColors.dashboardHeaderDark : const Color(0xFFC7E3FF);
+        isDark ? AppColors.dashboardHeaderDark : const Color(0xFFF3E8D9);
     final titleColor =
-        isDark ? AppColors.noticesHeadingDark : const Color(0xFF05234D);
+        isDark ? AppColors.noticesHeadingDark : const Color(0xFF3E2F1C);
     final mutedColor = isDark ? AppColors.noticesMutedDark : AppColors.noticesMutedLight;
     final accentBlue =
-        isDark ? AppColors.noticesAccentBlueDark : const Color(0xFF0060BD);
+        isDark ? AppColors.noticesAccentBlueDark : const Color(0xFFFF8A00);
     final secondaryColor =
         isDark ? AppColors.noticesSecondaryTextDark : AppColors.noticesSecondaryTextLight;
 
@@ -149,7 +149,7 @@ class _CreatePollScreenState extends State<CreatePollScreen> {
               color: isDark ? AppColors.noticesBlueTintBgDark : const Color(0xFFFFFFFF),
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
-                color: isDark ? AppColors.noticesBlueBorderDark : const Color(0xFFCCDFF2),
+                color: isDark ? AppColors.noticesBlueBorderDark : const Color(0xFFE8DCC8),
               ),
             ),
             child: Material(
@@ -194,7 +194,7 @@ class _CreatePollScreenState extends State<CreatePollScreen> {
                       CircleAvatar(
                         radius: 20,
                         backgroundColor:
-                            isDark ? AppColors.noticesAccentAmberDark : const Color(0xFFEC9211),
+                            isDark ? AppColors.noticesAccentAmberDark : const Color(0xFFFF8A00),
                         child: const Text(
                           'A',
                           style: TextStyle(
@@ -214,24 +214,22 @@ class _CreatePollScreenState extends State<CreatePollScreen> {
                           Text(
                             'User Name',
                             style: TextStyle(
-                              fontFamily: 'DM Sans',
                               fontWeight: FontWeight.w600,
                               fontSize: 15,
                               height: 1.0,
                               letterSpacing: 0,
-                              color: isDark ? AppColors.noticesHeadingDark : const Color(0xFF0F172A),
+                              color: isDark ? AppColors.noticesHeadingDark : const Color(0xFF3E2F1C),
                             ),
                           ),
                           const SizedBox(height: 2),
                           Text(
                             'Apartment B 402',
                             style: TextStyle(
-                              fontFamily: 'DM Sans',
                               fontSize: 12,
                               fontWeight: FontWeight.w500,
                               height: 1.0,
                               letterSpacing: 0,
-                              color: isDark ? AppColors.textSecondaryDark : const Color(0xFF05234D),
+                              color: isDark ? AppColors.textSecondaryDark : const Color(0xFF3E2F1C),
                             ),
                           ),
                         ],
@@ -246,7 +244,7 @@ class _CreatePollScreenState extends State<CreatePollScreen> {
                     decoration: BoxDecoration(
                       color: isDark ? AppColors.surfaceDark : const Color(0xFFFFFFFF),
                       border: Border.all(
-                        color: isDark ? AppColors.noticesBorderDark : const Color(0xFFE2E8F0),
+                        color: isDark ? AppColors.noticesBorderDark : const Color(0xFFE8DCC8),
                       ),
                       borderRadius: BorderRadius.circular(8),
                     ),
@@ -256,19 +254,18 @@ class _CreatePollScreenState extends State<CreatePollScreen> {
                         Text(
                           _selectedVisibility,
                           style: TextStyle(
-                            fontFamily: 'DM Sans',
                             fontSize: 13,
                             fontWeight: FontWeight.w500,
                             height: 1.0,
                             letterSpacing: 0,
-                            color: isDark ? titleColor : const Color(0xFF475569),
+                            color: isDark ? titleColor : const Color(0xFF5C4A32),
                           ),
                         ),
                         const SizedBox(width: 6),
                         Icon(
                           Icons.keyboard_arrow_down,
                           size: 16,
-                          color: isDark ? titleColor : const Color(0xFF475569),
+                          color: isDark ? titleColor : const Color(0xFF5C4A32),
                         ),
                       ],
                     ),
@@ -284,22 +281,21 @@ class _CreatePollScreenState extends State<CreatePollScreen> {
                   Text(
                     'Add a description to your poll...',
                     style: TextStyle(
-                      fontFamily: 'DM Sans',
                       fontSize: 14,
                       fontWeight: FontWeight.w400,
                       height: 1.0,
                       letterSpacing: 0,
-                      color: isDark ? secondaryColor : const Color(0xFF3E3E3E),
+                      color: isDark ? secondaryColor : const Color(0xFF5C4A32),
                     ),
                   ),
                   const SizedBox(height: 18),
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                     decoration: BoxDecoration(
-                      color: isDark ? AppColors.surfaceDark : const Color(0xFFF8FAFC),
+                      color: isDark ? AppColors.surfaceDark : const Color(0xFFFBF1E5),
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
-                        color: isDark ? AppColors.noticesCardBorderDark : const Color(0xFFE2E8F0),
+                        color: isDark ? AppColors.noticesCardBorderDark : const Color(0xFFE8DCC8),
                         width: 1.0,
                       ),
                     ),
@@ -318,7 +314,6 @@ class _CreatePollScreenState extends State<CreatePollScreen> {
                           child: TextField(
                             controller: _questionController,
                             style: TextStyle(
-                              fontFamily: 'DM Sans',
                               fontSize: 15,
                               fontWeight: FontWeight.w500,
                               height: 1.0,
@@ -328,12 +323,11 @@ class _CreatePollScreenState extends State<CreatePollScreen> {
                             decoration: InputDecoration(
                               hintText: 'Write your poll question here...',
                               hintStyle: TextStyle(
-                                fontFamily: 'DM Sans',
                                 fontSize: 15,
                                 fontWeight: FontWeight.w500,
                                 height: 1.0,
                                 letterSpacing: 0,
-                                color: isDark ? accentBlue : const Color(0xFF0060BD),
+                                color: isDark ? accentBlue : const Color(0xFFFF8A00),
                               ),
                               border: InputBorder.none,
                               isDense: true,
@@ -355,7 +349,7 @@ class _CreatePollScreenState extends State<CreatePollScreen> {
                   border: Border.all(
                     color: isDark
                         ? AppColors.noticesCardBorderDark
-                        : const Color(0xFFE2E8F0),
+                        : const Color(0xFFE8DCC8),
                     width: 1.0,
                   ),
                 ),
@@ -365,7 +359,6 @@ class _CreatePollScreenState extends State<CreatePollScreen> {
                       child: TextField(
                         controller: _optionControllers[i],
                         style: TextStyle(
-                          fontFamily: 'DM Sans',
                           fontSize: 14,
                           fontWeight: FontWeight.w400,
                           height: 1.0,
@@ -375,12 +368,11 @@ class _CreatePollScreenState extends State<CreatePollScreen> {
                         decoration: InputDecoration(
                           hintText: 'Option ${i + 1}',
                           hintStyle: TextStyle(
-                            fontFamily: 'DM Sans',
                             fontSize: 14,
                             fontWeight: FontWeight.w400,
                             height: 1.0,
                             letterSpacing: 0,
-                            color: isDark ? mutedColor : const Color(0xFF3E3E3E),
+                            color: isDark ? mutedColor : const Color(0xFF5C4A32),
                           ),
                           border: InputBorder.none,
                           isDense: true,
@@ -407,19 +399,18 @@ class _CreatePollScreenState extends State<CreatePollScreen> {
                   children: [
                     Icon(
                       Icons.add,
-                      color: isDark ? accentBlue : const Color(0xFF0060BD),
+                      color: isDark ? accentBlue : const Color(0xFFFF8A00),
                       size: 16,
                     ),
                     const SizedBox(width: 6),
                     Text(
                       'Add Option',
                       style: TextStyle(
-                        fontFamily: 'DM Sans',
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
                         height: 1.0,
                         letterSpacing: 0,
-                        color: isDark ? accentBlue : const Color(0xFF0060BD),
+                        color: isDark ? accentBlue : const Color(0xFFFF8A00),
                       ),
                     ),
                   ],

@@ -15,22 +15,22 @@ import 'package:flutter_nivasshub/constants/app_colors.dart';
 class AuthColors {
   AuthColors._();
 
-  static const Color primaryBlue = Color(0xFF1565C0);
+  static const Color primaryBlue = Color(0xFFFF8A00);
   // Design darker-blue shade used for gradients (e.g. AuthGradientButton),
   // NOT a dark-theme variant of primaryBlue.
-  static const Color primaryBlueDark = Color(0xFF0D47A1);
-  static const Color lightBlue = Color(0xFF42A5F5);
-  static const Color background = Color(0xFFF8FBFF);
-  static const Color heading = Color(0xFF0F2B5B);
-  static const Color bodyText = Color(0xFF6B7280);
-  static const Color border = Color(0xFFD6E4FF);
+  static const Color primaryBlueDark = Color(0xFFE67600);
+  static const Color lightBlue = Color(0xFFC58A4F);
+  static const Color background = Color(0xFFF3E8D9);
+  static const Color heading = Color(0xFF3E2F1C);
+  static const Color bodyText = Color(0xFF8A7658);
+  static const Color border = Color(0xFFE8DCC8);
 
   // ---------------------------------------------------------------------
   // Dark-theme counterparts (used when Theme.of(context).brightness ==
   // Brightness.dark). Not to be confused with `primaryBlueDark` above.
   // ---------------------------------------------------------------------
-  static const Color primaryBlueDarkMode = lightBlue;
-  static const Color lightBlueDarkMode = Color(0xFF64B5F6);
+  static const Color primaryBlueDarkMode = Color(0xFFF2B66D);
+  static const Color lightBlueDarkMode = Color(0xFFF2B66D);
   static const Color backgroundDarkMode = AppColors.backgroundDark;
   static const Color headingDarkMode = AppColors.textPrimaryDark;
   static const Color bodyTextDarkMode = AppColors.textSecondaryDark;

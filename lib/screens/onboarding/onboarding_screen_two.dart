@@ -107,7 +107,7 @@ class _OnboardingScreenTwoState extends State<OnboardingScreenTwo>
                       end: Alignment.bottomCenter,
                       colors: [
                         isDark ? AppColors.backgroundDark : Colors.white,
-                        isDark ? background : const Color(0xFFEAF1FA),
+                        isDark ? background : const Color(0xFFFBF1E5),
                       ],
                     ),
                   ),
@@ -174,7 +174,7 @@ class _OnboardingScreenTwoState extends State<OnboardingScreenTwo>
                                     maxWidth: 340,
                                   ),
                                   child: Text(
-                                    'NivaasHub connects residents, manages visitors, '
+                                    'Nivaas Hub connects residents, manages visitors, '
                                     'handles payments, and keeps your society running '
                                     'smoothly — all in one place.',
                                     textAlign: TextAlign.center,

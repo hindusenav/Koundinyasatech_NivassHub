@@ -6,7 +6,6 @@ import 'package:flutter_nivasshub/screens/dashboard/home_dashboard_screen.dart';
 import 'package:flutter_nivasshub/screens/notices/notices_screen.dart';
 import 'package:flutter_nivasshub/screens/notifications/delivery_details_screen.dart';
 import 'package:flutter_nivasshub/screens/profile/add_address_details_screen.dart';
-import 'package:flutter_nivasshub/screens/profile/profile_screen.dart';
 import 'package:flutter_nivasshub/screens/profile/vehicles_screen.dart';
 import 'package:flutter_nivasshub/screens/quick_actions/quick_actions_screen.dart';
 import 'package:flutter_nivasshub/screens/search/search_screen.dart';
@@ -36,15 +35,6 @@ class AppRouter {
           builder: (_) => const HomeDashboardScreen(),
         );
 
-      // ========================================================
-      // PROFILE
-      // ========================================================
-
-      case AppRoutes.profile:
-        return MaterialPageRoute(
-          settings: settings,
-          builder: (_) => const ProfileScreen(),
-        );
 
       // ========================================================
       // ADD ADDRESS DETAILS

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
+import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter_nivasshub/routes/app_routes.dart';
 
 class AddPropertySection extends StatelessWidget {
@@ -11,9 +13,10 @@ class AddPropertySection extends StatelessWidget {
   // COLORS
   // ============================================================
 
-  static const Color _headerBlue = Color(0xFFC6E1FA);
-  static const Color _textColor = Color(0xFF111111);
-  static const Color _orange = Color(0xFFFF9800);
+  static const Color _panelLight = Colors.white;
+  static const Color _textColor = AppColors.textPrimaryLight;
+  static const Color _divider = AppColors.borderLight;
+  static const Color _accent = AppColors.primary;
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +29,7 @@ class AddPropertySection extends StatelessWidget {
     }
 
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final panelColor = isDark ? const Color(0xFF1B2A47) : _headerBlue;
+    final panelColor = isDark ? const Color(0xFF222528) : _panelLight;
     final textColor = isDark ? Colors.white : _textColor;
 
     final screenWidth = MediaQuery.sizeOf(context).width;
@@ -67,7 +70,7 @@ class AddPropertySection extends StatelessWidget {
               'B - 402 Golden Residency',
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: TextStyle(
+              style: GoogleFonts.inter(
                 fontSize: titleFontSize,
                 fontWeight: FontWeight.w600,
                 color: textColor,
@@ -80,7 +83,11 @@ class AddPropertySection extends StatelessWidget {
             // ======================================================
             const SizedBox(height: 9),
 
-            Container(width: double.infinity, height: 1.2, color: _orange),
+            Container(
+              width: double.infinity,
+              height: 1,
+              color: isDark ? AppColors.borderDark : _divider,
+            ),
 
             // ======================================================
             // ADD PROPERTY ROW
@@ -104,9 +111,16 @@ class AddPropertySection extends StatelessWidget {
                       height: addCircleSize,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        border: Border.all(color: textColor, width: 1.2),
+                        border: Border.all(
+                          color: isDark ? AppColors.iconDark : _accent,
+                          width: 1.2,
+                        ),
                       ),
-                      child: Icon(Icons.add, color: textColor, size: 28),
+                      child: Icon(
+                        Icons.add,
+                        color: isDark ? AppColors.iconDark : _accent,
+                        size: 28,
+                      ),
                     ),
 
                     // ==================================================
@@ -122,7 +136,7 @@ class AddPropertySection extends StatelessWidget {
                         'Add Flat/Villa/Office',
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
+                        style: GoogleFonts.inter(
                           fontSize: addTextFontSize,
                           fontWeight: FontWeight.w500,
                           color: textColor,

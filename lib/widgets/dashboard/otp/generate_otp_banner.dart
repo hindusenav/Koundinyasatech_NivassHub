@@ -1,111 +1,87 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
+import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter_nivasshub/constants/figma_colors.dart';
+import 'package:flutter_nivasshub/widgets/shared/glass/glass_widgets.dart';
 
 class GenerateOtpBanner extends StatelessWidget {
   const GenerateOtpBanner({super.key});
 
+  void _generate(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('OTP / QR generation coming soon.'),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    return Material(
-      color: Colors.transparent,
-      borderRadius: BorderRadius.circular(16),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(16),
-        onTap: () {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('OTP / QR generation coming soon.'),
-            ),
-          );
-        },
-        child: Container(
-          height: 72,
-          width: double.infinity,
-          padding: const EdgeInsets.symmetric(
-            horizontal: 14,
-            vertical: 12,
-          ),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-            // Fixed navy Figma gradient — white text/icons on top already
-            // work in both themes, so it's kept as-is (like a colored
-            // button surface).
-            gradient: const LinearGradient(
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
-              colors: [
-                Color(0xFF1D3A6B),
-                FigmaColors.navy,
-              ],
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: isDark ? .3 : .12),
-                blurRadius: 10,
-                offset: const Offset(0, 4),
+    final t = FigmaColors.of(context);
+    return GlassCard(
+      radius: 16,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Image.asset(
+                'assets/icons/qr_icon.png',
+                width: 20,
+                height: 20,
+                fit: BoxFit.contain,
+                errorBuilder: (_, _, _) =>
+                    Icon(Icons.qr_code_2_rounded, size: 20, color: t.accent),
+              ),
+              const SizedBox(width: 8),
+              Text(
+                'Invite a guest',
+                style: GoogleFonts.inter(
+                  color: t.heading,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ],
           ),
-          child: Row(
-            children: [
-              /// TEXT
-              const Expanded(
-                child: Padding(
-                  padding: EdgeInsets.only(left: 2),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Generate OTP / QR Code',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w700,
-                          letterSpacing: 0.2,
-                        ),
-                      ),
-                      SizedBox(height: 4),
-                      Text(
-                        'Invite guests for smooth gate entry',
-                        style: TextStyle(
-                          color: Colors.white70,
-                          fontSize: 11,
-                          fontWeight: FontWeight.w500,
-                          height: 1.2,
-                        ),
-                      ),
-                    ],
-                  ),
+          const SizedBox(height: 8),
+          Text(
+            'Generate an OTP or QR code for smooth gate entry.',
+            style: GoogleFonts.inter(
+              color: t.body,
+              fontSize: 12,
+              height: 1.3,
+            ),
+          ),
+          const SizedBox(height: 12),
+          SizedBox(
+            height: 34,
+            child: ElevatedButton.icon(
+              onPressed: () => _generate(context),
+              icon: const Icon(Icons.arrow_forward_rounded, size: 16),
+              iconAlignment: IconAlignment.end,
+              label: Text(
+                'Generate code',
+                style: GoogleFonts.inter(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
-
-              const SizedBox(width: 12),
-
-              /// QR BOX
-              Container(
-                width: 50,
-                height: 60,
-                decoration: BoxDecoration(
-                  color: Colors.white,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.orange,
+                foregroundColor: Colors.white,
+                elevation: 0,
+                minimumSize: const Size(0, 34),
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                padding: const EdgeInsets.symmetric(horizontal: 14),
+                shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
-                alignment: Alignment.center,
-                child: Padding(
-                  padding: const EdgeInsets.all(3),
-                  child: Image.asset(
-                    'assets/icons/qr_icon.png',
-                    width: 35,
-                    height: 30,
-                    fit: BoxFit.contain,
-                  ),
-                ),
               ),
-            ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }

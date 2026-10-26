@@ -65,7 +65,7 @@ class OnlineAdvertisingBannerCard extends StatelessWidget {
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                       colors: [
-                        const Color(0xFF2563EB),
+                        const Color(0xFFFF8A00),
                         const Color(0xFF7C3AED),
                       ],
                     ),

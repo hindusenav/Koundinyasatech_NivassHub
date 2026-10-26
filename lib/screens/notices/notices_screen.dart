@@ -202,14 +202,13 @@ class _NoticeBoardViewState extends State<_NoticeBoardView> {
                 decoration: BoxDecoration(
                   color: isDark
                       ? AppColors.dashboardHeaderDark
-                      : const Color(0xFFC7E3FF),
+                      : const Color(0xFFF3E8D9),
                 ),
                 child: Row(
                   children: [
                     Text(
                       'Notice Board',
                       style: TextStyle(
-                        fontFamily: 'DM Sans',
                         color: isDark
                             ? AppColors.noticesHeadingDark
                             : const Color(0xFF000000),
@@ -262,17 +261,17 @@ class _NoticeBoardViewState extends State<_NoticeBoardView> {
                                       ),
                                       decoration: BoxDecoration(
                                         color: isSelected
-                                            ? const Color(0xFFEC9211)
+                                            ? const Color(0xFFFF8A00)
                                             : (isDark
                                                 ? AppColors.surfaceDark
                                                 : Colors.white),
                                         borderRadius: BorderRadius.circular(8),
                                         border: Border.all(
                                           color: isSelected
-                                              ? const Color(0xFFEC9211)
+                                              ? const Color(0xFFFF8A00)
                                               : (isDark
                                                   ? AppColors.noticesBorderDark
-                                                  : const Color(0xFFE2E8F0)),
+                                                  : const Color(0xFFE8DCC8)),
                                           width: 1,
                                         ),
                                       ),
@@ -280,12 +279,11 @@ class _NoticeBoardViewState extends State<_NoticeBoardView> {
                                         child: Text(
                                           filter,
                                           style: TextStyle(
-                                            fontFamily: 'DM Sans',
                                             color: isSelected
                                                 ? Colors.white
                                                 : (isDark
                                                     ? AppColors.noticesHeadingDark
-                                                    : const Color(0xFF05234D)),
+                                                    : const Color(0xFF3E2F1C)),
                                             fontWeight: isSelected
                                                 ? FontWeight.w600
                                                 : FontWeight.w500,
@@ -350,10 +348,9 @@ class _NoticeBoardViewState extends State<_NoticeBoardView> {
                                 Text(
                                   '1 Unread Notice',
                                   style: TextStyle(
-                                    fontFamily: 'DM Sans',
                                     color: isDark
                                         ? AppColors.noticesDangerTextDark
-                                        : const Color(0xFF0F1A30),
+                                        : const Color(0xFF222528),
                                     fontWeight: FontWeight.w700,
                                     fontSize: 14,
                                     height: 1.0,

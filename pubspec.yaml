@@ -1,5 +1,5 @@
 name: flutter_nivasshub
-description: "NivassHub - Smart Gated Community Application"
+description: "Nivaas Hub - Smart Gated Community Application"
 publish_to: 'none'
 
 version: 1.0.0+1
@@ -78,6 +78,7 @@ dependencies:
   url_launcher: ^6.3.2
   flutter_local_notifications: ^22.3.1
   smart_auth: ^3.2.0
+  google_fonts: ^8.2.1
 
 dev_dependencies:
   flutter_test:
@@ -87,6 +88,8 @@ dev_dependencies:
     sdk: flutter
 
   flutter_lints: ^6.0.0
+
+  flutter_launcher_icons: ^0.14.4
 
 flutter:
   uses-material-design: true
@@ -120,3 +123,10 @@ flutter:
   #         weight: 600
   #       - asset: assets/fonts/Poppins-Bold.ttf
   #         weight: 700
+flutter_launcher_icons:
+  android: "ic_launcher"
+  ios: true
+  remove_alpha_ios: true
+  image_path: "assets/images/splash_icon.png"
+  adaptive_icon_background: "#FFFFFF"
+  adaptive_icon_foreground: "assets/images/splash_icon.png"

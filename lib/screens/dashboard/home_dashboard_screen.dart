@@ -35,11 +35,6 @@ class _HomeDashboardScreenState
   // COLORS
   // ============================================================
 
-  static const Color _headerBlueLight =
-      FigmaColors.navy;
-
-  static const Color _headerBlueDark =
-      FigmaColors.navy;
 
   static final Color _backgroundColorLight =
       FigmaTheme.light.page;
@@ -55,6 +50,13 @@ class _HomeDashboardScreenState
   void initState() {
     super.initState();
     _loadKycStatus();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final dashboard = context.read<DashboardProvider>();
+      if (dashboard.state == DashboardState.initial) {
+        dashboard.loadDashboard();
+      }
+    });
   }
 
   // ============================================================
@@ -85,10 +87,6 @@ class _HomeDashboardScreenState
             Theme.of(context).brightness ==
                 Brightness.dark;
 
-        final headerBlue =
-            isDark
-                ? _headerBlueDark
-                : _headerBlueLight;
 
         final backgroundColor =
             isDark
@@ -97,16 +95,15 @@ class _HomeDashboardScreenState
 
         SystemChrome.setSystemUIOverlayStyle(
           SystemUiOverlayStyle(
-            statusBarColor: headerBlue,
-            // Navy header in both themes, so status-bar icons stay light.
-            statusBarIconBrightness: Brightness.light,
-            statusBarBrightness: Brightness.dark,
+            statusBarColor: Colors.transparent,
+            // Sage header in light mode (dark icons), navy in dark mode.
+            statusBarIconBrightness:
+                Brightness.light,
+            statusBarBrightness:
+                Brightness.dark,
             systemNavigationBarColor:
-                backgroundColor,
-            systemNavigationBarIconBrightness:
-                isDark
-                    ? Brightness.light
-                    : Brightness.dark,
+                isDark ? backgroundColor : const Color(0xFFC6A87A),
+            systemNavigationBarIconBrightness: Brightness.light,
           ),
         );
 
@@ -115,10 +112,10 @@ class _HomeDashboardScreenState
 
           body: Container(
             width: double.infinity,
-            color: headerBlue,
+            color: backgroundColor,
 
             child: SafeArea(
-              top: true,
+              top: false,
               left: false,
               right: false,
               bottom: false,

@@ -8,7 +8,7 @@ class KycStrings {
   // ---------------------------------------------------------------------
   // Authentication entry
   // ---------------------------------------------------------------------
-  static const String authEntryTitle = 'Welcome to NivaasHub';
+  static const String authEntryTitle = 'Welcome to Nivaas Hub';
   static const String authEntrySubtitle =
       'Enter your mobile number or email to continue.';
   static const String mobileLabel = 'Mobile Number';
@@ -205,7 +205,7 @@ class KycStrings {
   static const String stageProcessing = 'Processing';
   static const String verdictApprovedTitle = 'KYC Approved';
   static const String verdictApprovedBody =
-      'Your verification is complete. You now have full access to NivassHub.';
+      'Your verification is complete. You now have full access to Nivaas Hub.';
   static const String verdictUnsuccessfulTitle =
       'KYC Verification Unsuccessful';
   static const String verdictCorrectionTitle = 'Correction Required';
@@ -245,27 +245,27 @@ class KycStrings {
   static const String notificationLogEmptyMessage =
       'Mock KYC emails will appear here once your verification is reviewed.';
 
-  static const String emailApprovedSubject = 'NivassHub KYC Approved';
-  static const String emailRejectedSubject = 'NivassHub KYC Rejected';
+  static const String emailApprovedSubject = 'Nivaas Hub KYC Approved';
+  static const String emailRejectedSubject = 'Nivaas Hub KYC Rejected';
   static const String emailCorrectionSubject =
-      'NivassHub KYC Correction Required';
+      'Nivaas Hub KYC Correction Required';
 
   static String emailApprovedBody(String name) =>
       'Hi $name,\n\n'
       'Your KYC verification has been successfully completed. '
-      'You can now access your NivassHub account.\n\n'
-      '— The NivassHub Team';
+      'You can now access your Nivaas Hub account.\n\n'
+      '— The Nivaas Hub Team';
 
   static String emailRejectedBody(String name, String reason) =>
       'Hi $name,\n\n'
       'Your KYC verification could not be completed.\n\n'
       'Reason:\n$reason\n\n'
-      '— The NivassHub Team';
+      '— The Nivaas Hub Team';
 
   static String emailCorrectionBody(String name, String reason) =>
       'Hi $name,\n\n'
       'Additional information or documents are required to complete your '
       'KYC verification.\n\n'
       'Reason:\n$reason\n\n'
-      '— The NivassHub Team';
+      '— The Nivaas Hub Team';
 }

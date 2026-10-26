@@ -3,14 +3,13 @@ import 'package:flutter_nivasshub/constants/figma_colors.dart';
 
 import 'package:flutter_nivasshub/widgets/notifications/visitor_notification_section.dart';
 import 'package:flutter_nivasshub/widgets/dashboard/approval_queue/approval_queue_section.dart';
-import 'package:flutter_nivasshub/widgets/dashboard/banner/banner_slider.dart';
+import 'package:flutter_nivasshub/widgets/dashboard/resident/resident_summary_card.dart';
 import 'package:flutter_nivasshub/widgets/dashboard/community/community_posts_section.dart';
 import 'package:flutter_nivasshub/widgets/dashboard/header/dashboard_header.dart';
 import 'package:flutter_nivasshub/widgets/dashboard/maintenance/maintenance_card.dart';
 import 'package:flutter_nivasshub/widgets/dashboard/otp/generate_otp_banner.dart';
 import 'package:flutter_nivasshub/widgets/dashboard/panic/panic_sos_banner.dart';
 import 'package:flutter_nivasshub/widgets/dashboard/quick_actions/quick_actions_grid.dart';
-import 'package:flutter_nivasshub/widgets/dashboard/add_property/add_proper_section.dart';
 
 class DashboardBody extends StatefulWidget {
   const DashboardBody({super.key, required this.showKycCard});
@@ -77,13 +76,8 @@ class _DashboardBodyState extends State<DashboardBody> {
                 // ADD PROPERTY — hidden until the header's "B-402 ▾"
                 // row is tapped.
                 // ==================================================
-                AnimatedSize(
-                  duration: const Duration(milliseconds: 200),
-                  curve: Curves.easeInOut,
-                  child: _showPropertyPanel
-                      ? AddPropertySection(isExpanded: _showPropertyPanel)
-                      : const SizedBox(width: double.infinity),
-                ),
+                // (the property name + "Add Flat/Villa/Office" now live in
+                // the resident card below)
 
                 // ==================================================
                 // DASHBOARD CONTENT
@@ -100,9 +94,12 @@ class _DashboardBodyState extends State<DashboardBody> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // =================================================
-                      // ONLINE ADVERTISEMENT
+                      // RESIDENT CARD (tower, flat, add flat, stats)
                       // =================================================
-                      const BannerSlider(),
+                      ResidentSummaryCard(
+                        isPropertyPanelExpanded: _showPropertyPanel,
+                        onTogglePropertyPanel: _togglePropertyPanel,
+                      ),
 
                       const SizedBox(height: 16),
 
@@ -128,16 +125,16 @@ class _DashboardBodyState extends State<DashboardBody> {
                       const SizedBox(height: 16),
 
                       // =================================================
-                      // PANIC SOS
+                      // OTP (Invite a guest)
                       // =================================================
-                      const PanicSosBanner(),
+                      const GenerateOtpBanner(),
 
                       const SizedBox(height: 16),
 
                       // =================================================
-                      // OTP
+                      // PANIC SOS
                       // =================================================
-                      const GenerateOtpBanner(),
+                      const PanicSosBanner(),
 
                       const SizedBox(height: 16),
 
@@ -158,6 +155,8 @@ class _DashboardBodyState extends State<DashboardBody> {
           // VISITOR APPROVAL POPUP
           // ========================================================
           CompositedTransformFollower(
+            targetAnchor: Alignment.bottomLeft,
+            followerAnchor: Alignment.topLeft,
             link: _headerAnchor,
             showWhenUnlinked: false,
             child: const VisitorNotificationSection(

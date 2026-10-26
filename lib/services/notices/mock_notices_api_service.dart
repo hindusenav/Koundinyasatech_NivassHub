@@ -149,7 +149,7 @@ class MockNoticesApiService implements NoticesApiServiceBase {
       'data': {
         'commentId': 'comm_${DateTime.now().millisecondsSinceEpoch}',
         'content': comment,
-        'author': {'name': 'Hindu', 'flat': 'C 104'},
+        'author': {'name': 'Saran', 'flat': 'C 104'},
         'createdAt': DateTime.now().toIso8601String(),
       },
     };
@@ -165,7 +165,7 @@ class MockNoticesApiService implements NoticesApiServiceBase {
           {
             'id': 'comm_123',
             'content': 'This is a comment on the post.',
-            'author': {'name': 'Hindu', 'flat': 'C 104'},
+            'author': {'name': 'Saran', 'flat': 'C 104'},
             'createdAt': DateTime.now().toIso8601String(),
             'likesCount': 2,
           }

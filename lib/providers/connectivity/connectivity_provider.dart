@@ -11,13 +11,29 @@ import 'package:flutter_nivasshub/services/connectivity/connectivity_service.dar
 /// reachability probe (see [ConnectivityService.hasInternetAccess]) before
 /// [isOffline] flips back to `false`.
 class ConnectivityProvider extends ChangeNotifier {
-  ConnectivityProvider({required ConnectivityService connectivityService})
-      : _connectivityService = connectivityService {
+  ConnectivityProvider({
+    required ConnectivityService connectivityService,
+    this.failureRetryDelay = const Duration(seconds: 2),
+    this.offlineRecheckInterval = const Duration(seconds: 6),
+  }) : _connectivityService = connectivityService {
     _init();
   }
 
+  /// Pause before the confirming second probe. A single failed probe (a
+  /// Wi-Fi/mobile handoff, one slow DNS answer) must not flash the overlay.
+  final Duration failureRetryDelay;
+
+  /// While offline, how often to re-probe so the overlay clears by itself.
+  final Duration offlineRecheckInterval;
+
   final ConnectivityService _connectivityService;
   StreamSubscription<bool>? _subscription;
+  Timer? _recheckTimer;
+  bool _disposed = false;
+
+  // Each verification takes a ticket; only the newest one may apply its
+  // result, so a slow stale probe can never overwrite a fresher answer.
+  int _verifyTicket = 0;
 
   // Start optimistic so a cold app launch never flashes the offline screen
   // before the first check resolves.
@@ -61,17 +77,27 @@ void _setCurrentRoute(String? routeName) {
   }
 
   Future<void> _onAdapterChanged(bool hasAdapterConnection) async {
-    if (!hasAdapterConnection) {
-      // No Wi-Fi/mobile radio at all — definitely offline, no need to probe.
-      _setOffline(true);
-      return;
-    }
-    // Radio is on, but that alone doesn't mean there's real internet access.
+    // Adapter events flap during network handoffs, so even "no radio" is
+    // confirmed by the debounced probe rather than flipping offline at once.
     await _verify();
   }
 
-  Future<bool> _verify() async {
-    final hasInternet = await _connectivityService.hasInternetAccess();
+  /// Probes reachability. A failure is only believed after a second probe
+  /// (after [failureRetryDelay]) also fails, unless [confirmFailure] is
+  /// false (a user-initiated check, which should answer immediately).
+  Future<bool> _verify({bool confirmFailure = true}) async {
+    final ticket = ++_verifyTicket;
+
+    var hasInternet = await _connectivityService.hasInternetAccess();
+    if (!hasInternet && confirmFailure) {
+      if (ticket != _verifyTicket || _disposed) return hasInternet;
+      await Future<void>.delayed(failureRetryDelay);
+      if (ticket != _verifyTicket || _disposed) return hasInternet;
+      hasInternet = await _connectivityService.hasInternetAccess();
+    }
+
+    // A newer check superseded this one; let it decide.
+    if (ticket != _verifyTicket || _disposed) return hasInternet;
     _setOffline(!hasInternet);
     return hasInternet;
   }
@@ -79,6 +105,15 @@ void _setCurrentRoute(String? routeName) {
   void _setOffline(bool value) {
     if (_isOffline == value) return;
     _isOffline = value;
+    if (value) {
+      _recheckTimer?.cancel();
+      _recheckTimer = Timer.periodic(offlineRecheckInterval, (_) {
+        if (!_isChecking) unawaited(_verify(confirmFailure: false));
+      });
+    } else {
+      _recheckTimer?.cancel();
+      _recheckTimer = null;
+    }
     notifyListeners();
   }
 
@@ -88,16 +123,18 @@ void _setCurrentRoute(String? routeName) {
     _isChecking = true;
     notifyListeners();
 
-    final hasInternet = await _verify();
+    final hasInternet = await _verify(confirmFailure: false);
 
     _isChecking = false;
-    notifyListeners();
+    if (!_disposed) notifyListeners();
 
     return hasInternet;
   }
 
   @override
   void dispose() {
+    _disposed = true;
+    _recheckTimer?.cancel();
     _subscription?.cancel();
     super.dispose();
   }

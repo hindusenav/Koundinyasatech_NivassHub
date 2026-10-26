@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'package:flutter_nivasshub/constants/app_colors.dart';
+import 'package:flutter_nivasshub/widgets/household/household_sections.dart';
 import 'package:flutter_nivasshub/providers/dashboard/dashboard_provider.dart';
 import 'package:flutter_nivasshub/providers/theme/theme_mode_provider.dart';
 import 'package:flutter_nivasshub/routes/app_routes.dart';
@@ -37,11 +38,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   bool get _isDark => Theme.of(context).brightness == Brightness.dark;
 
-  Color get backgroundColor => _isDark
-      ? AppColors.settingsBackgroundDark
-      : AppColors.settingsBackgroundLight;
-  Color get headerColor =>
-      _isDark ? AppColors.settingsHeaderDark : AppColors.settingsHeaderLight;
+  // White page; blue accents (orange is reserved for buttons).
+  Color get backgroundColor =>
+      _isDark ? AppColors.settingsBackgroundDark : Colors.white;
   Color get primaryBlue => _isDark
       ? AppColors.settingsPrimaryBlueDark
       : AppColors.settingsPrimaryBlueLight;
@@ -61,11 +60,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
   // ============================================================
   // LOCAL VALUES
   // ============================================================
-
-  int familyCount = 1;
-  int dailyHelpCount = 0;
-  int vehicleCount = 0;
-  int petCount = 0;
 
   String selectedPlan = 'Ad-Supported';
 
@@ -95,15 +89,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  // ============================================================
-  // PROFILE
-  // ============================================================
-
-  void _openProfile() {
-    Navigator.pushNamed(context, AppRoutes.profile);
-  }
-
-  // ============================================================
   // HELP & SUPPORT
   // ============================================================
 
@@ -661,30 +646,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   // ============================================================
-  // ADD HOUSEHOLD
-  // ============================================================
-
-  void _addHousehold(String type) {
-    setState(() {
-      switch (type) {
-        case 'Family':
-          familyCount++;
-          break;
-        case 'Daily Help':
-          dailyHelpCount++;
-          break;
-        case 'Vehicles':
-          vehicleCount++;
-          break;
-        case 'Pets':
-          petCount++;
-          break;
-      }
-    });
-    _message('$type added successfully');
-  }
-
-  // ============================================================
   // TEST NOTIFICATION
   // ============================================================
 
@@ -698,44 +659,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return HouseholdScope(child: Scaffold(
       backgroundColor: backgroundColor,
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(56),
-        child: AppBar(
-          backgroundColor: headerColor,
-          elevation: 0,
-          scrolledUnderElevation: 0,
-          centerTitle: true,
-          leading: IconButton(
-            icon: Icon(
-              Icons.arrow_back,
-              color: _isDark ? AppColors.textPrimaryDark : Colors.black,
-              size: 22,
-            ),
-            onPressed: () {
-              Navigator.maybePop(context);
-            },
+      appBar: AppBar(
+        title: const Text('Settings'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.help_outline),
+            onPressed: _openHelpSupport,
           ),
-          title: Text(
-            'Settings',
-            style: TextStyle(
-              color: _isDark ? AppColors.textPrimaryDark : Colors.black,
-              fontSize: 16,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          actions: [
-            IconButton(
-              icon: Icon(
-                Icons.help_outline,
-                color: _isDark ? AppColors.textPrimaryDark : Colors.black,
-                size: 22,
-              ),
-              onPressed: _openHelpSupport,
-            ),
-          ],
-        ),
+        ],
       ),
       body: SafeArea(
         child: ListView(
@@ -744,85 +677,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
           children: [
             // Profile
             _profileCard(),
-            const SizedBox(height: 10),
-
-            // Complete Profile
-            _completeProfileCard(),
             const SizedBox(height: 16),
 
-            // Household
-            _sectionHeader('Household'),
-            const SizedBox(height: 10),
-
-            // Household Grid - 2 columns
-            GridView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: 5,
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 10,
-                mainAxisSpacing: 10,
-
-                // Screenshot card height ≈ 90 px
-                mainAxisExtent: 90,
-              ),
-              itemBuilder: (context, index) {
-                switch (index) {
-                  case 0:
-                    return _householdCard(
-                      icon: Icons.face_outlined,
-                      title: 'InstaHelp',
-                      subtitle: '1 Mn+ houses',
-                      rating: '4.8',
-                      showRating: true,
-                    );
-
-                  case 1:
-                    return _householdCard(
-                      icon: Icons.person_outline,
-                      title: 'Family',
-                      subtitle: '$familyCount member',
-                      showAdd: true,
-                      onAdd: () => _addHousehold('Family'),
-                    );
-
-                  case 2:
-                    return _householdCard(
-                      icon: Icons.person_add_alt_1_outlined,
-                      title: 'Daily Help',
-                      subtitle: dailyHelpCount == 0
-                          ? 'Add helper'
-                          : '$dailyHelpCount added',
-                      showAdd: true,
-                      onAdd: () => _addHousehold('Daily Help'),
-                    );
-
-                  case 3:
-                    return _householdCard(
-                      icon: Icons.directions_car_outlined,
-                      title: 'Vehicles',
-                      subtitle: vehicleCount == 0
-                          ? 'Add vehicle'
-                          : '$vehicleCount added',
-                      showAdd: true,
-                      onAdd: () => _addHousehold('Vehicles'),
-                    );
-
-                  case 4:
-                    return _householdCard(
-                      icon: Icons.pets_outlined,
-                      title: 'Pets',
-                      subtitle: petCount == 0 ? 'Add pet' : '$petCount added',
-                      showAdd: true,
-                      onAdd: () => _addHousehold('Pets'),
-                    );
-
-                  default:
-                    return const SizedBox.shrink();
-                }
-              },
-            ),
+            // Family, pets, vehicles, daily help — all on this screen
+            const HouseholdSections(),
 
             const SizedBox(height: 16),
 
@@ -924,7 +782,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               icon: Icons.person_outline,
               title: 'Account Information',
               subtitle: 'Manage your personal details',
-              onTap: _openProfile,
+              onTap: () => _message('Account details are coming soon'),
             ),
             Consumer<MockNotificationProvider>(
               builder: (context, notifications, _) {
@@ -962,7 +820,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ],
         ),
       ),
-    );
+    ));
   }
 
   // ============================================================
@@ -1039,83 +897,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   // ============================================================
-  // COMPLETE PROFILE
-  // ============================================================
-
-  Widget _completeProfileCard() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-      decoration: BoxDecoration(
-        color: _isDark ? AppColors.surfaceDark : Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: borderColor, width: 0.5),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: _isDark ? 0.4 : 0.06),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 30,
-            height: 30,
-            decoration: BoxDecoration(
-              color: _isDark
-                  ? AppColors.settingsProfileBadgeBgDark
-                  : AppColors.settingsProfileBadgeBgLight,
-              shape: BoxShape.circle,
-            ),
-            alignment: Alignment.center,
-            child: Text(
-              '0%',
-              style: TextStyle(
-                color: _isDark ? AppColors.noticesDangerTextDark : Colors.red,
-                fontSize: 9,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Complete your profile',
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w700,
-                    color: darkText,
-                  ),
-                ),
-                const SizedBox(height: 1),
-                Text(
-                  'Let neighbours discover you!',
-                  style: TextStyle(fontSize: 11, color: greyText),
-                ),
-              ],
-            ),
-          ),
-          GestureDetector(
-            onTap: _openProfile,
-            child: Text(
-              'View Profile',
-              style: TextStyle(
-                color: primaryBlue,
-                fontSize: 12,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // ============================================================
   // SECTION HEADER
   // ============================================================
 
@@ -1142,135 +923,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
         ),
       ],
-    );
-  }
-
-  // ============================================================
-  // HOUSEHOLD CARD
-  // ============================================================
-  Widget _householdCard({
-    required IconData icon,
-    required String title,
-    required String subtitle,
-    String? rating,
-    bool showRating = false,
-    bool showAdd = false,
-    VoidCallback? onAdd,
-  }) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 9),
-      decoration: BoxDecoration(
-        color: _isDark ? AppColors.surfaceDark : Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: borderColor, width: 0.5),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: _isDark ? 0.4 : 0.04),
-            blurRadius: 3,
-            offset: const Offset(0, 1),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // ───────── Top Row ─────────
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Icon
-              Container(
-                width: 34,
-                height: 34,
-                decoration: BoxDecoration(
-                  color: lightBlue,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Icon(icon, color: primaryBlue, size: 18),
-              ),
-
-              const Spacer(),
-
-              // Rating
-              if (showRating)
-                Padding(
-                  padding: const EdgeInsets.only(top: 5),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Icon(
-                        Icons.star,
-                        color: Color(0xFFFF9800),
-                        size: 12,
-                      ),
-                      const SizedBox(width: 2),
-                      Text(
-                        rating ?? '',
-                        style: TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.w700,
-                          color: darkText,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-              // + Add button
-              if (showAdd)
-                GestureDetector(
-                  onTap: onAdd,
-                  child: Container(
-                    height: 22,
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(6),
-                      border: Border.all(
-                        color: const Color(0xFFD9DDE3),
-                        width: 0.8,
-                      ),
-                    ),
-                    child: Text(
-                      '+ Add',
-                      style: TextStyle(
-                        color: primaryBlue,
-                        fontSize: 9,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ),
-            ],
-          ),
-
-          const SizedBox(height: 7),
-
-          // ───────── Title ─────────
-          Text(
-            title,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              color: darkText,
-              fontSize: 12,
-              fontWeight: FontWeight.w700,
-              height: 1.1,
-            ),
-          ),
-
-          const SizedBox(height: 2),
-
-          // ───────── Subtitle ─────────
-          Text(
-            subtitle,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(color: greyText, fontSize: 9.5, height: 1.1),
-          ),
-        ],
-      ),
     );
   }
 

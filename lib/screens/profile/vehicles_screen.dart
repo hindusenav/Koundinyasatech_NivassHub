@@ -8,10 +8,10 @@ import 'package:flutter_nivasshub/services/vehicle/vehicle_service.dart';
 import 'package:flutter_nivasshub/storage/secure_storage_service.dart';
 import 'package:provider/provider.dart';
 
-const Color _primaryBlue = Color(0xFF2167A5);
-const Color _lightBlue = Color(0xFFEAF3FB);
-const Color _headerBlue = Color(0xFFC4D9EE);
-const Color _background = Color(0xFFF4F7FB);
+const Color _primaryBlue = Color(0xFFFF8A00);
+const Color _lightBlue = Color(0xFFFBF1E5);
+const Color _headerBlue = Color(0xFFF3E8D9);
+const Color _background = Color(0xFFF3E8D9);
 const Color _orange = Color(0xFFE88700);
 const Color _textDark = Color(0xFF263747);
 const Color _textGrey = Color(0xFF6F7C89);
@@ -219,7 +219,7 @@ class _HeroCard extends StatelessWidget {
         gradient: const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [Color(0xFF2167A5), Color(0xFF14436F)],
+          colors: [Color(0xFFFF8A00), Color(0xFF7A4619)],
         ),
         boxShadow: [
           BoxShadow(
@@ -261,7 +261,7 @@ class _HeroCard extends StatelessWidget {
                 Text(
                   'Pick your bike or car brand for easy gate and parking access.',
                   style: TextStyle(
-                    color: Color(0xFFD7E6F5),
+                    color: Color(0xFFE8DCC8),
                     fontSize: 11,
                     height: 1.3,
                   ),
@@ -282,7 +282,7 @@ class _HeroCard extends StatelessWidget {
               ),
               const Text(
                 'brands',
-                style: TextStyle(color: Color(0xFFD7E6F5), fontSize: 10),
+                style: TextStyle(color: Color(0xFFE8DCC8), fontSize: 10),
               ),
             ],
           ),
@@ -304,7 +304,7 @@ class _TypeToggle extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFE3EAF2)),
+        border: Border.all(color: const Color(0xFFE8DCC8)),
       ),
       child: Row(
         children: [
@@ -396,7 +396,7 @@ class _SearchField extends StatelessWidget {
         contentPadding: const EdgeInsets.symmetric(vertical: 12),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
-          borderSide: const BorderSide(color: Color(0xFFE3EAF2)),
+          borderSide: const BorderSide(color: Color(0xFFE8DCC8)),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
@@ -435,12 +435,12 @@ class _BrandTile extends StatelessWidget {
             color: selected ? _lightBlue : Colors.white,
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: selected ? _primaryBlue : const Color(0xFFE3EAF2),
+              color: selected ? _primaryBlue : const Color(0xFFE8DCC8),
               width: selected ? 1.4 : 1,
             ),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFF14284B).withValues(alpha: 0.05),
+                color: const Color(0xFF3E2F1C).withValues(alpha: 0.05),
                 blurRadius: 10,
                 offset: const Offset(0, 3),
               ),
@@ -500,7 +500,7 @@ class _BrandTile extends StatelessWidget {
                     : const Icon(
                         Icons.radio_button_unchecked_rounded,
                         key: ValueKey('off'),
-                        color: Color(0xFFC3CEDA),
+                        color: Color(0xFFE8DCC8),
                         size: 22,
                       ),
               ),
@@ -554,7 +554,7 @@ class _ContinueBar extends StatelessWidget {
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF14284B).withValues(alpha: 0.08),
+            color: const Color(0xFF3E2F1C).withValues(alpha: 0.08),
             blurRadius: 14,
             offset: const Offset(0, -4),
           ),
@@ -567,7 +567,7 @@ class _ContinueBar extends StatelessWidget {
           onPressed: selected == null ? null : () => _addVehicle(context),
           style: ElevatedButton.styleFrom(
             backgroundColor: _primaryBlue,
-            disabledBackgroundColor: const Color(0xFFC3CEDA),
+            disabledBackgroundColor: const Color(0xFFE8DCC8),
             foregroundColor: Colors.white,
             disabledForegroundColor: Colors.white,
             elevation: 0,
@@ -726,7 +726,7 @@ class _VehicleDetailsSheetState extends State<_VehicleDetailsSheet> {
                       width: 40,
                       height: 4,
                       decoration: BoxDecoration(
-                        color: const Color(0xFFC3CEDA),
+                        color: const Color(0xFFE8DCC8),
                         borderRadius: BorderRadius.circular(2),
                       ),
                     ),

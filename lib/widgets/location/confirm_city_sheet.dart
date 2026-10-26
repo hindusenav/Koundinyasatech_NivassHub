@@ -81,7 +81,7 @@ class ConfirmCitySheet extends StatelessWidget {
                         if (city.subtitle != null)
                           Text(
                             city.subtitle!,
-                            style: const TextStyle(color: Color(0xFF6B7280), fontSize: 11),
+                            style: const TextStyle(color: Color(0xFF8A7658), fontSize: 11),
                           ),
                       ],
                     ),

@@ -61,7 +61,7 @@ class LocationSelection {
     return null;
   }
 
-  /// Human-readable address line, e.g. `A-502, Tower A, NivassHub Residency`.
+  /// Human-readable address line, e.g. `A-502, Tower A, Nivaas Hub Residency`.
   String get addressLabel =>
       [flat?.name, tower?.name, society?.name].whereType<String>().join(', ');
 

@@ -97,8 +97,6 @@ class AppRoutes {
   // ---------------------------------------------------------------------
   // Profile / settings
   // ---------------------------------------------------------------------
-  static const String profile = '/profile';
-  static const String editProfile = '/profile/edit';
   static const String addAddressDetails = '/profile/add-address-details';
   static const String addProperty = '/society/add-property';
   static const String vehicles = '/profile/vehicles';

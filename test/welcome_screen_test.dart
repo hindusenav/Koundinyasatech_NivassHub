@@ -23,7 +23,7 @@ void main() {
 
       expect(tester.takeException(), isNull);
       expect(find.text('Welcome!'), findsOneWidget);
-      expect(find.text('To NivaasHub'), findsOneWidget);
+      expect(find.text('To Nivaas Hub'), findsOneWidget);
       expect(find.text('ONE COMMUNITY · ONE PLATFORM'), findsOneWidget);
       expect(find.text('Onboarding screen'), findsNothing);
       expect(find.text('Get Started'), findsNothing);

@@ -273,7 +273,7 @@ class _UploadTarget extends StatelessWidget {
   }
 }
 
-const Color _uploadBlue = Color(0xFF1769C2);
+const Color _uploadBlue = Color(0xFFFF8A00);
 
 /// Dashed rounded-rectangle outline for the upload drop area.
 class _DashedBorderPainter extends CustomPainter {

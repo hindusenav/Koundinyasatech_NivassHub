@@ -37,8 +37,8 @@ class SearchResultTile extends StatelessWidget {
               height: AppDimensions.avatarSm,
               decoration: BoxDecoration(
                 color: isDark
-                    ? const Color(0xFF1B2A47)
-                    : const Color(0xFFEAF1FF),
+                    ? const Color(0xFF222528)
+                    : const Color(0xFFFBF1E5),
                 borderRadius: AppRadius.radiusSm,
               ),
               alignment: Alignment.center,

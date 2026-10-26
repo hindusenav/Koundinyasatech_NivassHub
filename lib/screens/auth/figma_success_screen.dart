@@ -123,7 +123,7 @@ class ProfileVerifiedScreen extends StatelessWidget {
     return FigmaSuccessScreen(
       title: 'Profile Successfully Verified!',
       message:
-          'Your resident identity has been validated.\nWelcome to the NivaasHub family.',
+          'Your resident identity has been validated.\nWelcome to the Nivaas Hub family.',
       buttonLabel: 'Continue to Dashboard',
       onContinue: onContinue,
     );

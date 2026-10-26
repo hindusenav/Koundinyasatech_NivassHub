@@ -79,12 +79,12 @@ class OtpPushNotifier {
       await _plugin.show(
         id: _notificationId++,
         title: isMobile ? 'Mobile verification code' : 'Email verification code',
-        body: 'Your NivaasHub OTP is $otp',
+        body: 'Your Nivaas Hub OTP is $otp',
         notificationDetails: const NotificationDetails(
           android: AndroidNotificationDetails(
             'otp_channel',
             'Verification codes',
-            channelDescription: 'One-time passwords for NivaasHub sign-up',
+            channelDescription: 'One-time passwords for Nivaas Hub sign-up',
             importance: Importance.max,
             priority: Priority.high,
             ticker: 'OTP',
@@ -238,7 +238,7 @@ class _OtpBannerState extends State<_OtpBanner>
                               Row(
                                 children: [
                                   Text(
-                                    'NivaasHub',
+                                    'Nivaas Hub',
                                     style: TextStyle(
                                       fontSize: 11,
                                       fontWeight: FontWeight.w700,

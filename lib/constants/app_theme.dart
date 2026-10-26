@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter_nivasshub/constants/app_dimensions.dart';
 import 'package:flutter_nivasshub/constants/app_radius.dart';
@@ -37,13 +38,16 @@ class AppTheme {
         : AppColors.dividerLight;
     final disabledBorderColor = isDark ? AppColors.grey700 : AppColors.grey200;
 
+    // Amber-brown on light surfaces, warm amber on dark surfaces.
+    final accent = isDark ? AppColors.iconDark : AppColors.primary;
+
     final colorScheme =
         ColorScheme.fromSeed(
           seedColor: AppColors.primary,
           brightness: brightness,
         ).copyWith(
-          primary: AppColors.primary,
-          onPrimary: AppColors.white,
+          primary: accent,
+          onPrimary: isDark ? AppColors.backgroundDark : AppColors.white,
           secondary: AppColors.secondary,
           onSecondary: AppColors.white,
           tertiary: AppColors.tertiary,
@@ -59,26 +63,47 @@ class AppTheme {
       brightness: brightness,
       colorScheme: colorScheme,
       scaffoldBackgroundColor: backgroundColor,
-      fontFamily: AppTextStyles.fontFamily,
       visualDensity: VisualDensity.adaptivePlatformDensity,
       textTheme: _textTheme(textPrimary, textSecondary),
+      // Light: sage bar with deep-navy title/icons. Dark: navy bar with white
+      // title/icons, unchanged.
       appBarTheme: AppBarThemeData(
-        backgroundColor: surfaceColor,
-        foregroundColor: textPrimary,
+        backgroundColor: isDark ? FigmaColors.darkBar : AppColors.amberStart,
+        foregroundColor: AppColors.white,
         elevation: 0,
+        scrolledUnderElevation: 0,
         centerTitle: true,
         surfaceTintColor: Colors.transparent,
-        titleTextStyle: AppTextStyles.titleLarge.copyWith(color: textPrimary),
+        systemOverlayStyle: SystemUiOverlayStyle(
+          statusBarColor: Colors.transparent,
+          statusBarIconBrightness: Brightness.light,
+          statusBarBrightness: Brightness.dark,
+        ),
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
+        ),
+        titleTextStyle: AppTextStyles.titleLarge.copyWith(
+          color: AppColors.white,
+          fontWeight: FontWeight.w600,
+        ),
         iconTheme: IconThemeData(
-          color: textPrimary,
+          color: AppColors.white,
+          size: AppDimensions.iconMd,
+        ),
+        actionsIconTheme: IconThemeData(
+          color: AppColors.white,
           size: AppDimensions.iconMd,
         ),
       ),
       cardTheme: CardThemeData(
         color: surfaceColor,
-        elevation: AppDimensions.cardElevation,
+        elevation: 0,
+        shadowColor: const Color(0x0D000000),
         margin: EdgeInsets.zero,
-        shape: RoundedRectangleBorder(borderRadius: AppRadius.radiusMd),
+        shape: RoundedRectangleBorder(
+          borderRadius: AppRadius.radiusMd,
+          side: BorderSide(color: borderColor),
+        ),
       ),
       dividerTheme: DividerThemeData(
         color: dividerColor,
@@ -87,7 +112,7 @@ class AppTheme {
       ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
-          backgroundColor: FigmaColors.orange,
+          backgroundColor: AppColors.primary,
           foregroundColor: AppColors.white,
           disabledBackgroundColor: isDark
               ? AppColors.grey700
@@ -96,7 +121,7 @@ class AppTheme {
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: FigmaColors.orange,
+          backgroundColor: AppColors.primary,
           foregroundColor: AppColors.white,
           disabledBackgroundColor: isDark
               ? AppColors.grey700
@@ -106,14 +131,14 @@ class AppTheme {
             AppDimensions.buttonHeightMd,
           ),
           shape: RoundedRectangleBorder(borderRadius: AppRadius.radiusSm),
-          textStyle: AppTextStyles.labelLarge,
+          textStyle: AppTextStyles.labelLarge.copyWith(fontWeight: FontWeight.w600),
           elevation: 0,
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          foregroundColor: AppColors.primary,
-          side: const BorderSide(color: AppColors.primary),
+          foregroundColor: accent,
+          side: BorderSide(color: accent),
           minimumSize: const Size(
             double.infinity,
             AppDimensions.buttonHeightMd,
@@ -124,7 +149,7 @@ class AppTheme {
       ),
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
-          foregroundColor: AppColors.primary,
+          foregroundColor: accent,
           textStyle: AppTextStyles.labelLarge,
         ),
       ),
@@ -136,32 +161,39 @@ class AppTheme {
           vertical: AppSpacing.sm,
         ),
         border: OutlineInputBorder(
-          borderRadius: AppRadius.radiusSm,
+          borderRadius: AppRadius.radiusMd,
           borderSide: BorderSide(color: borderColor),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: AppRadius.radiusSm,
+          borderRadius: AppRadius.radiusMd,
           borderSide: BorderSide(color: borderColor),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: AppRadius.radiusSm,
-          borderSide: const BorderSide(color: AppColors.primary, width: 2),
+          borderRadius: AppRadius.radiusMd,
+          borderSide: BorderSide(color: accent, width: 2),
         ),
         errorBorder: OutlineInputBorder(
-          borderRadius: AppRadius.radiusSm,
+          borderRadius: AppRadius.radiusMd,
           borderSide: const BorderSide(color: AppColors.error, width: 2),
         ),
         focusedErrorBorder: OutlineInputBorder(
-          borderRadius: AppRadius.radiusSm,
+          borderRadius: AppRadius.radiusMd,
           borderSide: const BorderSide(color: AppColors.error, width: 2),
         ),
         disabledBorder: OutlineInputBorder(
-          borderRadius: AppRadius.radiusSm,
+          borderRadius: AppRadius.radiusMd,
           borderSide: BorderSide(color: disabledBorderColor),
         ),
         hintStyle: AppTextStyles.bodyMedium.copyWith(color: textSecondary),
         labelStyle: AppTextStyles.bodyMedium.copyWith(color: textSecondary),
         errorStyle: AppTextStyles.bodySmall.copyWith(color: AppColors.error),
+      ),
+      bottomNavigationBarTheme: BottomNavigationBarThemeData(
+        backgroundColor: isDark ? AppColors.surfaceDark : AppColors.amberStart,
+        selectedItemColor: accent,
+        unselectedItemColor: textSecondary,
+        type: BottomNavigationBarType.fixed,
+        elevation: 0,
       ),
       bottomSheetTheme: BottomSheetThemeData(
         backgroundColor: surfaceColor,
@@ -198,6 +230,9 @@ class AppTheme {
   }
 
   static TextTheme _textTheme(Color primaryColor, Color secondaryColor) {
+    final bodyColor = primaryColor == AppColors.textPrimaryLight
+        ? AppColors.textBody
+        : primaryColor;
     return TextTheme(
       displayLarge: AppTextStyles.displayLarge.copyWith(color: primaryColor),
       displayMedium: AppTextStyles.displayMedium.copyWith(color: primaryColor),
@@ -211,7 +246,7 @@ class AppTheme {
       titleMedium: AppTextStyles.titleMedium.copyWith(color: primaryColor),
       titleSmall: AppTextStyles.titleSmall.copyWith(color: primaryColor),
       bodyLarge: AppTextStyles.bodyLarge.copyWith(color: primaryColor),
-      bodyMedium: AppTextStyles.bodyMedium.copyWith(color: primaryColor),
+      bodyMedium: AppTextStyles.bodyMedium.copyWith(color: bodyColor),
       bodySmall: AppTextStyles.bodySmall.copyWith(color: secondaryColor),
       labelLarge: AppTextStyles.labelLarge.copyWith(color: primaryColor),
       labelMedium: AppTextStyles.labelMedium.copyWith(color: secondaryColor),

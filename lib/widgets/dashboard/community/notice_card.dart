@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
+import 'package:flutter_nivasshub/constants/app_colors.dart';
+import 'package:flutter_nivasshub/constants/app_shadows.dart';
 import 'package:flutter_nivasshub/constants/figma_colors.dart';
 import 'package:flutter_nivasshub/screens/notices/notice_details_screen.dart';
 import 'package:flutter_nivasshub/models/dashboard/notice_model.dart';
@@ -44,27 +47,27 @@ class NoticeCard extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: t.card,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          // Teal accent border reads clearly against both a light and a
-          // dark card surface, so it's kept as-is in both themes.
           color: t.cardBorder,
           width: 1,
         ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: isDark ? .3 : .03),
-            blurRadius: 6,
-            offset: const Offset(0, 2),
-          ),
-        ],
+        boxShadow: isDark
+            ? [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: .3),
+                  blurRadius: 6,
+                  offset: const Offset(0, 2),
+                ),
+              ]
+            : AppShadows.card,
       ),
       child: Material(
         color: Colors.transparent,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(12),
         child: InkWell(
           onTap: handleTap,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(12),
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -77,19 +80,12 @@ class NoticeCard extends StatelessWidget {
                       height: 42,
                       width: 42,
                       decoration: BoxDecoration(
-                        color: isDark ? t.field : const Color(0xFFEAF1FF),
+                        color: t.iconBg,
                         borderRadius: BorderRadius.circular(12),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: isDark ? .3 : .06),
-                            blurRadius: 4,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
                       ),
                       child: Icon(
                         Icons.assignment_add,
-                        color: t.heading,
+                        color: t.accent,
                         size: 22,
                       ),
                     ),
@@ -100,8 +96,8 @@ class NoticeCard extends StatelessWidget {
                         children: [
                           Text(
                             headerTitle,
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
+                            style: GoogleFonts.inter(
+                              fontWeight: FontWeight.w600,
                               fontSize: 16,
                               color: t.heading,
                             ),
@@ -115,25 +111,27 @@ class NoticeCard extends StatelessWidget {
                                   vertical: 3,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: FigmaColors.navy,
+                                  color: isDark
+                                      ? AppColors.iconContainerDark
+                                      : AppColors.primary,
                                   borderRadius: BorderRadius.circular(6),
                                 ),
                                 child: Text(
                                   notice.postedBy,
-                                  style: const TextStyle(
+                                  style: GoogleFonts.inter(
                                     color: Colors.white,
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.bold,
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w600,
                                   ),
                                 ),
                               ),
                               const SizedBox(width: 8),
                               Text(
                                 notice.date,
-                                style: TextStyle(
+                                style: GoogleFonts.inter(
                                   color: t.body,
-                                  fontSize: 11.5,
-                                  fontWeight: FontWeight.w500,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w400,
                                 ),
                               ),
                             ],
@@ -150,12 +148,12 @@ class NoticeCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 12),
 
-                // Thin orange divider bar
+                // Thin divider bar
                 Container(
-                  height: 2,
+                  height: 1,
                   width: double.infinity,
                   decoration: BoxDecoration(
-                    color: FigmaColors.orange,
+                    color: t.cardBorder,
                     borderRadius: BorderRadius.circular(1),
                   ),
                 ),
@@ -163,8 +161,8 @@ class NoticeCard extends StatelessWidget {
 
                 Text(
                   notice.title,
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
+                  style: GoogleFonts.inter(
+                    fontWeight: FontWeight.w600,
                     fontSize: 14,
                     color: t.heading,
                   ),
@@ -172,9 +170,9 @@ class NoticeCard extends StatelessWidget {
                 const SizedBox(height: 6),
                 Text(
                   notice.body,
-                  style: TextStyle(
+                  style: GoogleFonts.inter(
                     color: t.body,
-                    fontSize: 12.5,
+                    fontSize: 13,
                     height: 1.45,
                   ),
                 ),
@@ -182,7 +180,7 @@ class NoticeCard extends StatelessWidget {
 
                 // Download Button Badge
                 Material(
-                  color: isDark ? t.field : const Color(0xFFE6F6EC),
+                  color: t.iconBg,
                   borderRadius: BorderRadius.circular(8),
                   child: InkWell(
                     onTap: () {
@@ -222,10 +220,10 @@ class NoticeCard extends StatelessWidget {
                           const SizedBox(width: 8),
                           Text(
                             notice.downloadLabel,
-                            style: TextStyle(
+                            style: GoogleFonts.inter(
                               color: t.heading,
                               fontSize: 13,
-                              fontWeight: FontWeight.bold,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                         ],

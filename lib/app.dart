@@ -276,7 +276,7 @@ class NivasHubApp extends StatelessWidget {
         final themeModeProvider = context.watch<ThemeModeProvider>();
 
         return MaterialApp(
-          title: 'NivasHub',
+          title: 'Nivaas Hub',
 
           debugShowCheckedModeBanner: false,
 
@@ -299,7 +299,20 @@ class NivasHubApp extends StatelessWidget {
               AuthRouter.generateRoute(settings) ??
               AppRouter.generateRoute(settings),
 
-          builder: (context, child) => NoInternetOverlay(child: child),
+          builder: (context, child) {
+            // Cap system font scaling so layouts stay overflow-free on every
+            // device (large accessibility text, small phones).
+            final mq = MediaQuery.of(context);
+            return MediaQuery(
+              data: mq.copyWith(
+                textScaler: mq.textScaler.clamp(
+                  minScaleFactor: 0.9,
+                  maxScaleFactor: 1.15,
+                ),
+              ),
+              child: NoInternetOverlay(child: child),
+            );
+          },
         );
       },
     );

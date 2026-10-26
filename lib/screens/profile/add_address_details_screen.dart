@@ -23,12 +23,12 @@ class _AddAddressDetailsScreenState
   // FIGMA COLORS
   // ============================================================
 
-  static const Color _primaryBlue = Color(0xFF2167A5);
+  static const Color _primaryBlue = Color(0xFFFF8A00);
 
   // Header blue
-  static const Color _headerBlue = Color(0xFFD4E4F4);
+  static const Color _headerBlue = Color(0xFFF3E8D9);
 
-  static const Color _screenBackground = Color(0xFFF3F6FA);
+  static const Color _screenBackground = Color(0xFFF3E8D9);
 
   static const Color _textDark = Color(0xFF263747);
 
@@ -36,7 +36,7 @@ class _AddAddressDetailsScreenState
 
   static const Color _hintColor = Color(0xFF9AA6B2);
 
-  static const Color _borderColor = Color(0xFFD6DDE5);
+  static const Color _borderColor = Color(0xFFE8DCC8);
 
   // ============================================================
   // CONTROLLERS
@@ -437,7 +437,7 @@ final fields = <_AddressFieldData>[
 
                 filled: true,
 
-                fillColor: const Color(0xFFFCFDFE),
+                fillColor: const Color(0xFFFFFFFF),
 
                 contentPadding: EdgeInsets.symmetric(
                   horizontal: 11 * scale,

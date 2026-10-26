@@ -113,7 +113,7 @@ class _ForgotPasswordVerifyOtpScreenState extends State<ForgotPasswordVerifyOtpS
 
   /// Matches the Figma reference: the mobile number is shown in full (as on
   /// the Login/registration OTP screens elsewhere in this app), while the
-  /// email's local part is masked, e.g. "hindu@example.com" ->
+  /// email's local part is masked, e.g. "Saran@example.com" ->
   /// "hi****@example.com".
   String get _maskedIdentifier {
     if (widget.channel == ForgotPasswordChannel.email) {

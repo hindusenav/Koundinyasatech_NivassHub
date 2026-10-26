@@ -153,7 +153,7 @@ class NoticeCard extends StatelessWidget {
                                   vertical: 3,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: const Color(0xFF0F172A),
+                                  color: const Color(0xFF3E2F1C),
                                   borderRadius: BorderRadius.circular(6),
                                 ),
                                 child: Text(
@@ -245,14 +245,14 @@ class NoticeCard extends StatelessWidget {
                               Icon(
                                 Icons.article_outlined,
                                 size: 20,
-                                color: Color(0xFF0F172A),
+                                color: Color(0xFF3E2F1C),
                               ),
                               Padding(
                                 padding: EdgeInsets.only(top: 4),
                                 child: Icon(
                                   Icons.arrow_downward,
                                   size: 10,
-                                  color: Color(0xFF0F172A),
+                                  color: Color(0xFF3E2F1C),
                                 ),
                               ),
                             ],
@@ -261,7 +261,7 @@ class NoticeCard extends StatelessWidget {
                           Text(
                             downloadLabel,
                             style: const TextStyle(
-                              color: Color(0xFF0F172A),
+                              color: Color(0xFF3E2F1C),
                               fontSize: 13,
                               fontWeight: FontWeight.bold,
                             ),

@@ -87,7 +87,7 @@ class AdvertisementDetailsScreen extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: isDark
                         ? AppColors.dashboardHeaderDark
-                        : const Color(0xFFC7E3FF),
+                        : const Color(0xFFF3E8D9),
                   ),
                   child: Row(
                     children: [
@@ -116,7 +116,7 @@ class AdvertisementDetailsScreen extends StatelessWidget {
                             border: Border.all(
                               color: isDark
                                   ? AppColors.borderDark
-                                  : const Color(0xFFCCDFF2),
+                                  : const Color(0xFFE8DCC8),
                               width: 1,
                             ),
                           ),
@@ -125,7 +125,6 @@ class AdvertisementDetailsScreen extends StatelessWidget {
                             child: Text(
                               'Advertisement Details',
                               style: TextStyle(
-                                fontFamily: 'DM Sans',
                                 color: isDark
                                     ? AppColors.noticesHeadingDark
                                     : const Color(0xFF000000),
@@ -169,7 +168,7 @@ class AdvertisementDetailsScreen extends StatelessWidget {
                                         : AppColors.noticesCardBorderLight,
                                   ),
                                   errorWidget: (context, url, err) => Container(
-                                    color: const Color(0xFF0F172A),
+                                    color: const Color(0xFF3E2F1C),
                                     child: const Icon(Icons.apartment, size: 50, color: Colors.white),
                                   ),
                                 ),
@@ -206,7 +205,6 @@ class AdvertisementDetailsScreen extends StatelessWidget {
                                     const Text(
                                       'Nikoo Homes',
                                       style: TextStyle(
-                                        fontFamily: 'DM Sans',
                                         color: Colors.white,
                                         fontSize: 28,
                                         fontWeight: FontWeight.w800,
@@ -219,7 +217,6 @@ class AdvertisementDetailsScreen extends StatelessWidget {
                                     Text(
                                       'by Bhartiya City',
                                       style: TextStyle(
-                                        fontFamily: 'DM Sans',
                                         color: Colors.white.withValues(alpha: 0.8),
                                         fontSize: 14,
                                         fontWeight: FontWeight.w500,
@@ -247,13 +244,12 @@ class AdvertisementDetailsScreen extends StatelessWidget {
                                         left: 10,
                                       ),
                                       decoration: BoxDecoration(
-                                        color: const Color(0xFFEC9211),
+                                        color: const Color(0xFFFF8A00),
                                         borderRadius: BorderRadius.circular(4),
                                       ),
                                       child: const Text(
                                         '30+ AMENITIES',
                                         style: TextStyle(
-                                          fontFamily: 'DM Sans',
                                           color: Colors.white,
                                           fontWeight: FontWeight.w700,
                                           fontSize: 10,
@@ -266,7 +262,6 @@ class AdvertisementDetailsScreen extends StatelessWidget {
                                     const Text(
                                       'for everyday to find more',
                                       style: TextStyle(
-                                        fontFamily: 'DM Sans',
                                         color: Colors.white,
                                         fontSize: 22,
                                         fontWeight: FontWeight.w700,
@@ -297,14 +292,13 @@ class AdvertisementDetailsScreen extends StatelessWidget {
                                       child: Text(
                                         title,
                                         style: TextStyle(
-                                          fontFamily: 'DM Sans',
                                           fontSize: 28,
                                           fontWeight: FontWeight.w800,
                                           height: 1.0,
                                           letterSpacing: 0,
                                           color: isDark
                                               ? AppColors.noticesTitleTextDark
-                                              : const Color(0xFF05234D),
+                                              : const Color(0xFF3E2F1C),
                                         ),
                                       ),
                                     ),
@@ -325,7 +319,7 @@ class AdvertisementDetailsScreen extends StatelessWidget {
                                         border: Border.all(
                                           color: isDark
                                               ? AppColors.noticesAmberBorderDark
-                                              : const Color(0xFFEC9211),
+                                              : const Color(0xFFFF8A00),
                                           width: 1,
                                         ),
                                       ),
@@ -337,16 +331,15 @@ class AdvertisementDetailsScreen extends StatelessWidget {
                                             size: 14,
                                             color: isDark
                                                 ? AppColors.noticesAccentAmberDark
-                                                : const Color(0xFFEC9211),
+                                                : const Color(0xFFFF8A00),
                                           ),
                                           const SizedBox(width: 6),
                                           Text(
                                             priceLabel,
                                             style: TextStyle(
-                                              fontFamily: 'DM Sans',
                                               color: isDark
                                                   ? AppColors.noticesAccentAmberDark
-                                                  : const Color(0xFFEC9211),
+                                                  : const Color(0xFFFF8A00),
                                               fontSize: 12,
                                               fontWeight: FontWeight.bold,
                                             ),
@@ -364,18 +357,17 @@ class AdvertisementDetailsScreen extends StatelessWidget {
                                       size: 14,
                                       color: isDark
                                           ? AppColors.noticesSecondaryTextDark
-                                          : const Color(0xFF3D3D3D),
+                                          : const Color(0xFF5C4A32),
                                     ),
                                     const SizedBox(width: 4),
                                     Expanded(
                                       child: Text(
                                         subtitle,
                                         style: TextStyle(
-                                          fontFamily: 'DM Sans',
                                           fontSize: 12,
                                           color: isDark
                                               ? AppColors.noticesSecondaryTextDark
-                                              : const Color(0xFF3D3D3D),
+                                              : const Color(0xFF5C4A32),
                                           fontWeight: FontWeight.w500,
                                         ),
                                       ),
@@ -409,7 +401,7 @@ class AdvertisementDetailsScreen extends StatelessWidget {
                             style: ElevatedButton.styleFrom(
                               backgroundColor: isDark
                                   ? AppColors.noticesAccentBlueDark
-                                  : const Color(0xFF0060BD),
+                                  : const Color(0xFFFF8A00),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
                               ),
@@ -418,7 +410,6 @@ class AdvertisementDetailsScreen extends StatelessWidget {
                             child: const Text(
                               'Schedule a Visit',
                               style: TextStyle(
-                                fontFamily: 'DM Sans',
                                 color: Colors.white,
                                 fontWeight: FontWeight.w700,
                                 fontSize: 15,
@@ -442,7 +433,7 @@ class AdvertisementDetailsScreen extends StatelessWidget {
                             style: ElevatedButton.styleFrom(
                               backgroundColor: isDark
                                   ? AppColors.noticesAccentAmberDark
-                                  : const Color(0xFFEC9211),
+                                  : const Color(0xFFFF8A00),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
                               ),
@@ -457,7 +448,6 @@ class AdvertisementDetailsScreen extends StatelessWidget {
                                 Text(
                                   'Download Brochure',
                                   style: TextStyle(
-                                    fontFamily: 'DM Sans',
                                     color: Colors.white,
                                     fontWeight: FontWeight.w700,
                                     fontSize: 13,
@@ -485,9 +475,9 @@ class AdvertisementDetailsScreen extends StatelessWidget {
   Widget _buildCenturyContent(bool isDark) {
     final cardColor = isDark ? AppColors.surfaceDark : const Color(0xFFFFFFFF);
     final borderColor =
-        isDark ? AppColors.noticesCardBorderDark : const Color(0xFFE2E8F0);
+        isDark ? AppColors.noticesCardBorderDark : const Color(0xFFE8DCC8);
     final titleColor =
-        isDark ? AppColors.noticesTitleTextDark : const Color(0xFF0F172A);
+        isDark ? AppColors.noticesTitleTextDark : const Color(0xFF3E2F1C);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -518,7 +508,6 @@ class AdvertisementDetailsScreen extends StatelessWidget {
                   Text(
                     'Every Reason to Upgrade',
                     style: TextStyle(
-                      fontFamily: 'DM Sans',
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
                       height: 1.0,
@@ -531,7 +520,7 @@ class AdvertisementDetailsScreen extends StatelessWidget {
                     Icons.auto_awesome,
                     color: isDark
                         ? AppColors.noticesAccentAmberDark
-                        : const Color(0xFFEC9211),
+                        : const Color(0xFFFF8A00),
                     size: 18,
                   ),
                 ],
@@ -595,7 +584,6 @@ class AdvertisementDetailsScreen extends StatelessWidget {
               Text(
                 'Why Century Bliss?',
                 style: TextStyle(
-                  fontFamily: 'DM Sans',
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
                   height: 1.0,
@@ -608,14 +596,13 @@ class AdvertisementDetailsScreen extends StatelessWidget {
               Text(
                 'A thoughtfully planned community built around the way you truly want to live. Nestled on Yelahanka–Doddaballapura Main Road, Century Bliss offers freespirited 2 & 3 BHK homes with world-class amenities and lush green surroundings.',
                 style: TextStyle(
-                  fontFamily: 'DM Sans',
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
                   height: 20 / 14,
                   letterSpacing: 0,
                   color: isDark
                       ? AppColors.noticesBodyTextDark
-                      : const Color(0xFF3E3E3E),
+                      : const Color(0xFF5C4A32),
                 ),
               ),
             ],
@@ -662,11 +649,11 @@ class AdvertisementDetailsScreen extends StatelessWidget {
           decoration: BoxDecoration(
             border: Border(
               top: BorderSide(
-                color: isDark ? AppColors.noticesCardBorderDark : const Color(0xFFE5E7EB),
+                color: isDark ? AppColors.noticesCardBorderDark : const Color(0xFFE8DCC8),
                 width: 1,
               ),
               bottom: BorderSide(
-                color: isDark ? AppColors.noticesCardBorderDark : const Color(0xFFE5E7EB),
+                color: isDark ? AppColors.noticesCardBorderDark : const Color(0xFFE8DCC8),
                 width: 1,
               ),
             ),
@@ -679,12 +666,11 @@ class AdvertisementDetailsScreen extends StatelessWidget {
               Text(
                 'PRICING DETAILS',
                 style: TextStyle(
-                  fontFamily: 'DM Sans',
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
                   height: 1.0,
                   letterSpacing: 0.5,
-                  color: isDark ? AppColors.noticesSecondaryTextDark : const Color(0xFF3E3E3E),
+                  color: isDark ? AppColors.noticesSecondaryTextDark : const Color(0xFF5C4A32),
                 ),
               ),
               const SizedBox(height: 4),
@@ -695,23 +681,21 @@ class AdvertisementDetailsScreen extends StatelessWidget {
                     TextSpan(
                       text: '₹93L ',
                       style: TextStyle(
-                        fontFamily: 'DM Sans',
                         fontSize: 26,
                         fontWeight: FontWeight.w800,
                         height: 1.0,
                         letterSpacing: 0,
-                        color: isDark ? AppColors.noticesTitleTextDark : const Color(0xFF05234D),
+                        color: isDark ? AppColors.noticesTitleTextDark : const Color(0xFF3E2F1C),
                       ),
                     ),
                     TextSpan(
                       text: 'Onwards',
                       style: TextStyle(
-                        fontFamily: 'DM Sans',
                         fontSize: 16,
                         fontWeight: FontWeight.w500,
                         height: 1.0,
                         letterSpacing: 0,
-                        color: isDark ? AppColors.noticesTitleTextDark : const Color(0xFF05234D),
+                        color: isDark ? AppColors.noticesTitleTextDark : const Color(0xFF3E2F1C),
                       ),
                     ),
                   ],
@@ -827,12 +811,11 @@ class AdvertisementDetailsScreen extends StatelessWidget {
         Text(
           title,
           style: TextStyle(
-            fontFamily: 'DM Sans',
             fontSize: 18,
             fontWeight: FontWeight.w600,
             height: 1.0,
             letterSpacing: 0,
-            color: isDark ? AppColors.noticesTitleTextDark : const Color(0xFF05234D),
+            color: isDark ? AppColors.noticesTitleTextDark : const Color(0xFF3E2F1C),
           ),
         ),
         const SizedBox(height: 6),
@@ -840,7 +823,7 @@ class AdvertisementDetailsScreen extends StatelessWidget {
           width: 36,
           height: 3,
           decoration: BoxDecoration(
-            color: const Color(0xFFEC9211),
+            color: const Color(0xFFFF8A00),
             borderRadius: BorderRadius.circular(2),
           ),
         ),
@@ -868,7 +851,7 @@ class AdvertisementDetailsScreen extends StatelessWidget {
                 icon,
                 color: isDark
                     ? AppColors.noticesAccentAmberDark
-                    : const Color(0xFFEC9211),
+                    : const Color(0xFFFF8A00),
                 size: 16,
               ),
             ),
@@ -879,14 +862,13 @@ class AdvertisementDetailsScreen extends StatelessWidget {
             child: Text(
               text,
               style: TextStyle(
-                fontFamily: 'DM Sans',
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
                 height: 1.0,
                 letterSpacing: 0,
                 color: isDark
                     ? AppColors.noticesBodyTextDark
-                    : const Color(0xFF05234D),
+                    : const Color(0xFF3E2F1C),
               ),
             ),
           ),
@@ -902,7 +884,7 @@ class AdvertisementDetailsScreen extends StatelessWidget {
         color: isDark ? AppColors.surfaceDark : const Color(0xFFFFFFFF),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: isDark ? AppColors.noticesCardBorderDark : const Color(0xFFE5E7EB),
+          color: isDark ? AppColors.noticesCardBorderDark : const Color(0xFFE8DCC8),
           width: 1,
         ),
       ),
@@ -920,7 +902,7 @@ class AdvertisementDetailsScreen extends StatelessWidget {
             child: Center(
               child: Icon(
                 icon,
-                color: isDark ? AppColors.noticesAccentAmberDark : const Color(0xFFEC9211),
+                color: isDark ? AppColors.noticesAccentAmberDark : const Color(0xFFFF8A00),
                 size: 18,
               ),
             ),
@@ -929,7 +911,6 @@ class AdvertisementDetailsScreen extends StatelessWidget {
           Text(
             main,
             style: TextStyle(
-              fontFamily: 'DM Sans',
               fontWeight: FontWeight.w700,
               fontSize: 14,
               height: 1.0,
@@ -944,8 +925,7 @@ class AdvertisementDetailsScreen extends StatelessWidget {
           Text(
             sub,
             style: TextStyle(
-              fontFamily: 'DM Sans',
-              color: isDark ? AppColors.noticesMutedDark : const Color(0xFF6B7280),
+              color: isDark ? AppColors.noticesMutedDark : const Color(0xFF8A7658),
               fontSize: 11,
               fontWeight: FontWeight.w400,
               height: 1.0,
@@ -1006,7 +986,7 @@ class _HighlightCard extends StatelessWidget {
         color: isDark ? AppColors.surfaceDark : const Color(0xFFFFFFFF),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: isDark ? AppColors.noticesCardBorderDark : const Color(0xFFE5E7EB),
+          color: isDark ? AppColors.noticesCardBorderDark : const Color(0xFFE8DCC8),
           width: 1,
         ),
         boxShadow: [
@@ -1025,13 +1005,13 @@ class _HighlightCard extends StatelessWidget {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: isDark ? AppColors.noticesBlueTintBgDark : const Color(0xFFF0F5FA),
+              color: isDark ? AppColors.noticesBlueTintBgDark : const Color(0xFFFBF1E5),
               shape: BoxShape.circle,
             ),
             child: Center(
               child: Icon(
                 icon,
-                color: isDark ? AppColors.noticesAccentBlueDark : const Color(0xFF05234D),
+                color: isDark ? AppColors.noticesAccentBlueDark : const Color(0xFF3E2F1C),
                 size: 20,
               ),
             ),
@@ -1043,12 +1023,11 @@ class _HighlightCard extends StatelessWidget {
               Text(
                 title,
                 style: TextStyle(
-                  fontFamily: 'DM Sans',
                   fontWeight: FontWeight.w700,
                   fontSize: 14,
                   height: 1.0,
                   letterSpacing: 0,
-                  color: isDark ? AppColors.noticesHeadingDark : const Color(0xFF05234D),
+                  color: isDark ? AppColors.noticesHeadingDark : const Color(0xFF3E2F1C),
                 ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -1057,8 +1036,7 @@ class _HighlightCard extends StatelessWidget {
               Text(
                 sub,
                 style: TextStyle(
-                  fontFamily: 'DM Sans',
-                  color: isDark ? AppColors.noticesMutedDark : const Color(0xFF6B7280),
+                  color: isDark ? AppColors.noticesMutedDark : const Color(0xFF8A7658),
                   fontSize: 11,
                   fontWeight: FontWeight.w400,
                   height: 1.0,

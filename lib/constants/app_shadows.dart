@@ -8,6 +8,24 @@ class AppShadows {
 
   static const List<BoxShadow> none = [];
 
+  /// Standard card shadow: 0/2/12, black at 5%.
+  static const List<BoxShadow> card = [
+    BoxShadow(
+      color: Color(0x0D000000),
+      offset: Offset(0, 2),
+      blurRadius: 12,
+    ),
+  ];
+
+  /// Primary button shadow: 0/4/12, forest green at 8%.
+  static const List<BoxShadow> button = [
+    BoxShadow(
+      color: Color(0x33FF8A00),
+      offset: Offset(0, 4),
+      blurRadius: 12,
+    ),
+  ];
+
   static const List<BoxShadow> sm = [
     BoxShadow(
       color: Color(0x14000000),

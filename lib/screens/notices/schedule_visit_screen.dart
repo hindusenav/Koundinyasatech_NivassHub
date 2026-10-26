@@ -54,14 +54,14 @@ class _ScheduleVisitScreenState extends State<ScheduleVisitScreen> {
     final titleName = widget.projectName.isNotEmpty ? widget.projectName : 'Century Bliss';
 
     final cardColor = isDark ? AppColors.surfaceDark : const Color(0xFFFFFFFF);
-    final cardBorderColor = isDark ? AppColors.noticesCardBorderDark : const Color(0xFFE2E8F0);
-    final amberAccent = const Color(0xFFEC9211);
-    final amberStrongBorder = const Color(0xFFEC9211);
-    final fieldFillColor = isDark ? AppColors.noticesBackgroundDark : const Color(0xFFF8FAFC);
+    final cardBorderColor = isDark ? AppColors.noticesCardBorderDark : const Color(0xFFE8DCC8);
+    final amberAccent = const Color(0xFFFF8A00);
+    final amberStrongBorder = const Color(0xFFFF8A00);
+    final fieldFillColor = isDark ? AppColors.noticesBackgroundDark : const Color(0xFFFBF1E5);
 
     return Scaffold(
       backgroundColor:
-          isDark ? AppColors.noticesBackgroundDark : const Color(0xFFEBF5FF),
+          isDark ? AppColors.noticesBackgroundDark : const Color(0xFFFBF1E5),
       body: SafeArea(
         top: false,
         child: Column(
@@ -76,7 +76,7 @@ class _ScheduleVisitScreenState extends State<ScheduleVisitScreen> {
                 left: 20,
               ),
               decoration: BoxDecoration(
-                color: isDark ? const Color(0xFF0F172A) : const Color(0xFFC7E3FF),
+                color: isDark ? const Color(0xFF3E2F1C) : const Color(0xFFF3E8D9),
               ),
               child: Row(
                 children: [
@@ -98,14 +98,13 @@ class _ScheduleVisitScreenState extends State<ScheduleVisitScreen> {
                         color: Colors.transparent,
                         borderRadius: BorderRadius.circular(40),
                         border: Border.all(
-                          color: isDark ? const Color(0xFF334155) : const Color(0xFFCCDFF2),
+                          color: isDark ? const Color(0xFF334155) : const Color(0xFFE8DCC8),
                           width: 1,
                         ),
                       ),
                       child: Text(
                         'Schedule Your Visit',
                         style: TextStyle(
-                          fontFamily: 'DM Sans',
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
                           height: 1.0,
@@ -134,7 +133,6 @@ class _ScheduleVisitScreenState extends State<ScheduleVisitScreen> {
                     Text(
                       'Pick your preferred day and we\'ll arrange a personalized tour of $titleName.',
                       style: TextStyle(
-                        fontFamily: 'DM Sans',
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
                         height: 20 / 14,
@@ -170,7 +168,6 @@ class _ScheduleVisitScreenState extends State<ScheduleVisitScreen> {
                                   ? widget.subtitleInfo
                                   : 'Freespirited 2 & 3 Bed Homes | Starting at ₹92.5 L*',
                               style: TextStyle(
-                                fontFamily: 'DM Sans',
                                 color: amberAccent,
                                 fontSize: 12,
                                 fontWeight: FontWeight.w600,
@@ -212,14 +209,13 @@ class _ScheduleVisitScreenState extends State<ScheduleVisitScreen> {
                               Text(
                                 'Preferred Visit Day',
                                 style: TextStyle(
-                                  fontFamily: 'DM Sans',
                                   fontSize: 15,
                                   fontWeight: FontWeight.w700,
                                   height: 1.0,
                                   letterSpacing: 0,
                                   color: isDark
                                       ? AppColors.noticesTitleTextDark
-                                      : const Color(0xFF05234D),
+                                      : const Color(0xFF3E2F1C),
                                 ),
                               ),
                               // icon-calendar (16px, #EC9211)
@@ -273,7 +269,6 @@ class _ScheduleVisitScreenState extends State<ScheduleVisitScreen> {
                                   Text(
                                     'Weekday',
                                     style: TextStyle(
-                                      fontFamily: 'DM Sans',
                                       fontWeight: FontWeight.w600,
                                       fontSize: 14,
                                       height: 1.0,
@@ -286,7 +281,6 @@ class _ScheduleVisitScreenState extends State<ScheduleVisitScreen> {
                                   Text(
                                     'Mon – Fri',
                                     style: TextStyle(
-                                      fontFamily: 'DM Sans',
                                       fontSize: 12,
                                       fontWeight: FontWeight.w500,
                                       height: 1.0,
@@ -341,12 +335,11 @@ class _ScheduleVisitScreenState extends State<ScheduleVisitScreen> {
                                   Text(
                                     'Weekend',
                                     style: TextStyle(
-                                      fontFamily: 'DM Sans',
                                       fontWeight: FontWeight.w700,
                                       fontSize: 14,
                                       height: 1.0,
                                       letterSpacing: 0,
-                                      color: isDark ? Colors.white : const Color(0xFF05234D),
+                                      color: isDark ? Colors.white : const Color(0xFF3E2F1C),
                                     ),
                                   ),
                                   const Spacer(),
@@ -354,7 +347,6 @@ class _ScheduleVisitScreenState extends State<ScheduleVisitScreen> {
                                   Text(
                                     'Sat – Sun',
                                     style: TextStyle(
-                                      fontFamily: 'DM Sans',
                                       fontSize: 12,
                                       fontWeight: FontWeight.w600,
                                       height: 1.0,
@@ -397,14 +389,13 @@ class _ScheduleVisitScreenState extends State<ScheduleVisitScreen> {
                               Text(
                                 'Contact Details',
                                 style: TextStyle(
-                                  fontFamily: 'DM Sans',
                                   fontSize: 15,
                                   fontWeight: FontWeight.w700,
                                   height: 1.0,
                                   letterSpacing: 0,
                                   color: isDark
                                       ? AppColors.noticesTitleTextDark
-                                      : const Color(0xFF05234D),
+                                      : const Color(0xFF3E2F1C),
                                 ),
                               ),
                               // icon-person (16px, #EC9211)
@@ -421,12 +412,11 @@ class _ScheduleVisitScreenState extends State<ScheduleVisitScreen> {
                           Text(
                             'Full Name',
                             style: TextStyle(
-                              fontFamily: 'DM Sans',
                               fontSize: 12,
                               fontWeight: FontWeight.w600,
                               height: 1.0,
                               letterSpacing: 0,
-                              color: isDark ? AppColors.noticesLabelTextDark : const Color(0xFF3E3E3E),
+                              color: isDark ? AppColors.noticesLabelTextDark : const Color(0xFF5C4A32),
                             ),
                           ),
                           const SizedBox(height: 6),
@@ -435,24 +425,22 @@ class _ScheduleVisitScreenState extends State<ScheduleVisitScreen> {
                             child: TextField(
                               controller: _nameController,
                               style: TextStyle(
-                                fontFamily: 'DM Sans',
                                 fontSize: 14,
                                 fontWeight: FontWeight.w400,
                                 height: 1.0,
                                 letterSpacing: 0,
-                                color: isDark ? Colors.white : const Color(0xFF3E3E3E),
+                                color: isDark ? Colors.white : const Color(0xFF5C4A32),
                               ),
                               decoration: InputDecoration(
                                 hintText: 'Enter full name',
                                 hintStyle: TextStyle(
-                                  fontFamily: 'DM Sans',
                                   fontSize: 14,
                                   fontWeight: FontWeight.w400,
                                   height: 1.0,
                                   letterSpacing: 0,
                                   color: const Color(0xFF94A3B8),
                                 ),
-                                prefixIcon: const Icon(Icons.person_outline, size: 14, color: Color(0xFF64748B)),
+                                prefixIcon: const Icon(Icons.person_outline, size: 14, color: Color(0xFF8A7658)),
                                 filled: true,
                                 fillColor: fieldFillColor,
                                 contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
@@ -467,7 +455,7 @@ class _ScheduleVisitScreenState extends State<ScheduleVisitScreen> {
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(8),
-                                  borderSide: const BorderSide(color: Color(0xFF0060BD)),
+                                  borderSide: const BorderSide(color: Color(0xFFFF8A00)),
                                 ),
                               ),
                             ),
@@ -478,12 +466,11 @@ class _ScheduleVisitScreenState extends State<ScheduleVisitScreen> {
                           Text(
                             'Phone Number',
                             style: TextStyle(
-                              fontFamily: 'DM Sans',
                               fontSize: 12,
                               fontWeight: FontWeight.w600,
                               height: 1.0,
                               letterSpacing: 0,
-                              color: isDark ? AppColors.noticesLabelTextDark : const Color(0xFF3E3E3E),
+                              color: isDark ? AppColors.noticesLabelTextDark : const Color(0xFF5C4A32),
                             ),
                           ),
                           const SizedBox(height: 6),
@@ -493,24 +480,22 @@ class _ScheduleVisitScreenState extends State<ScheduleVisitScreen> {
                               controller: _phoneController,
                               keyboardType: TextInputType.phone,
                               style: TextStyle(
-                                fontFamily: 'DM Sans',
                                 fontSize: 14,
                                 fontWeight: FontWeight.w400,
                                 height: 1.0,
                                 letterSpacing: 0,
-                                color: isDark ? Colors.white : const Color(0xFF3E3E3E),
+                                color: isDark ? Colors.white : const Color(0xFF5C4A32),
                               ),
                               decoration: InputDecoration(
                                 hintText: 'Enter phone number',
                                 hintStyle: TextStyle(
-                                  fontFamily: 'DM Sans',
                                   fontSize: 14,
                                   fontWeight: FontWeight.w400,
                                   height: 1.0,
                                   letterSpacing: 0,
                                   color: const Color(0xFF94A3B8),
                                 ),
-                                prefixIcon: const Icon(Icons.phone_outlined, size: 14, color: Color(0xFF64748B)),
+                                prefixIcon: const Icon(Icons.phone_outlined, size: 14, color: Color(0xFF8A7658)),
                                 filled: true,
                                 fillColor: fieldFillColor,
                                 contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
@@ -525,7 +510,7 @@ class _ScheduleVisitScreenState extends State<ScheduleVisitScreen> {
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(8),
-                                  borderSide: const BorderSide(color: Color(0xFF0060BD)),
+                                  borderSide: const BorderSide(color: Color(0xFFFF8A00)),
                                 ),
                               ),
                             ),
@@ -536,12 +521,11 @@ class _ScheduleVisitScreenState extends State<ScheduleVisitScreen> {
                           Text(
                             'Email Address',
                             style: TextStyle(
-                              fontFamily: 'DM Sans',
                               fontSize: 12,
                               fontWeight: FontWeight.w600,
                               height: 1.0,
                               letterSpacing: 0,
-                              color: isDark ? AppColors.noticesLabelTextDark : const Color(0xFF3E3E3E),
+                              color: isDark ? AppColors.noticesLabelTextDark : const Color(0xFF5C4A32),
                             ),
                           ),
                           const SizedBox(height: 6),
@@ -551,24 +535,22 @@ class _ScheduleVisitScreenState extends State<ScheduleVisitScreen> {
                               controller: _emailController,
                               keyboardType: TextInputType.emailAddress,
                               style: TextStyle(
-                                fontFamily: 'DM Sans',
                                 fontSize: 14,
                                 fontWeight: FontWeight.w400,
                                 height: 1.0,
                                 letterSpacing: 0,
-                                color: isDark ? Colors.white : const Color(0xFF3E3E3E),
+                                color: isDark ? Colors.white : const Color(0xFF5C4A32),
                               ),
                               decoration: InputDecoration(
                                 hintText: 'Enter email address',
                                 hintStyle: TextStyle(
-                                  fontFamily: 'DM Sans',
                                   fontSize: 14,
                                   fontWeight: FontWeight.w400,
                                   height: 1.0,
                                   letterSpacing: 0,
                                   color: const Color(0xFF94A3B8),
                                 ),
-                                prefixIcon: const Icon(Icons.email_outlined, size: 14, color: Color(0xFF64748B)),
+                                prefixIcon: const Icon(Icons.email_outlined, size: 14, color: Color(0xFF8A7658)),
                                 filled: true,
                                 fillColor: fieldFillColor,
                                 contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
@@ -583,7 +565,7 @@ class _ScheduleVisitScreenState extends State<ScheduleVisitScreen> {
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(8),
-                                  borderSide: const BorderSide(color: Color(0xFF0060BD)),
+                                  borderSide: const BorderSide(color: Color(0xFFFF8A00)),
                                 ),
                               ),
                             ),
@@ -600,7 +582,7 @@ class _ScheduleVisitScreenState extends State<ScheduleVisitScreen> {
                       child: ElevatedButton(
                         onPressed: _confirmVisit,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF0060BD),
+                          backgroundColor: const Color(0xFFFF8A00),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
@@ -609,7 +591,6 @@ class _ScheduleVisitScreenState extends State<ScheduleVisitScreen> {
                         child: const Text(
                           'Confirm Visit',
                           style: TextStyle(
-                            fontFamily: 'DM Sans',
                             color: Colors.white,
                             fontWeight: FontWeight.w700,
                             fontSize: 15,
@@ -627,14 +608,13 @@ class _ScheduleVisitScreenState extends State<ScheduleVisitScreen> {
                         'By submitting, you agree to our Terms & Privacy Policy.',
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                          fontFamily: 'DM Sans',
                           fontSize: 11,
                           fontWeight: FontWeight.w500,
                           height: 1.0,
                           letterSpacing: 0,
                           color: isDark
                               ? AppColors.noticesMutedDark
-                              : const Color(0xFF3E3E3E),
+                              : const Color(0xFF5C4A32),
                         ),
                       ),
                     ),

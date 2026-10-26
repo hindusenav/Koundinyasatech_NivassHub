@@ -37,7 +37,7 @@ class KycSectionTitle extends StatelessWidget {
             width: 4,
             height: 16,
             decoration: BoxDecoration(
-              color: const Color(0xFF0060BD),
+              color: const Color(0xFFFF8A00),
               borderRadius: BorderRadius.circular(2),
             ),
           ),
@@ -47,7 +47,6 @@ class KycSectionTitle extends StatelessWidget {
           Text(
             title,
             style: TextStyle(
-              fontFamily: 'DM Sans',
               color: isDark ? AppColors.grey300 : const Color(0xFF1D1B20),
               fontWeight: FontWeight.w700,
               fontSize: 12,
@@ -73,7 +72,7 @@ class KycListCardGroup extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final cardBgColor = isDark ? AppColors.surfaceDark : AppColors.white;
-    final borderColor = isDark ? AppColors.borderDark : const Color(0xFFE5E7EB);
+    final borderColor = isDark ? AppColors.borderDark : const Color(0xFFE8DCC8);
     final textPrimary = isDark ? AppColors.textPrimaryDark : const Color(0xFF000000);
 
     return Container(
@@ -122,7 +121,6 @@ class KycListCardGroup extends StatelessWidget {
                           child: Text(
                             item.title,
                             style: TextStyle(
-                              fontFamily: 'DM Sans',
                               color: textPrimary,
                               fontSize: 15,
                               fontWeight: FontWeight.w600,
@@ -133,7 +131,7 @@ class KycListCardGroup extends StatelessWidget {
                         ),
                         Icon(
                           Icons.chevron_right,
-                          color: isDark ? AppColors.grey400 : const Color(0xFF10213D),
+                          color: isDark ? AppColors.grey400 : const Color(0xFF222528),
                           size: 16,
                         ),
                       ],
