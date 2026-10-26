@@ -1,3 +1,4 @@
+import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
@@ -20,7 +21,7 @@ class BannerIndicator extends StatelessWidget {
         dotHeight: 8,
         dotWidth: 8,
         spacing: 8,
-        activeDotColor: Color(0xFF2E7DFF),
+        activeDotColor: AppColors.primaryOrange,
         dotColor: Colors.grey,
       ),
     );

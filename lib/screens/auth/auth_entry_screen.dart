@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:flutter_nivasshub/constants/asset_constants.dart';
 import 'package:flutter_nivasshub/constants/app_text_styles.dart';
-import 'package:flutter_nivasshub/constants/figma_colors.dart';
+import 'package:flutter_nivasshub/constants/app_colors.dart';
+import 'package:flutter_nivasshub/utils/responsive.dart';
 import 'package:flutter_nivasshub/constants/kyc/kyc_strings.dart';
 import 'package:flutter_nivasshub/models/auth/auth_flow_state.dart';
 import 'package:flutter_nivasshub/models/auth/auth_identifier.dart';
@@ -19,6 +18,7 @@ import 'package:flutter_nivasshub/screens/kyc/kyc_documents_screen.dart';
 import 'package:flutter_nivasshub/screens/kyc/kyc_verification_status_screen.dart';
 import 'package:flutter_nivasshub/services/kyc/document_service_base.dart';
 import 'package:flutter_nivasshub/utils/form_validators.dart';
+import 'package:flutter_nivasshub/widgets/auth/auth_brand_logo.dart';
 import 'package:flutter_nivasshub/widgets/auth/identifier_input_field.dart';
 import 'package:flutter_nivasshub/widgets/shared/figma/figma_scaffold.dart';
 import 'package:flutter_nivasshub/widgets/shared/figma/figma_widgets.dart';
@@ -226,7 +226,6 @@ class _AuthEntryScreenState extends State<AuthEntryScreen> {
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<AuthEntryProvider>();
-    final t = FigmaColors.of(context);
 
     return FigmaLightScaffold(
       body: LayoutBuilder(
@@ -235,38 +234,49 @@ class _AuthEntryScreenState extends State<AuthEntryScreen> {
             constraints: BoxConstraints(minHeight: constraints.maxHeight),
             child: Center(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
+                padding: context.pageInsets,
                 child: Form(
                   key: _formKey,
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Center(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            SvgPicture.asset(
-                              AppAssets.splashMark,
-                              width: 44,
-                              height: 44,
-                            ),
-                            const SizedBox(height: 8),
-                            SvgPicture.asset(
-                              AppAssets.splashWordmark,
-                              width: 140,
+                      const AuthBrandLogo(),
+                      context.gapLg,
+                      const Text(
+                        KycStrings.authEntryTitle,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.textDark,
+                        ),
+                      ),
+                      context.gapSm,
+                      const Text(
+                        KycStrings.authEntrySubtitle,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 13,
+                          height: 1.4,
+                          color: AppColors.textMuted,
+                        ),
+                      ),
+                      SizedBox(height: context.rs(28)),
+                      Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: AppColors.cardBg,
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(color: AppColors.cardBorder),
+                          boxShadow: const [
+                            BoxShadow(
+                              color: AppColors.shadowSoft,
+                              blurRadius: 18,
+                              offset: Offset(0, 6),
                             ),
                           ],
                         ),
-                      ),
-                      const SizedBox(height: 20),
-                      const FigmaTitleBlock(
-                        title: KycStrings.authEntryTitle,
-                        subtitle: KycStrings.authEntrySubtitle,
-                      ),
-                      const SizedBox(height: 28),
-                      FigmaCard(
-                        padding: const EdgeInsets.all(20),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
@@ -284,32 +294,30 @@ class _AuthEntryScreenState extends State<AuthEntryScreen> {
                               validator: _validateIdentifier,
                             ),
                             if (provider.errorMessage != null) ...[
-                              const SizedBox(height: 8),
+                              context.gapSm,
                               Text(
                                 provider.errorMessage!,
                                 style: AppTextStyles.errorText,
                               ),
                             ],
-                            const SizedBox(height: 18),
-                            FigmaButton(
-                              label: KycStrings.continueLabel,
-                              isLoading: provider.isChecking,
-                              onPressed: provider.isChecking
-                                  ? null
-                                  : _handleContinue,
-                            ),
                           ],
                         ),
                       ),
-                      const SizedBox(height: 12),
+                      SizedBox(height: context.rs(20)),
+                      FigmaButton(
+                        label: KycStrings.continueLabel,
+                        isLoading: provider.isChecking,
+                        onPressed: provider.isChecking ? null : _handleContinue,
+                      ),
+                      SizedBox(height: context.rs(12)),
                       TextButton(
                         onPressed: provider.isChecking ? null : _toggleChannel,
                         child: Text(
                           provider.isMobileMode
                               ? KycStrings.useEmailInstead
                               : KycStrings.useMobileInstead,
-                          style: TextStyle(
-                            color: t.heading,
+                          style: const TextStyle(
+                            color: AppColors.primaryOrangeDark,
                             fontWeight: FontWeight.w600,
                           ),
                         ),

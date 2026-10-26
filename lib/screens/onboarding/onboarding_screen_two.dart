@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_nivasshub/utils/responsive.dart';
 import 'package:flutter_nivasshub/routes/app_routes.dart';
 import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter_nivasshub/constants/app_dimensions.dart';
@@ -107,7 +108,7 @@ class _OnboardingScreenTwoState extends State<OnboardingScreenTwo>
                       end: Alignment.bottomCenter,
                       colors: [
                         isDark ? AppColors.backgroundDark : Colors.white,
-                        isDark ? background : const Color(0xFFFBF1E5),
+                        isDark ? background : AppColors.accentTint,
                       ],
                     ),
                   ),
@@ -170,8 +171,8 @@ class _OnboardingScreenTwoState extends State<OnboardingScreenTwo>
                                 progress: descriptionT,
                                 distance: 0,
                                 child: ConstrainedBox(
-                                  constraints: const BoxConstraints(
-                                    maxWidth: 340,
+                                  constraints: BoxConstraints(
+                                    maxWidth: context.rs(340),
                                   ),
                                   child: Text(
                                     'Nivaas Hub connects residents, manages visitors, '

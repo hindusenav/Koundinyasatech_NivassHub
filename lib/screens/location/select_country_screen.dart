@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_nivasshub/constants/figma_colors.dart';
+import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter_nivasshub/widgets/shared/figma/figma_scaffold.dart';
 import 'package:flutter_nivasshub/widgets/shared/figma/figma_widgets.dart';
 
@@ -50,7 +50,9 @@ class _SelectCountryScreenState extends State<SelectCountryScreen> {
 
   List<FigmaPlace> _filter(List<FigmaPlace> items) => _query.isEmpty
       ? items
-      : items.where((p) => p.name.toLowerCase().contains(_query.toLowerCase())).toList();
+      : items
+            .where((p) => p.name.toLowerCase().contains(_query.toLowerCase()))
+            .toList();
 
   @override
   Widget build(BuildContext context) {
@@ -61,8 +63,7 @@ class _SelectCountryScreenState extends State<SelectCountryScreen> {
       title: 'Select Country',
       body: widget.isLoading
           ? const Center(child: CircularProgressIndicator())
-          : ListView(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+          : FigmaPickerList(
               children: [
                 FigmaSearchField(
                   hint: 'Search your country...',
@@ -86,7 +87,7 @@ class _SelectCountryScreenState extends State<SelectCountryScreen> {
                     child: Center(
                       child: Text(
                         'No countries found',
-                        style: TextStyle(color: FigmaColors.of(context).body),
+                        style: const TextStyle(color: AppColors.textMuted),
                       ),
                     ),
                   ),
@@ -98,33 +99,47 @@ class _SelectCountryScreenState extends State<SelectCountryScreen> {
 
 /// Rounded search box used at the top of the pickers.
 class FigmaSearchField extends StatelessWidget {
-  const FigmaSearchField({super.key, required this.hint, required this.onChanged});
+  const FigmaSearchField({
+    super.key,
+    required this.hint,
+    required this.onChanged,
+  });
 
   final String hint;
   final ValueChanged<String> onChanged;
 
   @override
   Widget build(BuildContext context) {
-    final t = FigmaColors.of(context);
     return Container(
       decoration: BoxDecoration(
-        color: t.card,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: t.cardBorder),
-        boxShadow: [BoxShadow(color: t.shadow, blurRadius: 12, offset: const Offset(0, 4))],
+        color: AppColors.cardBg,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.cardBorder),
+        boxShadow: const [
+          BoxShadow(
+            color: AppColors.shadowSoft,
+            blurRadius: 14,
+            offset: Offset(0, 5),
+          ),
+        ],
       ),
       child: TextField(
         onChanged: onChanged,
-        style: TextStyle(color: t.heading, fontSize: 14),
+        style: const TextStyle(color: AppColors.textDark, fontSize: 14),
+        cursorColor: AppColors.primaryOrange,
         decoration: InputDecoration(
           hintText: hint,
-          hintStyle: TextStyle(color: t.body, fontSize: 13),
-          prefixIcon: Icon(Icons.search, size: 20, color: t.body),
+          hintStyle: const TextStyle(color: AppColors.textMuted, fontSize: 13),
+          prefixIcon: const Icon(
+            Icons.search,
+            size: 22,
+            color: AppColors.primaryOrange,
+          ),
           filled: false,
           border: InputBorder.none,
           enabledBorder: InputBorder.none,
           focusedBorder: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(vertical: 14),
+          contentPadding: const EdgeInsets.symmetric(vertical: 15),
         ),
       ),
     );
@@ -151,62 +166,115 @@ class FigmaPlaceList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = FigmaColors.of(context);
-    return FigmaCard(
-      padding: EdgeInsets.zero,
-      child: Column(
-        children: [
-          for (var i = 0; i < places.length; i++) ...[
-            InkWell(
-              borderRadius: BorderRadius.circular(16),
-              onTap: () => onTap(places[i]),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 34,
-                      height: 34,
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        color: FigmaColors.accentBlue.withValues(alpha: 0.10),
-                        shape: places[i].leading != null ? BoxShape.rectangle : BoxShape.circle,
-                        borderRadius: places[i].leading != null ? BorderRadius.circular(8) : null,
-                      ),
-                      child: places[i].leading != null
-                          ? Text(places[i].leading!, style: const TextStyle(fontSize: 18))
-                          : Icon(icon, size: 20, color: FigmaColors.accentBlue),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            places[i].name,
-                            style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w700,
-                              color: t.heading,
-                            ),
-                          ),
-                          if (showSubtitle && places[i].subtitle != null)
-                            Text(
-                              places[i].subtitle!,
-                              style: TextStyle(fontSize: 11, color: t.body),
-                            ),
-                        ],
-                      ),
-                    ),
-                    Icon(Icons.chevron_right, size: 20, color: t.body),
-                  ],
-                ),
-              ),
-            ),
-            if (i < places.length - 1) Divider(height: 1, color: t.cardBorder),
-          ],
+    return Container(
+      width: double.infinity,
+      clipBehavior: Clip.antiAlias,
+      decoration: BoxDecoration(
+        color: AppColors.cardBg,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.cardBorder),
+        boxShadow: const [
+          BoxShadow(
+            color: AppColors.shadowSoft,
+            blurRadius: 14,
+            offset: Offset(0, 5),
+          ),
         ],
       ),
+      child: Material(
+        color: AppColors.cardBg,
+        child: Column(
+          children: [
+            for (var i = 0; i < places.length; i++) ...[
+              InkWell(
+                onTap: () => onTap(places[i]),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 12,
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 38,
+                        height: 38,
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: AppColors.accentTint,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: places[i].leading != null
+                            ? Text(
+                                places[i].leading!,
+                                style: const TextStyle(fontSize: 20),
+                              )
+                            : Icon(
+                                icon,
+                                size: 20,
+                                color: AppColors.primaryOrange,
+                              ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              places[i].name,
+                              style: const TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w700,
+                                color: AppColors.textDark,
+                              ),
+                            ),
+                            if (showSubtitle && places[i].subtitle != null)
+                              Text(
+                                places[i].subtitle!,
+                                style: const TextStyle(
+                                  fontSize: 11,
+                                  color: AppColors.textMuted,
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                      const Icon(
+                        Icons.chevron_right,
+                        size: 22,
+                        color: AppColors.textMuted,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              if (i < places.length - 1)
+                const Divider(height: 1, color: AppColors.cardBorder),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Lazily built, keyboard-safe scroll list for the picker sections.
+class FigmaPickerList extends StatelessWidget {
+  const FigmaPickerList({super.key, required this.children});
+
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+      padding: EdgeInsets.fromLTRB(
+        16,
+        16,
+        16,
+        24 + MediaQuery.of(context).viewInsets.bottom,
+      ),
+      itemCount: children.length,
+      itemBuilder: (_, i) => children[i],
     );
   }
 }

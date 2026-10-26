@@ -1,3 +1,4 @@
+import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_nivasshub/constants/figma_colors.dart';
 
@@ -42,7 +43,7 @@ class HouseholdSheetFrame extends StatelessWidget {
                 width: 40,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFE8DCC8),
+                  color: AppColors.cardBorder,
                   borderRadius: BorderRadius.circular(4),
                 ),
               ),
@@ -83,14 +84,14 @@ class HouseholdSheetFrame extends StatelessWidget {
                       const Icon(
                         Icons.error_outline,
                         size: 16,
-                        color: Color(0xFFD92D20),
+                        color: AppColors.error,
                       ),
                       const SizedBox(width: 6),
                       Expanded(
                         child: Text(
                           error!,
                           style: const TextStyle(
-                            color: Color(0xFFD92D20),
+                            color: AppColors.error,
                             fontSize: 12.5,
                           ),
                         ),
@@ -156,8 +157,8 @@ InputDecoration householdFieldDecoration(String hint, {String? prefixText}) {
     counterText: '',
     isDense: true,
     contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 15),
-    enabledBorder: border(const Color(0xFFE8DCC8)),
+    enabledBorder: border(AppColors.cardBorder),
     focusedBorder: border(FigmaColors.accentBlue),
-    border: border(const Color(0xFFE8DCC8)),
+    border: border(AppColors.cardBorder),
   );
 }

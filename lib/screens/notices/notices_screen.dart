@@ -11,6 +11,7 @@ import 'package:flutter_nivasshub/models/notices/advertisement_model.dart';
 import 'package:flutter_nivasshub/models/notices/feed_item_model.dart';
 import 'package:flutter_nivasshub/models/notices/feed_notice_model.dart';
 import 'package:flutter_nivasshub/providers/notices/notices_provider.dart';
+import 'package:flutter_nivasshub/screens/notices/community_posts_selection_screen.dart';
 import 'package:flutter_nivasshub/widgets/notices/feed_list.dart';
 
 class NoticesScreen extends StatelessWidget {
@@ -181,8 +182,8 @@ class _NoticeBoardViewState extends State<_NoticeBoardView> {
       body: AnnotatedRegion<SystemUiOverlayStyle>(
         value: SystemUiOverlayStyle(
           statusBarColor: Colors.transparent,
-          statusBarIconBrightness: isDark ? Brightness.light : Brightness.dark,
-          statusBarBrightness: isDark ? Brightness.dark : Brightness.light,
+          statusBarIconBrightness: Brightness.light,
+          statusBarBrightness: Brightness.dark,
         ),
         child: SafeArea(
           top: false,
@@ -194,29 +195,53 @@ class _NoticeBoardViewState extends State<_NoticeBoardView> {
               Container(
                 width: double.infinity,
                 padding: EdgeInsets.only(
-                  top: statusBarHeight > 0 ? statusBarHeight + 12 : 12,
-                  left: 20,
-                  right: 20,
-                  bottom: 16,
+                  top: statusBarHeight + 12,
+                  left: 18,
+                  right: 18,
+                  bottom: 20,
                 ),
-                decoration: BoxDecoration(
-                  color: isDark
-                      ? AppColors.dashboardHeaderDark
-                      : const Color(0xFFF3E8D9),
+                decoration: const BoxDecoration(
+                  gradient: AppColors.headerGradient,
+                  borderRadius: BorderRadius.vertical(
+                    bottom: Radius.circular(28),
+                  ),
                 ),
-                child: Row(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'Notice Board',
+                    const Text(
+                      'Community Feed',
                       style: TextStyle(
-                        color: isDark
-                            ? AppColors.noticesHeadingDark
-                            : const Color(0xFF000000),
-                        fontWeight: FontWeight.w600,
-                        fontSize: 18,
-                        height: 1.0,
-                        letterSpacing: 0,
+                        color: AppColors.white,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 22,
                       ),
+                    ),
+                    const SizedBox(height: 14),
+                    Row(
+                      children: [
+                        _HeaderButton(
+                          icon: Icons.add_rounded,
+                          label: 'Add New Post',
+                          filled: true,
+                          onTap: () => Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) =>
+                                  const CommunityPostsSelectionScreen(),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        // Shows notices alongside community posts using the
+                        // existing 'Community' filter.
+                        _HeaderButton(
+                          icon: Icons.campaign_outlined,
+                          label: 'Notice',
+                          filled: false,
+                          onTap: () =>
+                              setState(() => _selectedFilter = 'Community'),
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -261,17 +286,17 @@ class _NoticeBoardViewState extends State<_NoticeBoardView> {
                                       ),
                                       decoration: BoxDecoration(
                                         color: isSelected
-                                            ? const Color(0xFFFF8A00)
+                                            ? AppColors.primaryOrange
                                             : (isDark
                                                 ? AppColors.surfaceDark
-                                                : Colors.white),
+                                                : AppColors.cardBg),
                                         borderRadius: BorderRadius.circular(8),
                                         border: Border.all(
                                           color: isSelected
-                                              ? const Color(0xFFFF8A00)
+                                              ? AppColors.primaryOrange
                                               : (isDark
                                                   ? AppColors.noticesBorderDark
-                                                  : const Color(0xFFE8DCC8)),
+                                                  : AppColors.border),
                                           width: 1,
                                         ),
                                       ),
@@ -283,7 +308,7 @@ class _NoticeBoardViewState extends State<_NoticeBoardView> {
                                                 ? Colors.white
                                                 : (isDark
                                                     ? AppColors.noticesHeadingDark
-                                                    : const Color(0xFF3E2F1C)),
+                                                    : AppColors.textPrimary),
                                             fontWeight: isSelected
                                                 ? FontWeight.w600
                                                 : FontWeight.w500,
@@ -323,12 +348,12 @@ class _NoticeBoardViewState extends State<_NoticeBoardView> {
                             decoration: BoxDecoration(
                               color: isDark
                                   ? AppColors.noticesDangerBgDark
-                                  : const Color(0xFFFFF1ED),
-                              borderRadius: BorderRadius.circular(12),
+                                  : AppColors.accentTint,
+                              borderRadius: BorderRadius.circular(16),
                               border: Border.all(
                                 color: isDark
                                     ? AppColors.noticesDangerBorderDark
-                                    : const Color(0xFFFF3B30),
+                                    : AppColors.primaryOrange,
                                 width: 1,
                               ),
                             ),
@@ -340,7 +365,7 @@ class _NoticeBoardViewState extends State<_NoticeBoardView> {
                                   decoration: BoxDecoration(
                                     color: isDark
                                         ? AppColors.noticesDangerDotDark
-                                        : const Color(0xFFFF3B30),
+                                        : AppColors.primaryOrange,
                                     shape: BoxShape.circle,
                                   ),
                                 ),
@@ -350,7 +375,7 @@ class _NoticeBoardViewState extends State<_NoticeBoardView> {
                                   style: TextStyle(
                                     color: isDark
                                         ? AppColors.noticesDangerTextDark
-                                        : const Color(0xFF222528),
+                                        : AppColors.textDark,
                                     fontWeight: FontWeight.w700,
                                     fontSize: 14,
                                     height: 1.0,
@@ -378,6 +403,54 @@ class _NoticeBoardViewState extends State<_NoticeBoardView> {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Pill button in the Community Feed header.
+class _HeaderButton extends StatelessWidget {
+  const _HeaderButton({
+    required this.icon,
+    required this.label,
+    required this.filled,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String label;
+  final bool filled;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(14),
+      child: Container(
+        height: 40,
+        padding: const EdgeInsets.symmetric(horizontal: 14),
+        decoration: BoxDecoration(
+          color: filled
+              ? AppColors.primaryOrange
+              : AppColors.white.withValues(alpha: 0.2),
+          borderRadius: BorderRadius.circular(14),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 18, color: AppColors.white),
+            const SizedBox(width: 6),
+            Text(
+              label,
+              style: const TextStyle(
+                color: AppColors.white,
+                fontSize: 14,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ],
         ),
       ),
     );

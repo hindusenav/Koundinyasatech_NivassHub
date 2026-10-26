@@ -98,12 +98,12 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final headerColor =
-        isDark ? AppColors.dashboardHeaderDark : const Color(0xFFF3E8D9);
+        isDark ? AppColors.dashboardHeaderDark : AppColors.background;
     final titleColor =
-        isDark ? AppColors.noticesHeadingDark : const Color(0xFF3E2F1C);
+        isDark ? AppColors.noticesHeadingDark : AppColors.textPrimary;
     final mutedColor = isDark ? AppColors.noticesMutedDark : AppColors.noticesMutedLight;
     final accentBlue =
-        isDark ? AppColors.noticesAccentBlueDark : const Color(0xFFFF8A00);
+        isDark ? AppColors.noticesAccentBlueDark : AppColors.accent;
 
     return Scaffold(
       backgroundColor: isDark ? AppColors.surfaceDark : AppColors.surfaceLight,
@@ -136,7 +136,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
               color: isDark ? AppColors.noticesBlueTintBgDark : const Color(0xFFFFFFFF),
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
-                color: isDark ? AppColors.noticesBlueBorderDark : const Color(0xFFE8DCC8),
+                color: isDark ? AppColors.noticesBlueBorderDark : AppColors.border,
               ),
             ),
             child: Material(
@@ -181,7 +181,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                       CircleAvatar(
                         radius: 20,
                         backgroundColor:
-                            isDark ? AppColors.noticesAccentAmberDark : const Color(0xFFFF8A00),
+                            isDark ? AppColors.noticesAccentAmberDark : AppColors.accent,
                         child: const Text(
                           'A',
                           style: TextStyle(
@@ -205,7 +205,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                               fontSize: 15,
                               height: 1.0,
                               letterSpacing: 0,
-                              color: isDark ? AppColors.noticesHeadingDark : const Color(0xFF3E2F1C),
+                              color: isDark ? AppColors.noticesHeadingDark : AppColors.textPrimary,
                             ),
                           ),
                           const SizedBox(height: 2),
@@ -216,7 +216,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                               fontWeight: FontWeight.w500,
                               height: 1.0,
                               letterSpacing: 0,
-                              color: isDark ? AppColors.textSecondaryDark : const Color(0xFF3E2F1C),
+                              color: isDark ? AppColors.textSecondaryDark : AppColors.textPrimary,
                             ),
                           ),
                         ],
@@ -231,7 +231,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                     decoration: BoxDecoration(
                       color: isDark ? AppColors.surfaceDark : const Color(0xFFFFFFFF),
                       border: Border.all(
-                        color: isDark ? AppColors.noticesBorderDark : const Color(0xFFE8DCC8),
+                        color: isDark ? AppColors.noticesBorderDark : AppColors.border,
                       ),
                       borderRadius: BorderRadius.circular(8),
                     ),
@@ -245,14 +245,14 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                             fontWeight: FontWeight.w500,
                             height: 1.0,
                             letterSpacing: 0,
-                            color: isDark ? titleColor : const Color(0xFF5C4A32),
+                            color: isDark ? titleColor : AppColors.textBody,
                           ),
                         ),
                         const SizedBox(width: 6),
                         Icon(
                           Icons.keyboard_arrow_down,
                           size: 16,
-                          color: isDark ? titleColor : const Color(0xFF5C4A32),
+                          color: isDark ? titleColor : AppColors.textBody,
                         ),
                       ],
                     ),
@@ -281,7 +281,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                         fontWeight: FontWeight.w400,
                         height: 1.0,
                         letterSpacing: 0,
-                        color: isDark ? mutedColor : const Color(0xFF5C4A32),
+                        color: isDark ? mutedColor : AppColors.textBody,
                       ),
                       border: InputBorder.none,
                       focusedBorder: InputBorder.none,
@@ -453,10 +453,10 @@ class _EventConfigTile extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: isDark ? AppColors.surfaceDark : const Color(0xFFFBF1E5),
+          color: isDark ? AppColors.surfaceDark : AppColors.accentTint,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: isDark ? AppColors.noticesCardBorderDark : const Color(0xFFE8DCC8),
+            color: isDark ? AppColors.noticesCardBorderDark : AppColors.border,
             width: 1.0,
           ),
           boxShadow: [
@@ -472,17 +472,17 @@ class _EventConfigTile extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: isDark ? AppColors.noticesBlueTintBgDark : const Color(0xFFFBF1E5),
+                color: isDark ? AppColors.noticesBlueTintBgDark : AppColors.accentTint,
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(
                   color: isDark
                       ? AppColors.noticesBlueLightBorderDark
-                      : const Color(0xFFF3E8D9),
+                      : AppColors.background,
                 ),
               ),
               child: Icon(
                 icon,
-                color: isDark ? AppColors.noticesAccentBlueDark : const Color(0xFFFF8A00),
+                color: isDark ? AppColors.noticesAccentBlueDark : AppColors.accent,
                 size: 18,
               ),
             ),
@@ -498,7 +498,7 @@ class _EventConfigTile extends StatelessWidget {
                       fontSize: 14,
                       height: 1.0,
                       letterSpacing: 0,
-                      color: isDark ? AppColors.noticesHeadingDark : const Color(0xFF3E2F1C),
+                      color: isDark ? AppColors.noticesHeadingDark : AppColors.textPrimary,
                     ),
                   ),
                   const SizedBox(height: 2),
@@ -509,7 +509,7 @@ class _EventConfigTile extends StatelessWidget {
                       fontWeight: FontWeight.w400,
                       height: 1.0,
                       letterSpacing: 0,
-                      color: isDark ? AppColors.textSecondaryDark : const Color(0xFF5C4A32),
+                      color: isDark ? AppColors.textSecondaryDark : AppColors.textBody,
                     ),
                   ),
                 ],
@@ -517,7 +517,7 @@ class _EventConfigTile extends StatelessWidget {
             ),
             Icon(
               Icons.chevron_right,
-              color: isDark ? AppColors.noticesSecondaryTextDark : const Color(0xFF8A7658),
+              color: isDark ? AppColors.noticesSecondaryTextDark : AppColors.textSecondary,
               size: 16,
             ),
           ],

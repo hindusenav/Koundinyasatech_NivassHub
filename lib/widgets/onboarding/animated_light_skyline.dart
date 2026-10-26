@@ -1,3 +1,4 @@
+import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_nivasshub/constants/asset_constants.dart';
@@ -110,10 +111,10 @@ class _AnimatedLightSkylineState extends State<AnimatedLightSkyline>
 
         return ShaderMask(
           blendMode: BlendMode.dstIn,
-          shaderCallback: (r) => const LinearGradient(
+          shaderCallback: (r) => LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [Color(0x00FFFFFF), Colors.white],
+            colors: [AppColors.white.withValues(alpha: 0), AppColors.white],
             stops: [0.0, 0.22],
           ).createShader(r),
           child: Opacity(

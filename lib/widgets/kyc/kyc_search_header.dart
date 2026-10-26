@@ -24,13 +24,11 @@ class KycSearchHeader extends StatelessWidget {
 
     final headerBgColor = isDark
         ? AppColors.dashboardHeaderDark
-        : const Color(0xFFF3E8D9);
-    final textPrimary = isDark ? AppColors.textPrimaryDark : const Color(0xFF1F2937);
+        : AppColors.background;
+    final textPrimary = isDark ? AppColors.textPrimaryDark : AppColors.textDark;
 
     return Container(
-      decoration: BoxDecoration(
-        color: headerBgColor,
-      ),
+      decoration: BoxDecoration(color: headerBgColor),
       child: SafeArea(
         bottom: false,
         child: Padding(
@@ -46,11 +44,7 @@ class KycSearchHeader extends StatelessWidget {
                   child: SizedBox(
                     width: 24,
                     height: 24,
-                    child: Icon(
-                      Icons.arrow_back,
-                      size: 24,
-                      color: textPrimary,
-                    ),
+                    child: Icon(Icons.arrow_back, size: 24, color: textPrimary),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -64,7 +58,7 @@ class KycSearchHeader extends StatelessWidget {
                       border: Border.all(
                         color: isDark
                             ? AppColors.borderDark
-                            : const Color(0xFFE8DCC8),
+                            : AppColors.cardBorder,
                         width: 1,
                       ),
                     ),
@@ -80,7 +74,7 @@ class KycSearchHeader extends StatelessWidget {
                           letterSpacing: 0,
                           color: isDark
                               ? AppColors.textPrimaryDark
-                              : const Color(0xFF000000),
+                              : AppColors.textDark,
                         ),
                       ),
                     ),

@@ -21,7 +21,7 @@ class FigmaCard extends StatelessWidget {
       padding: padding,
       decoration: BoxDecoration(
         color: t.card,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(20),
         border: Border.all(color: t.cardBorder),
         boxShadow: [
           BoxShadow(
@@ -88,7 +88,7 @@ class FigmaButton extends StatelessWidget {
     final color = navy ? FigmaColors.of(context).cta : FigmaColors.orange;
     return SizedBox(
       width: double.infinity,
-      height: 52,
+      height: 48,
       child: ElevatedButton(
         onPressed: isLoading ? null : onPressed,
         style: ElevatedButton.styleFrom(
@@ -98,7 +98,7 @@ class FigmaButton extends StatelessWidget {
           disabledForegroundColor: Colors.white,
           elevation: 0,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(14),
           ),
         ),
         child: isLoading
@@ -119,8 +119,8 @@ class FigmaButton extends StatelessWidget {
                       label,
                       textAlign: TextAlign.center,
                       style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
                   ),

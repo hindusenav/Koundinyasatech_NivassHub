@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_nivasshub/constants/app_colors.dart';
+import 'package:flutter_nivasshub/utils/responsive.dart';
 import 'package:flutter_nivasshub/constants/app_icons.dart';
 import 'package:flutter_nivasshub/constants/app_radius.dart';
 import 'package:flutter_nivasshub/constants/app_spacing.dart';
@@ -16,7 +17,6 @@ import 'package:flutter_nivasshub/routes/app_routes.dart';
 import 'package:flutter_nivasshub/screens/kyc/kyc_documents_screen.dart';
 import 'package:flutter_nivasshub/services/auth/sms_otp_listener.dart';
 import 'package:flutter_nivasshub/widgets/auth/otp_input_boxes.dart';
-import 'package:flutter_nivasshub/constants/figma_colors.dart';
 import 'package:flutter_nivasshub/widgets/shared/buttons/custom_button.dart';
 import 'package:flutter_nivasshub/widgets/shared/figma/figma_scaffold.dart';
 import 'package:flutter_nivasshub/widgets/shared/figma/figma_widgets.dart';
@@ -35,6 +35,7 @@ class OtpMobileEmailVerificationScreenArgs {
   });
 
   final String userId;
+
   /// Unknown when resuming from a registration-check result.
   final String? email;
   final String? mobileNumber;
@@ -177,21 +178,21 @@ class _OtpMobileEmailVerificationScreenState
     return FigmaLightScaffold(
       showBackButton: false,
       body: LayoutBuilder(
-          builder: (context, constraints) {
-            return SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
-              child: ConstrainedBox(
-                constraints: BoxConstraints(minHeight: constraints.maxHeight),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    const Center(child: FigmaBadge()),
-                    const SizedBox(height: 20),
-                    const FigmaTitleBlock(
-                      title: KycStrings.otpVerificationTitle,
-                      subtitle: KycStrings.otpVerificationSubtitle,
-                    ),
-                    if (pending.contains(OtpChannel.mobile)) ...[
+        builder: (context, constraints) {
+          return SingleChildScrollView(
+            padding: context.pageInsets,
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minHeight: constraints.maxHeight),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const Center(child: FigmaBadge()),
+                  SizedBox(height: context.rs(20)),
+                  const FigmaTitleBlock(
+                    title: KycStrings.otpVerificationTitle,
+                    subtitle: KycStrings.otpVerificationSubtitle,
+                  ),
+                  if (pending.contains(OtpChannel.mobile)) ...[
                     AppSpacing.gapLg,
                     _OtpCard(
                       channel: OtpChannel.mobile,
@@ -199,16 +200,17 @@ class _OtpMobileEmailVerificationScreenState
                       title: KycStrings.otpMobileSectionTitle,
                       subtitle: widget.args.mobileNumber ?? '',
                       state: provider.stateFor(OtpChannel.mobile),
-                      cooldownSeconds:
-                          provider.remainingCooldownSeconds(OtpChannel.mobile),
+                      cooldownSeconds: provider.remainingCooldownSeconds(
+                        OtpChannel.mobile,
+                      ),
                       codeController: _mobileOtpController,
                       onChanged: (value) => setState(() => _mobileOtp = value),
                       onVerify: () => _verify(OtpChannel.mobile, _mobileOtp),
                       onResend: () => _resend(OtpChannel.mobile),
                       canVerify: _mobileOtp.length == 6,
                     ),
-                    ],
-                    if (pending.contains(OtpChannel.email)) ...[
+                  ],
+                  if (pending.contains(OtpChannel.email)) ...[
                     AppSpacing.gapLg,
                     _OtpCard(
                       channel: OtpChannel.email,
@@ -216,19 +218,20 @@ class _OtpMobileEmailVerificationScreenState
                       title: KycStrings.otpEmailSectionTitle,
                       subtitle: widget.args.email ?? '',
                       state: provider.stateFor(OtpChannel.email),
-                      cooldownSeconds:
-                          provider.remainingCooldownSeconds(OtpChannel.email),
+                      cooldownSeconds: provider.remainingCooldownSeconds(
+                        OtpChannel.email,
+                      ),
                       onChanged: (value) => setState(() => _emailOtp = value),
                       onVerify: () => _verify(OtpChannel.email, _emailOtp),
                       onResend: () => _resend(OtpChannel.email),
                       canVerify: _emailOtp.length == 6,
                     ),
-                    ],
                   ],
-                ),
+                ],
               ),
-            );
-          },
+            ),
+          );
+        },
       ),
     );
   }
@@ -266,19 +269,22 @@ class _OtpCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = FigmaColors.of(context);
-    final textSecondary = t.body;
+    const textSecondary = AppColors.textMuted;
 
     return Container(
       decoration: BoxDecoration(
-        color: t.card,
-        borderRadius: BorderRadius.circular(16),
+        color: AppColors.cardBg,
+        borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: state.isVerified ? AppColors.success : t.cardBorder,
+          color: state.isVerified ? AppColors.badgeGreen : AppColors.cardBorder,
           width: state.isVerified ? 1.5 : 1,
         ),
-        boxShadow: [
-          BoxShadow(color: t.shadow, blurRadius: 18, offset: const Offset(0, 6)),
+        boxShadow: const [
+          BoxShadow(
+            color: AppColors.shadowSoft,
+            blurRadius: 18,
+            offset: Offset(0, 6),
+          ),
         ],
       ),
       padding: AppSpacing.all(AppSpacing.lg),
@@ -292,13 +298,16 @@ class _OtpCard extends StatelessWidget {
                 height: 44,
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
-                  color: (state.isVerified ? AppColors.success : AppColors.primary)
-                      .withValues(alpha: 0.1),
+                  color: state.isVerified
+                      ? AppColors.badgeGreenBg
+                      : AppColors.accentTint,
                   borderRadius: AppRadius.radiusMd,
                 ),
                 child: Icon(
                   state.isVerified ? AppIcons.checkCircle : icon,
-                  color: state.isVerified ? AppColors.success : AppColors.primary,
+                  color: state.isVerified
+                      ? AppColors.badgeGreen
+                      : AppColors.primaryOrange,
                 ),
               ),
               AppSpacing.gapWMd,
@@ -306,10 +315,18 @@ class _OtpCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(title, style: AppTextStyles.titleMedium),
+                    Text(
+                      title,
+                      style: AppTextStyles.titleMedium.copyWith(
+                        color: AppColors.textDark,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
                     Text(
                       subtitle,
-                      style: AppTextStyles.bodySmall.copyWith(color: textSecondary),
+                      style: AppTextStyles.bodySmall.copyWith(
+                        color: textSecondary,
+                      ),
                       overflow: TextOverflow.ellipsis,
                     ),
                   ],
@@ -319,12 +336,14 @@ class _OtpCard extends StatelessWidget {
                 Container(
                   padding: AppSpacing.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
-                    color: AppColors.successLight,
+                    color: AppColors.badgeGreenBg,
                     borderRadius: AppRadius.radiusFull,
                   ),
                   child: Text(
                     KycStrings.otpVerifiedLabel,
-                    style: AppTextStyles.labelSmall.copyWith(color: AppColors.success),
+                    style: AppTextStyles.labelSmall.copyWith(
+                      color: AppColors.badgeGreen,
+                    ),
                   ),
                 ),
             ],
@@ -357,7 +376,13 @@ class _OtpCard extends StatelessWidget {
               onPressed: canVerify && !state.isVerifying ? onVerify : null,
             ),
             AppSpacing.gapSm,
-            Center(child: _ResendRow(state: state, cooldownSeconds: cooldownSeconds, onResend: onResend)),
+            Center(
+              child: _ResendRow(
+                state: state,
+                cooldownSeconds: cooldownSeconds,
+                onResend: onResend,
+              ),
+            ),
           ],
         ],
       ),
@@ -378,10 +403,7 @@ class _ResendRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final textSecondary = isDark
-        ? AppColors.textSecondaryDark
-        : AppColors.textSecondaryLight;
+    const textSecondary = AppColors.textMuted;
 
     if (state.isResending) {
       return Text(
@@ -397,13 +419,12 @@ class _ResendRow extends StatelessWidget {
       );
     }
 
-    final t = FigmaColors.of(context);
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        color: t.field,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: t.fieldBorder),
+        color: AppColors.accentTint,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.cardBorder),
       ),
       alignment: Alignment.center,
       child: CustomButton(

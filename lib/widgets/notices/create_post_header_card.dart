@@ -23,7 +23,7 @@ class CreateCommunityPostHeaderCard extends StatelessWidget {
             fontWeight: FontWeight.w700,
             height: 1.0,
             letterSpacing: 0,
-            color: isDark ? AppColors.noticesHeadingDark : const Color(0xFF3E2F1C),
+            color: isDark ? AppColors.noticesHeadingDark : AppColors.textPrimary,
           ),
         ),
         const SizedBox(height: 4),
@@ -34,7 +34,7 @@ class CreateCommunityPostHeaderCard extends StatelessWidget {
             fontWeight: FontWeight.w400,
             height: 1.0,
             letterSpacing: 0,
-            color: isDark ? AppColors.noticesSecondaryTextDark : const Color(0xFF5C4A32),
+            color: isDark ? AppColors.noticesSecondaryTextDark : AppColors.textBody,
           ),
         ),
         const SizedBox(height: 16),
@@ -92,18 +92,18 @@ class _OptionCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final headingColor =
-        isDark ? AppColors.noticesHeadingDark : const Color(0xFF3E2F1C);
+        isDark ? AppColors.noticesHeadingDark : AppColors.textPrimary;
     final secondaryColor =
-        isDark ? AppColors.noticesSecondaryTextDark : const Color(0xFF5C4A32);
+        isDark ? AppColors.noticesSecondaryTextDark : AppColors.textBody;
     final accentBlue =
-        isDark ? AppColors.noticesAccentBlueDark : const Color(0xFFFF8A00);
+        isDark ? AppColors.noticesAccentBlueDark : AppColors.accent;
 
     return Container(
       decoration: BoxDecoration(
-        color: isDark ? AppColors.surfaceDark : const Color(0xFFFBF1E5),
+        color: isDark ? AppColors.surfaceDark : AppColors.accentTint,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: isDark ? AppColors.noticesCardBorderDark : const Color(0xFFFBF1E5),
+          color: isDark ? AppColors.noticesCardBorderDark : AppColors.accentTint,
           width: 1,
         ),
         boxShadow: [
@@ -129,12 +129,12 @@ class _OptionCard extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: isDark
                         ? AppColors.noticesBlueTintBgDark
-                        : const Color(0xFFFBF1E5),
+                        : AppColors.accentTint,
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(
                       color: isDark
                           ? AppColors.noticesBlueLightBorderDark
-                          : const Color(0xFFFBF1E5),
+                          : AppColors.accentTint,
                       width: 1,
                     ),
                     boxShadow: [

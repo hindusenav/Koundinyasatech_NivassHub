@@ -23,6 +23,8 @@ import 'package:flutter_nivasshub/routes/app_routes.dart';
 import 'package:flutter_nivasshub/screens/auth/otp_mobile_email_verification_screen.dart';
 import 'package:flutter_nivasshub/screens/kyc/kyc_residence_role_screen.dart';
 import 'package:flutter_nivasshub/utils/form_validators.dart';
+import 'package:flutter_nivasshub/constants/app_colors.dart';
+import 'package:flutter_nivasshub/utils/responsive.dart';
 import 'package:flutter_nivasshub/constants/figma_colors.dart';
 import 'package:flutter_nivasshub/widgets/shared/figma/figma_scaffold.dart';
 import 'package:flutter_nivasshub/widgets/shared/figma/figma_widgets.dart';
@@ -122,34 +124,35 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
       return;
     }
 
-    final done = await FigmaPlacePicker.locationFlow<LocationNode, RegistrationState>(
-      context,
-      countries: countries,
-      countryLabel: (c) => c.name,
-      countryFlag: (c) => c.flagEmoji,
-      onCountry: (c) {
-        // The selection is recorded synchronously; the follow-up fetch of the
-        // next level runs on its own, so the State page need not wait for it.
-        unawaited(location.select(LocationLevel.country, c));
-        master.selectCountry(c.id);
-        society.reset();
-      },
-      states: () => master.statesForSelectedCountry,
-      stateLabel: (s) => s.provinceName,
-      onState: (s) {
-        master.selectState(s);
-        society.reset();
-      },
-      cities: () => master.citiesForSelectedState,
-      onCity: (c) {
-        master.selectCity(c);
-        society.reset();
-      },
-      citySubtitle: () => [
-        master.selectedState?.provinceName,
-        location.selectedFor(LocationLevel.country)?.name,
-      ].whereType<String>().join(', '),
-    );
+    final done =
+        await FigmaPlacePicker.locationFlow<LocationNode, RegistrationState>(
+          context,
+          countries: countries,
+          countryLabel: (c) => c.name,
+          countryFlag: (c) => c.flagEmoji,
+          onCountry: (c) {
+            // The selection is recorded synchronously; the follow-up fetch of the
+            // next level runs on its own, so the State page need not wait for it.
+            unawaited(location.select(LocationLevel.country, c));
+            master.selectCountry(c.id);
+            society.reset();
+          },
+          states: () => master.statesForSelectedCountry,
+          stateLabel: (s) => s.provinceName,
+          onState: (s) {
+            master.selectState(s);
+            society.reset();
+          },
+          cities: () => master.citiesForSelectedState,
+          onCity: (c) {
+            master.selectCity(c);
+            society.reset();
+          },
+          citySubtitle: () => [
+            master.selectedState?.provinceName,
+            location.selectedFor(LocationLevel.country)?.name,
+          ].whereType<String>().join(', '),
+        );
     if (!mounted) return;
 
     if (!done) {
@@ -167,7 +170,8 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
     LocationProvider location,
     RegistrationMasterDataProvider master,
   ) {
-    bool busy() => location.isLoading(LocationLevel.country) || master.isLoading;
+    bool busy() =>
+        location.isLoading(LocationLevel.country) || master.isLoading;
     if (!busy()) return Future.value();
 
     final done = Completer<void>();
@@ -184,7 +188,10 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
   }
 
   String get _countryCode =>
-      context.read<LocationProvider>().selectedFor(LocationLevel.country)?.dialCode ??
+      context
+          .read<LocationProvider>()
+          .selectedFor(LocationLevel.country)
+          ?.dialCode ??
       widget.args.identifier.countryCode ??
       '+91';
 
@@ -329,7 +336,9 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
       AppRoutes.otpMobileEmailVerification,
       arguments: OtpMobileEmailVerificationScreenArgs(
         userId: result.userId,
-        email: result.email.isNotEmpty ? result.email : _emailController.text.trim(),
+        email: result.email.isNotEmpty
+            ? result.email
+            : _emailController.text.trim(),
         mobileNumber: result.mobileNumber.isNotEmpty
             ? result.mobileNumber
             : _mobileController.text.trim(),
@@ -361,128 +370,167 @@ class _UserDetailsScreenState extends State<UserDetailsScreen> {
       );
     }
 
-
     return FigmaHeaderScaffold(
       title: KycStrings.userDetailsTitle,
       body: SafeArea(
         top: false,
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text(
-                  KycStrings.userDetailsSubtitle,
-                  style: AppTextStyles.bodyMedium.copyWith(color: t.body),
-                ),
-                const SizedBox(height: 16),
-
-                FigmaCard(
+        child: Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                keyboardDismissBehavior:
+                    ScrollViewKeyboardDismissBehavior.onDrag,
+                padding: context.pageInsets,
+                child: Form(
+                  key: _formKey,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      const FigmaSectionLabel(
-                        KycStrings.sectionPersonalDetails,
+                      Text(
+                        KycStrings.userDetailsSubtitle,
+                        style: AppTextStyles.bodyMedium.copyWith(color: t.body),
                       ),
-                      AppSpacing.gapMd,
-                      CustomTextField(
-                        controller: _nameController,
-                        label: KycStrings.fullNameLabel,
-                        hint: KycStrings.fullNameHint,
-                        prefixIcon: AppIcons.profile,
-                        textInputAction: TextInputAction.next,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.allow(
-                            RegExp(r'[A-Za-z ]'),
-                          ),
-                        ],
-                        validator: FormValidators.fullName,
-                      ),
-                      AppSpacing.gapMd,
-                      CustomTextField(
-                        controller: _mobileController,
-                        label: '${KycStrings.mobileLabel} ($_countryCode)',
-                        hint: KycStrings.mobileHint,
-                        prefixIcon: AppIcons.phone,
-                        keyboardType: TextInputType.phone,
-                        textInputAction: TextInputAction.next,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly,
-                          LengthLimitingTextInputFormatter(15),
-                        ],
-                        validator: FormValidators.mobileNumberForDialCode(
-                          _countryCode,
+                      context.gapMd,
+
+                      FigmaCard(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            const FigmaSectionLabel(
+                              KycStrings.sectionPersonalDetails,
+                            ),
+                            AppSpacing.gapMd,
+                            CustomTextField(
+                              controller: _nameController,
+                              label: KycStrings.fullNameLabel,
+                              hint: KycStrings.fullNameHint,
+                              prefixIcon: AppIcons.profile,
+                              textInputAction: TextInputAction.next,
+                              inputFormatters: [
+                                FilteringTextInputFormatter.allow(
+                                  RegExp(r'[A-Za-z ]'),
+                                ),
+                              ],
+                              validator: FormValidators.fullName,
+                            ),
+                            AppSpacing.gapMd,
+                            CustomTextField(
+                              controller: _mobileController,
+                              label:
+                                  '${KycStrings.mobileLabel} ($_countryCode)',
+                              hint: KycStrings.mobileHint,
+                              prefixIcon: AppIcons.phone,
+                              keyboardType: TextInputType.phone,
+                              textInputAction: TextInputAction.next,
+                              inputFormatters: [
+                                FilteringTextInputFormatter.digitsOnly,
+                                LengthLimitingTextInputFormatter(15),
+                              ],
+                              validator: FormValidators.mobileNumberForDialCode(
+                                _countryCode,
+                              ),
+                            ),
+                            AppSpacing.gapMd,
+                            CustomTextField(
+                              controller: _emailController,
+                              label: KycStrings.emailLabel,
+                              hint: KycStrings.emailHint,
+                              prefixIcon: AppIcons.email,
+                              keyboardType: TextInputType.emailAddress,
+                              textInputAction: TextInputAction.next,
+                              validator: FormValidators.email,
+                            ),
+                          ],
                         ),
                       ),
-                      AppSpacing.gapMd,
-                      CustomTextField(
-                        controller: _emailController,
-                        label: KycStrings.emailLabel,
-                        hint: KycStrings.emailHint,
-                        prefixIcon: AppIcons.email,
-                        keyboardType: TextInputType.emailAddress,
-                        textInputAction: TextInputAction.next,
-                        validator: FormValidators.email,
+                      context.gapMd,
+
+                      FigmaCard(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            const FigmaSectionLabel(
+                              KycStrings.sectionLocationDetails,
+                            ),
+                            AppSpacing.gapMd,
+                            _CountryField(locked: _locationLocked),
+                            AppSpacing.gapMd,
+                            _StateField(locked: _locationLocked),
+                            AppSpacing.gapMd,
+                            _CityField(locked: _locationLocked),
+                          ],
+                        ),
+                      ),
+                      context.gapMd,
+
+                      FigmaCard(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            const FigmaSectionLabel(
+                              KycStrings.sectionPropertyDetails,
+                            ),
+                            AppSpacing.gapMd,
+                            const _SocietyField(),
+                            AppSpacing.gapMd,
+                            const _TowerField(),
+                            AppSpacing.gapMd,
+                            const _FloorField(),
+                            AppSpacing.gapMd,
+                            const _UnitField(),
+                            AppSpacing.gapMd,
+                            const _UnitBranchField(),
+                          ],
+                        ),
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(height: 16),
-
-                FigmaCard(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      const FigmaSectionLabel(
-                        KycStrings.sectionLocationDetails,
-                      ),
-                      AppSpacing.gapMd,
-                      _CountryField(locked: _locationLocked),
-                      AppSpacing.gapMd,
-                      _StateField(locked: _locationLocked),
-                      AppSpacing.gapMd,
-                      _CityField(locked: _locationLocked),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 16),
-
-                FigmaCard(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      const FigmaSectionLabel(
-                        KycStrings.sectionPropertyDetails,
-                      ),
-                      AppSpacing.gapMd,
-                      const _SocietyField(),
-                      AppSpacing.gapMd,
-                      const _TowerField(),
-                      AppSpacing.gapMd,
-                      const _FloorField(),
-                      AppSpacing.gapMd,
-                      const _UnitField(),
-                      AppSpacing.gapMd,
-                      const _UnitBranchField(),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 16),
-
-                const SizedBox(height: 24),
-
-                FigmaButton(
-                  label: KycStrings.submitDetails,
-                  navy: true,
-                  isLoading: details.isSubmitting,
-                  onPressed: details.isSubmitting ? null : _handleSubmit,
-                ),
-              ],
+              ),
             ),
-          ),
+            _StickySubmitBar(
+              label: KycStrings.submitDetails,
+              isLoading: details.isSubmitting,
+              onPressed: details.isSubmitting ? null : _handleSubmit,
+            ),
+          ],
         ),
+      ),
+    );
+  }
+}
+
+/// Bottom bar pinned under the scroll area holding the primary CTA.
+class _StickySubmitBar extends StatelessWidget {
+  const _StickySubmitBar({
+    required this.label,
+    required this.onPressed,
+    this.isLoading = false,
+  });
+
+  final String label;
+  final VoidCallback? onPressed;
+  final bool isLoading;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: Responsive.horizontalPadding(context), vertical: context.rs(12)),
+      decoration: const BoxDecoration(
+        color: AppColors.cardBg,
+        border: Border(top: BorderSide(color: AppColors.cardBorder)),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.shadowSoft,
+            blurRadius: 16,
+            offset: Offset(0, -4),
+          ),
+        ],
+      ),
+      child: FigmaButton(
+        label: label,
+        isLoading: isLoading,
+        onPressed: onPressed,
       ),
     );
   }
@@ -515,7 +563,10 @@ class _CountryField extends StatelessWidget {
     );
   }
 
-  Future<void> _openPicker(BuildContext context, LocationProvider location) async {
+  Future<void> _openPicker(
+    BuildContext context,
+    LocationProvider location,
+  ) async {
     if (location.stateFor(LocationLevel.country) == LocationLoadState.initial) {
       await location.load(LocationLevel.country);
       if (!context.mounted) return;
@@ -551,13 +602,14 @@ class _StateField extends StatelessWidget {
   Widget build(BuildContext context) {
     final location = context.watch<LocationProvider>();
     final master = context.watch<RegistrationMasterDataProvider>();
-    final countrySelected =
-        location.selectedFor(LocationLevel.country) != null;
+    final countrySelected = location.selectedFor(LocationLevel.country) != null;
 
     return SelectionField(
       label: KycStrings.stateLabel,
       value: master.selectedState?.provinceName,
-      hint: countrySelected ? KycStrings.stateHint : KycStrings.selectCountryFirst,
+      hint: countrySelected
+          ? KycStrings.stateHint
+          : KycStrings.selectCountryFirst,
       prefixIcon: Icons.map_outlined,
       onTap: countrySelected && !locked
           ? () => _openPicker(context, master)
@@ -609,9 +661,9 @@ class _CityField extends StatelessWidget {
     BuildContext context,
     RegistrationMasterDataProvider master,
   ) async {
-    final country = context
-        .read<LocationProvider>()
-        .selectedFor(LocationLevel.country);
+    final country = context.read<LocationProvider>().selectedFor(
+      LocationLevel.country,
+    );
     final choice = await FigmaPlacePicker.city<String>(
       context,
       items: master.citiesForSelectedState,
@@ -685,7 +737,9 @@ class _TowerField extends StatelessWidget {
           ? KycStrings.towerHint
           : KycStrings.selectSocietyFirst,
       isLoading: society.isLoading,
-      onTap: society.isTowerEnabled ? () => _openPicker(context, society) : null,
+      onTap: society.isTowerEnabled
+          ? () => _openPicker(context, society)
+          : null,
     );
   }
 
@@ -724,7 +778,9 @@ class _FloorField extends StatelessWidget {
       hint: society.isFloorEnabled
           ? KycStrings.floorHint
           : KycStrings.selectTowerFirst,
-      onTap: society.isFloorEnabled ? () => _openPicker(context, society) : null,
+      onTap: society.isFloorEnabled
+          ? () => _openPicker(context, society)
+          : null,
     );
   }
 
@@ -848,7 +904,9 @@ class _RoleStepPage extends StatelessWidget {
       dropdowns: [
         ResidenceRoleDropdown(
           label: KycStrings.subRoleLabel,
-          hint: roleSelected ? KycStrings.subRoleHint : KycStrings.selectRoleFirst,
+          hint: roleSelected
+              ? KycStrings.subRoleHint
+              : KycStrings.selectRoleFirst,
           value: master.selectedSubRole?.description,
           items: [for (final s in subRoles) s.description],
           enabled: roleSelected,

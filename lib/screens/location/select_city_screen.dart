@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_nivasshub/constants/figma_colors.dart';
+import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter_nivasshub/screens/location/select_country_screen.dart';
 import 'package:flutter_nivasshub/widgets/location/confirm_city_sheet.dart';
 import 'package:flutter_nivasshub/widgets/shared/figma/figma_scaffold.dart';
@@ -33,7 +33,9 @@ class _SelectCityScreenState extends State<SelectCityScreen> {
 
   List<FigmaPlace> _filter(List<FigmaPlace> items) => _query.isEmpty
       ? items
-      : items.where((p) => p.name.toLowerCase().contains(_query.toLowerCase())).toList();
+      : items
+            .where((p) => p.name.toLowerCase().contains(_query.toLowerCase()))
+            .toList();
 
   Future<void> _pick(FigmaPlace city) async {
     final confirmed = await ConfirmCitySheet.show(context, city: city);
@@ -42,7 +44,6 @@ class _SelectCityScreenState extends State<SelectCityScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final t = FigmaColors.of(context);
     final popular = _filter(widget.popular);
     final all = _filter(widget.all);
 
@@ -50,8 +51,7 @@ class _SelectCityScreenState extends State<SelectCityScreen> {
       title: 'Select City',
       body: widget.isLoading
           ? const Center(child: CircularProgressIndicator())
-          : ListView(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+          : FigmaPickerList(
               children: [
                 FigmaSearchField(
                   hint: 'Search your city...',
@@ -69,7 +69,8 @@ class _SelectCityScreenState extends State<SelectCityScreen> {
                       crossAxisSpacing: 0,
                       childAspectRatio: 1.15,
                       children: [
-                        for (final city in popular) _CityTile(city: city, onTap: () => _pick(city)),
+                        for (final city in popular)
+                          _CityTile(city: city, onTap: () => _pick(city)),
                       ],
                     ),
                   ),
@@ -89,7 +90,10 @@ class _SelectCityScreenState extends State<SelectCityScreen> {
                   Padding(
                     padding: const EdgeInsets.only(top: 48),
                     child: Center(
-                      child: Text('No cities found', style: TextStyle(color: t.body)),
+                      child: const Text(
+                        'No cities found',
+                        style: TextStyle(color: AppColors.textMuted),
+                      ),
                     ),
                   ),
               ],
@@ -106,21 +110,24 @@ class _CityTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = FigmaColors.of(context);
     return InkWell(
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
           border: Border(
-            right: BorderSide(color: t.cardBorder),
-            bottom: BorderSide(color: t.cardBorder),
+            right: BorderSide(color: AppColors.cardBorder),
+            bottom: BorderSide(color: AppColors.cardBorder),
           ),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             city.image == null
-                ? Icon(Icons.location_city_outlined, size: 28, color: FigmaColors.accentBlue)
+                ? const Icon(
+                    Icons.location_city_outlined,
+                    size: 28,
+                    color: AppColors.primaryOrange,
+                  )
                 : Image.asset(city.image!, height: 34, fit: BoxFit.contain),
             const SizedBox(height: 8),
             Text(
@@ -128,7 +135,11 @@ class _CityTile extends StatelessWidget {
               textAlign: TextAlign.center,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: t.heading),
+              style: const TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+                color: AppColors.textDark,
+              ),
             ),
           ],
         ),

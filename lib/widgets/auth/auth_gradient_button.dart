@@ -1,3 +1,4 @@
+import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_nivasshub/constants/app_dimensions.dart';
 import 'package:flutter_nivasshub/constants/app_radius.dart';
@@ -46,7 +47,7 @@ class AuthGradientButton extends StatelessWidget {
           gradient: const LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [FigmaColors.orange, Color(0xFF7A4619)],
+            colors: [FigmaColors.orange, AppColors.headerEnd],
           ),
           boxShadow: [
             BoxShadow(

@@ -16,7 +16,7 @@ import 'package:flutter_nivasshub/widgets/kyc/kyc_document_card.dart';
 import 'package:flutter_nivasshub/widgets/kyc/kyc_file_preview_sheet.dart';
 import 'package:flutter_nivasshub/widgets/kyc/kyc_upload_source_sheet.dart';
 import 'package:flutter_nivasshub/widgets/kyc/kyc_verdict_panel.dart';
-import 'package:flutter_nivasshub/constants/figma_colors.dart';
+import 'package:flutter_nivasshub/widgets/kyc/kyc_header_progress.dart';
 import 'package:flutter_nivasshub/widgets/shared/figma/figma_scaffold.dart';
 import 'package:flutter_nivasshub/widgets/shared/figma/figma_widgets.dart';
 import 'package:flutter_nivasshub/widgets/shared/buttons/primary_button.dart';
@@ -218,22 +218,30 @@ class _KycDocumentsScreenState extends State<KycDocumentsScreen> {
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<KycProvider>();
-    final t = FigmaColors.of(context);
-
     final args = widget.args;
+    final isReady =
+        provider.state != KycProviderState.initial &&
+        provider.state != KycProviderState.loading;
+    final hasFetchError =
+        provider.state == KycProviderState.error && provider.slots.isEmpty;
 
     return FigmaHeaderScaffold(
       title: KycStrings.kycTitle,
       showBackButton: false,
+      bottom: isReady && !hasFetchError
+          ? KycHeaderBadge(
+              text: args.role == null
+                  ? '${provider.slots.length} documents required'
+                  : '${args.role!.label} · ${provider.slots.length} documents required',
+            )
+          : null,
       // `initialise` runs in a post-frame callback (it notifies listeners,
       // so it cannot run during build), leaving one frame with no slots.
       // It also fetches `GET /kyc/documents`, which shows the same loader
       // for the round trip rather than a blank list.
-      body:
-          provider.state == KycProviderState.initial ||
-              provider.state == KycProviderState.loading
+      body: !isReady
           ? const Loader()
-          : provider.state == KycProviderState.error && provider.slots.isEmpty
+          : hasFetchError
           ? _FetchErrorView(
               message: provider.errorMessage ?? KycStrings.genericError,
               onRetry: () => context.read<KycProvider>().initialise(
@@ -245,88 +253,94 @@ class _KycDocumentsScreenState extends State<KycDocumentsScreen> {
                 rejectionReason: args.rejectionReason,
               ),
             )
-          : SafeArea(
-              top: false,
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    const FigmaProgressStrip(
-                      label: 'Onboarding Progress',
-                      current: 2,
-                      total: 3,
-                    ),
-                    AppSpacing.gapLg,
-                    const Center(child: FigmaBadge(size: 64, light: true)),
-                    AppSpacing.gapMd,
-                    if (args.role != null) ...[
-                      Text(
-                        'Upload ${args.role!.label} Documents',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w700,
-                          color: t.heading,
+          : Column(
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.fromLTRB(16, 20, 16, 16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        if (args.role != null) ...[
+                          Text(
+                            'Upload ${args.role!.label} Documents',
+                            style: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.textDark,
+                            ),
+                          ),
+                          AppSpacing.gapXs,
+                        ],
+                        Text(
+                          args.isResubmission
+                              ? KycStrings.kycResubmitSubtitle
+                              : KycStrings.kycSubtitle,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: AppColors.textMuted,
+                          ),
                         ),
-                      ),
-                      AppSpacing.gapSm,
-                    ],
-                    Text(
-                      args.isResubmission
-                          ? KycStrings.kycResubmitSubtitle
-                          : KycStrings.kycSubtitle,
-                      textAlign: TextAlign.center,
-                      style: AppTextStyles.bodyMedium.copyWith(color: t.body),
+                        if (args.isResubmission &&
+                            (args.rejectionReason != null ||
+                                args.invalidDocuments.isNotEmpty)) ...[
+                          AppSpacing.gapMd,
+                          KycVerdictPanel(
+                            status: KycVerificationStatus.correctionRequired,
+                            reason: args.rejectionReason,
+                            issues: args.invalidDocuments,
+                          ),
+                        ],
+                        AppSpacing.gapSm,
+                        if (provider.slots.isEmpty)
+                          const Text(
+                            KycStrings.noOptionsAvailable,
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: AppColors.textMuted,
+                            ),
+                          ),
+                        for (final slot in provider.slots)
+                          KycDocumentCard(
+                            slot: slot,
+                            onUpload: slot.status.isBusy
+                                ? () {}
+                                : () => _handleUpload(slot.document.documentId),
+                            onRemove: () =>
+                                provider.remove(slot.document.documentId),
+                          ),
+                      ],
                     ),
-                    AppSpacing.gapSm,
-                    Text(
-                      args.role == null
-                          ? '${provider.slots.length} documents required'
-                          : '${args.role!.label} · ${provider.slots.length} documents required',
-                      textAlign: TextAlign.center,
-                      style: AppTextStyles.labelMedium.copyWith(
-                        color: FigmaColors.orange,
-                        fontWeight: FontWeight.w600,
-                      ),
+                  ),
+                ),
+                // Sticky submit bar, kept above the keyboard / system inset.
+                Container(
+                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+                  decoration: BoxDecoration(
+                    color: AppColors.cardBg,
+                    border: Border(
+                      top: BorderSide(color: AppColors.cardBorder),
                     ),
-                    if (args.isResubmission &&
-                        (args.rejectionReason != null ||
-                            args.invalidDocuments.isNotEmpty)) ...[
-                      AppSpacing.gapMd,
-                      KycVerdictPanel(
-                        status: KycVerificationStatus.correctionRequired,
-                        reason: args.rejectionReason,
-                        issues: args.invalidDocuments,
+                    boxShadow: const [
+                      BoxShadow(
+                        color: AppColors.shadowSoft,
+                        blurRadius: 12,
+                        offset: Offset(0, -2),
                       ),
                     ],
-                    AppSpacing.gapMd,
-                    if (provider.slots.isEmpty)
-                      Text(
-                        KycStrings.noOptionsAvailable,
-                        style: AppTextStyles.bodyMedium.copyWith(color: t.body),
-                      ),
-                    for (final slot in provider.slots)
-                      KycDocumentCard(
-                        slot: slot,
-                        onUpload: slot.status.isBusy
-                            ? () {}
-                            : () => _handleUpload(slot.document.documentId),
-                        onRemove: () =>
-                            provider.remove(slot.document.documentId),
-                      ),
-                    AppSpacing.gapLg,
-                    FigmaButton(
+                  ),
+                  child: SafeArea(
+                    top: false,
+                    child: FigmaButton(
                       label: KycStrings.submitKyc,
-                      navy: true,
                       isLoading: provider.isSubmitting,
                       // Enabled only once every card carries a document id —
                       // freshly uploaded or preserved from a prior attempt.
                       onPressed: provider.canSubmit ? _handleSubmit : null,
                     ),
-                  ],
+                  ),
                 ),
-              ),
+              ],
             ),
     );
   }

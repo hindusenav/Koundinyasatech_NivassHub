@@ -54,7 +54,7 @@ class QuickActionCard extends StatelessWidget {
           decoration: BoxDecoration(
             color: AppColors.surfaceLight,
             borderRadius: AppRadius.radiusMd,
-            border: Border.all(color: const Color(0xFFE8DCC8), width: 1),
+            border: Border.all(color: const Color(0xFFEFE7DA), width: 1),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,

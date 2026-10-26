@@ -54,14 +54,14 @@ class _ScheduleVisitScreenState extends State<ScheduleVisitScreen> {
     final titleName = widget.projectName.isNotEmpty ? widget.projectName : 'Century Bliss';
 
     final cardColor = isDark ? AppColors.surfaceDark : const Color(0xFFFFFFFF);
-    final cardBorderColor = isDark ? AppColors.noticesCardBorderDark : const Color(0xFFE8DCC8);
-    final amberAccent = const Color(0xFFFF8A00);
-    final amberStrongBorder = const Color(0xFFFF8A00);
-    final fieldFillColor = isDark ? AppColors.noticesBackgroundDark : const Color(0xFFFBF1E5);
+    final cardBorderColor = isDark ? AppColors.noticesCardBorderDark : AppColors.border;
+    final amberAccent = AppColors.accent;
+    final amberStrongBorder = AppColors.accent;
+    final fieldFillColor = isDark ? AppColors.noticesBackgroundDark : AppColors.accentTint;
 
     return Scaffold(
       backgroundColor:
-          isDark ? AppColors.noticesBackgroundDark : const Color(0xFFFBF1E5),
+          isDark ? AppColors.noticesBackgroundDark : AppColors.accentTint,
       body: SafeArea(
         top: false,
         child: Column(
@@ -76,7 +76,7 @@ class _ScheduleVisitScreenState extends State<ScheduleVisitScreen> {
                 left: 20,
               ),
               decoration: BoxDecoration(
-                color: isDark ? const Color(0xFF3E2F1C) : const Color(0xFFF3E8D9),
+                color: isDark ? AppColors.textPrimary : AppColors.background,
               ),
               child: Row(
                 children: [
@@ -98,7 +98,7 @@ class _ScheduleVisitScreenState extends State<ScheduleVisitScreen> {
                         color: Colors.transparent,
                         borderRadius: BorderRadius.circular(40),
                         border: Border.all(
-                          color: isDark ? const Color(0xFF334155) : const Color(0xFFE8DCC8),
+                          color: isDark ? const Color(0xFF334155) : AppColors.border,
                           width: 1,
                         ),
                       ),
@@ -215,7 +215,7 @@ class _ScheduleVisitScreenState extends State<ScheduleVisitScreen> {
                                   letterSpacing: 0,
                                   color: isDark
                                       ? AppColors.noticesTitleTextDark
-                                      : const Color(0xFF3E2F1C),
+                                      : AppColors.textPrimary,
                                 ),
                               ),
                               // icon-calendar (16px, #EC9211)
@@ -339,7 +339,7 @@ class _ScheduleVisitScreenState extends State<ScheduleVisitScreen> {
                                       fontSize: 14,
                                       height: 1.0,
                                       letterSpacing: 0,
-                                      color: isDark ? Colors.white : const Color(0xFF3E2F1C),
+                                      color: isDark ? Colors.white : AppColors.textPrimary,
                                     ),
                                   ),
                                   const Spacer(),
@@ -395,7 +395,7 @@ class _ScheduleVisitScreenState extends State<ScheduleVisitScreen> {
                                   letterSpacing: 0,
                                   color: isDark
                                       ? AppColors.noticesTitleTextDark
-                                      : const Color(0xFF3E2F1C),
+                                      : AppColors.textPrimary,
                                 ),
                               ),
                               // icon-person (16px, #EC9211)
@@ -416,7 +416,7 @@ class _ScheduleVisitScreenState extends State<ScheduleVisitScreen> {
                               fontWeight: FontWeight.w600,
                               height: 1.0,
                               letterSpacing: 0,
-                              color: isDark ? AppColors.noticesLabelTextDark : const Color(0xFF5C4A32),
+                              color: isDark ? AppColors.noticesLabelTextDark : AppColors.textBody,
                             ),
                           ),
                           const SizedBox(height: 6),
@@ -429,7 +429,7 @@ class _ScheduleVisitScreenState extends State<ScheduleVisitScreen> {
                                 fontWeight: FontWeight.w400,
                                 height: 1.0,
                                 letterSpacing: 0,
-                                color: isDark ? Colors.white : const Color(0xFF5C4A32),
+                                color: isDark ? Colors.white : AppColors.textBody,
                               ),
                               decoration: InputDecoration(
                                 hintText: 'Enter full name',
@@ -440,7 +440,7 @@ class _ScheduleVisitScreenState extends State<ScheduleVisitScreen> {
                                   letterSpacing: 0,
                                   color: const Color(0xFF94A3B8),
                                 ),
-                                prefixIcon: const Icon(Icons.person_outline, size: 14, color: Color(0xFF8A7658)),
+                                prefixIcon: const Icon(Icons.person_outline, size: 14, color: AppColors.textSecondary),
                                 filled: true,
                                 fillColor: fieldFillColor,
                                 contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
@@ -455,7 +455,7 @@ class _ScheduleVisitScreenState extends State<ScheduleVisitScreen> {
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(8),
-                                  borderSide: const BorderSide(color: Color(0xFFFF8A00)),
+                                  borderSide: const BorderSide(color: AppColors.accent),
                                 ),
                               ),
                             ),
@@ -470,7 +470,7 @@ class _ScheduleVisitScreenState extends State<ScheduleVisitScreen> {
                               fontWeight: FontWeight.w600,
                               height: 1.0,
                               letterSpacing: 0,
-                              color: isDark ? AppColors.noticesLabelTextDark : const Color(0xFF5C4A32),
+                              color: isDark ? AppColors.noticesLabelTextDark : AppColors.textBody,
                             ),
                           ),
                           const SizedBox(height: 6),
@@ -484,7 +484,7 @@ class _ScheduleVisitScreenState extends State<ScheduleVisitScreen> {
                                 fontWeight: FontWeight.w400,
                                 height: 1.0,
                                 letterSpacing: 0,
-                                color: isDark ? Colors.white : const Color(0xFF5C4A32),
+                                color: isDark ? Colors.white : AppColors.textBody,
                               ),
                               decoration: InputDecoration(
                                 hintText: 'Enter phone number',
@@ -495,7 +495,7 @@ class _ScheduleVisitScreenState extends State<ScheduleVisitScreen> {
                                   letterSpacing: 0,
                                   color: const Color(0xFF94A3B8),
                                 ),
-                                prefixIcon: const Icon(Icons.phone_outlined, size: 14, color: Color(0xFF8A7658)),
+                                prefixIcon: const Icon(Icons.phone_outlined, size: 14, color: AppColors.textSecondary),
                                 filled: true,
                                 fillColor: fieldFillColor,
                                 contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
@@ -510,7 +510,7 @@ class _ScheduleVisitScreenState extends State<ScheduleVisitScreen> {
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(8),
-                                  borderSide: const BorderSide(color: Color(0xFFFF8A00)),
+                                  borderSide: const BorderSide(color: AppColors.accent),
                                 ),
                               ),
                             ),
@@ -525,7 +525,7 @@ class _ScheduleVisitScreenState extends State<ScheduleVisitScreen> {
                               fontWeight: FontWeight.w600,
                               height: 1.0,
                               letterSpacing: 0,
-                              color: isDark ? AppColors.noticesLabelTextDark : const Color(0xFF5C4A32),
+                              color: isDark ? AppColors.noticesLabelTextDark : AppColors.textBody,
                             ),
                           ),
                           const SizedBox(height: 6),
@@ -539,7 +539,7 @@ class _ScheduleVisitScreenState extends State<ScheduleVisitScreen> {
                                 fontWeight: FontWeight.w400,
                                 height: 1.0,
                                 letterSpacing: 0,
-                                color: isDark ? Colors.white : const Color(0xFF5C4A32),
+                                color: isDark ? Colors.white : AppColors.textBody,
                               ),
                               decoration: InputDecoration(
                                 hintText: 'Enter email address',
@@ -550,7 +550,7 @@ class _ScheduleVisitScreenState extends State<ScheduleVisitScreen> {
                                   letterSpacing: 0,
                                   color: const Color(0xFF94A3B8),
                                 ),
-                                prefixIcon: const Icon(Icons.email_outlined, size: 14, color: Color(0xFF8A7658)),
+                                prefixIcon: const Icon(Icons.email_outlined, size: 14, color: AppColors.textSecondary),
                                 filled: true,
                                 fillColor: fieldFillColor,
                                 contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
@@ -565,7 +565,7 @@ class _ScheduleVisitScreenState extends State<ScheduleVisitScreen> {
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(8),
-                                  borderSide: const BorderSide(color: Color(0xFFFF8A00)),
+                                  borderSide: const BorderSide(color: AppColors.accent),
                                 ),
                               ),
                             ),
@@ -582,7 +582,7 @@ class _ScheduleVisitScreenState extends State<ScheduleVisitScreen> {
                       child: ElevatedButton(
                         onPressed: _confirmVisit,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFFF8A00),
+                          backgroundColor: AppColors.accent,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
@@ -614,7 +614,7 @@ class _ScheduleVisitScreenState extends State<ScheduleVisitScreen> {
                           letterSpacing: 0,
                           color: isDark
                               ? AppColors.noticesMutedDark
-                              : const Color(0xFF5C4A32),
+                              : AppColors.textBody,
                         ),
                       ),
                     ),

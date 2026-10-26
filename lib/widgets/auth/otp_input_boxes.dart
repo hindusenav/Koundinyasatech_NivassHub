@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_nivasshub/constants/figma_colors.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter_nivasshub/constants/app_radius.dart';
-import 'package:flutter_nivasshub/constants/auth/auth_colors.dart';
 
 /// A row of single-digit OTP boxes. Internally this is a single invisible
 /// `TextField` capturing all keystrokes (numeric-only, capped at [length]) —
@@ -65,12 +63,9 @@ class _OtpInputBoxesState extends State<OtpInputBoxes> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final boxBackground = isDark ? AppColors.surfaceDark : Colors.white;
-    final border = isDark ? AuthColors.borderDarkMode : AuthColors.border;
-    final primaryBlue = isDark
-        ? AuthColors.primaryBlueDarkMode
-        : AuthColors.primaryBlue;
+    const boxBackground = AppColors.white;
+    const border = AppColors.cardBorder;
+    const primaryBlue = AppColors.primaryOrange;
     final disabledOpacity = widget.enabled ? 1.0 : 0.5;
 
     // Box/gap are a preferred size, scaled down together — never clipped
@@ -81,14 +76,16 @@ class _OtpInputBoxesState extends State<OtpInputBoxes> {
         const preferredBoxSize = 52.0;
         const preferredGap = 12.0;
         final preferredWidth =
-            widget.length * preferredBoxSize + (widget.length - 1) * preferredGap;
+            widget.length * preferredBoxSize +
+            (widget.length - 1) * preferredGap;
         final maxWidth = constraints.maxWidth;
         final scale = (maxWidth.isFinite && preferredWidth > maxWidth)
             ? maxWidth / preferredWidth
             : 1.0;
         final boxSize = preferredBoxSize * scale;
         final boxGap = preferredGap * scale;
-        final totalWidth = widget.length * boxSize + (widget.length - 1) * boxGap;
+        final totalWidth =
+            widget.length * boxSize + (widget.length - 1) * boxGap;
         final fontSize = (boxSize * 0.4).clamp(14.0, 22.0);
 
         return GestureDetector(
@@ -124,13 +121,17 @@ class _OtpInputBoxesState extends State<OtpInputBoxes> {
                                 color: boxBackground,
                                 borderRadius: AppRadius.radiusMd,
                                 border: Border.all(
-                                  color: isNextToFill ? FigmaColors.navy : border,
+                                  color: isNextToFill
+                                      ? AppColors.primaryOrange
+                                      : border,
                                   width: isNextToFill ? 2 : 1,
                                 ),
                                 boxShadow: isNextToFill
                                     ? [
                                         BoxShadow(
-                                          color: primaryBlue.withValues(alpha: 0.15),
+                                          color: primaryBlue.withValues(
+                                            alpha: 0.15,
+                                          ),
                                           blurRadius: 8,
                                           offset: const Offset(0, 2),
                                         ),
@@ -142,6 +143,7 @@ class _OtpInputBoxesState extends State<OtpInputBoxes> {
                                 style: TextStyle(
                                   fontSize: fontSize,
                                   fontWeight: FontWeight.bold,
+                                  color: AppColors.textDark,
                                 ),
                               ),
                             ),

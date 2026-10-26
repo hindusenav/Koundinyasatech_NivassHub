@@ -29,7 +29,7 @@ class AddPropertySection extends StatelessWidget {
     }
 
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final panelColor = isDark ? const Color(0xFF222528) : _panelLight;
+    final panelColor = isDark ? AppColors.surfaceDark : _panelLight;
     final textColor = isDark ? Colors.white : _textColor;
 
     final screenWidth = MediaQuery.sizeOf(context).width;

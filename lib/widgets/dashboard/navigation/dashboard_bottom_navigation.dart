@@ -5,7 +5,6 @@ import 'package:provider/provider.dart';
 import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter_nivasshub/routes/app_routes.dart';
 import 'package:flutter_nivasshub/providers/dashboard/dashboard_navigation_provider.dart';
-import 'package:flutter_nivasshub/widgets/shared/feedback/custom_snackbar.dart';
 
 class DashboardBottomNavigation extends StatelessWidget {
   const DashboardBottomNavigation({super.key, this.selectedIndex});
@@ -26,18 +25,16 @@ class DashboardBottomNavigation extends StatelessWidget {
       child: SafeArea(
         top: false,
         child: Container(
-          height: 64,
+          height: 68,
           decoration: BoxDecoration(
-            gradient: isDark
-                ? AppColors.amberGradientDark
-                : AppColors.amberGradient,
+            gradient: AppColors.navGradient,
             borderRadius: const BorderRadius.only(
               topLeft: Radius.circular(24),
               topRight: Radius.circular(24),
             ),
             boxShadow: const [
               BoxShadow(
-                color: Color(0x263E2F1C),
+                color: AppColors.shadowSoft,
                 blurRadius: 12,
                 offset: Offset(0, -2),
               ),
@@ -111,8 +108,8 @@ class DashboardBottomNavigation extends StatelessWidget {
     bool isDark,
   ) {
     final bool selected = activeIndex == index;
-    final activeBlue = AppColors.orange;
-    final inactiveColor = Colors.white;
+    final activeBlue = AppColors.primaryOrange;
+    final inactiveColor = selected ? AppColors.primaryOrange : AppColors.cardBorder.withValues(alpha: 0.6);
 
     return Expanded(
       child: InkWell(
@@ -124,8 +121,10 @@ class DashboardBottomNavigation extends StatelessWidget {
           provider.changeIndex(index);
 
           if (index == 3) {
-            // Payments screen is not available yet.
-            CustomSnackbar.info(context, '$title coming soon.');
+            // Payments — open the Payments Center.
+            if (ModalRoute.of(context)?.settings.name != AppRoutes.payments) {
+              Navigator.pushNamed(context, AppRoutes.payments);
+            }
             return;
           }
 
@@ -172,7 +171,16 @@ class DashboardBottomNavigation extends StatelessWidget {
               height: 30,
               width: 30,
               decoration: BoxDecoration(
-                color: selected ? activeBlue : Colors.transparent,
+                color: selected ? activeBlue.withValues(alpha: 0.16) : Colors.transparent,
+                boxShadow: selected
+                    ? [
+                        BoxShadow(
+                          color: activeBlue.withValues(alpha: 0.35),
+                          blurRadius: 12,
+                          spreadRadius: 1,
+                        ),
+                      ]
+                    : null,
                 shape: BoxShape.circle,
               ),
               child: Center(
@@ -181,14 +189,14 @@ class DashboardBottomNavigation extends StatelessWidget {
                   width: 18,
                   height: 18,
                   fit: BoxFit.contain,
-                  color: Colors.white,
+                  color: inactiveColor,
                   filterQuality: FilterQuality.high,
                   isAntiAlias: true,
                   errorBuilder: (_, _, _) {
-                    return const Icon(
+                    return Icon(
                       Icons.circle_outlined,
                       size: 18,
-                      color: Colors.white,
+                      color: inactiveColor,
                     );
                   },
                 ),

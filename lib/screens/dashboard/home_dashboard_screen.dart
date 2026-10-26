@@ -1,3 +1,4 @@
+import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -102,7 +103,7 @@ class _HomeDashboardScreenState
             statusBarBrightness:
                 Brightness.dark,
             systemNavigationBarColor:
-                isDark ? backgroundColor : const Color(0xFFC6A87A),
+                isDark ? backgroundColor : AppColors.navDark,
             systemNavigationBarIconBrightness: Brightness.light,
           ),
         );

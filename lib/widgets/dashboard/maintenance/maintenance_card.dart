@@ -28,13 +28,13 @@ class MaintenanceCard extends StatelessWidget {
         vertical: 12,
       ),
       decoration: BoxDecoration(
-        gradient: AppColors.amberGradient,
-        borderRadius: BorderRadius.circular(12),
+        color: AppColors.alertBannerBg,
+        borderRadius: BorderRadius.circular(16),
       ),
       child: Row(
         children: [
           Icon(
-            Icons.info_outline_rounded,
+            Icons.warning_amber_rounded,
             color: Colors.white,
             size: 20,
           ),

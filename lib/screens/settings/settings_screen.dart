@@ -40,7 +40,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   // White page; blue accents (orange is reserved for buttons).
   Color get backgroundColor =>
-      _isDark ? AppColors.settingsBackgroundDark : Colors.white;
+      _isDark ? AppColors.settingsBackgroundDark : AppColors.background;
   Color get primaryBlue => _isDark
       ? AppColors.settingsPrimaryBlueDark
       : AppColors.settingsPrimaryBlueLight;
@@ -55,11 +55,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Color get borderColor =>
       _isDark ? AppColors.borderDark : AppColors.settingsBorderLight;
   Color get sheetBackgroundColor =>
-      _isDark ? AppColors.surfaceDark : Colors.white;
+      _isDark ? AppColors.surfaceDark : AppColors.cardBg;
 
   // ============================================================
   // LOCAL VALUES
   // ============================================================
+
+  /// 0 = Household Hub, 1 = Account Settings.
+  int _tab = 0;
 
   String selectedPlan = 'Ad-Supported';
 
@@ -559,7 +562,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: primaryBlue,
-                foregroundColor: Colors.white,
+                foregroundColor: AppColors.white,
               ),
               onPressed: () {
                 final value = controller.text.trim();
@@ -598,8 +601,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red,
-                foregroundColor: Colors.white,
+                backgroundColor: AppColors.error,
+                foregroundColor: AppColors.white,
               ),
               onPressed: () async {
                 // Read providers before the first `await` — avoids using
@@ -659,238 +662,346 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return HouseholdScope(child: Scaffold(
-      backgroundColor: backgroundColor,
-      appBar: AppBar(
-        title: const Text('Settings'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.help_outline),
-            onPressed: _openHelpSupport,
-          ),
-        ],
-      ),
-      body: SafeArea(
-        child: ListView(
-          physics: const BouncingScrollPhysics(),
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+    return HouseholdScope(
+      child: Scaffold(
+        backgroundColor: backgroundColor,
+        body: Column(
           children: [
-            // Profile
-            _profileCard(),
-            const SizedBox(height: 16),
+            _header(),
+            Expanded(
+              child: SafeArea(
+                top: false,
+                child: ListView(
+                  physics: const BouncingScrollPhysics(),
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
+                  children: [
+                    _tabSwitcher(),
+                    const SizedBox(height: 16),
 
-            // Family, pets, vehicles, daily help — all on this screen
-            const HouseholdSections(),
+                    if (_tab == 0)
+                      // Family, pets, vehicles, daily help
+                      const HouseholdSections()
+                    else ...[
+                      // Address
+                      _addressCard(),
+                      const SizedBox(height: 12),
 
-            const SizedBox(height: 16),
+                      // Notification Banner
+                      _notificationBanner(),
+                      const SizedBox(height: 16),
 
-            // Address
-            _addressCard(),
-            const SizedBox(height: 12),
+                      // Security & Notifications
+                      _sectionHeader('Security & Notifications'),
+                      const SizedBox(height: 6),
+                      _settingCard(
+                        icon: Icons.notifications_none,
+                        title: 'Notification Preferences',
+                        subtitle: 'Manage what alerts you receive',
+                        onTap: _notificationPreferences,
+                      ),
+                      _settingCard(
+                        icon: Icons.shield_outlined,
+                        title: 'Security Alert List',
+                        subtitle: 'View and manage security alerts',
+                        onTap: _securityAlerts,
+                      ),
+                      _settingCard(
+                        icon: Icons.article_outlined,
+                        title: 'Feed Settings',
+                        subtitle: 'Customize your community feed',
+                        onTap: _feedSettings,
+                      ),
+                      const SizedBox(height: 16),
 
-            // Notification Banner
-            _notificationBanner(),
-            const SizedBox(height: 16),
+                      // Purchases
+                      _sectionHeader('Purchases'),
+                      const SizedBox(height: 6),
+                      _settingCard(
+                        icon: Icons.shopping_bag_outlined,
+                        title: 'My Orders',
+                        subtitle: 'Track your purchases',
+                        onTap: _myOrders,
+                      ),
+                      _settingCard(
+                        icon: Icons.credit_card_outlined,
+                        title: 'My Plans',
+                        subtitle: 'Ad-Supported Active',
+                        badge: selectedPlan,
+                        onTap: _myPlans,
+                      ),
+                      const SizedBox(height: 16),
 
-            // Security & Notifications
-            _sectionHeader('Security & Notifications'),
-            const SizedBox(height: 6),
-            _settingCard(
-              icon: Icons.notifications_none,
-              title: 'Notification Preferences',
-              subtitle: 'Manage what alerts you receive',
-              onTap: _notificationPreferences,
-            ),
-            _settingCard(
-              icon: Icons.shield_outlined,
-              title: 'Security Alert List',
-              subtitle: 'View and manage security alerts',
-              onTap: _securityAlerts,
-            ),
-            _settingCard(
-              icon: Icons.article_outlined,
-              title: 'Feed Settings',
-              subtitle: 'Customize your community feed',
-              onTap: _feedSettings,
-            ),
-            const SizedBox(height: 16),
+                      // Manage Flats
+                      _sectionHeader('Manage Flats'),
+                      const SizedBox(height: 6),
+                      ...properties.map((property) {
+                        return _settingCard(
+                          icon: Icons.home_outlined,
+                          title: property['name'] as String,
+                          badge: property['active'] == true ? 'Active' : null,
+                          badgeColor: AppColors.badgeGreen,
+                          onTap: () {
+                            setState(() {
+                              for (final item in properties) {
+                                item['active'] = false;
+                              }
+                              property['active'] = true;
+                            });
+                            _message('${property['name']} selected');
+                          },
+                        );
+                      }),
+                      _settingCard(
+                        icon: Icons.add_circle_outline,
+                        title: 'Add Flat/Villa/Office',
+                        subtitle: 'Link another property',
+                        onTap: _addProperty,
+                      ),
+                      const SizedBox(height: 16),
 
-            // Purchases
-            _sectionHeader('Purchases'),
-            const SizedBox(height: 6),
-            _settingCard(
-              icon: Icons.shopping_bag_outlined,
-              title: 'My Orders',
-              subtitle: 'Track your purchases',
-              onTap: _myOrders,
+                      // General Settings
+                      _sectionHeader('General Settings'),
+                      const SizedBox(height: 6),
+                      _settingCard(
+                        icon: Icons.help_outline,
+                        title: 'Support & Feedback',
+                        subtitle: 'Get help or share your thoughts',
+                        onTap: _openHelpSupport,
+                      ),
+                      _settingCard(
+                        icon: Icons.send_outlined,
+                        title: 'Tell a friend about mygate',
+                        subtitle: 'Invite your neighbours',
+                        onTap: () {
+                          _message('Share option opened');
+                        },
+                      ),
+                      _settingCard(
+                        icon: Icons.person_outline,
+                        title: 'Account Information',
+                        subtitle: 'Manage your personal details',
+                        onTap: () =>
+                            _message('Account details are coming soon'),
+                      ),
+                      Consumer<MockNotificationProvider>(
+                        builder: (context, notifications, _) {
+                          return _settingCard(
+                            icon: Icons.mark_email_unread_outlined,
+                            title: 'Notification Log (Mock)',
+                            subtitle: 'KYC emails that would have been sent',
+                            badge: notifications.unreadCount > 0
+                                ? '${notifications.unreadCount}'
+                                : null,
+                            onTap: _openNotificationLog,
+                          );
+                        },
+                      ),
+                      Consumer<ThemeModeProvider>(
+                        builder: (context, themeModeProvider, _) {
+                          return _settingCard(
+                            icon: Icons.brightness_6_outlined,
+                            title: 'Theme',
+                            subtitle:
+                                'Choose light, dark, or match your device',
+                            badge: _themeModeLabel(themeModeProvider.themeMode),
+                            onTap: _chooseTheme,
+                          );
+                        },
+                      ),
+                      _settingCard(
+                        icon: Icons.logout,
+                        title: 'Logout',
+                        subtitle: 'Sign-out of your account',
+                        iconColor: AppColors.error,
+                        titleColor: AppColors.error,
+                        onTap: _logout,
+                      ),
+                    ],
+                    const SizedBox(height: 20),
+                  ],
+                ),
+              ),
             ),
-            _settingCard(
-              icon: Icons.credit_card_outlined,
-              title: 'My Plans',
-              subtitle: 'Ad-Supported Active',
-              badge: selectedPlan,
-              onTap: _myPlans,
-            ),
-            const SizedBox(height: 16),
-
-            // Manage Flats
-            _sectionHeader('Manage Flats'),
-            const SizedBox(height: 6),
-            ...properties.map((property) {
-              return _settingCard(
-                icon: Icons.home_outlined,
-                title: property['name'] as String,
-                badge: property['active'] == true ? 'Active' : null,
-                badgeColor: Colors.green,
-                onTap: () {
-                  setState(() {
-                    for (final item in properties) {
-                      item['active'] = false;
-                    }
-                    property['active'] = true;
-                  });
-                  _message('${property['name']} selected');
-                },
-              );
-            }),
-            _settingCard(
-              icon: Icons.add_circle_outline,
-              title: 'Add Flat/Villa/Office',
-              subtitle: 'Link another property',
-              onTap: _addProperty,
-            ),
-            const SizedBox(height: 16),
-
-            // General Settings
-            _sectionHeader('General Settings'),
-            const SizedBox(height: 6),
-            _settingCard(
-              icon: Icons.help_outline,
-              title: 'Support & Feedback',
-              subtitle: 'Get help or share your thoughts',
-              onTap: _openHelpSupport,
-            ),
-            _settingCard(
-              icon: Icons.send_outlined,
-              title: 'Tell a friend about mygate',
-              subtitle: 'Invite your neighbours',
-              onTap: () {
-                _message('Share option opened');
-              },
-            ),
-            _settingCard(
-              icon: Icons.person_outline,
-              title: 'Account Information',
-              subtitle: 'Manage your personal details',
-              onTap: () => _message('Account details are coming soon'),
-            ),
-            Consumer<MockNotificationProvider>(
-              builder: (context, notifications, _) {
-                return _settingCard(
-                  icon: Icons.mark_email_unread_outlined,
-                  title: 'Notification Log (Mock)',
-                  subtitle: 'KYC emails that would have been sent',
-                  badge: notifications.unreadCount > 0
-                      ? '${notifications.unreadCount}'
-                      : null,
-                  onTap: _openNotificationLog,
-                );
-              },
-            ),
-            Consumer<ThemeModeProvider>(
-              builder: (context, themeModeProvider, _) {
-                return _settingCard(
-                  icon: Icons.brightness_6_outlined,
-                  title: 'Theme',
-                  subtitle: 'Choose light, dark, or match your device',
-                  badge: _themeModeLabel(themeModeProvider.themeMode),
-                  onTap: _chooseTheme,
-                );
-              },
-            ),
-            _settingCard(
-              icon: Icons.logout,
-              title: 'Logout',
-              subtitle: 'Sign-out of your account',
-              iconColor: Colors.red,
-              titleColor: Colors.red,
-              onTap: _logout,
-            ),
-            const SizedBox(height: 20),
           ],
         ),
       ),
-    ));
+    );
   }
 
   // ============================================================
   // PROFILE CARD
   // ============================================================
 
-  Widget _profileCard() {
+  Widget _header() {
+    final topPadding = MediaQuery.of(context).padding.top;
     return Container(
-      padding: const EdgeInsets.all(14),
+      padding: EdgeInsets.fromLTRB(20, topPadding + 12, 20, 24),
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [AppColors.headerStart, AppColors.headerEnd],
+        ),
+        borderRadius: BorderRadius.vertical(bottom: Radius.circular(28)),
+      ),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              if (Navigator.of(context).canPop())
+                IconButton(
+                  visualDensity: VisualDensity.compact,
+                  icon: const Icon(
+                    Icons.arrow_back_ios_new_rounded,
+                    color: AppColors.white,
+                    size: 18,
+                  ),
+                  onPressed: () => Navigator.of(context).maybePop(),
+                ),
+              const Expanded(
+                child: Text(
+                  'Settings',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: AppColors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+              IconButton(
+                visualDensity: VisualDensity.compact,
+                icon: const Icon(Icons.help_outline, color: AppColors.white),
+                onPressed: _openHelpSupport,
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Container(
+                width: 52,
+                height: 52,
+                decoration: BoxDecoration(
+                  color: AppColors.primaryOrange,
+                  shape: BoxShape.circle,
+                  border: Border.all(color: AppColors.white, width: 2),
+                ),
+                alignment: Alignment.center,
+                child: const Text(
+                  'U',
+                  style: TextStyle(
+                    color: AppColors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              const Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'User Name',
+                      style: TextStyle(
+                        color: AppColors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    SizedBox(height: 2),
+                    Text(
+                      'Nivaas Hub ID : 00000',
+                      style: TextStyle(color: AppColors.white, fontSize: 12),
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                width: 38,
+                height: 38,
+                decoration: BoxDecoration(
+                  color: AppColors.white.withValues(alpha: 0.2),
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(
+                    color: AppColors.white.withValues(alpha: 0.35),
+                  ),
+                ),
+                child: const Icon(
+                  Icons.qr_code_2,
+                  color: AppColors.white,
+                  size: 20,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ============================================================
+  // TAB SWITCHER
+  // ============================================================
+
+  Widget _tabSwitcher() {
+    Widget segment(int index, IconData icon, String label) {
+      final selected = _tab == index;
+      return Expanded(
+        child: GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: () => setState(() => _tab = index),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 180),
+            height: 42,
+            decoration: BoxDecoration(
+              color: selected ? AppColors.primaryOrange : Colors.transparent,
+              borderRadius: BorderRadius.circular(21),
+            ),
+            alignment: Alignment.center,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  icon,
+                  size: 16,
+                  color: selected ? AppColors.white : AppColors.textMuted,
+                ),
+                const SizedBox(width: 6),
+                Text(
+                  label,
+                  style: TextStyle(
+                    color: selected ? AppColors.white : AppColors.textMuted,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
+    return Container(
+      padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: _isDark ? AppColors.surfaceDark : Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: borderColor, width: 0.5),
-        boxShadow: [
+        color: AppColors.cardBg,
+        borderRadius: BorderRadius.circular(25),
+        border: Border.all(color: AppColors.cardBorder),
+        boxShadow: const [
           BoxShadow(
-            color: Colors.black.withValues(alpha: _isDark ? 0.4 : 0.06),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
+            color: AppColors.shadowSoft,
+            blurRadius: 8,
+            offset: Offset(0, 3),
           ),
         ],
       ),
       child: Row(
         children: [
-          Container(
-            width: 48,
-            height: 48,
-            decoration: const BoxDecoration(
-              color: Color(0xFFFFA000),
-              shape: BoxShape.circle,
-            ),
-            alignment: Alignment.center,
-            child: Text(
-              'U',
-              style: const TextStyle(
-                color: Colors.black,
-                fontSize: 20,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'User Name',
-                  style: TextStyle(
-                    color: darkText,
-                    fontSize: 15,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  'Nivaas Hub ID : 00000',
-                  style: TextStyle(color: greyText, fontSize: 12),
-                ),
-              ],
-            ),
-          ),
-          Container(
-            width: 34,
-            height: 34,
-            decoration: BoxDecoration(
-              color: lightBlue,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Icon(Icons.qr_code_2, color: primaryBlue, size: 18),
-          ),
+          segment(0, Icons.groups_2_outlined, 'Household Hub'),
+          segment(1, Icons.settings_outlined, 'Account Settings'),
         ],
       ),
     );
@@ -934,12 +1045,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       decoration: BoxDecoration(
-        color: _isDark ? AppColors.surfaceDark : Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: borderColor, width: 0.5),
+        color: _isDark ? AppColors.surfaceDark : AppColors.cardBg,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: borderColor, width: 1),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: _isDark ? 0.4 : 0.06),
+            color: _isDark
+                ? AppColors.black.withValues(alpha: 0.4)
+                : AppColors.shadowSoft,
             blurRadius: 3,
             offset: const Offset(0, 1),
           ),
@@ -984,7 +1097,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         color: _isDark
             ? AppColors.settingsNotifyBgDark
             : AppColors.settingsNotifyBgLight,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: _isDark
               ? AppColors.settingsNotifyBorderDark
@@ -1011,8 +1124,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
             child: ElevatedButton(
               onPressed: _testNotification,
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFFF8A00),
-                foregroundColor: Colors.white,
+                backgroundColor: AppColors.primaryOrange,
+                foregroundColor: AppColors.white,
                 elevation: 0,
                 padding: const EdgeInsets.symmetric(horizontal: 14),
                 minimumSize: Size.zero,
@@ -1053,12 +1166,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       decoration: BoxDecoration(
-        color: _isDark ? AppColors.surfaceDark : Colors.white,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: borderColor, width: 0.5),
+        color: _isDark ? AppColors.surfaceDark : AppColors.cardBg,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: borderColor, width: 1),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: _isDark ? 0.4 : 0.04),
+            color: _isDark
+                ? AppColors.black.withValues(alpha: 0.4)
+                : AppColors.shadowSoft,
             blurRadius: 2,
             offset: const Offset(0, 1),
           ),
@@ -1068,7 +1183,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         color: Colors.transparent,
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(16),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
             child: Row(
@@ -1077,7 +1192,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   width: 34,
                   height: 34,
                   decoration: BoxDecoration(
-                    color: iconColor == Colors.red
+                    color: iconColor == AppColors.error
                         ? (_isDark
                               ? AppColors.settingsDangerIconBgDark
                               : AppColors.settingsDangerIconBgLight)
@@ -1086,10 +1201,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ),
                   child: Icon(
                     icon,
-                    color: iconColor == Colors.red
+                    color: iconColor == AppColors.error
                         ? (_isDark
                               ? AppColors.noticesDangerTextDark
-                              : Colors.red)
+                              : AppColors.error)
                         : (iconColor ?? primaryBlue),
                     size: 17,
                   ),
@@ -1104,10 +1219,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
-                          color: titleColor == Colors.red
+                          color: titleColor == AppColors.error
                               ? (_isDark
                                     ? AppColors.noticesDangerTextDark
-                                    : Colors.red)
+                                    : AppColors.error)
                               : (titleColor ?? darkText),
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
@@ -1171,7 +1286,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       width: 38,
       height: 4,
       decoration: BoxDecoration(
-        color: _isDark ? AppColors.borderDark : Colors.grey.shade300,
+        color: _isDark ? AppColors.borderDark : AppColors.cardBorder,
         borderRadius: BorderRadius.circular(10),
       ),
     );

@@ -11,6 +11,7 @@ import 'package:flutter_nivasshub/storage/local_storage_service.dart';
 import 'package:flutter_nivasshub/storage/secure_storage_service.dart';
 import 'package:flutter_nivasshub/providers/connectivity/connectivity_provider.dart';
 import 'package:flutter_nivasshub/widgets/shared/connectivity/no_internet_overlay.dart';
+import 'package:flutter_nivasshub/widgets/shared/common/responsive_shell.dart';
 
 // ============================================================
 // AUTH
@@ -273,8 +274,6 @@ class NivasHubApp extends StatelessWidget {
       // MATERIAL APP
       // ==========================================================
       builder: (context, child) {
-        final themeModeProvider = context.watch<ThemeModeProvider>();
-
         return MaterialApp(
           title: 'Nivaas Hub',
 
@@ -291,7 +290,9 @@ class NivasHubApp extends StatelessWidget {
 
           darkTheme: AppTheme.dark,
 
-          themeMode: themeModeProvider.themeMode,
+          // Forced light: the warm cream/bronze palette is light-only, and a
+          // device in dark mode would otherwise pick `AppTheme.dark`.
+          themeMode: ThemeMode.light,
 
           initialRoute: AppRoutes.splash,
 
@@ -299,20 +300,10 @@ class NivasHubApp extends StatelessWidget {
               AuthRouter.generateRoute(settings) ??
               AppRouter.generateRoute(settings),
 
-          builder: (context, child) {
-            // Cap system font scaling so layouts stay overflow-free on every
-            // device (large accessibility text, small phones).
-            final mq = MediaQuery.of(context);
-            return MediaQuery(
-              data: mq.copyWith(
-                textScaler: mq.textScaler.clamp(
-                  minScaleFactor: 0.9,
-                  maxScaleFactor: 1.15,
-                ),
-              ),
-              child: NoInternetOverlay(child: child),
-            );
-          },
+          // Width cap, width-based text scale and orientation policy for
+          // every screen (see `ResponsiveShell`).
+          builder: (context, child) =>
+              ResponsiveShell(child: NoInternetOverlay(child: child)),
         );
       },
     );

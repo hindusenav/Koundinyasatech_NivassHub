@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_nivasshub/constants/app_spacing.dart';
 import 'package:flutter_nivasshub/constants/app_text_styles.dart';
+import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter_nivasshub/constants/figma_colors.dart';
 import 'package:flutter_nivasshub/constants/kyc/kyc_strings.dart';
 import 'package:flutter_nivasshub/models/registration/registration_master_data.dart';
@@ -79,30 +80,34 @@ class _AddPropertyViewState extends State<_AddPropertyView> {
       return;
     }
 
-    final done = await FigmaPlacePicker.locationFlow<RegistrationCountry, RegistrationState>(
-      context,
-      countries: form.countries,
-      countryLabel: (c) => c.name,
-      onCountry: (c) {
-        form.selectCountry(c);
-        society.reset();
-      },
-      states: () => form.states,
-      stateLabel: (s) => s.provinceName,
-      onState: (s) {
-        form.selectState(s);
-        society.reset();
-      },
-      cities: () => form.cities,
-      onCity: (c) {
-        form.selectCity(c);
-        society.reset();
-      },
-      citySubtitle: () => [
-        form.selectedState?.provinceName,
-        form.selectedCountry?.name,
-      ].whereType<String>().join(', '),
-    );
+    final done =
+        await FigmaPlacePicker.locationFlow<
+          RegistrationCountry,
+          RegistrationState
+        >(
+          context,
+          countries: form.countries,
+          countryLabel: (c) => c.name,
+          onCountry: (c) {
+            form.selectCountry(c);
+            society.reset();
+          },
+          states: () => form.states,
+          stateLabel: (s) => s.provinceName,
+          onState: (s) {
+            form.selectState(s);
+            society.reset();
+          },
+          cities: () => form.cities,
+          onCity: (c) {
+            form.selectCity(c);
+            society.reset();
+          },
+          citySubtitle: () => [
+            form.selectedState?.provinceName,
+            form.selectedCountry?.name,
+          ].whereType<String>().join(', '),
+        );
     if (!mounted) return;
 
     if (!done) {
@@ -170,7 +175,10 @@ class _AddPropertyViewState extends State<_AddPropertyView> {
       if (_route != null) Navigator.of(context).popUntil((r) => r == _route);
       Navigator.of(context).pop(true);
     } else {
-      CustomSnackbar.error(context, form.errorMessage ?? KycStrings.genericError);
+      CustomSnackbar.error(
+        context,
+        form.errorMessage ?? KycStrings.genericError,
+      );
     }
   }
 
@@ -202,28 +210,52 @@ class _AddPropertyViewState extends State<_AddPropertyView> {
             message: form.errorMessage ?? KycStrings.genericError,
             onRetry: form.retry,
           ),
-          _ => SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text(
-                  'Pick the property you want to add. It will be pending '
-                  'approval once submitted.',
-                  style: AppTextStyles.bodyMedium.copyWith(color: t.body),
+          _ => Column(
+            children: [
+              Expanded(
+                child: SingleChildScrollView(
+                  keyboardDismissBehavior:
+                      ScrollViewKeyboardDismissBehavior.onDrag,
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Text(
+                        'Pick the property you want to add. It will be pending '
+                        'approval once submitted.',
+                        style: AppTextStyles.bodyMedium.copyWith(
+                          color: AppColors.textMuted,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      FigmaCard(
+                        child: _LocationSection(locked: _locationLocked),
+                      ),
+                      const SizedBox(height: 16),
+                      const FigmaCard(child: _PropertySection()),
+                    ],
+                  ),
                 ),
-                const SizedBox(height: 16),
-                FigmaCard(child: _LocationSection(locked: _locationLocked)),
-                const SizedBox(height: 16),
-                const FigmaCard(child: _PropertySection()),
-                const SizedBox(height: 24),
-                FigmaButton(
+              ),
+              Container(
+                padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+                decoration: const BoxDecoration(
+                  color: AppColors.cardBg,
+                  border: Border(top: BorderSide(color: AppColors.cardBorder)),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.shadowSoft,
+                      blurRadius: 16,
+                      offset: Offset(0, -4),
+                    ),
+                  ],
+                ),
+                child: FigmaButton(
                   label: 'Submit Details',
-                  navy: true,
                   onPressed: _continueToRole,
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         },
       ),
@@ -301,16 +333,16 @@ class _LocationSection extends StatelessWidget {
           onTap: locked
               ? null
               : () async {
-            final c = await FigmaPlacePicker.country<RegistrationCountry>(
-              context,
-              items: form.countries,
-              labelOf: (c) => c.name,
-              flagOf: (c) => FigmaPlacePicker.flagFromCode(c.countryCode),
-            );
-            if (c == null) return;
-            form.selectCountry(c);
-            society.reset();
-          },
+                  final c = await FigmaPlacePicker.country<RegistrationCountry>(
+                    context,
+                    items: form.countries,
+                    labelOf: (c) => c.name,
+                    flagOf: (c) => FigmaPlacePicker.flagFromCode(c.countryCode),
+                  );
+                  if (c == null) return;
+                  form.selectCountry(c);
+                  society.reset();
+                },
         ),
         AppSpacing.gapMd,
         SelectionField(
@@ -495,7 +527,9 @@ class _RoleStepPage extends StatelessWidget {
       dropdowns: [
         ResidenceRoleDropdown(
           label: KycStrings.subRoleLabel,
-          hint: roleSelected ? KycStrings.subRoleHint : KycStrings.selectRoleFirst,
+          hint: roleSelected
+              ? KycStrings.subRoleHint
+              : KycStrings.selectRoleFirst,
           value: form.selectedSubRole?.description,
           items: [for (final s in form.subRoles) s.description],
           enabled: roleSelected,

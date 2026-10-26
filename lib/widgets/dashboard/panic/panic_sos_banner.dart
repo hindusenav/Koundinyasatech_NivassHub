@@ -77,7 +77,7 @@ class _PanicSosBannerState extends State<PanicSosBanner> {
                     end: Alignment.centerRight,
                     colors: [
                       Color.fromARGB(255, 238, 30, 26),
-                      Color(0xFFFF3B30),
+                      AppColors.error,
                     ],
                   )
                 : null,
@@ -85,7 +85,7 @@ class _PanicSosBannerState extends State<PanicSosBanner> {
               BoxShadow(
                 color: isDark
                     ? Colors.redAccent.withValues(alpha: 0.35)
-                    : const Color(0x0D000000),
+                    : AppColors.shadowSoft,
                 blurRadius: isDark ? 10 : 12,
                 offset: Offset(0, isDark ? 4 : 2),
               ),
@@ -98,7 +98,7 @@ class _PanicSosBannerState extends State<PanicSosBanner> {
                 width: 54,
                 height: 54,
                 decoration: const BoxDecoration(
-                  color: Color(0xFFE53935),
+                  color: AppColors.error,
                   shape: BoxShape.circle,
                 ),
                 child: Center(
@@ -134,7 +134,7 @@ class _PanicSosBannerState extends State<PanicSosBanner> {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: GoogleFonts.inter(
-                        color: isDark ? Colors.white70 : const Color(0xFFB42318),
+                        color: isDark ? Colors.white70 : AppColors.error,
                         fontSize: 11,
                         fontWeight: FontWeight.w400,
                       ),

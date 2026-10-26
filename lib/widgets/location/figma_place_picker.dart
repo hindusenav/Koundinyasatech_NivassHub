@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_nivasshub/constants/figma_colors.dart';
+import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter_nivasshub/screens/location/select_city_screen.dart';
 import 'package:flutter_nivasshub/screens/location/select_country_screen.dart';
 import 'package:flutter_nivasshub/widgets/shared/figma/figma_scaffold.dart';
@@ -340,8 +340,7 @@ class _PlaceListPageState<T> extends State<_PlaceListPage<T>> {
 
     return FigmaHeaderScaffold(
       title: widget.title,
-      body: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+      body: FigmaPickerList(
         children: [
           FigmaSearchField(
             hint: widget.searchHint,
@@ -354,7 +353,7 @@ class _PlaceListPageState<T> extends State<_PlaceListPage<T>> {
               child: Center(
                 child: Text(
                   widget.emptyText,
-                  style: TextStyle(color: FigmaColors.of(context).body),
+                  style: const TextStyle(color: AppColors.textMuted),
                 ),
               ),
             )

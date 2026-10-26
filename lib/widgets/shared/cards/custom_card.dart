@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter_nivasshub/constants/app_decoration.dart';
-import 'package:flutter_nivasshub/constants/app_radius.dart';
 import 'package:flutter_nivasshub/constants/app_spacing.dart';
 
 /// The app's base card container. Uses [Ink] rather than [Container] so an
@@ -29,7 +29,7 @@ class CustomCard extends StatelessWidget {
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
-        borderRadius: AppRadius.radiusMd,
+        borderRadius: BorderRadius.circular(AppColors.cardRadius),
         child: Ink(
           padding: padding,
           decoration: decoration,

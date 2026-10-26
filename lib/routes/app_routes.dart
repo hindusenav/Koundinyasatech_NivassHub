@@ -80,6 +80,9 @@ class AppRoutes {
   /// "View all" link (NivasHub API Contract §6.2 — `GET /api/v1/approvals`).
   static const String activities = '/visitor/activities';
 
+  /// Payments Center (dues, month status, payment history).
+  static const String payments = '/payments';
+
   // ---------------------------------------------------------------------
   // Complaints
   // ---------------------------------------------------------------------

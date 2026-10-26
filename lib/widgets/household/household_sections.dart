@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_nivasshub/utils/responsive.dart';
 import 'package:provider/provider.dart';
 
-import 'package:flutter_nivasshub/constants/figma_colors.dart';
+import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter_nivasshub/core/api/base_api.dart';
 import 'package:flutter_nivasshub/models/family/add_family.dart';
 import 'package:flutter_nivasshub/models/pet/pet.dart';
@@ -9,13 +10,14 @@ import 'package:flutter_nivasshub/providers/family/family_provider.dart';
 import 'package:flutter_nivasshub/providers/pet/pet_provider.dart';
 import 'package:flutter_nivasshub/routes/app_routes.dart';
 import 'package:flutter_nivasshub/services/family/family_service.dart';
-import 'package:flutter_nivasshub/services/pet/stub_pet_service.dart';
+import 'package:flutter_nivasshub/services/pet/pet_service.dart';
+import 'package:flutter_nivasshub/storage/secure_storage_service.dart';
 import 'package:flutter_nivasshub/widgets/household/add_family_sheet.dart';
 import 'package:flutter_nivasshub/widgets/household/add_pet_sheet.dart';
 
-const _tint = Color(0xFFFBF1E5);
-const _blue = FigmaColors.accentBlue;
-const _muted = Color(0xFF8A7658);
+const _tint = AppColors.accentTint;
+const _blue = AppColors.primaryOrange;
+const _muted = AppColors.textMuted;
 
 /// Owns the Family/Pet providers for everything below it. Wrap the screen
 /// (not the scrolling list) so state survives scrolling.
@@ -29,12 +31,16 @@ class HouseholdScope extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider<FamilyProvider>(
+          // No eager load: `showAddFamilySheet` calls `load()` on tap.
           create: (c) =>
-              FamilyProvider(service: FamilyService(c.read<ApiClient>()))
-                ..load(),
+              FamilyProvider(service: FamilyService(c.read<ApiClient>())),
         ),
         ChangeNotifierProvider<PetProvider>(
-          create: (_) => PetProvider(service: const StubPetService()),
+          // No eager load: `showAddPetSheet` loads the reference data on tap.
+          create: (c) => PetProvider(
+            service: PetService(c.read<ApiClient>()),
+            readToken: c.read<SecureStorageService>().getAccessToken,
+          ),
         ),
       ],
       child: child,
@@ -172,7 +178,7 @@ class _SectionHeader extends StatelessWidget {
           child: Text(
             title,
             style: const TextStyle(
-              color: FigmaColors.navy,
+              color: AppColors.textDark,
               fontSize: 15,
               fontWeight: FontWeight.w700,
             ),
@@ -180,11 +186,11 @@ class _SectionHeader extends StatelessWidget {
         ),
         TextButton.icon(
           onPressed: onAdd,
-          icon: const Icon(Icons.add, size: 16, color: FigmaColors.orange),
+          icon: const Icon(Icons.add, size: 16, color: AppColors.primaryOrange),
           label: const Text(
             'Add',
             style: TextStyle(
-              color: FigmaColors.orange,
+              color: AppColors.primaryOrange,
               fontWeight: FontWeight.w700,
             ),
           ),
@@ -208,7 +214,7 @@ class _Tiles extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 132,
+      height: context.rt(132),
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         physics: const BouncingScrollPhysics(),
@@ -237,7 +243,7 @@ class _Tile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 132,
+      width: context.rt(132),
       padding: const EdgeInsets.all(12),
       decoration: _cardDecoration(),
       child: Column(
@@ -254,7 +260,7 @@ class _Tile extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: const TextStyle(
-              color: FigmaColors.navy,
+              color: AppColors.textDark,
               fontSize: 13,
               fontWeight: FontWeight.w700,
             ),
@@ -270,7 +276,7 @@ class _Tile extends StatelessWidget {
               detail,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(color: Color(0xFF9CA3AF), fontSize: 11),
+              style: const TextStyle(color: AppColors.textMuted, fontSize: 11),
             ),
         ],
       ),
@@ -286,13 +292,29 @@ class _AddTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(20),
       onTap: onTap,
       child: SizedBox(
         width: 96,
         child: CustomPaint(
           painter: _DashedRRectPainter(),
-          child: const Center(child: Icon(Icons.add, color: _blue, size: 30)),
+          child: const Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.add, color: _blue, size: 28),
+                SizedBox(height: 4),
+                Text(
+                  "Add",
+                  style: TextStyle(
+                    color: _blue,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );
@@ -315,7 +337,7 @@ class _EmptyPrompt extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(20),
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.all(14),
@@ -349,7 +371,7 @@ class _EmptyPrompt extends StatelessWidget {
                   Text(
                     '+ $actionLabel',
                     style: const TextStyle(
-                      color: FigmaColors.navy,
+                      color: AppColors.textDark,
                       fontSize: 13,
                       fontWeight: FontWeight.w700,
                     ),
@@ -365,11 +387,11 @@ class _EmptyPrompt extends StatelessWidget {
 }
 
 BoxDecoration _cardDecoration() => BoxDecoration(
-  color: Colors.white,
-  borderRadius: BorderRadius.circular(16),
-  border: Border.all(color: const Color(0xFFE8DCC8)),
+  color: AppColors.cardBg,
+  borderRadius: BorderRadius.circular(20),
+  border: Border.all(color: AppColors.cardBorder),
   boxShadow: const [
-    BoxShadow(color: Color(0x0F101828), blurRadius: 10, offset: Offset(0, 3)),
+    BoxShadow(color: AppColors.shadowSoft, blurRadius: 10, offset: Offset(0, 3)),
   ],
 );
 
@@ -382,7 +404,7 @@ class _DashedRRectPainter extends CustomPainter {
       ..strokeWidth = 1.4;
     final path = Path()
       ..addRRect(
-        RRect.fromRectAndRadius(Offset.zero & size, const Radius.circular(16)),
+        RRect.fromRectAndRadius(Offset.zero & size, const Radius.circular(20)),
       );
     for (final metric in path.computeMetrics()) {
       double d = 0;

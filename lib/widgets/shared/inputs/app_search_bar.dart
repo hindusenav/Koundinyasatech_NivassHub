@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter_nivasshub/constants/app_dimensions.dart';
 import 'package:flutter_nivasshub/constants/app_icons.dart';
-import 'package:flutter_nivasshub/constants/app_radius.dart';
 import 'package:flutter_nivasshub/constants/app_text_styles.dart';
 
 /// A fully-rounded, filled-background search input for **instant, local**
@@ -33,6 +32,7 @@ class AppSearchBar extends StatefulWidget {
 }
 
 class _AppSearchBarState extends State<AppSearchBar> {
+  static final _radius = BorderRadius.circular(14);
   late final TextEditingController _controller;
   bool _hasText = false;
 
@@ -67,31 +67,41 @@ class _AppSearchBarState extends State<AppSearchBar> {
       controller: _controller,
       autofocus: widget.autofocus,
       onChanged: widget.onChanged,
-      style: AppTextStyles.bodyMedium.copyWith(color: AppColors.grey900),
+      style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textDark),
       decoration: InputDecoration(
         hintText: widget.hint,
-        hintStyle: AppTextStyles.bodyMedium.copyWith(color: AppColors.grey500),
+        hintStyle: AppTextStyles.bodyMedium.copyWith(
+          color: AppColors.textMuted,
+        ),
         filled: true,
-        fillColor: AppColors.grey100,
-        prefixIcon: Icon(AppIcons.search, size: AppDimensions.iconSm, color: AppColors.grey500),
+        fillColor: AppColors.cardBg,
+        prefixIcon: Icon(
+          AppIcons.search,
+          size: AppDimensions.iconSm,
+          color: AppColors.textMuted,
+        ),
         suffixIcon: _hasText
             ? IconButton(
-                icon: Icon(AppIcons.close, size: AppDimensions.iconSm, color: AppColors.grey500),
+                icon: Icon(
+                  AppIcons.close,
+                  size: AppDimensions.iconSm,
+                  color: AppColors.textMuted,
+                ),
                 onPressed: _handleClear,
               )
             : null,
         contentPadding: const EdgeInsets.symmetric(vertical: 12),
         border: OutlineInputBorder(
-          borderRadius: AppRadius.radiusFull,
-          borderSide: BorderSide.none,
+          borderRadius: _radius,
+          borderSide: BorderSide(color: AppColors.cardBorder),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: AppRadius.radiusFull,
-          borderSide: BorderSide.none,
+          borderRadius: _radius,
+          borderSide: BorderSide(color: AppColors.cardBorder),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: AppRadius.radiusFull,
-          borderSide: BorderSide(color: AppColors.primary, width: 1.5),
+          borderRadius: _radius,
+          borderSide: BorderSide(color: AppColors.primaryOrange, width: 1.5),
         ),
       ),
     );

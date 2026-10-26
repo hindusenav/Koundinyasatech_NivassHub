@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter_nivasshub/constants/app_icons.dart';
 import 'package:flutter_nivasshub/constants/app_spacing.dart';
-import 'package:flutter_nivasshub/widgets/shared/app_bar/custom_app_bar.dart';
 import 'package:flutter_nivasshub/widgets/shared/feedback/custom_snackbar.dart';
 import 'package:flutter_nivasshub/widgets/shared/inputs/app_search_bar.dart';
 import 'package:flutter_nivasshub/widgets/shared/loaders/shimmer_loader.dart';
@@ -75,6 +74,13 @@ class _ActivitiesViewState extends State<_ActivitiesView> {
   void _handleAddVisitor() {
     CustomSnackbar.info(context, 'Add Visitor coming soon.');
   }
+
+  // Approve / Deny are not backed by an API on this screen yet.
+  void _handleApprove() =>
+      CustomSnackbar.info(context, 'Approving visitors is coming soon.');
+
+  void _handleDeny() =>
+      CustomSnackbar.info(context, 'Denying visitors is coming soon.');
 
   void _handleCall(ApprovalActivityModel activity) {
     CustomSnackbar.info(context, 'Calling ${activity.name}…');
@@ -166,25 +172,105 @@ class _ActivitiesViewState extends State<_ActivitiesView> {
     return Consumer<VisitorActivityProvider>(
       builder: (context, provider, _) {
         return Scaffold(
-          appBar: CustomAppBar(
-            title: 'Activities',
-            actions: [
-              IconButton(icon: _buildFilterIcon(), onPressed: _handleFilterTap),
-              IconButton(
-                icon: Icon(_showSearch ? AppIcons.close : AppIcons.search),
-                onPressed: _toggleSearch,
-              ),
-            ],
-          ),
+          backgroundColor: AppColors.background,
           floatingActionButton: FloatingActionButton(
             onPressed: _handleAddVisitor,
             tooltip: 'Add Visitor',
             child: Icon(AppIcons.add),
           ),
           bottomNavigationBar: const DashboardBottomNavigation(),
-          body: SafeArea(child: _buildBody(provider)),
+          body: Column(
+            children: [
+              _buildHeader(provider),
+              Expanded(
+                child: SafeArea(top: false, child: _buildBody(provider)),
+              ),
+            ],
+          ),
         );
       },
+    );
+  }
+
+  /// Bronze curved header: title row (back / filter / search) with the
+  /// filter-chip bar right below it. "Wrong" stays a provider filter but is
+  /// not shown as a chip in this design.
+  Widget _buildHeader(VisitorActivityProvider provider) {
+    final filters = ActivityFilter.values
+        .where((f) => f != ActivityFilter.wrong)
+        .toList();
+
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.only(
+        top: MediaQuery.of(context).padding.top + 12,
+        bottom: 20,
+      ),
+      decoration: const BoxDecoration(
+        gradient: AppColors.headerGradient,
+        borderRadius: BorderRadius.vertical(bottom: Radius.circular(28)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 18),
+            child: Row(
+              children: [
+                if (Navigator.of(context).canPop())
+                  Padding(
+                    padding: const EdgeInsets.only(right: 8),
+                    child: InkWell(
+                      onTap: () => Navigator.of(context).pop(),
+                      customBorder: const CircleBorder(),
+                      child: Icon(AppIcons.back, color: AppColors.white),
+                    ),
+                  ),
+                const Expanded(
+                  child: Text(
+                    'Visitor Log ',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: AppColors.white,
+                      fontSize: 22,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+                IconButton(
+                  color: AppColors.white,
+                  icon: _buildFilterIcon(),
+                  onPressed: _handleFilterTap,
+                ),
+                IconButton(
+                  color: AppColors.white,
+                  icon: Icon(_showSearch ? AppIcons.close : AppIcons.search),
+                  onPressed: _toggleSearch,
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+          SizedBox(
+            height: 40,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: 18),
+              itemCount: filters.length,
+              separatorBuilder: (_, _) => const SizedBox(width: 8),
+              itemBuilder: (_, index) {
+                final filter = filters[index];
+                return ActivityFilterChip(
+                  label: filter.label,
+                  selected: provider.selectedFilter == filter,
+                  onTap: () => provider.selectFilter(filter),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -225,23 +311,6 @@ class _ActivitiesViewState extends State<_ActivitiesView> {
               onChanged: provider.setSearchQuery,
             ),
           ),
-        SizedBox(
-          height: 44,
-          child: ListView.separated(
-            scrollDirection: Axis.horizontal,
-            padding: AppSpacing.symmetric(horizontal: AppSpacing.md),
-            itemCount: ActivityFilter.values.length,
-            separatorBuilder: (_, _) => AppSpacing.gapWSm,
-            itemBuilder: (_, index) {
-              final filter = ActivityFilter.values[index];
-              return ActivityFilterChip(
-                label: filter.label,
-                selected: provider.selectedFilter == filter,
-                onTap: () => provider.selectFilter(filter),
-              );
-            },
-          ),
-        ),
         AppSpacing.gapSm,
         Expanded(
           child: provider.hasNoResultsForFilter || grouped.isEmpty
@@ -262,6 +331,8 @@ class _ActivitiesViewState extends State<_ActivitiesView> {
                           ActivityCard(
                             activity: activity,
                             onCall: () => _handleCall(activity),
+                            onApprove: _handleApprove,
+                            onDeny: _handleDeny,
                             onWrongEntry: () => _handleWrongEntry(provider, activity),
                           ),
                           AppSpacing.gapSm,

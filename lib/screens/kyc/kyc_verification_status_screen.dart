@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter_nivasshub/constants/app_spacing.dart';
 import 'package:flutter_nivasshub/constants/app_text_styles.dart';
-import 'package:flutter_nivasshub/constants/figma_colors.dart';
 import 'package:flutter_nivasshub/constants/kyc/kyc_strings.dart';
 import 'package:flutter_nivasshub/constants/string_constants.dart';
 import 'package:flutter_nivasshub/models/auth/user_role.dart';
@@ -16,6 +15,7 @@ import 'package:flutter_nivasshub/providers/kyc/kyc_status_provider.dart';
 import 'package:flutter_nivasshub/routes/app_routes.dart';
 import 'package:flutter_nivasshub/routes/navigation_service.dart';
 import 'package:flutter_nivasshub/widgets/kyc/kyc_stage_indicator.dart';
+import 'package:flutter_nivasshub/widgets/kyc/kyc_header_progress.dart';
 import 'package:flutter_nivasshub/widgets/kyc/kyc_verdict_panel.dart';
 import 'package:flutter_nivasshub/widgets/shared/figma/figma_scaffold.dart';
 import 'package:flutter_nivasshub/widgets/shared/figma/figma_widgets.dart';
@@ -162,6 +162,13 @@ class _KycVerificationStatusScreenState
             ? KycStrings.kycTitle
             : 'Verification Progress',
         showBackButton: false,
+        bottom:
+            provider.state == KycStatusState.loading ||
+                provider.state == KycStatusState.error ||
+                provider.status == KycVerificationStatus.rejected ||
+                provider.status == KycVerificationStatus.correctionRequired
+            ? null
+            : const KycHeaderProgress(current: 3, total: 3),
         body: SafeArea(top: false, child: _buildBody(context, provider)),
       ),
     );
@@ -196,14 +203,6 @@ class _KycVerificationStatusScreenState
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            if (!isRejected) ...[
-              const FigmaProgressStrip(
-                label: 'Onboarding Progress',
-                current: 3,
-                total: 3,
-              ),
-              AppSpacing.gapMd,
-            ],
             AnimatedSwitcher(
               duration: const Duration(milliseconds: 300),
               child: isRejected
@@ -239,7 +238,7 @@ class _KycVerificationStatusScreenState
                             fontWeight: FontWeight.w700,
                           ),
                         ),
-                        StatusChip(
+                        _StatusPill(
                           label: _statusLabel(provider.status).toUpperCase(),
                           type: _statusChipType(provider.status),
                         ),
@@ -258,15 +257,40 @@ class _KycVerificationStatusScreenState
                       isComplete: provider.isTerminal,
                     ),
                     AppSpacing.gapMd,
-                    Divider(height: 1, color: FigmaColors.of(context).cardBorder),
+                    const Divider(height: 1, color: AppColors.cardBorder),
                     AppSpacing.gapMd,
-                    Center(
-                      child: Text(
-                        'Reference ID: ${widget.args.kycId}',
-                        style: AppTextStyles.bodyMedium.copyWith(
-                          color: textPrimary,
-                          fontWeight: FontWeight.w500,
-                        ),
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 12,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppColors.background,
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      child: Row(
+                        children: [
+                          const Text(
+                            'Reference ID',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: AppColors.textMuted,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              widget.args.kycId,
+                              textAlign: TextAlign.end,
+                              style: const TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w700,
+                                color: AppColors.textDark,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],
@@ -285,7 +309,6 @@ class _KycVerificationStatusScreenState
               FigmaButton(
                 label: KycStrings.goToDashboard,
                 isLoading: provider.isGeneratingToken,
-                navy: true,
                 onPressed: provider.isGeneratingToken ? null : _handleApproved,
               ),
             ] else if (!isRejected) ...[
@@ -296,16 +319,18 @@ class _KycVerificationStatusScreenState
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
+                  const Icon(
                     Icons.mail_outline,
                     size: 18,
-                    color: FigmaColors.of(context).heading,
+                    color: AppColors.textDark,
                   ),
                   const SizedBox(width: 8),
-                  Text(
-                    'Support desk is active at support@nivasshub.com',
-                    style: AppTextStyles.bodySmall.copyWith(
-                      color: FigmaColors.of(context).heading,
+                  Flexible(
+                    child: Text(
+                      'Support desk is active at support@nivasshub.com',
+                      style: AppTextStyles.bodySmall.copyWith(
+                        color: AppColors.textDark,
+                      ),
                     ),
                   ),
                 ],
@@ -346,26 +371,25 @@ class _ActionRequiredAlert extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const red = Color(0xFFEF4444);
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: red.withValues(alpha: 0.08),
+        color: AppColors.errorLight,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: red.withValues(alpha: 0.7)),
+        border: Border.all(color: AppColors.error.withValues(alpha: 0.5)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              const Icon(Icons.info_outline, color: red, size: 20),
+              const Icon(Icons.info_outline, color: AppColors.error, size: 20),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
                   title,
                   style: AppTextStyles.titleSmall.copyWith(
-                    color: red,
+                    color: AppColors.error,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
@@ -375,9 +399,7 @@ class _ActionRequiredAlert extends StatelessWidget {
           const SizedBox(height: 6),
           Text(
             body,
-            style: AppTextStyles.bodySmall.copyWith(
-              color: const Color(0xFF991B1B),
-            ),
+            style: AppTextStyles.bodySmall.copyWith(color: AppColors.error),
           ),
         ],
       ),
@@ -396,7 +418,6 @@ class _HowToCorrectCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = FigmaColors.of(context);
     return FigmaCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -404,7 +425,7 @@ class _HowToCorrectCard extends StatelessWidget {
           Text(
             'How to correct:',
             style: AppTextStyles.titleSmall.copyWith(
-              color: t.heading,
+              color: AppColors.textDark,
               fontWeight: FontWeight.w700,
             ),
           ),
@@ -418,7 +439,7 @@ class _HowToCorrectCard extends StatelessWidget {
                   Text(
                     '${i + 1}.',
                     style: AppTextStyles.bodySmall.copyWith(
-                      color: FigmaColors.orange,
+                      color: AppColors.primaryOrange,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
@@ -426,7 +447,9 @@ class _HowToCorrectCard extends StatelessWidget {
                   Expanded(
                     child: Text(
                       _tips[i],
-                      style: AppTextStyles.bodySmall.copyWith(color: t.body),
+                      style: AppTextStyles.bodySmall.copyWith(
+                        color: AppColors.textMuted,
+                      ),
                     ),
                   ),
                 ],
@@ -445,29 +468,25 @@ class _ReviewHint extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.error.withValues(alpha: 0.08),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.error.withValues(alpha: 0.6)),
+        color: AppColors.alertBannerBg,
+        borderRadius: BorderRadius.circular(20),
       ),
       child: Row(
         children: [
-          const Icon(Icons.hourglass_top_rounded, color: AppColors.warning),
+          const Icon(Icons.hourglass_top_rounded, color: AppColors.white),
           const SizedBox(width: 12),
           Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  KycStrings.verifiedWithinHint,
-                  style: AppTextStyles.titleSmall,
-                ),
-                Text(
-                  KycStrings.verifiedWithinHintSub,
-                  style: AppTextStyles.bodySmall,
-                ),
-              ],
+            child: Text(
+              '${KycStrings.verifiedWithinHint}. '
+              '${KycStrings.verifiedWithinHintSub}',
+              style: const TextStyle(
+                fontSize: 13,
+                height: 1.4,
+                fontWeight: FontWeight.w600,
+                color: AppColors.white,
+              ),
             ),
           ),
         ],
@@ -573,7 +592,7 @@ class _DocumentStatusTile extends StatelessWidget {
       context: context,
       barrierDismissible: true,
       barrierLabel: 'Close preview',
-      barrierColor: Colors.black87,
+      barrierColor: AppColors.overlay,
       transitionDuration: const Duration(milliseconds: 220),
       transitionBuilder: (_, anim, _, child) =>
           FadeTransition(opacity: anim, child: child),
@@ -585,7 +604,7 @@ class _DocumentStatusTile extends StatelessWidget {
                   ? Text(
                       KycStrings.previewUnavailable,
                       style: AppTextStyles.bodyMedium.copyWith(
-                        color: Colors.white,
+                        color: AppColors.white,
                       ),
                     )
                   : InteractiveViewer(
@@ -597,7 +616,7 @@ class _DocumentStatusTile extends StatelessWidget {
               top: 8,
               right: 8,
               child: IconButton(
-                icon: const Icon(Icons.close_rounded, color: Colors.white),
+                icon: const Icon(Icons.close_rounded, color: AppColors.white),
                 onPressed: () => Navigator.of(ctx).pop(),
               ),
             ),
@@ -638,11 +657,11 @@ class _DocumentStatusTile extends StatelessWidget {
                   child: Container(
                     width: 48,
                     height: 48,
-                    color: AppColors.primary.withValues(alpha: 0.1),
+                    color: AppColors.accentTint,
                     child: doc.bytes == null
                         ? const Icon(
                             Icons.description_outlined,
-                            color: AppColors.primary,
+                            color: AppColors.primaryOrange,
                           )
                         : Image.memory(
                             doc.bytes!,
@@ -651,7 +670,7 @@ class _DocumentStatusTile extends StatelessWidget {
                             gaplessPlayback: true,
                             errorBuilder: (_, _, _) => const Icon(
                               Icons.description_outlined,
-                              color: AppColors.primary,
+                              color: AppColors.primaryOrange,
                             ),
                           ),
                   ),
@@ -673,7 +692,7 @@ class _DocumentStatusTile extends StatelessWidget {
                       child: Text(
                         'Preview',
                         style: AppTextStyles.bodySmall.copyWith(
-                          color: AppColors.primary,
+                          color: AppColors.primaryOrange,
                         ),
                       ),
                     ),
@@ -682,7 +701,7 @@ class _DocumentStatusTile extends StatelessWidget {
               ),
               AnimatedSwitcher(
                 duration: const Duration(milliseconds: 250),
-                child: StatusChip(
+                child: _StatusPill(
                   key: ValueKey(label),
                   label: label,
                   type: type,
@@ -740,6 +759,39 @@ class _DocumentStatusTile extends StatelessWidget {
                 : const SizedBox(width: double.infinity),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// Soft status pill: pending (orange tint), approved (green), rejected (red).
+class _StatusPill extends StatelessWidget {
+  const _StatusPill({super.key, required this.label, required this.type});
+
+  final String label;
+  final StatusChipType type;
+
+  @override
+  Widget build(BuildContext context) {
+    final (bg, fg) = switch (type) {
+      StatusChipType.approved => (AppColors.badgeGreenBg, AppColors.badgeGreen),
+      StatusChipType.rejected => (AppColors.errorLight, AppColors.error),
+      _ => (AppColors.accentTint, AppColors.primaryOrangeDark),
+    };
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(
+        color: bg,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Text(
+        label,
+        style: TextStyle(
+          fontSize: 11,
+          fontWeight: FontWeight.w700,
+          letterSpacing: 0.3,
+          color: fg,
+        ),
       ),
     );
   }

@@ -13,23 +13,23 @@ class FigmaColors {
 
   /// Deep navy used for solid header fills that carry white text. Name kept
   /// from the old palette so existing call sites keep compiling.
-  static const Color navy = Color(0xFF8B6F47);
+  static const Color navy = AppColors.headerEnd;
 
   /// Primary accent (warm amber-brown). Name kept from the old orange
   /// palette so existing call sites keep compiling.
-  static const Color orange = Color(0xFFFF8A00);
+  static const Color orange = AppColors.primaryOrange;
 
   /// Warning / highlight accent.
-  static const Color warning = Color(0xFFD97706);
+  static const Color warning = AppColors.warning;
 
   /// Info accent (follows the brand accent).
-  static const Color accentBlue = Color(0xFFFF8A00);
+  static const Color accentBlue = AppColors.primaryOrange;
 
   /// Top bar / header colour in dark mode.
-  static const Color darkBar = Color(0xFF222528);
+  static const Color darkBar = AppColors.surfaceDark;
 
   /// Deep-navy text colour for headings.
-  static const Color ink = Color(0xFF3E2F1C);
+  static const Color ink = AppColors.textDark;
 
   static FigmaTheme of(BuildContext context) =>
       Theme.of(context).brightness == Brightness.dark
@@ -86,7 +86,7 @@ class FigmaTheme {
     heading: AppColors.textPrimaryLight,
     body: AppColors.textSecondaryLight,
     cta: AppColors.primary,
-    shadow: Color(0x0D000000),
+    shadow: AppColors.shadowSoft,
     accent: AppColors.primary,
     iconBg: AppColors.mint,
     navInactive: AppColors.textSecondaryLight,

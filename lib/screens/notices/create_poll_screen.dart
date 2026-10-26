@@ -109,12 +109,12 @@ class _CreatePollScreenState extends State<CreatePollScreen> {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final headerColor =
-        isDark ? AppColors.dashboardHeaderDark : const Color(0xFFF3E8D9);
+        isDark ? AppColors.dashboardHeaderDark : AppColors.background;
     final titleColor =
-        isDark ? AppColors.noticesHeadingDark : const Color(0xFF3E2F1C);
+        isDark ? AppColors.noticesHeadingDark : AppColors.textPrimary;
     final mutedColor = isDark ? AppColors.noticesMutedDark : AppColors.noticesMutedLight;
     final accentBlue =
-        isDark ? AppColors.noticesAccentBlueDark : const Color(0xFFFF8A00);
+        isDark ? AppColors.noticesAccentBlueDark : AppColors.accent;
     final secondaryColor =
         isDark ? AppColors.noticesSecondaryTextDark : AppColors.noticesSecondaryTextLight;
 
@@ -149,7 +149,7 @@ class _CreatePollScreenState extends State<CreatePollScreen> {
               color: isDark ? AppColors.noticesBlueTintBgDark : const Color(0xFFFFFFFF),
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
-                color: isDark ? AppColors.noticesBlueBorderDark : const Color(0xFFE8DCC8),
+                color: isDark ? AppColors.noticesBlueBorderDark : AppColors.border,
               ),
             ),
             child: Material(
@@ -194,7 +194,7 @@ class _CreatePollScreenState extends State<CreatePollScreen> {
                       CircleAvatar(
                         radius: 20,
                         backgroundColor:
-                            isDark ? AppColors.noticesAccentAmberDark : const Color(0xFFFF8A00),
+                            isDark ? AppColors.noticesAccentAmberDark : AppColors.accent,
                         child: const Text(
                           'A',
                           style: TextStyle(
@@ -218,7 +218,7 @@ class _CreatePollScreenState extends State<CreatePollScreen> {
                               fontSize: 15,
                               height: 1.0,
                               letterSpacing: 0,
-                              color: isDark ? AppColors.noticesHeadingDark : const Color(0xFF3E2F1C),
+                              color: isDark ? AppColors.noticesHeadingDark : AppColors.textPrimary,
                             ),
                           ),
                           const SizedBox(height: 2),
@@ -229,7 +229,7 @@ class _CreatePollScreenState extends State<CreatePollScreen> {
                               fontWeight: FontWeight.w500,
                               height: 1.0,
                               letterSpacing: 0,
-                              color: isDark ? AppColors.textSecondaryDark : const Color(0xFF3E2F1C),
+                              color: isDark ? AppColors.textSecondaryDark : AppColors.textPrimary,
                             ),
                           ),
                         ],
@@ -244,7 +244,7 @@ class _CreatePollScreenState extends State<CreatePollScreen> {
                     decoration: BoxDecoration(
                       color: isDark ? AppColors.surfaceDark : const Color(0xFFFFFFFF),
                       border: Border.all(
-                        color: isDark ? AppColors.noticesBorderDark : const Color(0xFFE8DCC8),
+                        color: isDark ? AppColors.noticesBorderDark : AppColors.border,
                       ),
                       borderRadius: BorderRadius.circular(8),
                     ),
@@ -258,14 +258,14 @@ class _CreatePollScreenState extends State<CreatePollScreen> {
                             fontWeight: FontWeight.w500,
                             height: 1.0,
                             letterSpacing: 0,
-                            color: isDark ? titleColor : const Color(0xFF5C4A32),
+                            color: isDark ? titleColor : AppColors.textBody,
                           ),
                         ),
                         const SizedBox(width: 6),
                         Icon(
                           Icons.keyboard_arrow_down,
                           size: 16,
-                          color: isDark ? titleColor : const Color(0xFF5C4A32),
+                          color: isDark ? titleColor : AppColors.textBody,
                         ),
                       ],
                     ),
@@ -285,17 +285,17 @@ class _CreatePollScreenState extends State<CreatePollScreen> {
                       fontWeight: FontWeight.w400,
                       height: 1.0,
                       letterSpacing: 0,
-                      color: isDark ? secondaryColor : const Color(0xFF5C4A32),
+                      color: isDark ? secondaryColor : AppColors.textBody,
                     ),
                   ),
                   const SizedBox(height: 18),
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                     decoration: BoxDecoration(
-                      color: isDark ? AppColors.surfaceDark : const Color(0xFFFBF1E5),
+                      color: isDark ? AppColors.surfaceDark : AppColors.accentTint,
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
-                        color: isDark ? AppColors.noticesCardBorderDark : const Color(0xFFE8DCC8),
+                        color: isDark ? AppColors.noticesCardBorderDark : AppColors.border,
                         width: 1.0,
                       ),
                     ),
@@ -327,7 +327,7 @@ class _CreatePollScreenState extends State<CreatePollScreen> {
                                 fontWeight: FontWeight.w500,
                                 height: 1.0,
                                 letterSpacing: 0,
-                                color: isDark ? accentBlue : const Color(0xFFFF8A00),
+                                color: isDark ? accentBlue : AppColors.accent,
                               ),
                               border: InputBorder.none,
                               isDense: true,
@@ -349,7 +349,7 @@ class _CreatePollScreenState extends State<CreatePollScreen> {
                   border: Border.all(
                     color: isDark
                         ? AppColors.noticesCardBorderDark
-                        : const Color(0xFFE8DCC8),
+                        : AppColors.border,
                     width: 1.0,
                   ),
                 ),
@@ -372,7 +372,7 @@ class _CreatePollScreenState extends State<CreatePollScreen> {
                             fontWeight: FontWeight.w400,
                             height: 1.0,
                             letterSpacing: 0,
-                            color: isDark ? mutedColor : const Color(0xFF5C4A32),
+                            color: isDark ? mutedColor : AppColors.textBody,
                           ),
                           border: InputBorder.none,
                           isDense: true,
@@ -399,7 +399,7 @@ class _CreatePollScreenState extends State<CreatePollScreen> {
                   children: [
                     Icon(
                       Icons.add,
-                      color: isDark ? accentBlue : const Color(0xFFFF8A00),
+                      color: isDark ? accentBlue : AppColors.accent,
                       size: 16,
                     ),
                     const SizedBox(width: 6),
@@ -410,7 +410,7 @@ class _CreatePollScreenState extends State<CreatePollScreen> {
                         fontWeight: FontWeight.w600,
                         height: 1.0,
                         letterSpacing: 0,
-                        color: isDark ? accentBlue : const Color(0xFFFF8A00),
+                        color: isDark ? accentBlue : AppColors.accent,
                       ),
                     ),
                   ],

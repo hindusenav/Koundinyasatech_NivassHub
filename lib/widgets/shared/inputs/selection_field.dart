@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter_nivasshub/constants/app_dimensions.dart';
 import 'package:flutter_nivasshub/constants/app_icons.dart';
 import 'package:flutter_nivasshub/widgets/shared/inputs/custom_text_field.dart';
@@ -86,7 +87,11 @@ class _SelectionFieldState extends State<SelectionField> {
                 child: CircularProgressIndicator(strokeWidth: 2),
               ),
             )
-          : const Icon(AppIcons.chevronDown, size: AppDimensions.iconSm),
+          : const Icon(
+              AppIcons.chevronDown,
+              size: AppDimensions.iconSm,
+              color: AppColors.textMuted,
+            ),
     );
   }
 }

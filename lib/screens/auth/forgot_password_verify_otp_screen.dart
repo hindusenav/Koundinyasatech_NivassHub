@@ -2,20 +2,17 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_nivasshub/constants/app_dimensions.dart';
-import 'package:flutter_nivasshub/constants/app_icons.dart';
-import 'package:flutter_nivasshub/constants/app_spacing.dart';
-import 'package:flutter_nivasshub/constants/app_text_styles.dart';
-import 'package:flutter_nivasshub/constants/auth/auth_colors.dart';
+import 'package:flutter_nivasshub/constants/app_colors.dart';
+import 'package:flutter_nivasshub/utils/responsive.dart';
 import 'package:flutter_nivasshub/providers/auth/forgot_password_provider.dart';
 import 'package:flutter_nivasshub/routes/app_routes.dart';
 import 'package:flutter_nivasshub/screens/auth/update_password_screen.dart';
 import 'package:flutter_nivasshub/services/auth/sms_otp_listener.dart';
 import 'package:flutter_nivasshub/utils/extensions/context_extensions.dart';
-import 'package:flutter_nivasshub/widgets/auth/auth_back_button.dart';
-import 'package:flutter_nivasshub/widgets/auth/auth_gradient_button.dart';
 import 'package:flutter_nivasshub/widgets/auth/otp_input_boxes.dart';
 import 'package:flutter_nivasshub/widgets/shared/feedback/custom_snackbar.dart';
+import 'package:flutter_nivasshub/widgets/shared/figma/figma_scaffold.dart';
+import 'package:flutter_nivasshub/widgets/shared/figma/figma_widgets.dart';
 
 /// Typed arguments for [AppRoutes.forgotPasswordVerifyOtp], unpacked in
 /// `auth_router.dart`.
@@ -50,12 +47,10 @@ class ForgotPasswordVerifyOtpScreen extends StatefulWidget {
   State<ForgotPasswordVerifyOtpScreen> createState() => _ForgotPasswordVerifyOtpScreenState();
 }
 
-class _ForgotPasswordVerifyOtpScreenState extends State<ForgotPasswordVerifyOtpScreen>
-    with SingleTickerProviderStateMixin {
+class _ForgotPasswordVerifyOtpScreenState extends State<ForgotPasswordVerifyOtpScreen> {
   static const int _otpLength = 6;
   static const int _resendCooldownSeconds = 30;
 
-  late final AnimationController _entrance;
   Timer? _countdownTimer;
   int _secondsRemaining = _resendCooldownSeconds;
   String _otpCode = '';
@@ -71,16 +66,11 @@ class _ForgotPasswordVerifyOtpScreenState extends State<ForgotPasswordVerifyOtpS
   void initState() {
     super.initState();
     if (widget.channel == ForgotPasswordChannel.mobile) _smsListener.start();
-    _entrance = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 900),
-    )..forward();
     _startCountdown();
   }
 
   @override
   void dispose() {
-    _entrance.dispose();
     _countdownTimer?.cancel();
     _smsListener.stop();
     _otpController.dispose();
@@ -168,164 +158,111 @@ class _ForgotPasswordVerifyOtpScreenState extends State<ForgotPasswordVerifyOtpS
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final screenHeight = context.screenHeight;
     final forgotPassword = context.watch<ForgotPasswordProvider>();
-    final background = isDark ? AuthColors.backgroundDarkMode : AuthColors.background;
-    final heading = isDark ? AuthColors.headingDarkMode : AuthColors.heading;
-    final bodyText = isDark ? AuthColors.bodyTextDarkMode : AuthColors.bodyText;
-    final primaryBlue = isDark ? AuthColors.primaryBlueDarkMode : AuthColors.primaryBlue;
-    final lightBlue = isDark ? AuthColors.lightBlueDarkMode : AuthColors.lightBlue;
     final mobilePrefix = widget.channel == ForgotPasswordChannel.mobile
         ? '${forgotPassword.countryCode ?? ''} '
         : '';
+    final isMobile = widget.channel == ForgotPasswordChannel.mobile;
 
     return PopScope(
       canPop: !(forgotPassword.isVerifyingOtp || forgotPassword.isResendingOtp),
-      child: Scaffold(
-        backgroundColor: background,
-        body: Stack(
-          children: [
-            Positioned.fill(
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [background, background, lightBlue.withValues(alpha: 0.05)],
-                    stops: const [0.0, 0.55, 1.0],
+      child: FigmaHeaderScaffold(
+        title: 'Verify OTP',
+        body: SafeArea(
+          top: false,
+          child: SingleChildScrollView(
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+            padding: context.pageInsets,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(
+                  isMobile
+                      ? 'Verify Your Mobile Number'
+                      : 'Verify Your Email Address',
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.textDark,
                   ),
                 ),
-              ),
-            ),
-            SafeArea(
-              child: Align(
-                alignment: Alignment.topLeft,
-                child: Padding(
-                  padding: AppSpacing.all(AppSpacing.sm),
-                  child: AuthBackButton(onTap: () => Navigator.pop(context)),
+                context.gapSm,
+                Text(
+                  isMobile
+                      ? 'Enter the 6-digit OTP sent to your mobile number\n'
+                          '$mobilePrefix$_maskedIdentifier'
+                      : 'Enter the 6-digit OTP sent to your email address\n'
+                          '$_maskedIdentifier',
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 13,
+                    height: 1.4,
+                    color: AppColors.textMuted,
+                  ),
                 ),
-              ),
-            ),
-            SafeArea(
-              child: Center(
-                child: Padding(
-                  padding: AppSpacing.horizontal(AppSpacing.lg),
-                  child: SingleChildScrollView(
-                    child: AnimatedBuilder(
-                      animation: _entrance,
-                      builder: (context, _) {
-                        final t = _entrance.value;
-                        final titleT = const Interval(0.00, 0.40, curve: Curves.easeOut).transform(t);
-                        final subtitleT =
-                            const Interval(0.10, 0.48, curve: Curves.easeOut).transform(t);
-                        final otpT =
-                            const Interval(0.22, 0.60, curve: Curves.easeOutCubic).transform(t);
-                        final resendT = const Interval(0.34, 0.68, curve: Curves.easeOut).transform(t);
-                        final buttonT =
-                            const Interval(0.46, 0.82, curve: Curves.easeOutCubic).transform(t);
-                        final footerT = const Interval(0.58, 0.94, curve: Curves.easeOut).transform(t);
-
-                        return Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            SizedBox(height: screenHeight * 0.08),
-                            Opacity(
-                              opacity: titleT.clamp(0.0, 1.0),
-                              child: Text(
-                                widget.channel == ForgotPasswordChannel.mobile
-                                    ? 'Verify Your Mobile Number'
-                                    : 'Verify Your Email Address',
-                                textAlign: TextAlign.center,
-                                style: AppTextStyles.headlineSmall.copyWith(
-                                  color: heading,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                            SizedBox(height: AppSpacing.sm),
-                            Opacity(
-                              opacity: subtitleT.clamp(0.0, 1.0),
-                              child: Text(
-                                widget.channel == ForgotPasswordChannel.mobile
-                                    ? 'Enter the 6-digit OTP sent to your mobile number '
-                                        '$mobilePrefix$_maskedIdentifier'
-                                    : 'Enter the 6-digit OTP sent to your email address '
-                                        '$_maskedIdentifier',
-                                textAlign: TextAlign.center,
-                                style: AppTextStyles.bodyMedium.copyWith(color: bodyText),
-                              ),
-                            ),
-                            SizedBox(height: AppSpacing.xxl),
-                            Opacity(
-                              opacity: otpT.clamp(0.0, 1.0),
-                              child: OtpInputBoxes(
-                                length: _otpLength,
-                                controller: _otpController,
-                                onChanged: (code) => setState(() => _otpCode = code),
-                                onCompleted: (code) => setState(() => _otpCode = code),
-                              ),
-                            ),
-                            SizedBox(height: AppSpacing.xl),
-                            Opacity(
-                              opacity: resendT.clamp(0.0, 1.0),
-                              child: _secondsRemaining > 0
-                                  ? Text(
-                                      "Didn't receive the OTP? Resend in $_formattedCountdown",
-                                      style: AppTextStyles.bodyMedium.copyWith(color: bodyText),
-                                    )
-                                  : GestureDetector(
-                                      onTap: forgotPassword.isResendingOtp ? null : _handleResend,
-                                      child: Text(
-                                        forgotPassword.isResendingOtp ? 'Resending...' : 'Resend OTP',
-                                        style: AppTextStyles.bodyMedium.copyWith(
-                                          color: primaryBlue,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ),
-                            ),
-                            SizedBox(height: AppSpacing.xxl),
-                            Opacity(
-                              opacity: buttonT.clamp(0.0, 1.0),
-                              child: AuthGradientButton(
-                                label: 'Verify OTP',
-                                isLoading: forgotPassword.isVerifyingOtp,
-                                onPressed: _otpCode.length == _otpLength ? _handleVerify : null,
-                              ),
-                            ),
-                            SizedBox(height: AppSpacing.lg),
-                            Opacity(
-                              opacity: footerT.clamp(0.0, 1.0),
-                              child: GestureDetector(
-                                onTap: () =>
-                                    Navigator.popUntil(context, (route) => route.isFirst || route.settings.name == AppRoutes.forgotPassword),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Icon(AppIcons.back, size: AppDimensions.iconXs, color: primaryBlue),
-                                    AppSpacing.gapWXs,
-                                    Text(
-                                      'Back to Options',
-                                      style: AppTextStyles.bodyMedium.copyWith(
-                                        color: primaryBlue,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            SizedBox(height: screenHeight * 0.06),
-                          ],
-                        );
-                      },
+                SizedBox(height: context.rs(28)),
+                FigmaCard(
+                  child: Center(
+                    child: OtpInputBoxes(
+                      length: _otpLength,
+                      controller: _otpController,
+                      onChanged: (code) => setState(() => _otpCode = code),
+                      onCompleted: (code) => setState(() => _otpCode = code),
                     ),
                   ),
                 ),
-              ),
+                context.gapMd,
+                Center(
+                  child: _secondsRemaining > 0
+                      ? Text(
+                          "Didn't receive the OTP? Resend in $_formattedCountdown",
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            fontSize: 13,
+                            color: AppColors.textMuted,
+                          ),
+                        )
+                      : TextButton(
+                          onPressed:
+                              forgotPassword.isResendingOtp ? null : _handleResend,
+                          child: Text(
+                            forgotPassword.isResendingOtp
+                                ? 'Resending...'
+                                : 'Resend OTP',
+                            style: const TextStyle(
+                              color: AppColors.primaryOrange,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+                ),
+                SizedBox(height: context.rs(20)),
+                FigmaButton(
+                  label: 'Verify OTP',
+                  showArrow: true,
+                  isLoading: forgotPassword.isVerifyingOtp,
+                  onPressed: _otpCode.length == _otpLength ? _handleVerify : null,
+                ),
+                SizedBox(height: context.rs(12)),
+                TextButton(
+                  onPressed: () => Navigator.popUntil(
+                    context,
+                    (route) =>
+                        route.isFirst ||
+                        route.settings.name == AppRoutes.forgotPassword,
+                  ),
+                  child: const Text(
+                    'Back to Options',
+                    style: TextStyle(
+                      color: AppColors.primaryOrange,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );

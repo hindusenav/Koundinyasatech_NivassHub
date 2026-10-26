@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_nivasshub/constants/figma_colors.dart';
+import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter_nivasshub/screens/location/select_country_screen.dart';
 import 'package:flutter_nivasshub/widgets/shared/figma/figma_widgets.dart';
 
@@ -23,7 +23,7 @@ class ConfirmCitySheet extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: const BoxDecoration(
-        color: FigmaColors.navy,
+        gradient: AppColors.headerGradient,
         borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
       ),
       padding: const EdgeInsets.fromLTRB(24, 14, 24, 24),
@@ -38,7 +38,7 @@ class ConfirmCitySheet extends StatelessWidget {
                 width: 40,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: Colors.white38,
+                  color: AppColors.white.withValues(alpha: 0.4),
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -47,24 +47,34 @@ class ConfirmCitySheet extends StatelessWidget {
             const Text(
               'Select City',
               textAlign: TextAlign.start,
-              style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w700),
+              style: TextStyle(
+                color: AppColors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+              ),
             ),
             const SizedBox(height: 4),
-            const Text(
+            Text(
               'Confirm the selected region to continue',
               textAlign: TextAlign.start,
-              style: TextStyle(color: Colors.white70, fontSize: 13),
+              style: TextStyle(
+                color: AppColors.white.withValues(alpha: 0.75),
+                fontSize: 13,
+              ),
             ),
             const SizedBox(height: 16),
             Container(
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: AppColors.cardBg,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.location_on_outlined, color: FigmaColors.accentBlue),
+                  const Icon(
+                    Icons.location_on_outlined,
+                    color: AppColors.primaryOrange,
+                  ),
                   const SizedBox(width: 10),
                   Expanded(
                     child: Column(
@@ -73,7 +83,7 @@ class ConfirmCitySheet extends StatelessWidget {
                         Text(
                           city.name,
                           style: const TextStyle(
-                            color: FigmaColors.navy,
+                            color: AppColors.textDark,
                             fontSize: 15,
                             fontWeight: FontWeight.w700,
                           ),
@@ -81,12 +91,15 @@ class ConfirmCitySheet extends StatelessWidget {
                         if (city.subtitle != null)
                           Text(
                             city.subtitle!,
-                            style: const TextStyle(color: Color(0xFF8A7658), fontSize: 11),
+                            style: const TextStyle(
+                              color: AppColors.textMuted,
+                              fontSize: 11,
+                            ),
                           ),
                       ],
                     ),
                   ),
-                  const Icon(Icons.check, color: FigmaColors.accentBlue),
+                  const Icon(Icons.check, color: AppColors.primaryOrange),
                 ],
               ),
             ),

@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter_nivasshub/routes/app_routes.dart';
 import 'package:flutter_nivasshub/providers/dashboard/dashboard_provider.dart';
+import 'package:flutter_nivasshub/providers/notifications/mock_notification_provider.dart';
 import 'package:flutter_nivasshub/widgets/shared/glass/glass_widgets.dart';
 
 class DashboardHeader extends StatelessWidget {
@@ -24,14 +25,15 @@ class DashboardHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final provider = context.watch<DashboardProvider>();
     final user = provider.home?.data.user;
-    const textColor = Colors.white;
+    const textColor = AppColors.white;
+    final unread = context.watch<MockNotificationProvider>().unreadCount;
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: AmberGradientBar.overlayStyle,
       child: AmberGradientBar(
         borderRadius: const BorderRadius.only(
-          bottomLeft: Radius.circular(24),
-          bottomRight: Radius.circular(24),
+          bottomLeft: Radius.circular(28),
+          bottomRight: Radius.circular(28),
         ),
         child: SafeArea(
           top: true,
@@ -40,10 +42,10 @@ class DashboardHeader extends StatelessWidget {
           bottom: false,
           child: Padding(
             padding: const EdgeInsets.only(
-              left: 16,
-              right: 16,
-              top: 20,
-              bottom: 26,
+              left: 18,
+              right: 18,
+              top: 12,
+              bottom: 28,
             ),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -79,31 +81,38 @@ class DashboardHeader extends StatelessWidget {
                 ),
                 _CircleIconButton(
                   onTap: () => Navigator.pushNamed(context, AppRoutes.search),
-                  child: Image.asset(
-                    'assets/icons/search.png',
-                    width: 20,
-                    height: 20,
-                    color: textColor,
-                    errorBuilder: (_, _, _) => const Icon(
-                      Icons.search_rounded,
-                      size: 20,
-                      color: textColor,
-                    ),
-                  ),
+                  child: const Icon(Icons.search, size: 20, color: textColor),
                 ),
                 const SizedBox(width: 8),
                 _CircleIconButton(
                   onTap: () => Navigator.pushNamed(context, AppRoutes.settings),
-                  child: Image.asset(
-                    'assets/icons/chat.png',
-                    width: 20,
-                    height: 20,
-                    color: textColor,
-                    errorBuilder: (_, _, _) => const Icon(
-                      Icons.chat_bubble_outline_rounded,
-                      size: 20,
-                      color: textColor,
-                    ),
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    alignment: Alignment.center,
+                    children: [
+                      const Icon(
+                        Icons.notifications_none,
+                        size: 20,
+                        color: textColor,
+                      ),
+                      if (unread > 0)
+                        Positioned(
+                          top: -1,
+                          right: -1,
+                          child: Container(
+                            width: 9,
+                            height: 9,
+                            decoration: BoxDecoration(
+                              color: AppColors.primaryOrange,
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: AppColors.headerEnd,
+                                width: 1.5,
+                              ),
+                            ),
+                          ),
+                        ),
+                    ],
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -116,14 +125,14 @@ class DashboardHeader extends StatelessWidget {
                     alignment: Alignment.center,
                     decoration: const BoxDecoration(
                       shape: BoxShape.circle,
-                      color: AppColors.orange,
+                      color: AppColors.primaryOrange,
                     ),
                     child: const Text(
                       'A',
                       style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w600,
-                        color: Colors.white,
+                        color: AppColors.white,
                         height: 1,
                       ),
                     ),
@@ -155,7 +164,7 @@ class _CircleIconButton extends StatelessWidget {
         alignment: Alignment.center,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: Colors.white.withValues(alpha: 0.18),
+          color: AppColors.white.withValues(alpha: 0.2),
         ),
         child: child,
       ),

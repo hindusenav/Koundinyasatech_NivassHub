@@ -80,7 +80,7 @@ class AppTheme {
           statusBarBrightness: Brightness.dark,
         ),
         shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
+          borderRadius: BorderRadius.vertical(bottom: Radius.circular(28)),
         ),
         titleTextStyle: AppTextStyles.titleLarge.copyWith(
           color: AppColors.white,
@@ -130,8 +130,13 @@ class AppTheme {
             double.infinity,
             AppDimensions.buttonHeightMd,
           ),
-          shape: RoundedRectangleBorder(borderRadius: AppRadius.radiusSm),
-          textStyle: AppTextStyles.labelLarge.copyWith(fontWeight: FontWeight.w600),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+          ),
+          textStyle: AppTextStyles.labelLarge.copyWith(
+            fontSize: 14,
+            fontWeight: FontWeight.w700,
+          ),
           elevation: 0,
         ),
       ),
@@ -155,21 +160,21 @@ class AppTheme {
       ),
       inputDecorationTheme: InputDecorationThemeData(
         filled: true,
-        fillColor: surfaceColor,
+        fillColor: isDark ? surfaceColor : AppColors.cardBg,
         contentPadding: AppSpacing.symmetric(
           horizontal: AppSpacing.md,
           vertical: AppSpacing.sm,
         ),
         border: OutlineInputBorder(
-          borderRadius: AppRadius.radiusMd,
+          borderRadius: BorderRadius.circular(14),
           borderSide: BorderSide(color: borderColor),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: AppRadius.radiusMd,
+          borderRadius: BorderRadius.circular(14),
           borderSide: BorderSide(color: borderColor),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: AppRadius.radiusMd,
+          borderRadius: BorderRadius.circular(14),
           borderSide: BorderSide(color: accent, width: 2),
         ),
         errorBorder: OutlineInputBorder(

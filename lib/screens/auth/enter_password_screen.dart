@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_nivasshub/constants/figma_colors.dart';
+import 'package:flutter_nivasshub/widgets/auth/auth_brand_logo.dart';
 import 'package:flutter_nivasshub/widgets/shared/figma/figma_scaffold.dart';
+import 'package:flutter_nivasshub/widgets/shared/figma/figma_widgets.dart';
 import 'package:flutter_nivasshub/constants/app_colors.dart';
+import 'package:flutter_nivasshub/utils/responsive.dart';
 import 'package:flutter_nivasshub/constants/app_dimensions.dart';
 import 'package:flutter_nivasshub/constants/app_icons.dart';
-import 'package:flutter_nivasshub/constants/app_spacing.dart';
 import 'package:flutter_nivasshub/constants/app_text_styles.dart';
 import 'package:flutter_nivasshub/constants/kyc/kyc_strings.dart';
 import 'package:flutter_nivasshub/models/auth/auth_identifier.dart';
@@ -12,7 +13,6 @@ import 'package:flutter_nivasshub/providers/auth/enter_password_provider.dart';
 import 'package:flutter_nivasshub/providers/dashboard/dashboard_provider.dart';
 import 'package:flutter_nivasshub/routes/app_routes.dart';
 import 'package:flutter_nivasshub/routes/navigation_service.dart';
-import 'package:flutter_nivasshub/widgets/shared/app_bar/custom_app_bar.dart';
 import 'package:flutter_nivasshub/widgets/shared/buttons/custom_button.dart';
 import 'package:flutter_nivasshub/widgets/shared/buttons/primary_button.dart';
 import 'package:flutter_nivasshub/widgets/shared/inputs/custom_text_field.dart';
@@ -71,43 +71,43 @@ class _EnterPasswordScreenState extends State<EnterPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<EnterPasswordProvider>();
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final textPrimary = isDark
-        ? AppColors.textPrimaryDark
-        : AppColors.textPrimaryLight;
-    final textSecondary = isDark
-        ? AppColors.textSecondaryDark
-        : AppColors.textSecondaryLight;
 
-    return Scaffold(
-      appBar: const CustomAppBar(title: '', showBackButton: true),
-      backgroundColor: FigmaColors.of(context).page,
-      body: FigmaBackground(
-        child: SafeArea(
-          child: SingleChildScrollView(
-            padding: AppSpacing.screenPadding,
-            child: Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  AppSpacing.gapLg,
-                  Text(
-                    KycStrings.enterPasswordTitle,
-                    style: AppTextStyles.headlineSmall.copyWith(
-                      color: textPrimary,
-                    ),
+    return FigmaHeaderScaffold(
+      title: KycStrings.loginLabel,
+      body: SafeArea(
+        top: false,
+        child: SingleChildScrollView(
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+          padding: context.pageInsets,
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const AuthBrandLogo(),
+                context.gapLg,
+                Text(
+                  KycStrings.enterPasswordTitle,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    color: AppColors.textDark,
+                    fontSize: 22,
+                    fontWeight: FontWeight.w700,
                   ),
-                  AppSpacing.gapSm,
-                  Text(
-                    widget.args.maskedIdentifier,
-                    style: AppTextStyles.bodyMedium.copyWith(
-                      color: textSecondary,
-                      fontWeight: FontWeight.w600,
-                    ),
+                ),
+                SizedBox(height: context.rs(6)),
+                Text(
+                  widget.args.maskedIdentifier,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    color: AppColors.textMuted,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
                   ),
-                  AppSpacing.gapXl,
-                  CustomTextField(
+                ),
+                context.gapLg,
+                FigmaCard(
+                  child: CustomTextField(
                     controller: _passwordController,
                     label: KycStrings.passwordLabel,
                     hint: KycStrings.passwordHint,
@@ -131,35 +131,39 @@ class _EnterPasswordScreenState extends State<EnterPasswordScreen> {
                           setState(() => _obscurePassword = !_obscurePassword),
                     ),
                   ),
-                  if (provider.errorMessage != null) ...[
-                    AppSpacing.gapSm,
-                    Text(
-                      provider.errorMessage!,
-                      style: AppTextStyles.errorText,
-                    ),
-                  ],
-                  AppSpacing.gapSm,
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: TextButton(
-                      // Reuses the existing forgot-password chain unchanged.
-                      onPressed: provider.isSubmitting
-                          ? null
-                          : () => Navigator.of(
-                              context,
-                            ).pushNamed(AppRoutes.forgotPassword),
-                      child: const Text(KycStrings.forgotPassword),
-                    ),
-                  ),
-                  AppSpacing.gapLg,
-                  PrimaryButton(
-                    label: KycStrings.loginLabel,
-                    isLoading: provider.isSubmitting,
-                    size: CustomButtonSize.large,
-                    onPressed: provider.isSubmitting ? null : _handleLogin,
-                  ),
+                ),
+                if (provider.errorMessage != null) ...[
+                  SizedBox(height: context.rs(10)),
+                  Text(provider.errorMessage!, style: AppTextStyles.errorText),
                 ],
-              ),
+                SizedBox(height: context.rs(6)),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton(
+                    // Reuses the existing forgot-password chain unchanged.
+                    onPressed: provider.isSubmitting
+                        ? null
+                        : () => Navigator.of(
+                            context,
+                          ).pushNamed(AppRoutes.forgotPassword),
+                    style: TextButton.styleFrom(
+                      foregroundColor: AppColors.primaryOrange,
+                      textStyle: const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    child: const Text(KycStrings.forgotPassword),
+                  ),
+                ),
+                SizedBox(height: context.rs(20)),
+                PrimaryButton(
+                  label: KycStrings.loginLabel,
+                  isLoading: provider.isSubmitting,
+                  size: CustomButtonSize.medium,
+                  onPressed: provider.isSubmitting ? null : _handleLogin,
+                ),
+              ],
             ),
           ),
         ),

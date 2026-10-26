@@ -6,8 +6,8 @@ import 'package:flutter_nivasshub/constants/app_spacing.dart';
 import 'package:flutter_nivasshub/constants/app_text_styles.dart';
 import 'package:flutter_nivasshub/models/kyc/kyc_status.dart';
 
-const Color _done = Color(0xFF16A34A);
-const Color _current = Color(0xFFEF4444);
+const Color _done = AppColors.badgeGreen;
+const Color _current = AppColors.primaryOrange;
 
 /// Submitted → Under Review → Admin Review → Processing (spec §12).
 ///
@@ -45,7 +45,7 @@ class KycStageIndicator extends StatelessWidget {
                     height: 2,
                     color: (isComplete || i < activeIndex)
                         ? _done
-                        : AppColors.grey300,
+                        : AppColors.cardBorder,
                   ),
                 ),
             ],
@@ -68,7 +68,7 @@ class KycStageIndicator extends StatelessWidget {
                         ? _done
                         : i == activeIndex
                         ? _current
-                        : AppColors.grey500,
+                        : AppColors.textMuted,
                     fontWeight: (!isComplete && i == activeIndex)
                         ? FontWeight.w700
                         : FontWeight.w500,
@@ -99,13 +99,13 @@ class _Dot extends StatelessWidget {
             ? _done
             : isCurrent
             ? _current
-            : AppColors.grey300.withValues(alpha: 0.6),
+            : AppColors.cardBorder,
         border: Border.all(
           color: isDone
               ? _done
               : isCurrent
               ? _current
-              : AppColors.grey300,
+              : AppColors.cardBorder,
           width: 2,
         ),
       ),

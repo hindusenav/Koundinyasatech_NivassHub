@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import 'package:flutter_nivasshub/constants/figma_colors.dart';
+import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter_nivasshub/models/dashboard/quick_action_model.dart';
 
 class QuickActionCard extends StatelessWidget {
@@ -10,65 +10,69 @@ class QuickActionCard extends StatelessWidget {
   final QuickActionModel action;
   final VoidCallback onTap;
 
-  bool get _isViewMore => action.name.toLowerCase() == "view more";
+  static const double _tileSize = 52;
+  static const double _tileRadius = 18;
 
-  bool get _isBookNow => action.name.toLowerCase() == "book now";
+  String get _key => action.name.toLowerCase();
 
-  Color get _tint => switch (action.name.toLowerCase()) {
-    "pre-approve" => const Color(0xFFFFF0B8),
-    "payments" => const Color(0xFFDCD9FF),
-    "posts" => const Color(0xFFC9F5EE),
-    "security" => const Color(0xFFFFC9C5),
-    "book now" => const Color(0xFFE6D9FF),
-    "directory" => const Color(0xFFCDEBFF),
-    "free trial" => const Color(0xFFC9F5E0),
-    _ => const Color(0xFFE3E8F5),
+  /// Material icon per known action; `null` falls back to the API's asset.
+  IconData? get _icon => switch (_key) {
+    'pre-approve' => Icons.person_add_alt_1_rounded,
+    'payments' => Icons.account_balance_wallet_rounded,
+    'pass' => Icons.badge_rounded,
+    'security' => Icons.shield_rounded,
+    'book now' => Icons.event_available_rounded,
+    'buy/sell' => Icons.storefront_rounded,
+    'free trial' => Icons.card_giftcard_rounded,
+    'view more' => Icons.more_horiz_rounded,
+    _ => null,
+  };
+
+  Color get _tint => switch (_key) {
+    'pre-approve' => AppColors.iconPreApproveBg,
+    'payments' => AppColors.iconPaymentsBg,
+    'pass' => AppColors.iconPassBg,
+    'security' => AppColors.iconSecurityBg,
+    'book now' => AppColors.iconBookNowBg,
+    'buy/sell' => AppColors.iconBuySellBg,
+    'free trial' => AppColors.iconTrialBg,
+    'view more' => AppColors.iconMoreBg,
+    _ => AppColors.iconMoreBg,
   };
 
   @override
   Widget build(BuildContext context) {
-    final t = FigmaColors.of(context);
+    final icon = _icon;
+
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(_tileRadius),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            width: 48,
-            height: 48,
+            width: _tileSize,
+            height: _tileSize,
             decoration: BoxDecoration(
-              // Every action shares the same champagne / dark-amber tile.
               color: _tint,
-              shape: BoxShape.circle,
+              borderRadius: BorderRadius.circular(_tileRadius),
             ),
             child: Center(
-              child: Image.asset(
-                action.assetPath,
-                width: _isViewMore
-                    ? 24
-                    : _isBookNow
-                    ? 36
-                    : 28,
-                height: _isViewMore
-                    ? 24
-                    : _isBookNow
-                    ? 36
-                    : 28,
-                fit: BoxFit.contain,
-                // Line icons take the theme accent; the "Book Now" artwork is
-                // a multi-colour illustration and keeps its own colours.
-                color: _isBookNow ? null : const Color(0xFF3E2F1C),
-                filterQuality: FilterQuality.high,
-                isAntiAlias: true,
-                errorBuilder: (_, _, _) {
-                  return Icon(
-                    Icons.image_not_supported_outlined,
-                    size: 26,
-                    color: Colors.grey.shade600,
-                  );
-                },
-              ),
+              child: icon != null
+                  ? Icon(icon, size: 26, color: AppColors.textDark)
+                  : Image.asset(
+                      action.assetPath,
+                      width: 28,
+                      height: 28,
+                      fit: BoxFit.contain,
+                      color: AppColors.textDark,
+                      filterQuality: FilterQuality.high,
+                      errorBuilder: (_, _, _) => const Icon(
+                        Icons.apps_rounded,
+                        size: 26,
+                        color: AppColors.textMuted,
+                      ),
+                    ),
             ),
           ),
           const SizedBox(height: 6),
@@ -83,7 +87,7 @@ class QuickActionCard extends StatelessWidget {
                 fontSize: 12,
                 height: 1.25,
                 fontWeight: FontWeight.w500,
-                color: t.heading,
+                color: AppColors.textDark,
               ),
             ),
           ),

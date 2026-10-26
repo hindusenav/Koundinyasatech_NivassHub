@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_nivasshub/constants/figma_colors.dart';
+import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter_nivasshub/models/auth/user_role.dart';
 import 'package:flutter_nivasshub/models/registration/registration_master_data.dart';
 import 'package:flutter_nivasshub/widgets/kyc/move_in_rules_dialog.dart';
+import 'package:flutter_nivasshub/widgets/kyc/kyc_header_progress.dart';
 import 'package:flutter_nivasshub/widgets/shared/feedback/custom_snackbar.dart';
 import 'package:flutter_nivasshub/widgets/shared/figma/figma_scaffold.dart';
 import 'package:flutter_nivasshub/widgets/shared/figma/figma_widgets.dart';
@@ -140,39 +141,41 @@ class _KycResidenceRoleScreenState extends State<KycResidenceRoleScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final t = FigmaColors.of(context);
-
     return FigmaHeaderScaffold(
       title: widget.title,
+      bottom: widget.showProgress
+          ? KycHeaderProgress(
+              current: widget.currentStep,
+              total: widget.totalSteps,
+            )
+          : null,
       body: SafeArea(
         top: false,
         child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+          padding: EdgeInsets.fromLTRB(
+            16,
+            20,
+            16,
+            24 + MediaQuery.of(context).viewInsets.bottom,
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              if (widget.showProgress) ...[
-                FigmaProgressStrip(
-                  label: 'Onboarding Progress',
-                  current: widget.currentStep,
-                  total: widget.totalSteps,
-                ),
-                const SizedBox(height: 20),
-              ],
-              Text(
+              const Text(
                 'Choose Residence Role',
                 style: TextStyle(
-                  fontSize: 20,
+                  fontSize: 22,
                   fontWeight: FontWeight.w700,
-                  color: t.heading,
+                  color: AppColors.textDark,
                 ),
               ),
               const SizedBox(height: 4),
-              Text(
+              const Text(
                 'Are you a property Owner or a Tenant in this community?',
-                style: TextStyle(fontSize: 14, color: t.heading),
+                style: TextStyle(fontSize: 14, color: AppColors.textMuted),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 20),
               if (widget.isLoading && widget.roles.isEmpty)
                 const Padding(
                   padding: EdgeInsets.symmetric(vertical: 24),
@@ -194,47 +197,87 @@ class _KycResidenceRoleScreenState extends State<KycResidenceRoleScreen> {
                 widget.extra!,
               ],
               const SizedBox(height: 18),
-              Row(
-                children: [
-                  SizedBox(
-                    width: 24,
-                    height: 24,
-                    child: Checkbox(
-                      value: _agreed,
-                      activeColor: FigmaColors.orange,
-                      onChanged: (v) {
-                        if (v == true) {
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 12,
+                ),
+                decoration: BoxDecoration(
+                  color: AppColors.cardBg,
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: AppColors.cardBorder),
+                ),
+                child: Row(
+                  children: [
+                    _AgreeBox(
+                      checked: _agreed,
+                      onTap: () {
+                        if (!_agreed) {
                           _openRules();
                         } else {
                           setState(() => _agreed = false);
                         }
                       },
                     ),
-                  ),
-                  const SizedBox(width: 8),
-                  GestureDetector(
-                    onTap: _openRules,
-                    child: Text(
-                      'I Agree to Move-in Rules',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: t.heading,
-                        decoration: TextDecoration.underline,
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: _openRules,
+                        child: const Text(
+                          'I Agree to Move-in Rules',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.textDark,
+                            decoration: TextDecoration.underline,
+                          ),
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-              const SizedBox(height: 28),
+              const SizedBox(height: 24),
               FigmaButton(
                 label: widget.continueLabel,
-                navy: true,
                 isLoading: widget.isSubmitting,
                 onPressed: widget.isSubmitting ? null : _continue,
               ),
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+/// Rounded custom checkbox (orange when checked).
+class _AgreeBox extends StatelessWidget {
+  const _AgreeBox({required this.checked, required this.onTap});
+
+  final bool checked;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 150),
+        width: 24,
+        height: 24,
+        decoration: BoxDecoration(
+          color: checked ? AppColors.primaryOrange : AppColors.cardBg,
+          borderRadius: BorderRadius.circular(7),
+          border: Border.all(
+            color: checked ? AppColors.primaryOrange : AppColors.textMuted,
+            width: 1.6,
+          ),
+        ),
+        child: checked
+            ? const Icon(Icons.check, size: 16, color: AppColors.white)
+            : null,
       ),
     );
   }
@@ -297,10 +340,10 @@ class _FieldLabel extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 6),
       child: Text(
         text,
-        style: TextStyle(
+        style: const TextStyle(
           fontSize: 13,
           fontWeight: FontWeight.w600,
-          color: FigmaColors.of(context).heading,
+          color: AppColors.textDark,
         ),
       ),
     );
@@ -314,23 +357,29 @@ class _Dropdown extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = FigmaColors.of(context);
     final value = spec.items.contains(spec.value) ? spec.value : null;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14),
       decoration: BoxDecoration(
-        color: spec.enabled ? t.card : t.field,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: t.fieldBorder),
+        color: spec.enabled ? AppColors.cardBg : AppColors.iconMoreBg,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppColors.cardBorder),
       ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(
           value: value,
           isExpanded: true,
-          hint: Text(spec.hint, style: TextStyle(fontSize: 14, color: t.body)),
-          dropdownColor: t.card,
-          icon: Icon(Icons.keyboard_arrow_down, color: t.body),
-          style: TextStyle(fontSize: 14, color: t.heading),
+          hint: Text(
+            spec.hint,
+            style: const TextStyle(fontSize: 14, color: AppColors.textMuted),
+          ),
+          dropdownColor: AppColors.cardBg,
+          borderRadius: BorderRadius.circular(14),
+          icon: const Icon(
+            Icons.keyboard_arrow_down,
+            color: AppColors.primaryOrange,
+          ),
+          style: const TextStyle(fontSize: 14, color: AppColors.textDark),
           items: [
             for (final i in spec.items)
               DropdownMenuItem(value: i, child: Text(i)),
@@ -360,49 +409,65 @@ class _RoleCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = FigmaColors.of(context);
-    const teal = Color(0xFF12A28F);
-    final accent = selected ? teal : t.fieldBorder;
-
     return InkWell(
-      borderRadius: BorderRadius.circular(14),
+      borderRadius: BorderRadius.circular(20),
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: t.card,
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: accent, width: selected ? 2 : 1.5),
+          color: selected ? AppColors.accentTint : AppColors.cardBg,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: selected ? AppColors.primaryOrange : AppColors.cardBorder,
+            width: selected ? 2 : 1,
+          ),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              width: 44,
-              height: 44,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: selected
-                    ? FigmaColors.orange.withValues(alpha: 0.12)
-                    : t.fieldBorder.withValues(alpha: 0.5),
-              ),
-              child: Icon(
-                choice.icon,
-                size: 22,
-                color: selected ? FigmaColors.orange : t.heading,
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  width: 46,
+                  height: 46,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: selected
+                        ? AppColors.primaryOrange
+                        : AppColors.accentTint,
+                  ),
+                  child: Icon(
+                    choice.icon,
+                    size: 24,
+                    color: selected
+                        ? AppColors.white
+                        : AppColors.primaryOrangeDark,
+                  ),
+                ),
+                Icon(
+                  selected ? Icons.check_circle : Icons.radio_button_unchecked,
+                  size: 22,
+                  color: selected
+                      ? AppColors.primaryOrange
+                      : AppColors.cardBorder,
+                ),
+              ],
             ),
             const SizedBox(height: 14),
             Text(
               choice.title,
-              style: TextStyle(
-                fontSize: 15,
+              style: const TextStyle(
+                fontSize: 16,
                 fontWeight: FontWeight.w700,
-                color: t.heading,
+                color: AppColors.textDark,
               ),
             ),
             const SizedBox(height: 2),
-            Text(choice.subtitle, style: TextStyle(fontSize: 12, color: t.body)),
+            Text(
+              choice.subtitle,
+              style: const TextStyle(fontSize: 12, color: AppColors.textMuted),
+            ),
           ],
         ),
       ),

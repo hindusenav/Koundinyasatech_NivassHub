@@ -37,7 +37,7 @@ class KycSectionTitle extends StatelessWidget {
             width: 4,
             height: 16,
             decoration: BoxDecoration(
-              color: const Color(0xFFFF8A00),
+              color: AppColors.primaryOrange,
               borderRadius: BorderRadius.circular(2),
             ),
           ),
@@ -47,7 +47,7 @@ class KycSectionTitle extends StatelessWidget {
           Text(
             title,
             style: TextStyle(
-              color: isDark ? AppColors.grey300 : const Color(0xFF1D1B20),
+              color: isDark ? AppColors.grey300 : AppColors.textDark,
               fontWeight: FontWeight.w700,
               fontSize: 12,
               height: 1.0,
@@ -71,9 +71,9 @@ class KycListCardGroup extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final cardBgColor = isDark ? AppColors.surfaceDark : AppColors.white;
-    final borderColor = isDark ? AppColors.borderDark : const Color(0xFFE8DCC8);
-    final textPrimary = isDark ? AppColors.textPrimaryDark : const Color(0xFF000000);
+    final cardBgColor = isDark ? AppColors.surfaceDark : AppColors.cardBg;
+    final borderColor = isDark ? AppColors.borderDark : AppColors.cardBorder;
+    final textPrimary = isDark ? AppColors.textPrimaryDark : AppColors.textDark;
 
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 8),
@@ -131,7 +131,9 @@ class KycListCardGroup extends StatelessWidget {
                         ),
                         Icon(
                           Icons.chevron_right,
-                          color: isDark ? AppColors.grey400 : const Color(0xFF222528),
+                          color: isDark
+                              ? AppColors.grey400
+                              : AppColors.textMuted,
                           size: 16,
                         ),
                       ],
@@ -143,7 +145,7 @@ class KycListCardGroup extends StatelessWidget {
                 Divider(
                   height: 1,
                   thickness: 1,
-                  color: isDark ? AppColors.grey800 : const Color(0xFFF3F4F6),
+                  color: isDark ? AppColors.grey800 : AppColors.iconMoreBg,
                   indent: 16,
                   endIndent: 16,
                 ),

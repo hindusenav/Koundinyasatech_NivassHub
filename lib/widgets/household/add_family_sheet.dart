@@ -1,3 +1,4 @@
+import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -96,7 +97,7 @@ class _AddFamilySheetState extends State<_AddFamilySheet> {
                 padding: const EdgeInsets.symmetric(horizontal: 14),
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
-                  border: Border.all(color: const Color(0xFFE8DCC8)),
+                  border: Border.all(color: AppColors.cardBorder),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: const Text('+91', style: TextStyle(fontSize: 15)),
@@ -174,7 +175,7 @@ class _AdultKidTabs extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: const Color(0xFFF3F4F6),
+        color: AppColors.iconMoreBg,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(children: [tab('Adult', false), tab('Kid', true)]),
@@ -217,7 +218,7 @@ class _RelationPicker extends StatelessWidget {
             Expanded(
               child: Text(
                 provider.errorMessage ?? 'Unable to load relations.',
-                style: const TextStyle(color: Color(0xFFD92D20), fontSize: 13),
+                style: const TextStyle(color: AppColors.error, fontSize: 13),
               ),
             ),
             TextButton(
@@ -234,7 +235,7 @@ class _RelationPicker extends StatelessWidget {
         if (categories.isEmpty) {
           return const Text(
             'No relations available.',
-            style: TextStyle(color: Color(0xFF8A7658)),
+            style: TextStyle(color: AppColors.textMuted),
           );
         }
         return Column(
@@ -246,7 +247,7 @@ class _RelationPicker extends StatelessWidget {
                 child: Text(
                   category.categoryName,
                   style: const TextStyle(
-                    color: Color(0xFF8A7658),
+                    color: AppColors.textMuted,
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
                   ),
@@ -318,7 +319,7 @@ class _RelationChip extends StatelessWidget {
               : Colors.white,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: selected ? FigmaColors.accentBlue : const Color(0xFFE8DCC8),
+            color: selected ? FigmaColors.accentBlue : AppColors.cardBorder,
           ),
         ),
         child: Text(

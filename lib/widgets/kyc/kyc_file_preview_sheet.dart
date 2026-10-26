@@ -63,8 +63,11 @@ class KycFilePreviewSheet extends StatelessWidget {
                   height: 260,
                   width: double.infinity,
                   fit: BoxFit.cover,
-                  errorBuilder: (_, _, _) =>
-                      _FileCard(file: file, textPrimary: textPrimary, textSecondary: textSecondary),
+                  errorBuilder: (_, _, _) => _FileCard(
+                    file: file,
+                    textPrimary: textPrimary,
+                    textSecondary: textSecondary,
+                  ),
                 ),
               )
             else

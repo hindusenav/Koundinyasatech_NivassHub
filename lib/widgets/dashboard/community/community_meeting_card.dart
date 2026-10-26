@@ -77,7 +77,7 @@ class CommunityMeetingCard extends StatelessWidget {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
                     content: Text("RSVP recorded successfully!"),
-                    backgroundColor: Color(0xFF059669),
+                    backgroundColor: AppColors.badgeGreen,
                   ),
                 );
               },

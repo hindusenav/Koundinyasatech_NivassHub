@@ -64,7 +64,7 @@ class NoticeDetailsScreen extends StatelessWidget {
                   left: 20,
                 ),
                 decoration: BoxDecoration(
-                  color: isDark ? AppColors.dashboardHeaderDark : const Color(0xFFF3E8D9),
+                  color: isDark ? AppColors.dashboardHeaderDark : AppColors.background,
                 ),
               child: Row(
                 children: [
@@ -93,7 +93,7 @@ class NoticeDetailsScreen extends StatelessWidget {
                         border: Border.all(
                           color: isDark
                               ? AppColors.borderDark
-                              : const Color(0xFFE8DCC8),
+                              : AppColors.border,
                           width: 1,
                         ),
                       ),
@@ -166,7 +166,7 @@ class NoticeDetailsScreen extends StatelessWidget {
                           decoration: BoxDecoration(
                             color: isDark
                                 ? AppColors.noticesAppBarDark
-                                : const Color(0xFFFBF1E5),
+                                : AppColors.accentTint,
                             borderRadius: BorderRadius.circular(12),
                             boxShadow: [
                               BoxShadow(
@@ -181,7 +181,7 @@ class NoticeDetailsScreen extends StatelessWidget {
                             Icons.assignment_add,
                             color: isDark
                                 ? headingColor
-                                : const Color(0xFF3E2F1C),
+                                : AppColors.textPrimary,
                             size: 24,
                           ),
                         ),
@@ -201,7 +201,7 @@ class NoticeDetailsScreen extends StatelessWidget {
                                   letterSpacing: 0,
                                   color: isDark
                                       ? headingColor
-                                      : const Color(0xFF3E2F1C),
+                                      : AppColors.textPrimary,
                                 ),
                               ),
                               const SizedBox(height: 4),
@@ -215,7 +215,7 @@ class NoticeDetailsScreen extends StatelessWidget {
                                       vertical: 4,
                                     ),
                                     decoration: BoxDecoration(
-                                      color: const Color(0xFF3E2F1C),
+                                      color: AppColors.textPrimary,
                                       borderRadius: BorderRadius.circular(6),
                                     ),
                                     child: Text(
@@ -234,7 +234,7 @@ class NoticeDetailsScreen extends StatelessWidget {
                                     style: TextStyle(
                                       color: isDark
                                           ? mutedColor
-                                          : const Color(0xFF5C4A32),
+                                          : AppColors.textBody,
                                       fontSize: 13,
                                       fontWeight: FontWeight.w400,
                                       height: 1.0,
@@ -258,7 +258,7 @@ class NoticeDetailsScreen extends StatelessWidget {
                             Icons.more_vert,
                             color: isDark
                                 ? headingColor
-                                : const Color(0xFF3E2F1C),
+                                : AppColors.textPrimary,
                             size: 24,
                           ),
                         ),
@@ -274,7 +274,7 @@ class NoticeDetailsScreen extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: isDark
                           ? AppColors.noticesAmberDark
-                          : const Color(0xFFFF8A00),
+                          : AppColors.accent,
                       borderRadius: BorderRadius.circular(16),
                     ),
                   ),
@@ -352,7 +352,7 @@ class NoticeDetailsScreen extends StatelessWidget {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: isDark
                             ? AppColors.noticesAccentBlueDark
-                            : const Color(0xFFFF8A00),
+                            : AppColors.accent,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),

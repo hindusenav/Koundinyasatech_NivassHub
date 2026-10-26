@@ -5,17 +5,21 @@ import 'package:provider/provider.dart';
 import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter_nivasshub/routes/app_routes.dart';
 import 'package:flutter_nivasshub/providers/dashboard/dashboard_provider.dart';
+import 'package:flutter_nivasshub/utils/responsive.dart';
 import 'package:flutter_nivasshub/widgets/dashboard/empty/section_empty.dart';
 
+/// Dashboard "Approval queue": a light taupe card holding up to three
+/// pending visitors as warm-white outlined rows with Approve / Deny
+/// buttons. Light on purpose, so it stays distinct from the dark bottom bar.
 class ApprovalQueueSection extends StatelessWidget {
   const ApprovalQueueSection({
     super.key,
   });
 
   static const _avatarColors = [
-    Color(0xFFF59E0B),
-    Color(0xFF8B5CF6),
-    Color(0xFF10B981),
+    AppColors.warning,
+    AppColors.headerStart,
+    AppColors.badgeGreen,
   ];
 
   @override
@@ -34,13 +38,14 @@ class ApprovalQueueSection extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(context.rs(16)),
       decoration: BoxDecoration(
-        color: AppColors.textDark,
-        borderRadius: BorderRadius.circular(16),
+        color: AppColors.approvalQueueBg,
+        borderRadius: BorderRadius.circular(AppColors.cardRadius),
+        border: Border.all(color: AppColors.cardBorder),
         boxShadow: const [
           BoxShadow(
-            color: Color(0x333E2F1C),
+            color: AppColors.shadowSoft,
             blurRadius: 14,
             offset: Offset(0, 4),
           ),
@@ -51,56 +56,66 @@ class ApprovalQueueSection extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                children: [
-                  Text(
-                    'Approval queue',
-                    style: GoogleFonts.inter(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 7,
-                      vertical: 2,
-                    ),
-                    decoration: BoxDecoration(
-                      color: AppColors.orange,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Text(
-                      '${visitors.length}',
-                      style: GoogleFonts.inter(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.white,
+              Flexible(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Flexible(
+                      child: Text(
+                        'Approval queue',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: GoogleFonts.inter(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.textDark,
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                    context.gapWSm,
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 3,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppColors.primaryOrange,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        '${visitors.length}',
+                        style: GoogleFonts.inter(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.white,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
               InkWell(
                 onTap: () => Navigator.pushNamed(context, AppRoutes.activities),
                 borderRadius: BorderRadius.circular(4),
-                child: Text(
-                  'View all',
-                  style: GoogleFonts.inter(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w500,
-                    fontSize: 13,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4),
+                  child: Text(
+                    'View all',
+                    style: GoogleFonts.inter(
+                      color: AppColors.textDark,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
+                    ),
                   ),
                 ),
               ),
             ],
           ),
 
-          const SizedBox(height: 12),
+          context.gapMd,
 
           for (int i = 0; i < visitors.length && i < 3; i++) ...[
-            if (i > 0) const SizedBox(height: 8),
+            if (i > 0) context.gapSm,
             _VisitorRow(
               name: visitors[i].visitorName,
               subtitle: visitors[i].visitorType.isNotEmpty
@@ -133,26 +148,30 @@ class _VisitorRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      padding: EdgeInsets.symmetric(
+        horizontal: context.rs(12),
+        vertical: context.rs(10),
+      ),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.10),
-        borderRadius: BorderRadius.circular(12),
+        color: AppColors.cardBg,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.approvalQueueRowBorder),
       ),
       child: Row(
         children: [
           CircleAvatar(
-            radius: 18,
+            radius: context.rs(20),
             backgroundColor: color,
             child: Text(
               subtitle.isNotEmpty ? subtitle[0].toUpperCase() : '?',
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 15,
+              style: GoogleFonts.inter(
+                color: AppColors.white,
+                fontWeight: FontWeight.w700,
+                fontSize: 16,
               ),
             ),
           ),
-          const SizedBox(width: 10),
+          SizedBox(width: context.rs(12)),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -162,9 +181,9 @@ class _VisitorRow extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: GoogleFonts.inter(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.textDark,
                   ),
                 ),
                 Text(
@@ -172,38 +191,65 @@ class _VisitorRow extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: GoogleFonts.inter(
-                    fontSize: 12,
-                    color: Colors.white70,
+                    fontSize: 13,
+                    color: AppColors.textMuted,
                   ),
                 ),
               ],
             ),
           ),
-          SizedBox(
-            height: 32,
-            child: ElevatedButton(
-              onPressed: onApprove,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.orange,
-                foregroundColor: Colors.white,
-                elevation: 0,
-                minimumSize: const Size(0, 32),
-                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                padding: const EdgeInsets.symmetric(horizontal: 14),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-              child: Text(
-                'Approve',
-                style: GoogleFonts.inter(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
+          _RoundAction(
+            icon: Icons.check_rounded,
+            color: AppColors.badgeGreen,
+            tooltip: 'Approve',
+            onTap: onApprove,
+          ),
+          context.gapWSm,
+          // Deny opens the same activity log as Approve — the decision itself
+          // is made there; no deny API is wired on the dashboard.
+          _RoundAction(
+            icon: Icons.close_rounded,
+            color: AppColors.error,
+            tooltip: 'Deny',
+            onTap: onApprove,
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _RoundAction extends StatelessWidget {
+  const _RoundAction({
+    required this.icon,
+    required this.color,
+    required this.tooltip,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final Color color;
+  final String tooltip;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final size = context.rs(38).clamp(36.0, 46.0);
+    return Tooltip(
+      message: tooltip,
+      child: InkWell(
+        onTap: onTap,
+        customBorder: const CircleBorder(),
+        child: Container(
+          width: size,
+          height: size,
+          decoration: BoxDecoration(
+            color: color.withValues(alpha: 0.12),
+            shape: BoxShape.circle,
+            border: Border.all(color: color.withValues(alpha: 0.7)),
+          ),
+          child: Icon(icon, size: size * 0.55, color: color),
+        ),
       ),
     );
   }

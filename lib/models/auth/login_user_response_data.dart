@@ -44,7 +44,14 @@ class LoginUserResponseData {
   factory LoginUserResponseData.fromJson(Map<String, dynamic> json) {
     final errorCode = json['ErrorCode'] as int? ?? json['statusCode'] as int?;
     final success = json['success'] as bool?;
-    final token = (json['RefreshToken'] ?? json['Login_Tokens']) as String?;
+    // Newest shape nests the token: `{success, statusCode, message,
+    // data: {refreshToken}}`.
+    final data = json['data'];
+    final nested = data is Map<String, dynamic>
+        ? (data['refreshToken'] ?? data['RefreshToken']) as String?
+        : null;
+    final token =
+        (json['RefreshToken'] ?? json['Login_Tokens'] ?? nested) as String?;
     final authenticated =
         (errorCode == 200 || success == true) &&
         token != null &&

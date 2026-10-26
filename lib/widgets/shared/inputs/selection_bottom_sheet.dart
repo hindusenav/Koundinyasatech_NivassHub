@@ -205,7 +205,8 @@ class _SelectionBottomSheetState<T> extends State<SelectionBottomSheet<T>> {
       shrinkWrap: true,
       padding: AppSpacing.vertical(AppSpacing.xs),
       itemCount: items.length,
-      separatorBuilder: (_, _) => const Divider(height: 1, indent: 16),
+      separatorBuilder: (_, _) =>
+          const Divider(height: 1, indent: 16, color: AppColors.cardBorder),
       itemBuilder: (context, index) => _buildRow(context, items[index]),
     );
   }
@@ -241,7 +242,7 @@ class _SelectionBottomSheetState<T> extends State<SelectionBottomSheet<T>> {
           ? const Icon(
               AppIcons.check,
               size: AppDimensions.iconSm,
-              color: AppColors.primary,
+              color: AppColors.primaryOrange,
             )
           : null,
       onTap: () => Navigator.of(context).pop(item),

@@ -23,12 +23,12 @@ class _AddAddressDetailsScreenState
   // FIGMA COLORS
   // ============================================================
 
-  static const Color _primaryBlue = Color(0xFFFF8A00);
+  static const Color _primaryBlue = Color(0xFFF07C00);
 
   // Header blue
-  static const Color _headerBlue = Color(0xFFF3E8D9);
+  static const Color _headerBlue = Color(0xFFF5EFE6);
 
-  static const Color _screenBackground = Color(0xFFF3E8D9);
+  static const Color _screenBackground = Color(0xFFF5EFE6);
 
   static const Color _textDark = Color(0xFF263747);
 
@@ -36,7 +36,7 @@ class _AddAddressDetailsScreenState
 
   static const Color _hintColor = Color(0xFF9AA6B2);
 
-  static const Color _borderColor = Color(0xFFE8DCC8);
+  static const Color _borderColor = Color(0xFFEFE7DA);
 
   // ============================================================
   // CONTROLLERS

@@ -12,6 +12,7 @@ import 'package:flutter_nivasshub/screens/search/search_screen.dart';
 import 'package:flutter_nivasshub/screens/society/add_property_screen.dart';
 import 'package:flutter_nivasshub/screens/settings/help_support_screen.dart';
 import 'package:flutter_nivasshub/screens/settings/settings_screen.dart';
+import 'package:flutter_nivasshub/screens/payments/payments_screen.dart';
 import 'package:flutter_nivasshub/screens/visitor/activities_screen.dart';
 
 import 'package:flutter_nivasshub/routes/app_routes.dart';
@@ -124,6 +125,12 @@ class AppRouter {
         return MaterialPageRoute(
           settings: settings,
           builder: (_) => const ActivitiesScreen(),
+        );
+
+      case AppRoutes.payments:
+        return MaterialPageRoute(
+          settings: settings,
+          builder: (_) => const PaymentsScreen(),
         );
 
       case AppRoutes.visitorDetail:

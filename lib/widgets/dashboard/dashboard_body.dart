@@ -25,6 +25,9 @@ class DashboardBody extends StatefulWidget {
 class _DashboardBodyState extends State<DashboardBody> {
   static final LayerLink _headerAnchor = LayerLink();
 
+  /// How far the resident card overlaps the header's bottom edge.
+  static const double _cardOverlap = 20;
+
   // ============================================================
   // ADD PROPERTY PANEL
   //
@@ -85,7 +88,7 @@ class _DashboardBodyState extends State<DashboardBody> {
                 Padding(
                   padding: const EdgeInsets.fromLTRB(
                     horizontalPadding,
-                    16,
+                    0,
                     horizontalPadding,
                     0,
                   ),
@@ -96,12 +99,18 @@ class _DashboardBodyState extends State<DashboardBody> {
                       // =================================================
                       // RESIDENT CARD (tower, flat, add flat, stats)
                       // =================================================
-                      ResidentSummaryCard(
-                        isPropertyPanelExpanded: _showPropertyPanel,
-                        onTogglePropertyPanel: _togglePropertyPanel,
+                      // Floats over the header's bottom edge.
+                      Transform.translate(
+                        offset: const Offset(0, -_cardOverlap),
+                        child: ResidentSummaryCard(
+                          isPropertyPanelExpanded: _showPropertyPanel,
+                          onTogglePropertyPanel: _togglePropertyPanel,
+                        ),
                       ),
 
-                      const SizedBox(height: 16),
+                      // The translate above does not shrink layout, so this
+                      // gap reads as ~_cardOverlap of visual space.
+                      const SizedBox(height: 0),
 
                       // =================================================
                       // QUICK ACTIONS

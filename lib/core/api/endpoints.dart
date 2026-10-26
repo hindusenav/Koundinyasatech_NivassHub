@@ -3,6 +3,8 @@ class ApiEndpoints {
   ApiEndpoints._();
 
   static const String baseUrl = 'http://192.168.0.104:3004';
+//   static const String baseUrl = 'http://10.10.10.66:3000';
+
 
   // ---------------------------------------------------------------------
   // 1b. Identifier-first authentication entry (mobile OR email)
@@ -57,6 +59,10 @@ class ApiEndpoints {
 
   /// `GET` — family relation categories and options. See `FamilyService`.
   static const String getFamily = '/get-family';
+
+  /// `GET ?user_token=<session-token>` — pet types and their breeds for the
+  /// Add Pet form. See `PetService`.
+  static const String addPet = '/pet/add-pet';
 
   /// `POST` JSON body (see `AddFamilyRequest`) — adds a family member for the
   /// signed-in user. See `FamilyService`.

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter_nivasshub/constants/figma_colors.dart';
 
 /// Figma "Society Move-in Rules" dialog: a list of rules and an orange
@@ -8,12 +9,15 @@ class MoveInRulesDialog extends StatelessWidget {
 
   final List<String> rules;
 
-  static const Color _bullet = Color(0xFF12A28F);
+  static const Color _bullet = AppColors.primaryOrange;
 
-  static Future<bool?> show(BuildContext context, {required List<String> rules}) {
+  static Future<bool?> show(
+    BuildContext context, {
+    required List<String> rules,
+  }) {
     return showDialog<bool>(
       context: context,
-      barrierColor: Colors.black.withValues(alpha: 0.65),
+      barrierColor: AppColors.black.withValues(alpha: 0.65),
       builder: (_) => MoveInRulesDialog(rules: rules),
     );
   }
@@ -102,7 +106,7 @@ class MoveInRulesDialog extends StatelessWidget {
                   child: Text(
                     'I Agree to Move-in Rules',
                     style: TextStyle(
-                      color: Colors.white,
+                      color: AppColors.white,
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
                     ),

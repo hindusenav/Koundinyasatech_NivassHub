@@ -8,7 +8,6 @@ import 'package:flutter_nivasshub/constants/auth/auth_colors.dart';
 import 'package:flutter_nivasshub/providers/auth/forgot_password_provider.dart';
 import 'package:flutter_nivasshub/routes/app_routes.dart';
 import 'package:flutter_nivasshub/utils/extensions/context_extensions.dart';
-import 'package:flutter_nivasshub/widgets/auth/auth_skyline_painter.dart';
 import 'package:flutter_nivasshub/widgets/auth/reset_option_card.dart';
 import 'package:flutter_nivasshub/widgets/shared/brand/nivass_logo_mark.dart';
 import 'package:flutter_nivasshub/widgets/shared/common/fade_slide_in.dart';
@@ -59,47 +58,11 @@ class _ForgotPasswordOptionsScreenState extends State<ForgotPasswordOptionsScree
     final heading = isDark ? AuthColors.headingDarkMode : AuthColors.heading;
     final bodyText = isDark ? AuthColors.bodyTextDarkMode : AuthColors.bodyText;
     final primaryBlue = isDark ? AuthColors.primaryBlueDarkMode : AuthColors.primaryBlue;
-    final lightBlue = isDark ? AuthColors.lightBlueDarkMode : AuthColors.lightBlue;
 
     return Scaffold(
       backgroundColor: background,
       body: Stack(
         children: [
-          Positioned.fill(
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [background, background, lightBlue.withValues(alpha: 0.05)],
-                  stops: const [0.0, 0.55, 1.0],
-                ),
-              ),
-            ),
-          ),
-          AnimatedBuilder(
-            animation: _entrance,
-            builder: (context, _) {
-              final illustrationT =
-                  const Interval(0.20, 0.65, curve: Curves.easeOutCubic).transform(_entrance.value);
-              final opacity = illustrationT.clamp(0.0, 1.0);
-              return Positioned(
-                left: 0,
-                right: 0,
-                bottom: 0,
-                height: screenHeight * 0.24,
-                child: IgnorePointer(
-                  child: Opacity(
-                    opacity: opacity,
-                    child: CustomPaint(
-                      size: Size.infinite,
-                      painter: AuthSkylinePainter(progress: opacity),
-                    ),
-                  ),
-                ),
-              );
-            },
-          ),
           SafeArea(
             child: Align(
               alignment: Alignment.topLeft,

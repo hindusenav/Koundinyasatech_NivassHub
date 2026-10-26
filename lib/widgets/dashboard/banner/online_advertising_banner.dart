@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_nivasshub/utils/responsive.dart';
 
 import 'package:flutter_nivasshub/constants/app_colors.dart';
 
@@ -17,14 +18,14 @@ class OnlineAdvertisingBannerCard extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       width: double.infinity,
-      height: 200,
+      height: context.rs(200),
       margin: const EdgeInsets.symmetric(horizontal: 0),
       padding: EdgeInsets.zero,
       decoration: BoxDecoration(
-        color: isDark ? AppColors.surfaceDark : const Color(0xFFF9F9FB),
+        color: isDark ? AppColors.surfaceDark : AppColors.cardBg,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: isDark ? AppColors.borderDark : const Color(0xFFCBD5E1),
+          color: isDark ? AppColors.borderDark : AppColors.cardBorder,
           width: 1,
         ),
         boxShadow: [
@@ -54,7 +55,7 @@ class OnlineAdvertisingBannerCard extends StatelessWidget {
             child: Image.asset(
               'assets/icons/advertisement.png', // Make sure this is the correct path
               width: double.infinity,
-              height: 200,
+              height: context.rs(200),
               fit: BoxFit.cover,
               errorBuilder: (context, error, stackTrace) {
                 debugPrint('Error loading image: $error');
@@ -65,8 +66,8 @@ class OnlineAdvertisingBannerCard extends StatelessWidget {
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                       colors: [
-                        const Color(0xFFFF8A00),
-                        const Color(0xFF7C3AED),
+                        AppColors.accent,
+                        AppColors.primaryOrangeDark,
                       ],
                     ),
                   ),

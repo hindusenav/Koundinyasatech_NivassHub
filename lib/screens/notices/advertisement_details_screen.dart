@@ -87,7 +87,7 @@ class AdvertisementDetailsScreen extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: isDark
                         ? AppColors.dashboardHeaderDark
-                        : const Color(0xFFF3E8D9),
+                        : AppColors.background,
                   ),
                   child: Row(
                     children: [
@@ -116,7 +116,7 @@ class AdvertisementDetailsScreen extends StatelessWidget {
                             border: Border.all(
                               color: isDark
                                   ? AppColors.borderDark
-                                  : const Color(0xFFE8DCC8),
+                                  : AppColors.border,
                               width: 1,
                             ),
                           ),
@@ -168,7 +168,7 @@ class AdvertisementDetailsScreen extends StatelessWidget {
                                         : AppColors.noticesCardBorderLight,
                                   ),
                                   errorWidget: (context, url, err) => Container(
-                                    color: const Color(0xFF3E2F1C),
+                                    color: AppColors.textPrimary,
                                     child: const Icon(Icons.apartment, size: 50, color: Colors.white),
                                   ),
                                 ),
@@ -244,7 +244,7 @@ class AdvertisementDetailsScreen extends StatelessWidget {
                                         left: 10,
                                       ),
                                       decoration: BoxDecoration(
-                                        color: const Color(0xFFFF8A00),
+                                        color: AppColors.accent,
                                         borderRadius: BorderRadius.circular(4),
                                       ),
                                       child: const Text(
@@ -298,7 +298,7 @@ class AdvertisementDetailsScreen extends StatelessWidget {
                                           letterSpacing: 0,
                                           color: isDark
                                               ? AppColors.noticesTitleTextDark
-                                              : const Color(0xFF3E2F1C),
+                                              : AppColors.textPrimary,
                                         ),
                                       ),
                                     ),
@@ -319,7 +319,7 @@ class AdvertisementDetailsScreen extends StatelessWidget {
                                         border: Border.all(
                                           color: isDark
                                               ? AppColors.noticesAmberBorderDark
-                                              : const Color(0xFFFF8A00),
+                                              : AppColors.accent,
                                           width: 1,
                                         ),
                                       ),
@@ -331,7 +331,7 @@ class AdvertisementDetailsScreen extends StatelessWidget {
                                             size: 14,
                                             color: isDark
                                                 ? AppColors.noticesAccentAmberDark
-                                                : const Color(0xFFFF8A00),
+                                                : AppColors.accent,
                                           ),
                                           const SizedBox(width: 6),
                                           Text(
@@ -339,7 +339,7 @@ class AdvertisementDetailsScreen extends StatelessWidget {
                                             style: TextStyle(
                                               color: isDark
                                                   ? AppColors.noticesAccentAmberDark
-                                                  : const Color(0xFFFF8A00),
+                                                  : AppColors.accent,
                                               fontSize: 12,
                                               fontWeight: FontWeight.bold,
                                             ),
@@ -357,7 +357,7 @@ class AdvertisementDetailsScreen extends StatelessWidget {
                                       size: 14,
                                       color: isDark
                                           ? AppColors.noticesSecondaryTextDark
-                                          : const Color(0xFF5C4A32),
+                                          : AppColors.textBody,
                                     ),
                                     const SizedBox(width: 4),
                                     Expanded(
@@ -367,7 +367,7 @@ class AdvertisementDetailsScreen extends StatelessWidget {
                                           fontSize: 12,
                                           color: isDark
                                               ? AppColors.noticesSecondaryTextDark
-                                              : const Color(0xFF5C4A32),
+                                              : AppColors.textBody,
                                           fontWeight: FontWeight.w500,
                                         ),
                                       ),
@@ -401,7 +401,7 @@ class AdvertisementDetailsScreen extends StatelessWidget {
                             style: ElevatedButton.styleFrom(
                               backgroundColor: isDark
                                   ? AppColors.noticesAccentBlueDark
-                                  : const Color(0xFFFF8A00),
+                                  : AppColors.accent,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
                               ),
@@ -433,7 +433,7 @@ class AdvertisementDetailsScreen extends StatelessWidget {
                             style: ElevatedButton.styleFrom(
                               backgroundColor: isDark
                                   ? AppColors.noticesAccentAmberDark
-                                  : const Color(0xFFFF8A00),
+                                  : AppColors.accent,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
                               ),
@@ -475,9 +475,9 @@ class AdvertisementDetailsScreen extends StatelessWidget {
   Widget _buildCenturyContent(bool isDark) {
     final cardColor = isDark ? AppColors.surfaceDark : const Color(0xFFFFFFFF);
     final borderColor =
-        isDark ? AppColors.noticesCardBorderDark : const Color(0xFFE8DCC8);
+        isDark ? AppColors.noticesCardBorderDark : AppColors.border;
     final titleColor =
-        isDark ? AppColors.noticesTitleTextDark : const Color(0xFF3E2F1C);
+        isDark ? AppColors.noticesTitleTextDark : AppColors.textPrimary;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -520,7 +520,7 @@ class AdvertisementDetailsScreen extends StatelessWidget {
                     Icons.auto_awesome,
                     color: isDark
                         ? AppColors.noticesAccentAmberDark
-                        : const Color(0xFFFF8A00),
+                        : AppColors.accent,
                     size: 18,
                   ),
                 ],
@@ -602,7 +602,7 @@ class AdvertisementDetailsScreen extends StatelessWidget {
                   letterSpacing: 0,
                   color: isDark
                       ? AppColors.noticesBodyTextDark
-                      : const Color(0xFF5C4A32),
+                      : AppColors.textBody,
                 ),
               ),
             ],
@@ -649,11 +649,11 @@ class AdvertisementDetailsScreen extends StatelessWidget {
           decoration: BoxDecoration(
             border: Border(
               top: BorderSide(
-                color: isDark ? AppColors.noticesCardBorderDark : const Color(0xFFE8DCC8),
+                color: isDark ? AppColors.noticesCardBorderDark : AppColors.border,
                 width: 1,
               ),
               bottom: BorderSide(
-                color: isDark ? AppColors.noticesCardBorderDark : const Color(0xFFE8DCC8),
+                color: isDark ? AppColors.noticesCardBorderDark : AppColors.border,
                 width: 1,
               ),
             ),
@@ -670,7 +670,7 @@ class AdvertisementDetailsScreen extends StatelessWidget {
                   fontWeight: FontWeight.w600,
                   height: 1.0,
                   letterSpacing: 0.5,
-                  color: isDark ? AppColors.noticesSecondaryTextDark : const Color(0xFF5C4A32),
+                  color: isDark ? AppColors.noticesSecondaryTextDark : AppColors.textBody,
                 ),
               ),
               const SizedBox(height: 4),
@@ -685,7 +685,7 @@ class AdvertisementDetailsScreen extends StatelessWidget {
                         fontWeight: FontWeight.w800,
                         height: 1.0,
                         letterSpacing: 0,
-                        color: isDark ? AppColors.noticesTitleTextDark : const Color(0xFF3E2F1C),
+                        color: isDark ? AppColors.noticesTitleTextDark : AppColors.textPrimary,
                       ),
                     ),
                     TextSpan(
@@ -695,7 +695,7 @@ class AdvertisementDetailsScreen extends StatelessWidget {
                         fontWeight: FontWeight.w500,
                         height: 1.0,
                         letterSpacing: 0,
-                        color: isDark ? AppColors.noticesTitleTextDark : const Color(0xFF3E2F1C),
+                        color: isDark ? AppColors.noticesTitleTextDark : AppColors.textPrimary,
                       ),
                     ),
                   ],
@@ -815,7 +815,7 @@ class AdvertisementDetailsScreen extends StatelessWidget {
             fontWeight: FontWeight.w600,
             height: 1.0,
             letterSpacing: 0,
-            color: isDark ? AppColors.noticesTitleTextDark : const Color(0xFF3E2F1C),
+            color: isDark ? AppColors.noticesTitleTextDark : AppColors.textPrimary,
           ),
         ),
         const SizedBox(height: 6),
@@ -823,7 +823,7 @@ class AdvertisementDetailsScreen extends StatelessWidget {
           width: 36,
           height: 3,
           decoration: BoxDecoration(
-            color: const Color(0xFFFF8A00),
+            color: AppColors.accent,
             borderRadius: BorderRadius.circular(2),
           ),
         ),
@@ -851,7 +851,7 @@ class AdvertisementDetailsScreen extends StatelessWidget {
                 icon,
                 color: isDark
                     ? AppColors.noticesAccentAmberDark
-                    : const Color(0xFFFF8A00),
+                    : AppColors.accent,
                 size: 16,
               ),
             ),
@@ -868,7 +868,7 @@ class AdvertisementDetailsScreen extends StatelessWidget {
                 letterSpacing: 0,
                 color: isDark
                     ? AppColors.noticesBodyTextDark
-                    : const Color(0xFF3E2F1C),
+                    : AppColors.textPrimary,
               ),
             ),
           ),
@@ -884,7 +884,7 @@ class AdvertisementDetailsScreen extends StatelessWidget {
         color: isDark ? AppColors.surfaceDark : const Color(0xFFFFFFFF),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: isDark ? AppColors.noticesCardBorderDark : const Color(0xFFE8DCC8),
+          color: isDark ? AppColors.noticesCardBorderDark : AppColors.border,
           width: 1,
         ),
       ),
@@ -902,7 +902,7 @@ class AdvertisementDetailsScreen extends StatelessWidget {
             child: Center(
               child: Icon(
                 icon,
-                color: isDark ? AppColors.noticesAccentAmberDark : const Color(0xFFFF8A00),
+                color: isDark ? AppColors.noticesAccentAmberDark : AppColors.accent,
                 size: 18,
               ),
             ),
@@ -925,7 +925,7 @@ class AdvertisementDetailsScreen extends StatelessWidget {
           Text(
             sub,
             style: TextStyle(
-              color: isDark ? AppColors.noticesMutedDark : const Color(0xFF8A7658),
+              color: isDark ? AppColors.noticesMutedDark : AppColors.textSecondary,
               fontSize: 11,
               fontWeight: FontWeight.w400,
               height: 1.0,
@@ -986,7 +986,7 @@ class _HighlightCard extends StatelessWidget {
         color: isDark ? AppColors.surfaceDark : const Color(0xFFFFFFFF),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: isDark ? AppColors.noticesCardBorderDark : const Color(0xFFE8DCC8),
+          color: isDark ? AppColors.noticesCardBorderDark : AppColors.border,
           width: 1,
         ),
         boxShadow: [
@@ -1005,13 +1005,13 @@ class _HighlightCard extends StatelessWidget {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: isDark ? AppColors.noticesBlueTintBgDark : const Color(0xFFFBF1E5),
+              color: isDark ? AppColors.noticesBlueTintBgDark : AppColors.accentTint,
               shape: BoxShape.circle,
             ),
             child: Center(
               child: Icon(
                 icon,
-                color: isDark ? AppColors.noticesAccentBlueDark : const Color(0xFF3E2F1C),
+                color: isDark ? AppColors.noticesAccentBlueDark : AppColors.textPrimary,
                 size: 20,
               ),
             ),
@@ -1027,7 +1027,7 @@ class _HighlightCard extends StatelessWidget {
                   fontSize: 14,
                   height: 1.0,
                   letterSpacing: 0,
-                  color: isDark ? AppColors.noticesHeadingDark : const Color(0xFF3E2F1C),
+                  color: isDark ? AppColors.noticesHeadingDark : AppColors.textPrimary,
                 ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -1036,7 +1036,7 @@ class _HighlightCard extends StatelessWidget {
               Text(
                 sub,
                 style: TextStyle(
-                  color: isDark ? AppColors.noticesMutedDark : const Color(0xFF8A7658),
+                  color: isDark ? AppColors.noticesMutedDark : AppColors.textSecondary,
                   fontSize: 11,
                   fontWeight: FontWeight.w400,
                   height: 1.0,

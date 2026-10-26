@@ -3,8 +3,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 import 'package:flutter_nivasshub/constants/app_colors.dart';
-import 'package:flutter_nivasshub/constants/app_shadows.dart';
-import 'package:flutter_nivasshub/constants/figma_colors.dart';
 
 import 'package:flutter_nivasshub/routes/app_routes.dart';
 import 'package:flutter_nivasshub/providers/dashboard/dashboard_provider.dart';
@@ -18,8 +16,6 @@ class QuickActionsGrid extends StatelessWidget {
   Widget build(BuildContext context) {
     final provider = context.watch<DashboardProvider>();
     final actions = provider.home?.data.quickActions ?? [];
-    final t = FigmaColors.of(context);
-    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     if (actions.isEmpty) {
       return const SectionEmpty(
@@ -33,10 +29,16 @@ class QuickActionsGrid extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: t.card,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: t.cardBorder),
-        boxShadow: isDark ? null : AppShadows.card,
+        color: AppColors.cardBg,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.cardBorder),
+        boxShadow: const [
+          BoxShadow(
+            color: AppColors.shadowSoft,
+            blurRadius: 12,
+            offset: Offset(0, 4),
+          ),
+        ],
       ),
       child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -48,9 +50,9 @@ class QuickActionsGrid extends StatelessWidget {
               child: Text(
                 "Quick actions",
                 style: GoogleFonts.inter(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600,
-                  color: t.heading,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.textDark,
                 ),
               ),
             ),
@@ -62,7 +64,7 @@ class QuickActionsGrid extends StatelessWidget {
                 style: GoogleFonts.inter(
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
-                  color: AppColors.orange,
+                  color: AppColors.primaryOrange,
                 ),
               ),
             ),
@@ -100,6 +102,7 @@ class QuickActionsGrid extends StatelessWidget {
 
         break;
       case 'Payments':
+        Navigator.pushNamed(context, AppRoutes.payments);
         break;
       case 'Posts':
         break;

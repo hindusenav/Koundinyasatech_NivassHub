@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_nivasshub/utils/responsive.dart';
 
 import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter_nivasshub/constants/figma_colors.dart';
@@ -70,19 +71,19 @@ class BannerCard extends StatelessWidget {
               ClipRRect(
                 borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
                 child: SizedBox(
-                  height: 165,
+                  height: context.rs(165),
                   width: double.infinity,
                   child: CachedNetworkImage(
                     imageUrl: imageUrl,
                     fit: BoxFit.cover,
                     placeholder: (context, url) => Container(
-                      color: isDark ? AppColors.grey800 : const Color(0xFFF1F5F9),
+                      color: isDark ? AppColors.grey800 : AppColors.background,
                       child: const Center(
                         child: CircularProgressIndicator(strokeWidth: 2),
                       ),
                     ),
                     errorWidget: (context, url, error) => Container(
-                      color: const Color(0xFF3E2F1C),
+                      color: AppColors.textPrimary,
                       child: const Icon(
                         Icons.apartment_rounded,
                         color: Colors.white70,
@@ -135,7 +136,7 @@ class BannerCard extends StatelessWidget {
                         vertical: 2,
                       ),
                       decoration: BoxDecoration(
-                        color: isDark ? AppColors.grey800 : const Color(0xFFF1F5F9),
+                        color: isDark ? AppColors.grey800 : AppColors.background,
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Text(
@@ -176,7 +177,7 @@ class BannerCard extends StatelessWidget {
                           TextSpan(
                             text: 'Read More',
                             style: TextStyle(
-                              color: Color(0xFFEF4444),
+                              color: AppColors.error,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -188,7 +189,7 @@ class BannerCard extends StatelessWidget {
                     // Thin Horizontal Divider
                     Divider(
                       height: 1,
-                      color: isDark ? AppColors.grey800 : const Color(0xFFF1F5F9),
+                      color: isDark ? AppColors.grey800 : AppColors.background,
                     ),
                     const SizedBox(height: 10),
 

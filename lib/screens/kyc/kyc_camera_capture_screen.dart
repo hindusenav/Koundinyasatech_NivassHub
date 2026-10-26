@@ -31,8 +31,7 @@ class KycCameraCaptureScreen extends StatefulWidget {
   }
 
   @override
-  State<KycCameraCaptureScreen> createState() =>
-      _KycCameraCaptureScreenState();
+  State<KycCameraCaptureScreen> createState() => _KycCameraCaptureScreenState();
 }
 
 enum _CameraScreenStatus { loading, ready, error }
@@ -105,7 +104,8 @@ class _KycCameraCaptureScreenState extends State<KycCameraCaptureScreen>
       _cameras = cameras;
       // Back camera is the default; fall back to the front lens, then to
       // whatever else is reported (e.g. an external camera).
-      final initial = _cameraFor(CameraLensDirection.back) ??
+      final initial =
+          _cameraFor(CameraLensDirection.back) ??
           _cameraFor(CameraLensDirection.front) ??
           cameras.first;
 
@@ -242,9 +242,7 @@ class _KycCameraCaptureScreenState extends State<KycCameraCaptureScreen>
             bottom: AppSpacing.xl,
             left: 0,
             right: 0,
-            child: Center(
-              child: _CaptureButton(onPressed: _capture),
-            ),
+            child: Center(child: _CaptureButton(onPressed: _capture)),
           ),
       ],
     );
@@ -350,7 +348,10 @@ class _CaptureButton extends StatelessWidget {
           shape: BoxShape.circle,
         ),
         child: const DecoratedBox(
-          decoration: BoxDecoration(color: AppColors.white, shape: BoxShape.circle),
+          decoration: BoxDecoration(
+            color: AppColors.white,
+            shape: BoxShape.circle,
+          ),
         ),
       ),
     );
