@@ -6,7 +6,6 @@ import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter_nivasshub/core/api/base_api.dart';
 import 'package:flutter_nivasshub/widgets/shared/loaders/loader.dart';
 import 'package:flutter_nivasshub/widgets/shared/states/custom_error_widget.dart';
-import 'package:flutter_nivasshub/widgets/dashboard/navigation/dashboard_bottom_navigation.dart';
 import 'package:flutter_nivasshub/models/notices/advertisement_model.dart';
 import 'package:flutter_nivasshub/models/notices/feed_item_model.dart';
 import 'package:flutter_nivasshub/models/notices/feed_notice_model.dart';
@@ -178,7 +177,6 @@ class _NoticeBoardViewState extends State<_NoticeBoardView> {
       backgroundColor: isDark
           ? AppColors.noticesBackgroundDark
           : AppColors.noticesBackgroundLight,
-      bottomNavigationBar: const DashboardBottomNavigation(),
       body: AnnotatedRegion<SystemUiOverlayStyle>(
         value: SystemUiOverlayStyle(
           statusBarColor: Colors.transparent,

@@ -137,15 +137,6 @@ class KycStrings {
       'Camera permission is turned off for this app. '
       'Enable it from Settings to take a photo.';
 
-  /// In-app camera capture screen.
-  static const String cameraRetake = 'Retake';
-  static const String cameraUsePhoto = 'Use Photo';
-  static const String cameraUnavailableMessage =
-      'The camera is unavailable on this device right now. '
-      'Please try again or choose a different option.';
-  static const String cameraCaptureFailedMessage =
-      'We could not capture that photo. Please try again.';
-
   /// Local file/gallery preview sheet.
   static const String filePreviewTitle = 'Preview';
   static const String filePreviewUpload = 'Upload';

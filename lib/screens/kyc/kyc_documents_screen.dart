@@ -9,7 +9,8 @@ import 'package:flutter_nivasshub/models/kyc/kyc_document_slot.dart';
 import 'package:flutter_nivasshub/models/kyc/kyc_status.dart';
 import 'package:flutter_nivasshub/providers/kyc/kyc_provider.dart';
 import 'package:flutter_nivasshub/routes/app_routes.dart';
-import 'package:flutter_nivasshub/screens/kyc/kyc_camera_capture_screen.dart';
+import 'package:flutter_nivasshub/models/camera/app_camera_config.dart';
+import 'package:flutter_nivasshub/screens/camera/app_camera.dart';
 import 'package:flutter_nivasshub/screens/kyc/kyc_verification_status_screen.dart';
 import 'package:flutter_nivasshub/services/file/file_picker_service_base.dart';
 import 'package:flutter_nivasshub/widgets/kyc/kyc_document_card.dart';
@@ -97,17 +98,13 @@ class _KycDocumentsScreenState extends State<KycDocumentsScreen> {
     final filePicker = context.read<FilePickerServiceBase>();
 
     final source = await KycUploadSourceSheet.show(context);
-    if (source == null) return;
+    if (source == null || !mounted) return;
 
     if (source == FilePickSource.camera) {
-      final permissionError = await filePicker.ensureCameraPermission();
-      if (permissionError != null) {
-        if (!mounted) return;
-        _showPickError(permissionError.message);
-        return;
-      }
-      if (!mounted) return;
-      final file = await KycCameraCaptureScreen.show(context);
+      final file = await AppCamera.capture(
+        context,
+        config: AppCameraConfig.document,
+      );
       if (file == null || !mounted) return;
       await provider.uploadPicked(documentId, file);
     } else {

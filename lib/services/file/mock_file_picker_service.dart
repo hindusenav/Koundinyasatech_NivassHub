@@ -49,4 +49,7 @@ class MockFilePickerService implements FilePickerServiceBase {
 
   @override
   Future<ApiException?> ensureCameraPermission() async => null;
+
+  @override
+  Future<bool> hasCameraPermission() async => true;
 }

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter_nivasshub/constants/app_colors.dart';
-import 'package:flutter_nivasshub/widgets/dashboard/navigation/dashboard_bottom_navigation.dart';
 import 'package:flutter_nivasshub/widgets/shared/app_bar/custom_app_bar.dart';
 import 'package:flutter_nivasshub/widgets/shared/feedback/custom_snackbar.dart';
 
@@ -74,7 +73,6 @@ class _PaymentsScreenState extends State<PaymentsScreen> {
         title: 'Payments Center',
         showBackButton: false,
       ),
-      bottomNavigationBar: const DashboardBottomNavigation(selectedIndex: 3),
       body: SafeArea(
         child: ListView(
           physics: const BouncingScrollPhysics(),

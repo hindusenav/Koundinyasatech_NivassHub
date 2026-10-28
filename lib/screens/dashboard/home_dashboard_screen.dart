@@ -11,7 +11,6 @@ import 'package:flutter_nivasshub/widgets/dashboard/dashboard_body.dart';
 import 'package:flutter_nivasshub/widgets/dashboard/loading/dashboard_loading_widget.dart';
 import 'package:flutter_nivasshub/widgets/dashboard/error/dashboard_error_widget.dart';
 import 'package:flutter_nivasshub/widgets/dashboard/empty/dashboard_empty_widget.dart';
-import 'package:flutter_nivasshub/widgets/dashboard/navigation/dashboard_bottom_navigation.dart';
 
 class HomeDashboardScreen extends StatefulWidget {
   const HomeDashboardScreen({
@@ -125,8 +124,6 @@ class _HomeDashboardScreenState
             ),
           ),
 
-          bottomNavigationBar:
-              const DashboardBottomNavigation(),
         );
       },
     );

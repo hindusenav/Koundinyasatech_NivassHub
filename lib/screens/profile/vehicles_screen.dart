@@ -524,6 +524,7 @@ class _ContinueBar extends StatelessWidget {
   /// Collects the vehicle details; on a successful `POST /vehicle/add` shows
   /// the success popup, then leaves the screen.
   Future<void> _addVehicle(BuildContext context) async {
+    provider.clearSaveError();
     final result = await showModalBottomSheet<AddVehicleResult>(
       context: context,
       isScrollControlled: true,
@@ -536,7 +537,7 @@ class _ContinueBar extends StatelessWidget {
     if (result == null || !context.mounted) return;
 
     await _VehicleAddedDialog.show(context, result);
-    if (context.mounted) Navigator.of(context).pop(true);
+    if (context.mounted) Navigator.of(context).pop(result);
   }
 
   @override
@@ -685,15 +686,9 @@ class _VehicleDetailsSheetState extends State<_VehicleDetailsSheet> {
     );
     if (!mounted) return;
 
-    if (result != null) {
-      Navigator.of(context).pop(result);
-    } else {
-      ScaffoldMessenger.of(context)
-        ..hideCurrentSnackBar()
-        ..showSnackBar(
-          SnackBar(content: Text(provider.saveError ?? 'Please try again.')),
-        );
-    }
+    // On failure the provider's `saveError` is rendered inline in the sheet
+    // (a SnackBar would sit behind the modal and never be seen).
+    if (result != null) Navigator.of(context).pop(result);
   }
 
   String? _required(String? v, String label) =>
@@ -772,6 +767,38 @@ class _VehicleDetailsSheetState extends State<_VehicleDetailsSheet> {
                     formatters: [FilteringTextInputFormatter.digitsOnly],
                     validator: (v) => _required(v, 'parking zone ID'),
                   ),
+                  if (provider.saveError != null)
+                    Container(
+                      width: double.infinity,
+                      margin: const EdgeInsets.only(bottom: 12),
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFDECEA),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: const Color(0xFFE5A39B)),
+                      ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Icon(
+                            Icons.error_outline_rounded,
+                            color: Color(0xFFC0392B),
+                            size: 18,
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              provider.saveError!,
+                              style: const TextStyle(
+                                color: Color(0xFFC0392B),
+                                fontSize: 12.5,
+                                height: 1.3,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   const SizedBox(height: 4),
                   SizedBox(
                     width: double.infinity,

@@ -44,6 +44,13 @@ class PetProvider extends ChangeNotifier {
     return const [];
   }
 
+  int? _breedIdFor(String petType, String breed) {
+    for (final t in _petTypes) {
+      if (t.petType == petType) return t.breedIds[breed];
+    }
+    return null;
+  }
+
   /// Loads pet types and breeds once; pass [force] to retry after an error.
   Future<void> loadReferenceData({bool force = false}) async {
     if (_referenceState == PetReferenceState.loading) return;
@@ -79,11 +86,32 @@ class PetProvider extends ChangeNotifier {
     required String name,
     required String type,
     String breed = '',
+    String colour = '',
+    String? picturePath,
+    String? vaccinationStatus,
+    DateTime? vaccinationDate,
   }) async {
     if (_isSaving) return false;
     final trimmed = name.trim();
-    if (trimmed.isEmpty) {
-      _saveError = 'Please enter your pet\'s name.';
+    final petTypeId = _petTypes
+        .where((t) => t.petType == type)
+        .map((t) => t.petTypeId)
+        .firstOrNull;
+    final breedId = _breedIdFor(type, breed.trim());
+
+    final validation = trimmed.isEmpty
+        ? 'Please enter your pet\'s name.'
+        : petTypeId == null
+        ? 'Pet types could not be loaded. Please retry.'
+        : breedId == null
+        ? 'Please select your pet\'s breed.'
+        : colour.trim().isEmpty
+        ? 'Please enter your pet\'s colour.'
+        : picturePath == null
+        ? 'Please add a photo of your pet.'
+        : null;
+    if (validation != null) {
+      _saveError = validation;
       notifyListeners();
       return false;
     }
@@ -93,7 +121,17 @@ class PetProvider extends ChangeNotifier {
     notifyListeners();
 
     final response = await _service.addPet(
-      Pet(name: trimmed, type: type, breed: breed.trim()),
+      Pet(
+        name: trimmed,
+        type: type,
+        breed: breed.trim(),
+        petTypeId: petTypeId,
+        breedId: breedId,
+        colour: colour.trim(),
+        picturePath: picturePath,
+        vaccinationStatus: vaccinationStatus,
+        vaccinationDate: vaccinationDate,
+      ),
     );
 
     _isSaving = false;

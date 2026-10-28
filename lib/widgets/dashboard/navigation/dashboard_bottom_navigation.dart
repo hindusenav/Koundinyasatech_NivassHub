@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter_nivasshub/routes/app_routes.dart';
+import 'package:flutter_nivasshub/routes/navigation_service.dart';
 import 'package:flutter_nivasshub/providers/dashboard/dashboard_navigation_provider.dart';
 
 class DashboardBottomNavigation extends StatelessWidget {
@@ -98,6 +99,47 @@ class DashboardBottomNavigation extends StatelessWidget {
     );
   }
 
+  static const _tabRoutes = [
+    AppRoutes.dashboard,
+    AppRoutes.visitorList,
+    AppRoutes.noticeList,
+    AppRoutes.payments,
+    AppRoutes.quickActions,
+  ];
+
+  /// Switches tab. Works both inside a route (sub-page bars) and from the
+  /// persistent bar hosted above the Navigator (no Navigator in `context`).
+  void _onTap(
+    BuildContext context,
+    DashboardNavigationProvider provider,
+    int index,
+  ) {
+    final navigator =
+        NavigationService.navigatorKey.currentState ?? Navigator.of(context);
+    final current =
+        provider.currentRoute ?? ModalRoute.of(context)?.settings.name;
+    final target = _tabRoutes[index];
+
+    // Already on this tab (Visitors has two route names).
+    if (current == target ||
+        (index == 1 && current == AppRoutes.activities)) {
+      return;
+    }
+
+    provider.changeIndex(index);
+
+    if (index == 0) {
+      navigator.popUntil(ModalRoute.withName(AppRoutes.dashboard));
+    } else if (current != null &&
+        current != AppRoutes.dashboard &&
+        DashboardNavigationProvider.tabRoutes.contains(current)) {
+      // Tab -> tab: replace instead of stacking, so Back goes Home.
+      navigator.pushReplacementNamed(target);
+    } else {
+      navigator.pushNamed(target);
+    }
+  }
+
   Widget _item(
     BuildContext context,
     DashboardNavigationProvider provider,
@@ -116,52 +158,7 @@ class DashboardBottomNavigation extends StatelessWidget {
         splashColor: Colors.transparent,
         highlightColor: Colors.transparent,
 
-        onTap: () {
-          // Update the selected bottom-navigation index.
-          provider.changeIndex(index);
-
-          if (index == 3) {
-            // Payments — open the Payments Center.
-            if (ModalRoute.of(context)?.settings.name != AppRoutes.payments) {
-              Navigator.pushNamed(context, AppRoutes.payments);
-            }
-            return;
-          }
-
-          if (index == 4) {
-            // More — open the Quick Actions screen.
-            if (ModalRoute.of(context)?.settings.name !=
-                AppRoutes.quickActions) {
-              Navigator.pushNamed(context, AppRoutes.quickActions);
-            }
-            return;
-          }
-
-          if (index == 1) {
-            // Visitors — open the visitor list screen.
-            if (ModalRoute.of(context)?.settings.name != AppRoutes.activities &&
-                ModalRoute.of(context)?.settings.name !=
-                    AppRoutes.visitorList) {
-              Navigator.pushNamed(context, AppRoutes.visitorList);
-            }
-            return;
-          }
-
-          if (index == 0) {
-            // Home — return to the existing Dashboard.
-            if (ModalRoute.of(context)?.settings.name != AppRoutes.dashboard) {
-              Navigator.popUntil(
-                context,
-                ModalRoute.withName(AppRoutes.dashboard),
-              );
-            }
-          } else if (index == 2) {
-            // Community — open the Community Feed / Notice Board.
-            if (ModalRoute.of(context)?.settings.name != AppRoutes.noticeList) {
-              Navigator.pushNamed(context, AppRoutes.noticeList);
-            }
-          }
-        },
+        onTap: () => _onTap(context, provider, index),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [

@@ -39,4 +39,9 @@ abstract class FilePickerServiceBase {
   /// flow — and the exact same permanently-denied message — that [pick]
   /// already uses for `FilePickSource.camera`.
   Future<ApiException?> ensureCameraPermission();
+
+  /// Whether the camera permission is already granted. Never prompts, so
+  /// the camera screen can decide between opening the preview and showing
+  /// its own permission explainer first.
+  Future<bool> hasCameraPermission();
 }

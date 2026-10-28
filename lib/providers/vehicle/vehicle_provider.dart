@@ -89,6 +89,12 @@ class VehicleProvider extends ChangeNotifier {
   /// Server (or session) message of the last failed [addVehicle].
   String? get saveError => _saveError;
 
+  void clearSaveError() {
+    if (_saveError == null) return;
+    _saveError = null;
+    notifyListeners();
+  }
+
   /// `POST /vehicle/add` for the selected brand. Returns the allotted slot
   /// details on success, or null with [saveError] set.
   Future<AddVehicleResult?> addVehicle({

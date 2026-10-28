@@ -98,7 +98,18 @@ class FamilyProvider extends ChangeNotifier {
     _isSaving = false;
     final result = response.data;
     if (response.isSuccess && result != null) {
-      _members.add(result.member);
+      // The API may omit these fields; fall back to what the user entered.
+      final m = result.member;
+      _members.add(
+        FamilyMember(
+          name: m.name.trim().isEmpty ? trimmedName : m.name,
+          relationship: m.relationship.trim().isEmpty ? relation : m.relationship,
+          countryCode: m.countryCode.isEmpty ? countryCode : m.countryCode,
+          maskedMobile: m.maskedMobile.isEmpty
+              ? '••••••${trimmedMobile.substring(trimmedMobile.length - 4)}'
+              : m.maskedMobile,
+        ),
+      );
       notifyListeners();
       return result;
     }
