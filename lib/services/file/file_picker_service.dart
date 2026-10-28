@@ -101,6 +101,10 @@ class FilePickerService implements FilePickerServiceBase {
   }
 
   @override
+  Future<bool> hasCameraPermission() async =>
+      (await ph.Permission.camera.status).isGranted;
+
+  @override
   Future<void> openSettings() => ph.openAppSettings();
 
   Future<PickedFile?> _pickFromFiles(List<String> allowedExtensions) async {

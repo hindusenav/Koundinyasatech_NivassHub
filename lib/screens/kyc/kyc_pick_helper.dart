@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_nivasshub/constants/kyc/kyc_strings.dart';
 import 'package:flutter_nivasshub/models/kyc/picked_file.dart';
-import 'package:flutter_nivasshub/screens/kyc/kyc_camera_capture_screen.dart';
+import 'package:flutter_nivasshub/models/camera/app_camera_config.dart';
+import 'package:flutter_nivasshub/screens/camera/app_camera.dart';
 import 'package:flutter_nivasshub/services/file/file_picker_service_base.dart';
 import 'package:flutter_nivasshub/widgets/kyc/kyc_file_preview_sheet.dart';
 import 'package:flutter_nivasshub/widgets/kyc/kyc_upload_source_sheet.dart';
@@ -18,13 +19,7 @@ Future<PickedFile?> pickKycFile(BuildContext context) async {
   if (source == null || !context.mounted) return null;
 
   if (source == FilePickSource.camera) {
-    final permissionError = await filePicker.ensureCameraPermission();
-    if (!context.mounted) return null;
-    if (permissionError != null) {
-      _showPickError(context, filePicker, permissionError.message);
-      return null;
-    }
-    return KycCameraCaptureScreen.show(context);
+    return AppCamera.capture(context, config: AppCameraConfig.document);
   }
 
   final picked = await filePicker.pick(source: source);

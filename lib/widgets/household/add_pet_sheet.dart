@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter_nivasshub/models/kyc/picked_file.dart';
 import 'package:flutter_nivasshub/providers/pet/pet_provider.dart';
+import 'package:flutter_nivasshub/screens/camera/app_camera.dart';
 import 'package:flutter_nivasshub/services/file/file_picker_service_base.dart';
 import 'package:flutter_nivasshub/widgets/household/household_sheet_frame.dart';
 
@@ -80,6 +81,19 @@ class _AddPetSheetState extends State<_AddPetSheet> {
       ),
     );
     if (source == null || !mounted) return;
+    if (source == FilePickSource.camera) {
+      final shot = await AppCamera.capture(context);
+      if (shot == null || !mounted) return;
+      setState(() {
+        if (shot.sizeBytes >= _maxPhotoBytes) {
+          _photoError = 'Photo must be smaller than 5 MB.';
+        } else {
+          _photo = shot;
+          _photoError = null;
+        }
+      });
+      return;
+    }
     final result = await context.read<FilePickerServiceBase>().pick(
       source: source,
       allowedExtensions: _photoExtensions,

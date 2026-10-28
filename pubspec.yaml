@@ -59,8 +59,6 @@ dependencies:
   # ---------------------------------------------------------------------------
   # UI
   # ---------------------------------------------------------------------------
-  carousel_slider: ^5.1.1
-  smooth_page_indicator: ^1.2.1
   shimmer: ^3.0.0
   cached_network_image: ^3.4.1
   flutter_svg: ^2.2.1
@@ -69,7 +67,6 @@ dependencies:
   # Utilities
   # ---------------------------------------------------------------------------
   intl: ^0.20.3
-  equatable: ^2.0.7
   collection: ^1.19.1
 
   # ---------------------------------------------------------------------------
@@ -98,31 +95,13 @@ flutter:
     - assets/images/
     - assets/images/kyc/cities/
     - assets/icons/
-    - assets/json/
-    - assets/icons/settings/
+    - assets/icons/profile/
     - assets/icons/quick_actions/
     - assets/icons/quick_actions/homequick_actions/
+    - assets/json/
     - assets/json/notices/
     - assets/json/location/
-    - assets/icons/profile/addbio.png
-    - assets/icons/profile/address(profile).png
-    - assets/icons/profile/area(addaddress).png
-    - assets/icons/profile/block.png
-    - assets/icons/profile/briefcase.png
-    - assets/icons/profile/house.png
-    - assets/icons/profile/landmark(addaddress).png
-    - assets/icons/profile/street(addaddress).png
-    - assets/icons/profile/wing(addaddress).png
-  # 
-  #   - family: Poppins
-  #     fonts:
-  #       - asset: assets/fonts/Poppins-Regular.ttf
-  #       - asset: assets/fonts/Poppins-Medium.ttf
-  #         weight: 500
-  #       - asset: assets/fonts/Poppins-SemiBold.ttf
-  #         weight: 600
-  #       - asset: assets/fonts/Poppins-Bold.ttf
-  #         weight: 700
+
 flutter_launcher_icons:
   android: "ic_launcher"
   ios: true

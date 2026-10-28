@@ -15,7 +15,7 @@ import 'package:flutter_nivasshub/widgets/shared/buttons/primary_button.dart';
 /// Confirmation step shown after picking a file/image from the OS file
 /// picker or photo gallery, before it is uploaded — an image preview when
 /// the file is a photo, otherwise a name/type/size card. Camera captures
-/// get their own preview inside `KycCameraCaptureScreen` and don't need a
+/// get their own preview inside `AppCamera` and don't need a
 /// second one here.
 class KycFilePreviewSheet extends StatelessWidget {
   const KycFilePreviewSheet({super.key, required this.file});

@@ -2,29 +2,22 @@
 class ApiEndpoints {
   ApiEndpoints._();
 
-  static const String baseUrl = 'http://192.168.0.104:3004';
-//   static const String baseUrl = 'http://10.10.10.66:3000';
-
+  /// Backend origin. Set it for each environment at build time:
+  ///   flutter build apk --release --dart-define=BASE_URL=https://api.yourdomain.com
+  /// or change the default below. No trailing slash.
+  static const String baseUrl = String.fromEnvironment(
+    'BASE_URL',
+    defaultValue: 'http://192.168.0.104:3004',
+  );
 
   // ---------------------------------------------------------------------
   // 1b. Identifier-first authentication entry (mobile OR email)
   //
-  // Replaces the OTP entry above as the app's front door: one identifier
-  // is checked, then the user is routed to password login or registration.
-  //
-  // `checkUserExists`/`loginUser` match the documented NivaasHub contract
-  // exactly (`POST /country-codes/registration-check`, `POST /auth/login`
-  // — neither uses the `/api/v1` prefix). `createUser`/`accessToken` do
-  // NOT correspond to any documented endpoint — MISSING API CONTRACT.
-  // `AuthEntryService` must never call them; `MockAuthEntryService`
-  // continues to back those two methods even once the others go real.
-  // See `PartialRealAuthEntryService`.
+  // One identifier is checked, then the user is routed to password login or
+  // registration. Neither endpoint uses the `/api/v1` prefix.
   // ---------------------------------------------------------------------
   static const String checkUserExists = '/country-codes/registration-check';
   static const String loginUser = '/auth/login';
-  static const String createUser = '/api/v1/auth/users'; // MISSING API CONTRACT
-  static const String accessToken =
-      '/api/v1/auth/access-token'; // MISSING API CONTRACT
 
   // ---------------------------------------------------------------------
   // 1c. Country list / registration master data (documented)
@@ -110,39 +103,8 @@ class ApiEndpoints {
   /// `GET ?user_token=<session-token>` — the user's stored KYC documents
   /// (distinct from `kycDocuments`, which lists applicable document types).
   static const String kycUserDocuments = '/kyc/user-documents';
-  static const String kycSubmit = '/api/v1/kyc/submit';
-  static String kycStatus(String kycId) => '/api/v1/kyc/$kycId/status';
   static String kycDocumentById(String documentId) =>
       '/api/v1/kyc/documents/$documentId';
-
-  // ---------------------------------------------------------------------
-  // 3. Society Management (Admin) Screens
-  // ---------------------------------------------------------------------
-  static const String societies = '/api/v1/societies';
-  static String societyById(String societyId) => '/api/v1/societies/$societyId';
-
-  // ---------------------------------------------------------------------
-  // 4. Roles & Permissions Screens
-  // ---------------------------------------------------------------------
-  static const String roles = '/api/v1/roles';
-  static String roleById(String roleId) => '/api/v1/roles/$roleId';
-  static String updateRole(String roleId) => '/api/v1/roles/$roleId';
-  static const String permissionsMatrix = '/api/v1/permissions/matrix';
-  static const String usersSearch = '/api/v1/users/search';
-  static String assignRole(String userId) =>
-      '/api/v1/users/$userId/assign-role';
-
-  // ---------------------------------------------------------------------
-  // 5. Tower & Unit Management Screens
-  // ---------------------------------------------------------------------
-  static String towers(String societyId) =>
-      '/api/v1/societies/$societyId/towers';
-  static String towerById(String societyId, String towerId) =>
-      '/api/v1/societies/$societyId/towers/$towerId';
-
-  static String units(String societyId) => '/api/v1/societies/$societyId/units';
-  static String unitById(String societyId, String unitId) =>
-      '/api/v1/societies/$societyId/units/$unitId';
 
   // ---------------------------------------------------------------------
   // 6. Home & Dashboard Screens
@@ -151,8 +113,6 @@ class ApiEndpoints {
   static const String userAddresses = '/api/v1/users/profile';
   static const String visitorsPending = '/api/v1/approvals';
   static const String emergencySos = '/api/v1/emergency/sos';
-  static String visitorDetails(String visitorId) =>
-      '/api/v1/visitors/$visitorId';
 
   // ---------------------------------------------------------------------
   // 7. Community Features Screens (Posts, Likes & Comments)
@@ -164,8 +124,6 @@ class ApiEndpoints {
   static String postComments(String postId) => '/api/v1/posts/$postId/comments';
   static String getPostComments(String postId) =>
       '/api/v1/posts/$postId/comments';
-  static String postCommentById(String postId, String commentId) =>
-      '/api/v1/posts/$postId/comments/$commentId';
 
   // ---------------------------------------------------------------------
   // 8. Community Posts, Polls & Events Creation
@@ -180,28 +138,10 @@ class ApiEndpoints {
   static String visitorAction(String visitorId) =>
       '/api/v1/visitors/$visitorId/action';
 
-  /// Activities screen's gate/delivery log (Nivaas Hub API Contract §6.2).
-  /// Still mock-only — see `MockVisitorActivityService`.
-  static const String approvals = '/api/v1/approvals';
-
-  /// "Filter Activity by Type" bottom sheet's option catalog. Not in the
-  /// API contract at all yet (no Figma/endpoint published) — still
-  /// mock-only, see `MockActivityTypeFilterService`.
-  static const String activityTypeFilters = '/activities/type-filters';
-
   // ---------------------------------------------------------------------
   // 9. Profile Screens
   // ---------------------------------------------------------------------
-  static const String myProfile = '/api/v1/profile';
-  static const String updateProfile = '/api/v1/profile';
   static const String profileImages = '/api/v1/profile/images';
-  static const String callingPreference = '/api/v1/profile/calling-preference';
-
-  // ---------------------------------------------------------------------
-  // 10. Settings & Master Data
-  // ---------------------------------------------------------------------
-  static const String settings = '/api/v1/settings';
-  static const String masterInterests = '/api/v1/master/interests';
 
   // ---------------------------------------------------------------------
   // 10 (Notice Board) Screens
@@ -209,12 +149,6 @@ class ApiEndpoints {
   static const String noticeBoard = '/api/v1/notice-board';
   static String noticeBoardById(String id) => '/api/v1/notice-board/$id';
   static String markNoticeRead(String id) => '/api/v1/notice-board/$id/read';
-
-  // ---------------------------------------------------------------------
-  // Profile / Active Society (Nivaas Hub Mobile App API Contract v1.0, §2)
-  // ---------------------------------------------------------------------
-  static const String userProfile = '/api/v1/users/profile';
-  static const String activeSociety = '/api/v1/users/active-society';
 
   // ---------------------------------------------------------------------
   // Forgot Password
