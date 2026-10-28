@@ -64,6 +64,11 @@ class ApiEndpoints {
   /// Add Pet form. See `PetService`.
   static const String addPet = '/pet/add-pet';
 
+  /// `POST` multipart/form-data (`pettype`, `breedtype`, `petname`,
+  /// `petcolour`, `petpicture` file, vaccination fields) — creates a pet.
+  /// See `PetService`.
+  static const String addPetDetails = '/pet/adding-pet-details';
+
   /// `POST` JSON body (see `AddFamilyRequest`) — adds a family member for the
   /// signed-in user. See `FamilyService`.
   static const String addFamily = '/get-family/add-family';

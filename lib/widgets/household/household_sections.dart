@@ -6,6 +6,7 @@ import 'package:flutter_nivasshub/constants/app_colors.dart';
 import 'package:flutter_nivasshub/core/api/base_api.dart';
 import 'package:flutter_nivasshub/models/family/add_family.dart';
 import 'package:flutter_nivasshub/models/pet/pet.dart';
+import 'package:flutter_nivasshub/models/vehicle/add_vehicle.dart';
 import 'package:flutter_nivasshub/providers/family/family_provider.dart';
 import 'package:flutter_nivasshub/providers/pet/pet_provider.dart';
 import 'package:flutter_nivasshub/routes/app_routes.dart';
@@ -58,11 +59,13 @@ class HouseholdSections extends StatefulWidget {
 }
 
 class _HouseholdSectionsState extends State<HouseholdSections> {
-  int _vehicleCount = 0;
+  final List<AddVehicleResult> _vehicles = [];
 
   Future<void> _addVehicle() async {
     final added = await Navigator.of(context).pushNamed(AppRoutes.vehicles);
-    if (added == true && mounted) setState(() => _vehicleCount++);
+    if (added is AddVehicleResult && mounted) {
+      setState(() => _vehicles.add(added));
+    }
   }
 
   void _comingSoon() {
@@ -133,7 +136,7 @@ class _HouseholdSectionsState extends State<HouseholdSections> {
         const SizedBox(height: 20),
         _SectionHeader(title: 'My Vehicles', onAdd: _addVehicle),
         const SizedBox(height: 10),
-        _vehicleCount == 0
+        _vehicles.isEmpty
             ? _EmptyPrompt(
                 icon: Icons.directions_car_outlined,
                 message: 'Register your bike or car to get a parking slot',
@@ -142,11 +145,15 @@ class _HouseholdSectionsState extends State<HouseholdSections> {
               )
             : _Tiles(
                 tiles: [
-                  _Tile(
-                    icon: Icons.directions_car_outlined,
-                    name: '$_vehicleCount added',
-                    subtitle: 'This session',
-                  ),
+                  for (final v in _vehicles)
+                    _Tile(
+                      icon: Icons.directions_car_outlined,
+                      name: v.registrationNumber,
+                      subtitle: v.zoneName.isNotEmpty ? v.zoneName : 'Parking',
+                      detail: v.slotNumber.isNotEmpty
+                          ? 'Slot ${v.slotNumber}'
+                          : '',
+                    ),
                 ],
                 onAdd: _addVehicle,
               ),
@@ -213,15 +220,26 @@ class _Tiles extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Swipe left/right through the cards; the scrollbar is hidden and the
+    // shadows are not clipped at the list edge.
     return SizedBox(
-      height: context.rt(132),
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        physics: const BouncingScrollPhysics(),
-        itemCount: tiles.length + 1,
-        separatorBuilder: (_, _) => const SizedBox(width: 12),
-        itemBuilder: (context, i) =>
-            i < tiles.length ? tiles[i] : _AddTile(onTap: onAdd),
+      height: context.rt(148),
+      child: ScrollConfiguration(
+        behavior: ScrollConfiguration.of(
+          context,
+        ).copyWith(scrollbars: false, overscroll: false),
+        child: ListView.separated(
+          scrollDirection: Axis.horizontal,
+          clipBehavior: Clip.none,
+          physics: const BouncingScrollPhysics(
+            parent: AlwaysScrollableScrollPhysics(),
+          ),
+          padding: const EdgeInsets.symmetric(vertical: 6),
+          itemCount: tiles.length + 1,
+          separatorBuilder: (_, _) => const SizedBox(width: 12),
+          itemBuilder: (context, i) =>
+              i < tiles.length ? tiles[i] : _AddTile(onTap: onAdd),
+        ),
       ),
     );
   }
@@ -243,41 +261,83 @@ class _Tile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: context.rt(132),
-      padding: const EdgeInsets.all(12),
+      width: context.rt(138),
       decoration: _cardDecoration(),
+      clipBehavior: Clip.antiAlias,
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          CircleAvatar(
-            radius: 22,
-            backgroundColor: _tint,
-            child: Icon(icon, color: _blue),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            name,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: const TextStyle(
-              color: AppColors.textDark,
-              fontSize: 13,
-              fontWeight: FontWeight.w700,
+          // Accent strip in the theme colour.
+          Container(
+            height: 4,
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [AppColors.primaryOrange, Color(0xFFFFB45E)],
+              ),
             ),
           ),
-          Text(
-            subtitle,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: const TextStyle(color: _muted, fontSize: 11.5),
-          ),
-          if (detail.isNotEmpty)
-            Text(
-              detail,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(color: AppColors.textMuted, fontSize: 11),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(10, 12, 10, 10),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    width: 48,
+                    height: 48,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: _tint,
+                      border: Border.all(color: _blue.withValues(alpha: 0.35)),
+                    ),
+                    child: Icon(icon, color: _blue, size: 24),
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    name.isEmpty ? '—' : name,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      color: AppColors.textDark,
+                      fontSize: 13.5,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  if (subtitle.isNotEmpty) ...[
+                    const SizedBox(height: 4),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 2,
+                      ),
+                      decoration: BoxDecoration(
+                        color: _tint,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                        subtitle,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          color: _blue,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
+                  if (detail.isNotEmpty) ...[
+                    const SizedBox(height: 4),
+                    Text(
+                      detail,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(color: _muted, fontSize: 11),
+                    ),
+                  ],
+                ],
+              ),
             ),
+          ),
         ],
       ),
     );
@@ -295,7 +355,7 @@ class _AddTile extends StatelessWidget {
       borderRadius: BorderRadius.circular(20),
       onTap: onTap,
       child: SizedBox(
-        width: 96,
+        width: 92,
         child: CustomPaint(
           painter: _DashedRRectPainter(),
           child: const Center(

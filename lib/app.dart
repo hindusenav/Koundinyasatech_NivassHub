@@ -10,6 +10,7 @@ import 'package:flutter_nivasshub/services/connectivity/connectivity_service.dar
 import 'package:flutter_nivasshub/storage/local_storage_service.dart';
 import 'package:flutter_nivasshub/storage/secure_storage_service.dart';
 import 'package:flutter_nivasshub/providers/connectivity/connectivity_provider.dart';
+import 'package:flutter_nivasshub/widgets/dashboard/navigation/persistent_bottom_bar_shell.dart';
 import 'package:flutter_nivasshub/widgets/shared/connectivity/no_internet_overlay.dart';
 import 'package:flutter_nivasshub/widgets/shared/common/responsive_shell.dart';
 
@@ -303,7 +304,11 @@ class NivasHubApp extends StatelessWidget {
           // Width cap, width-based text scale and orientation policy for
           // every screen (see `ResponsiveShell`).
           builder: (context, child) =>
-              ResponsiveShell(child: NoInternetOverlay(child: child)),
+              ResponsiveShell(
+                child: NoInternetOverlay(
+                  child: PersistentBottomBarShell(child: child),
+                ),
+              ),
         );
       },
     );

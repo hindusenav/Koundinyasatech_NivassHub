@@ -1,3 +1,4 @@
+import 'package:flutter_nivasshub/core/api/api_exception.dart';
 import 'package:flutter_nivasshub/core/api/api_response.dart';
 import 'package:flutter_nivasshub/core/api/api_service.dart';
 import 'package:flutter_nivasshub/core/api/endpoints.dart';
@@ -27,7 +28,48 @@ class PetService extends ApiService implements PetServiceBase {
     );
   }
 
-  /// The Add Pet POST API is not specified yet, so the pet is kept locally.
+  /// `POST /pet/adding-pet-details` as multipart/form-data. Dio generates the
+  /// multipart boundary; the Bearer token comes from the auth interceptor.
+  /// Responds 201 with `data.{petName, microchipNo, status}`.
   @override
-  Future<ApiResponse<Pet>> addPet(Pet pet) async => ApiResponse.success(pet);
+  Future<ApiResponse<Pet>> addPet(Pet pet) {
+    final picture = pet.picturePath;
+    if (pet.petTypeId == null || pet.breedId == null || picture == null) {
+      return Future.value(
+        ApiResponse.failure(
+          const ApiException(
+            message: 'Pet type, breed and picture are required.',
+            type: ApiExceptionType.validation,
+          ),
+        ),
+      );
+    }
+    return handleRequest(
+      () => client.uploadFile(
+        ApiEndpoints.addPetDetails,
+        files: {'petpicture': picture},
+        fields: {
+          'pettype': pet.petTypeId.toString(),
+          'breedtype': pet.breedId.toString(),
+          'petname': pet.name,
+          'petcolour': pet.colour,
+          if (pet.vaccinationStatus != null)
+            'petvaccinationstatus': pet.vaccinationStatus,
+          if (pet.vaccinationDate != null)
+            'petvaccinationdate': pet.vaccinationDate!
+                .toUtc()
+                .toIso8601String(),
+        },
+      ),
+      (json) {
+        final data = json is Map && json['data'] is Map
+            ? Map<String, dynamic>.from(json['data'] as Map)
+            : const <String, dynamic>{};
+        return pet.copyWith(
+          microchipNo: data['microchipNo']?.toString(),
+          status: data['status']?.toString(),
+        );
+      },
+    );
+  }
 }

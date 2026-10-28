@@ -9,6 +9,7 @@ abstract class PetServiceBase {
     required String userToken,
   });
 
-  /// Saves [pet]. Local-only until the Add Pet POST API is available.
+  /// `POST /pet/adding-pet-details` (multipart) — returns [pet] completed with
+  /// the backend's `microchipNo` and `status`.
   Future<ApiResponse<Pet>> addPet(Pet pet);
 }

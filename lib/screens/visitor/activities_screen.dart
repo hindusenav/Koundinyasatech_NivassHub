@@ -9,7 +9,6 @@ import 'package:flutter_nivasshub/widgets/shared/inputs/app_search_bar.dart';
 import 'package:flutter_nivasshub/widgets/shared/loaders/shimmer_loader.dart';
 import 'package:flutter_nivasshub/widgets/shared/states/custom_error_widget.dart';
 import 'package:flutter_nivasshub/widgets/shared/states/empty_state.dart';
-import 'package:flutter_nivasshub/widgets/dashboard/navigation/dashboard_bottom_navigation.dart';
 import 'package:flutter_nivasshub/models/visitor/approval_activity_model.dart';
 import 'package:flutter_nivasshub/providers/visitor/visitor_activity_provider.dart';
 import 'package:flutter_nivasshub/services/visitor/mock_visitor_activity_service.dart';
@@ -178,7 +177,6 @@ class _ActivitiesViewState extends State<_ActivitiesView> {
             tooltip: 'Add Visitor',
             child: Icon(AppIcons.add),
           ),
-          bottomNavigationBar: const DashboardBottomNavigation(),
           body: Column(
             children: [
               _buildHeader(provider),

@@ -6,7 +6,22 @@ class PetTypeOption {
     required this.breeds,
     this.petTypeId,
     this.petTypeCode,
+    this.breedIds = const {},
   });
+
+  /// Breed display name -> backend breed id (`breedtype` on POST).
+  final Map<String, int> breedIds;
+
+  static const _breedIdKeys = ['breedId', 'breed_id', 'petBreedId', 'id'];
+
+  static int? _breedId(dynamic b) {
+    if (b is! Map) return null;
+    for (final key in _breedIdKeys) {
+      final v = int.tryParse(b[key]?.toString() ?? '');
+      if (v != null) return v;
+    }
+    return null;
+  }
 
   /// Display name (`petTypeName`), e.g. "Bird".
   final String petType;
@@ -51,6 +66,13 @@ class PetTypeOption {
                 if (_breedLabel(b).isNotEmpty) _breedLabel(b),
             ]
           : const [],
+      breedIds: rawBreeds is List
+          ? {
+              for (final b in rawBreeds)
+                if (_breedLabel(b).isNotEmpty && _breedId(b) != null)
+                  _breedLabel(b): _breedId(b)!,
+            }
+          : const {},
     );
   }
 

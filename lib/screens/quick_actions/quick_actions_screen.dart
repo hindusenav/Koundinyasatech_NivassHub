@@ -9,7 +9,6 @@ import 'package:flutter_nivasshub/widgets/shared/feedback/custom_snackbar.dart';
 import 'package:flutter_nivasshub/widgets/shared/inputs/app_search_bar.dart';
 import 'package:flutter_nivasshub/widgets/shared/states/custom_error_widget.dart';
 import 'package:flutter_nivasshub/widgets/shared/states/empty_state.dart';
-import 'package:flutter_nivasshub/widgets/dashboard/navigation/dashboard_bottom_navigation.dart';
 import 'package:flutter_nivasshub/models/quick_actions/quick_action_section_model.dart';
 import 'package:flutter_nivasshub/providers/quick_actions/quick_actions_provider.dart';
 import 'package:flutter_nivasshub/widgets/quick_actions/demo_notification_banner.dart';
@@ -152,8 +151,6 @@ class _QuickActionsScreenState extends State<QuickActionsScreen> {
         ),
         centerTitle: true,
       ),
-      bottomNavigationBar:
-          const DashboardBottomNavigation(),
       body: SafeArea(
         child: Consumer<QuickActionsProvider>(
           builder: (context, provider, _) {

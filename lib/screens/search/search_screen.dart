@@ -11,7 +11,6 @@ import 'package:flutter_nivasshub/widgets/shared/feedback/custom_snackbar.dart';
 import 'package:flutter_nivasshub/widgets/shared/loaders/shimmer_loader.dart';
 import 'package:flutter_nivasshub/widgets/shared/states/custom_error_widget.dart';
 import 'package:flutter_nivasshub/widgets/shared/states/empty_state.dart';
-import 'package:flutter_nivasshub/widgets/dashboard/navigation/dashboard_bottom_navigation.dart';
 import 'package:flutter_nivasshub/widgets/quick_actions/demo_notification_banner.dart';
 import 'package:flutter_nivasshub/providers/search/search_provider.dart';
 import 'package:flutter_nivasshub/widgets/search/search_results_list.dart';
@@ -58,7 +57,6 @@ class _SearchScreenState extends State<SearchScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      bottomNavigationBar: const DashboardBottomNavigation(),
       body: SafeArea(
         child: Column(
           children: [
